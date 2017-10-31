@@ -12,32 +12,25 @@ const options = {
 
 const pullRequestsQuery = `
     query Name($owner: String!, $cursor: String) {
-      repository(owner: $owner, name: "web-component-tester") {
+      repository(owner: $owner, name: "prpl-server-node") {
         id
-        nameWithOwner
         pullRequests(first: 100, after: $cursor) {
           pageInfo {
             endCursor
             hasNextPage
           }
           nodes {
+            author {
+              login
+            }
+            createdAt
             url
-            timeline(first: 50) {
+            reviews(first: 20, states: [APPROVED, CHANGES_REQUESTED, COMMENTED]) {
               nodes {
-                __typename
-                ... on PullRequestReview {
-                  author {
-                    login
-                  }
-                  createdAt
-                  state
+                author {
+                  login
                 }
-                ... on ReviewRequestedEvent {
-                  subject {
-                    login
-                  }
-                  createdAt
-                }
+                submittedAt
               }
             }
           }
@@ -79,51 +72,54 @@ function storeRepo(data: any) {
   }
 }
 
-function calculateReviewLatencyForPullRequest(timeline: any):
-    {totalEvents: number, totalLatency: number} {
-  let numReviews = 0;
-  let latency: number = 0;
-  let reviewRequests: any = {};
-  for (const event of timeline.nodes) {
-    if (event.__typename == 'ReviewRequestedEvent') {
-      reviewRequests[event.subject.login] = event.createdAt;
-    } else if (event.__typename == 'PullRequestReview') {
-      // Review may have never been requested.
-      if (reviewRequests[event.author.login]) {
-        numReviews++;
-        latency += new Date(event.createdAt) -
-            new Date(reviewRequests[event.author.login]);
-        delete reviewRequests[event.author.login];
-      }
+type ReviewLatencyEvent = {
+  reviewedAt: string,
+  latency: number
+};
+
+function calculateReviewLatencyForPullRequest(pullRequest: {
+  author: {login: string},
+  createdAt: string,
+  reviews: {nodes: {author: {login: string}, submittedAt: string}[]}
+}): ReviewLatencyEvent[] {
+  const reviewEvents = [];
+  const authors: any = {};
+
+  for (const review of pullRequest.reviews.nodes) {
+    if (review.author.login != pullRequest.author.login &&
+        authors[review.author.login] != true) {
+      authors[review.author.login] = true;
+      reviewEvents.push({
+        reviewedAt: review.submittedAt,
+        latency: new Date(review.submittedAt).getTime() -
+            new Date(pullRequest.createdAt).getTime()
+      });
     }
   }
-  return {totalEvents: numReviews, totalLatency: latency};
+
+  return reviewEvents;
 }
 
-// This doesn't factor in time buckets
-let reviewLatency = {totalEvents: 0, totalLatency: 0};
-function accumulateLatency(
-    latency: {totalEvents: number, totalLatency: number}) {
-  reviewLatency.totalEvents += latency.totalEvents;
-  reviewLatency.totalLatency += latency.totalLatency;
-}
+const reviewLatencies: Array<ReviewLatencyEvent> = [];
 
 function calculateReviewLatency() {
   for (const id of Object.keys(store)) {
     for (const pullRequest of store[id].pullRequests.nodes) {
-      const result = calculateReviewLatencyForPullRequest(pullRequest.timeline);
-      accumulateLatency(result);
-      console.log(`${pullRequest.url} had ${
-          result.totalEvents} reviews with a total latency of ${
-          Math.round(result.totalLatency / 1000 / 60 / 60)} hours.`);
+      const result = calculateReviewLatencyForPullRequest(pullRequest);
+      console.log(`${pullRequest.url} has ${result.length} reviews.`);
+      reviewLatencies.push(...result);
     }
   }
 
+  let totalLatency = 0;
+  for (const event of reviewLatencies) {
+    totalLatency += event.latency;
+  }
+
   console.log(`There were ${
-      reviewLatency.totalEvents} reviews with an average latency of ${
+      reviewLatencies.length} reviews with an average latency of ${
       Math.round(
-          reviewLatency.totalLatency / 1000 / 60 / 60 /
-          reviewLatency.totalEvents)} hours.`);
+          totalLatency / 1000 / 60 / 60 / reviewLatencies.length)} hours.`);
 }
 
 async function dumpData() {
