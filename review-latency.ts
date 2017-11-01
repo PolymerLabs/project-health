@@ -1,12 +1,12 @@
 import * as https from 'https';
 
 const options = {
-  hostname: 'api.github.com',
-  path: '/graphql',
-  method: 'POST',
-  headers: {
-    'Authorization': 'bearer ' + process.env.GITHUB_TOKEN,
-    'User-Agent': 'Project Health'
+  hostname : 'api.github.com',
+  path : '/graphql',
+  method : 'POST',
+  headers : {
+    'Authorization' : 'bearer ' + process.env.GITHUB_TOKEN,
+    'User-Agent' : 'Project Health'
   },
 };
 
@@ -58,8 +58,8 @@ const pullRequestsQuery = `
   }
     `;
 
-function apiCall(
-    query: string, variables: {[key: string]: string|undefined}): Promise<any> {
+function apiCall(query: string,
+                 variables: {[key: string]: string|undefined}): Promise<any> {
   const start = Date.now();
   return new Promise((resolve, reject) => {
     const req = https.request(options, res => {
@@ -123,9 +123,9 @@ function calculateReviewLatencyForPullRequest(pullRequest: {
         authors[review.author.login] != true) {
       authors[review.author.login] = true;
       reviewEvents.push({
-        reviewedAt: review.submittedAt,
-        latency: new Date(review.submittedAt).getTime() -
-            new Date(pullRequest.createdAt).getTime()
+        reviewedAt : review.submittedAt,
+        latency : new Date(review.submittedAt).getTime() -
+                      new Date(pullRequest.createdAt).getTime()
       });
     }
   }
@@ -190,26 +190,26 @@ async function runOnOrg() {
     const result = calculateReviewLatency();
 
     // Sort results into date buckets.
-    const buckets: Map<string, [ReviewLatencyEvent]> = new Map();
+    const buckets: Map<string, ReviewLatencyEvent[]> = new Map();
     for (const entry of result) {
       const date = new Date(entry.reviewedAt);
       // Sort into weekly buckets.
       date.setDate(date.getDate() - date.getDay())
       const dateKey = date.toDateString();
-      if (buckets.has(dateKey)) {
-        buckets.get(dateKey).push(entry);
+      const bucket = buckets.get(dateKey);
+      if (bucket !== undefined) {
+        bucket.push(entry);
       } else {
-        buckets.set(dateKey, [entry]);
+        buckets.set(dateKey, [ entry ]);
       }
     }
 
     // Log by date bucket.
     const keys = Array.from(buckets.keys())
-                     .sort(
-                         (left: string, right: string) =>
-                             new Date(left) < new Date(right) ? -1 : 1);
+                     .sort((left: string, right: string) =>
+                               new Date(left) < new Date(right) ? -1 : 1);
     for (const date of keys) {
-      let entries = buckets.get(date);
+      let entries = buckets.get(date)!;
       let totalLatency = 0;
       entries.forEach((entry) => {totalLatency += entry.latency});
       console.log(`${date}\t${totalLatency / entries.length / 1000 / 60 / 60}`);
