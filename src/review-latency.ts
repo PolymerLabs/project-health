@@ -1,12 +1,12 @@
 import * as https from 'https';
 
 const options = {
-  hostname : 'api.github.com',
-  path : '/graphql',
-  method : 'POST',
-  headers : {
-    'Authorization' : 'bearer ' + process.env.GITHUB_TOKEN,
-    'User-Agent' : 'Project Health'
+  hostname: 'api.github.com',
+  path: '/graphql',
+  method: 'POST',
+  headers: {
+    'Authorization': 'bearer ' + process.env.GITHUB_TOKEN,
+    'User-Agent': 'Project Health'
   },
 };
 
@@ -58,8 +58,8 @@ const pullRequestsQuery = `
   }
     `;
 
-function apiCall(query: string,
-                 variables: {[key: string]: string|undefined}): Promise<any> {
+function apiCall(
+    query: string, variables: {[key: string]: string|undefined}): Promise<any> {
   const start = Date.now();
   return new Promise((resolve, reject) => {
     const req = https.request(options, res => {
@@ -123,9 +123,9 @@ function calculateReviewLatencyForPullRequest(pullRequest: {
         authors[review.author.login] != true) {
       authors[review.author.login] = true;
       reviewEvents.push({
-        reviewedAt : review.submittedAt,
-        latency : new Date(review.submittedAt).getTime() -
-                      new Date(pullRequest.createdAt).getTime()
+        reviewedAt: review.submittedAt,
+        latency: new Date(review.submittedAt).getTime() -
+            new Date(pullRequest.createdAt).getTime()
       });
     }
   }
@@ -200,14 +200,15 @@ async function runOnOrg() {
       if (bucket !== undefined) {
         bucket.push(entry);
       } else {
-        buckets.set(dateKey, [ entry ]);
+        buckets.set(dateKey, [entry]);
       }
     }
 
     // Log by date bucket.
     const keys = Array.from(buckets.keys())
-                     .sort((left: string, right: string) =>
-                               new Date(left) < new Date(right) ? -1 : 1);
+                     .sort(
+                         (left: string, right: string) =>
+                             new Date(left) < new Date(right) ? -1 : 1);
     for (const date of keys) {
       let entries = buckets.get(date)!;
       let totalLatency = 0;
