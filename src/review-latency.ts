@@ -190,14 +190,15 @@ async function runOnOrg() {
     const result = calculateReviewLatency();
 
     // Sort results into date buckets.
-    const buckets: Map<string, [ReviewLatencyEvent]> = new Map();
+    const buckets: Map<string, ReviewLatencyEvent[]> = new Map();
     for (const entry of result) {
       const date = new Date(entry.reviewedAt);
       // Sort into weekly buckets.
       date.setDate(date.getDate() - date.getDay())
       const dateKey = date.toDateString();
-      if (buckets.has(dateKey)) {
-        buckets.get(dateKey).push(entry);
+      const bucket = buckets.get(dateKey);
+      if (bucket !== undefined) {
+        bucket.push(entry);
       } else {
         buckets.set(dateKey, [entry]);
       }
@@ -209,7 +210,7 @@ async function runOnOrg() {
                          (left: string, right: string) =>
                              new Date(left) < new Date(right) ? -1 : 1);
     for (const date of keys) {
-      let entries = buckets.get(date);
+      let entries = buckets.get(date)!;
       let totalLatency = 0;
       entries.forEach((entry) => {totalLatency += entry.latency});
       console.log(`${date}\t${totalLatency / entries.length / 1000 / 60 / 60}`);
