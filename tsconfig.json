@@ -4,6 +4,10 @@
     "module": "commonjs",
     "strict": true,
     "outDir": "lib",
-    "pretty": true
+    "pretty": true,
+    "lib": [
+      "es2017",
+      "esnext.asynciterable"
+    ]
   }
 }
