@@ -1,16 +1,22 @@
-import * as https from 'https';
+import {InMemoryCache} from 'apollo-cache-inmemory';
+import ApolloClient from 'apollo-client';
+import {HttpLink} from 'apollo-link-http';
+import gql from 'graphql-tag';
+import fetch from 'node-fetch';
 
-const options = {
-  hostname: 'api.github.com',
-  path: '/graphql',
-  method: 'POST',
-  headers: {
-    'Authorization': 'bearer ' + process.env.GITHUB_TOKEN,
-    'User-Agent': 'Project Health'
-  },
-};
+const github = new ApolloClient({
+  link: new HttpLink({
+    uri: 'https://api.github.com/graphql',
+    headers: {
+      'Authorization': 'bearer ' + process.env.GITHUB_TOKEN,
+      'User-Agent': 'Project Health'
+    },
+    fetch: fetch,
+  }),
+  cache: new InMemoryCache(),
+});
 
-const orgReposQuery = `
+const orgReposQuery = gql`
   query fetchOrgRepos($login: String!, $cursor: String) {
     organization(login: $login) {
       repositories(first: 100, after: $cursor) {
@@ -27,7 +33,7 @@ const orgReposQuery = `
   }
 `;
 
-const pullRequestsQuery = `
+const pullRequestsQuery = gql`
   query pullRequestLatency($id: ID!, $cursor: String) {
     node(id: $id) {
       __typename
@@ -58,46 +64,12 @@ const pullRequestsQuery = `
   }
     `;
 
-function apiCall(
-    query: string, variables: {[key: string]: string|undefined}): Promise<any> {
-  const start = Date.now();
-  return new Promise((resolve, reject) => {
-    const req = https.request(options, res => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        // console.log(`GitHub API took ${Date.now() - start}ms to respond`);
-        const parsedData = JSON.parse(data);
-        if (parsedData.errors) {
-          reject(data);
-        } else if (parsedData.message) {
-          // console.log(parsedData.message);
-          reject(data);
-        } else {
-          resolve(parsedData);
-        }
-      });
-    });
-
-    req.write(JSON.stringify({query, variables}));
-    req.end();
-  });
-}
-
-function pullRequests(id: string, cursor: string|undefined): Promise<any> {
-  return apiCall(pullRequestsQuery, {id, cursor});
-}
-
-function fetchOrgRepos(login: string, cursor: string|undefined): Promise<any> {
-  return apiCall(orgReposQuery, {login, cursor});
-}
-
 let store: any = {};
 // Stores data objects from GitHub's API. Repositories are keyed
 // by their id and the pull requests object is accumulated.
 function storeRepo(id: string, data: any) {
   if (!store[id].pullRequests) {
-    store[id].pullRequests = data.pullRequests;
+    store[id].pullRequests = {nodes: data.pullRequests.nodes.slice()};
   } else {
     store[id].pullRequests.nodes.push(...data.pullRequests.nodes);
   }
@@ -159,7 +131,8 @@ async function fetchPullRequestsForId(id: string) {
   let hasNextPage = true;
   let cursor: string|undefined;
   while (hasNextPage) {
-    const page = await pullRequests(id, cursor);
+    const page: any =
+        await github.query({query: pullRequestsQuery, variables: {id, cursor}});
     storeRepo(id, page.data.node);
     const pageInfo = page.data.node.pullRequests.pageInfo;
     hasNextPage = pageInfo.hasNextPage;
@@ -171,9 +144,10 @@ async function runOnOrg() {
   let hasNextPage = true;
   let cursor: string|undefined;
   while (hasNextPage) {
-    const page = await fetchOrgRepos('GoogleChrome', cursor);
+    const page: any = await github.query(
+        {query: orgReposQuery, variables: {login: 'webcomponents', cursor}});
     for (const repo of page.data.organization.repositories.nodes) {
-      store[repo.id] = repo;
+      store[repo.id] = {};
     }
     const pageInfo = page.data.organization.repositories.pageInfo;
     hasNextPage = pageInfo.hasNextPage;
