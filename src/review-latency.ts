@@ -3,6 +3,7 @@ import ApolloClient from 'apollo-client';
 import {HttpLink} from 'apollo-link-http';
 import gql from 'graphql-tag';
 import fetch from 'node-fetch';
+import * as gqlTypes from './gql-types';
 
 const github = new ApolloClient({
   link: new HttpLink({
@@ -17,7 +18,7 @@ const github = new ApolloClient({
 });
 
 const orgReposQuery = gql`
-  query fetchOrgRepos($login: String!, $cursor: String) {
+  query OrgRepos($login: String!, $cursor: String) {
     organization(login: $login) {
       repositories(first: 100, after: $cursor) {
         nodes {
@@ -34,7 +35,7 @@ const orgReposQuery = gql`
 `;
 
 const pullRequestsQuery = gql`
-  query pullRequestLatency($id: ID!, $cursor: String) {
+  query PullRequests($id: ID!, $cursor: String) {
     node(id: $id) {
       __typename
       ... on Repository {
@@ -129,12 +130,15 @@ function calculateReviewLatency() {
 
 async function fetchPullRequestsForId(id: string) {
   let hasNextPage = true;
-  let cursor: string|undefined;
+  let cursor: string|null = null;
   while (hasNextPage) {
-    const page: any =
-        await github.query({query: pullRequestsQuery, variables: {id, cursor}});
-    storeRepo(id, page.data.node);
-    const pageInfo = page.data.node.pullRequests.pageInfo;
+    const variables: gqlTypes.PullRequestsQueryVariables = {id, cursor};
+    const result = await github.query<gqlTypes.PullRequestsQuery>(
+        {query: pullRequestsQuery, variables});
+    if (!result.data.node || result.data.node.__typename !== 'Repository')
+      break;
+    storeRepo(id, result.data.node);
+    const pageInfo = result.data.node.pullRequests.pageInfo;
     hasNextPage = pageInfo.hasNextPage;
     cursor = pageInfo.endCursor;
   }
@@ -142,17 +146,26 @@ async function fetchPullRequestsForId(id: string) {
 
 async function runOnOrg() {
   let hasNextPage = true;
-  let cursor: string|undefined;
+  let cursor: string|null = null;
   while (hasNextPage) {
-    const page: any = await github.query(
-        {query: orgReposQuery, variables: {login: 'webcomponents', cursor}});
-    for (const repo of page.data.organization.repositories.nodes) {
-      store[repo.id] = {};
+    const variables:
+        gqlTypes.OrgReposQueryVariables = {login: 'webcomponents', cursor};
+    const result = await github.query<gqlTypes.OrgReposQuery>(
+        {query: orgReposQuery, variables});
+    if (!result.data.organization)
+      break;
+
+    for (const repo of result.data.organization.repositories.nodes || []) {
+      if (repo) {
+        store[repo.id] = {};
+      }
     }
-    const pageInfo = page.data.organization.repositories.pageInfo;
+
+    const pageInfo = result.data.organization.repositories.pageInfo;
     hasNextPage = pageInfo.hasNextPage;
     cursor = pageInfo.endCursor;
   }
+
   // console.log(`Found ${Object.keys(store).length} repos for GoogleChrome
   // org.`);
 
