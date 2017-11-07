@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+
+'use strict';
+
+const cli = require('../lib/metric-cli.js');
+
+try {
+  cli.run(process.argv);
+} catch (e) {
+  console.error(e);
+  process.exit(64);
+}
