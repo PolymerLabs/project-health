@@ -25,6 +25,7 @@
     "typescript": "^2.6.1"
   },
   "dependencies": {
+    "@types/command-line-args": "^4.0.1",
     "@types/graphql": "^0.11.5",
     "@types/node": "^8.0.47",
     "@types/node-fetch": "^1.6.7",
@@ -32,6 +33,7 @@
     "apollo-cache-inmemory": "^1.0.0",
     "apollo-client": "^2.0.1",
     "apollo-link-http": "^1.1.0",
+    "command-line-args": "^4.0.7",
     "graphql-tag": "^2.5.0",
     "node-fetch": "^1.7.3"
   }

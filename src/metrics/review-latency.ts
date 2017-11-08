@@ -1,9 +1,25 @@
+/*
+ * Copyright 2017 Google Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 import {InMemoryCache} from 'apollo-cache-inmemory';
 import ApolloClient from 'apollo-client';
 import {HttpLink} from 'apollo-link-http';
 import gql from 'graphql-tag';
 import fetch from 'node-fetch';
-import * as gqlTypes from './gql-types';
+import * as gqlTypes from '../gql-types';
 
 const github = new ApolloClient({
   link: new HttpLink({
@@ -81,7 +97,7 @@ type ReviewLatencyEvent = {
   latency: number
 };
 
-function calculateReviewLatencyForPullRequest(pullRequest: {
+function getReviewsForPullRequest(pullRequest: {
   author: {login: string},
   createdAt: string,
   reviews: {nodes: {author: {login: string}, submittedAt: string}[]}
@@ -107,27 +123,20 @@ function calculateReviewLatencyForPullRequest(pullRequest: {
 }
 
 // Calculate review latency for the entire store.
-function calculateReviewLatency() {
+function getReviews() {
   const reviewLatencies: Array<ReviewLatencyEvent> = [];
   for (const id of Object.keys(store)) {
     for (const pullRequest of store[id].pullRequests.nodes) {
-      reviewLatencies.push(
-          ...calculateReviewLatencyForPullRequest(pullRequest));
+      reviewLatencies.push(...getReviewsForPullRequest(pullRequest));
     }
   }
 
-  let totalLatency = 0;
-  for (const event of reviewLatencies) {
-    totalLatency += event.latency;
-  }
-
-  // console.log(`There were ${
-  //     reviewLatencies.length} reviews with an average latency of ${
-  //     Math.round(
-  //         totalLatency / 1000 / 60 / 60 / reviewLatencies.length)} hours.`);
   return reviewLatencies;
 }
 
+/**
+ * Fetches all pull requests for the specified repository node.
+ */
 async function fetchPullRequestsForId(id: string) {
   let hasNextPage = true;
   let cursor: string|null = null;
@@ -144,12 +153,17 @@ async function fetchPullRequestsForId(id: string) {
   }
 }
 
-async function runOnOrg() {
+/**
+ * Computes the review latency for a given GitHub organisation.
+ */
+export default async function reviewLatency(config: any) {
   let hasNextPage = true;
   let cursor: string|null = null;
+
+  // Fetches the list of repos in the specified org.
   while (hasNextPage) {
     const variables:
-        gqlTypes.OrgReposQueryVariables = {login: 'webcomponents', cursor};
+        gqlTypes.OrgReposQueryVariables = {login: config.org, cursor};
     const result = await github.query<gqlTypes.OrgReposQuery>(
         {query: orgReposQuery, variables});
     if (!result.data.organization)
@@ -166,43 +180,64 @@ async function runOnOrg() {
     cursor = pageInfo.endCursor;
   }
 
-  // console.log(`Found ${Object.keys(store).length} repos for GoogleChrome
-  // org.`);
+  if (!config.raw) {
+    console.log(
+        `Found ${Object.keys(store).length} repos for ${config.org} org.`);
+  }
 
+  // Fetches all requests for all the repos in the org.
   const fetches = [];
   for (const id of Object.keys(store)) {
     fetches.push(fetchPullRequestsForId(id));
   }
+
   Promise.all(fetches).then(() => {
-    const result = calculateReviewLatency();
+    const reviews = getReviews();
 
-    // Sort results into date buckets.
-    const buckets: Map<string, ReviewLatencyEvent[]> = new Map();
-    for (const entry of result) {
-      const date = new Date(entry.reviewedAt);
-      // Sort into weekly buckets.
-      date.setDate(date.getDate() - date.getDay())
-      const dateKey = date.toDateString();
-      const bucket = buckets.get(dateKey);
-      if (bucket !== undefined) {
-        bucket.push(entry);
-      } else {
-        buckets.set(dateKey, [entry]);
-      }
-    }
-
-    // Log by date bucket.
-    const keys = Array.from(buckets.keys())
-                     .sort(
-                         (left: string, right: string) =>
-                             new Date(left) < new Date(right) ? -1 : 1);
-    for (const date of keys) {
-      let entries = buckets.get(date)!;
+    if (config.raw) {
+      dumpRawData(reviews);
+    } else {
       let totalLatency = 0;
-      entries.forEach((entry) => {totalLatency += entry.latency});
-      console.log(`${date}\t${totalLatency / entries.length / 1000 / 60 / 60}`);
+      for (const event of reviews) {
+        totalLatency += event.latency;
+      }
+
+      console.log(`There were ${
+          reviews.length} reviews with an average latency of ${
+          Math.round(totalLatency / 1000 / 60 / 60 / reviews.length)} hours.`);
     }
   });
 }
 
-runOnOrg();
+/**
+ * Logs raw data for review latency. Currently logs average review latency by
+ * weeks starting on Sunday.
+ */
+function dumpRawData(result: ReviewLatencyEvent[]) {
+  // Sort results into date buckets.
+  const buckets: Map<string, ReviewLatencyEvent[]> = new Map();
+  for (const entry of result) {
+    const date = new Date(entry.reviewedAt);
+    // Sort into weekly buckets.
+    date.setDate(date.getDate() - date.getDay())
+    const dateKey = date.toDateString();
+    const bucket = buckets.get(dateKey);
+    if (bucket !== undefined) {
+      bucket.push(entry);
+    } else {
+      buckets.set(dateKey, [entry]);
+    }
+  }
+
+  // Log by date bucket.
+  const keys = Array.from(buckets.keys())
+                   .sort(
+                       (left: string, right: string) =>
+                           new Date(left) < new Date(right) ? -1 : 1);
+  for (const date of keys) {
+    let entries = buckets.get(date)!;
+    let totalLatency = 0;
+    entries.forEach((entry) => {totalLatency += entry.latency});
+    console.log(`${date}\t${totalLatency / entries.length / 1000 / 60 / 60}`);
+  }
+}
