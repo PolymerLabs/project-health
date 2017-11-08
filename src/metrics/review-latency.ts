@@ -14,24 +14,10 @@
  * the License.
  */
 
-import {InMemoryCache} from 'apollo-cache-inmemory';
-import ApolloClient from 'apollo-client';
-import {HttpLink} from 'apollo-link-http';
 import gql from 'graphql-tag';
-import fetch from 'node-fetch';
-import * as gqlTypes from '../gql-types';
 
-const github = new ApolloClient({
-  link: new HttpLink({
-    uri: 'https://api.github.com/graphql',
-    headers: {
-      'Authorization': 'bearer ' + process.env.GITHUB_TOKEN,
-      'User-Agent': 'Project Health'
-    },
-    fetch: fetch,
-  }),
-  cache: new InMemoryCache(),
-});
+import github from '../gql';
+import * as gqlTypes from '../gql-types';
 
 const orgReposQuery = gql`
   query OrgRepos($login: String!, $cursor: String) {
