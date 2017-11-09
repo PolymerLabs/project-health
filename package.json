@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "npm run clean && npm run generate-gql-types && tsc",
+    "build": "npm run clean && npm run generate-gql-types && tsc && npm run lint",
     "build:watch": "npm run generate-gql-types && tsc --watch",
     "clean": "rm -rf lib",
     "format": "find src -name '*.ts' | xargs clang-format --style=file -i",
     "generate-gql-types": "apollo-codegen generate src/**/*.ts --schema src/github-schema.json --target typescript --addTypename --output src/gql-types.ts",
+    "lint": "tslint -c tslint.json  src/**/*.ts -t stylish",
     "test": "RECORD=false; npm run build && npm run test:ava -- --timeout=10sec",
     "test:record": "RECORD=true; npm run build && npm run test:ava -- --timeout=1min",
     "test:ava": "ava lib/test/**/*-test.js --verbose"
@@ -29,6 +30,7 @@
     "clang-format": "^1.1.0",
     "fs-extra": "^4.0.2",
     "request": "^2.83.0",
+    "tslint": "^5.8.0",
     "typescript": "^2.6.1",
     "watchy": "^0.7.0"
   },
