@@ -16,7 +16,7 @@
 
 import gql from 'graphql-tag';
 
-import github from '../gql';
+import {GitHub} from '../gql';
 import * as gqlTypes from '../gql-types';
 
 const orgReposQuery = gql`
@@ -123,7 +123,7 @@ function getReviews() {
 /**
  * Fetches all pull requests for the specified repository node.
  */
-async function fetchPullRequestsForId(id: string) {
+async function fetchPullRequestsForId(github: GitHub, id: string) {
   let hasNextPage = true;
   let cursor: string|null = null;
   while (hasNextPage) {
@@ -142,7 +142,8 @@ async function fetchPullRequestsForId(id: string) {
 /**
  * Computes the review latency for a given GitHub organisation.
  */
-export default async function reviewLatency(config: any) {
+export default async function reviewLatency(
+    github: GitHub, config: {org: string, raw: boolean}): Promise<number> {
   let hasNextPage = true;
   let cursor: string|null = null;
 
@@ -174,25 +175,28 @@ export default async function reviewLatency(config: any) {
   // Fetches all requests for all the repos in the org.
   const fetches = [];
   for (const id of Object.keys(store)) {
-    fetches.push(fetchPullRequestsForId(id));
+    fetches.push(fetchPullRequestsForId(github, id));
   }
 
-  Promise.all(fetches).then(() => {
-    const reviews = getReviews();
+  await Promise.all(fetches);
 
-    if (config.raw) {
-      dumpRawData(reviews);
-    } else {
-      let totalLatency = 0;
-      for (const event of reviews) {
-        totalLatency += event.latency;
-      }
+  const reviews = getReviews();
 
-      console.log(`There were ${
-          reviews.length} reviews with an average latency of ${
-          Math.round(totalLatency / 1000 / 60 / 60 / reviews.length)} hours.`);
+  let totalLatency = 0;
+
+  if (config.raw) {
+    dumpRawData(reviews);
+  } else {
+    for (const event of reviews) {
+      totalLatency += event.latency;
     }
-  });
+
+    console.log(`There were ${
+        reviews.length} reviews with an average latency of ${
+        Math.round(totalLatency / 1000 / 60 / 60 / reviews.length)} hours.`);
+  }
+
+  return totalLatency;
 }
 
 /**

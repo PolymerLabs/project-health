@@ -6,13 +6,13 @@ import {HttpLink} from 'apollo-link-http';
 import fetch from 'node-fetch';
 import {promisify} from 'util';
 
-class GitHub {
+export class GitHub {
   private apollo: ApolloClient<NormalizedCache>;
 
-  constructor() {
+  constructor(uri = 'https://api.github.com/graphql') {
     this.apollo = new ApolloClient({
       link: new HttpLink({
-        uri: 'https://api.github.com/graphql',
+        uri,
         headers: {
           'Authorization': 'bearer ' + process.env.GITHUB_TOKEN,
           'User-Agent': 'Project Health'
@@ -49,5 +49,3 @@ class GitHub {
     return result;
   }
 }
-
-export default new GitHub();

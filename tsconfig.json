@@ -3,8 +3,11 @@
     "target": "es2017",
     "module": "commonjs",
     "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "outDir": "lib",
     "pretty": true,
+    "skipLibCheck": true,
     "lib": [
       "es2017",
       "esnext.asynciterable"
