@@ -15,6 +15,8 @@
  */
 
 import * as commandLineArgs from 'command-line-args';
+
+import {GitHub} from './gql';
 import reviewLatency from './metrics/review-latency';
 
 const argDefs = [
@@ -48,7 +50,9 @@ export function run(argv: string[]) {
     throw new Error('No GitHub org specified');
   }
 
+  const github = new GitHub();
+
   if (args.metric === 'review-latency') {
-    reviewLatency(args);
+    reviewLatency(github, args);
   }
 }
