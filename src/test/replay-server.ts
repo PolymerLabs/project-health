@@ -89,7 +89,7 @@ export async function startTestReplayServer(t: ava.TestContext):
         res.end(replay.body);
       }
     });
-  };
+  }
 
   return new Promise<{server: http.Server, client: GitHub}>((resolve) => {
     const server = http.createServer(handler);

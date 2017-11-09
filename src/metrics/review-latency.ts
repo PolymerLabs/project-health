@@ -67,9 +67,11 @@ const pullRequestsQuery = gql`
   }
     `;
 
-let store: any = {};
+const store: any = {};  // tslint:disable-line:no-any TODO
+
 // Stores data objects from GitHub's API. Repositories are keyed
 // by their id and the pull requests object is accumulated.
+// tslint:disable-next-line:no-any TODO
 function storeRepo(id: string, data: any) {
   if (!store[id].pullRequests) {
     store[id].pullRequests = {nodes: data.pullRequests.nodes.slice()};
@@ -80,27 +82,27 @@ function storeRepo(id: string, data: any) {
 
 type ReviewLatencyEvent = {
   reviewedAt: string,
-  latency: number
+  latency: number,
 };
 
 function getReviewsForPullRequest(pullRequest: {
   author: {login: string},
   createdAt: string,
-  reviews: {nodes: {author: {login: string}, submittedAt: string}[]}
+  reviews: {nodes: Array<{author: {login: string}, submittedAt: string}>},
 }): ReviewLatencyEvent[] {
   const reviewEvents = [];
-  const authors: any = {};
+  const authors: any = {};  // tslint:disable-line: no-any TODO
 
   for (const review of pullRequest.reviews.nodes) {
     // Exclude 'reviews' made by the author of the pull request
     // & only count a maximum of 1 review per reviewer.
-    if (review.author.login != pullRequest.author.login &&
-        authors[review.author.login] != true) {
+    if (review.author.login !== pullRequest.author.login &&
+        authors[review.author.login] !== true) {
       authors[review.author.login] = true;
       reviewEvents.push({
-        reviewedAt: review.submittedAt,
         latency: new Date(review.submittedAt).getTime() -
-            new Date(pullRequest.createdAt).getTime()
+            new Date(pullRequest.createdAt).getTime(),
+        reviewedAt: review.submittedAt,
       });
     }
   }
@@ -110,7 +112,7 @@ function getReviewsForPullRequest(pullRequest: {
 
 // Calculate review latency for the entire store.
 function getReviews() {
-  const reviewLatencies: Array<ReviewLatencyEvent> = [];
+  const reviewLatencies: ReviewLatencyEvent[] = [];
   for (const id of Object.keys(store)) {
     for (const pullRequest of store[id].pullRequests.nodes) {
       reviewLatencies.push(...getReviewsForPullRequest(pullRequest));
@@ -130,8 +132,9 @@ async function fetchPullRequestsForId(github: GitHub, id: string) {
     const variables: gqlTypes.PullRequestsQueryVariables = {id, cursor};
     const result = await github.query<gqlTypes.PullRequestsQuery>(
         {query: pullRequestsQuery, variables});
-    if (!result.data.node || result.data.node.__typename !== 'Repository')
+    if (!result.data.node || result.data.node.__typename !== 'Repository') {
       break;
+    }
     storeRepo(id, result.data.node);
     const pageInfo = result.data.node.pullRequests.pageInfo;
     hasNextPage = pageInfo.hasNextPage;
@@ -142,7 +145,7 @@ async function fetchPullRequestsForId(github: GitHub, id: string) {
 /**
  * Computes the review latency for a given GitHub organisation.
  */
-export default async function reviewLatency(
+export async function reviewLatency(
     github: GitHub, config: {org: string, raw: boolean}): Promise<number> {
   let hasNextPage = true;
   let cursor: string|null = null;
@@ -153,8 +156,9 @@ export default async function reviewLatency(
         gqlTypes.OrgReposQueryVariables = {login: config.org, cursor};
     const result = await github.query<gqlTypes.OrgReposQuery>(
         {query: orgReposQuery, variables});
-    if (!result.data.organization)
+    if (!result.data.organization) {
       break;
+    }
 
     for (const repo of result.data.organization.repositories.nodes || []) {
       if (repo) {
@@ -209,7 +213,7 @@ function dumpRawData(result: ReviewLatencyEvent[]) {
   for (const entry of result) {
     const date = new Date(entry.reviewedAt);
     // Sort into weekly buckets.
-    date.setDate(date.getDate() - date.getDay())
+    date.setDate(date.getDate() - date.getDay());
     const dateKey = date.toDateString();
     const bucket = buckets.get(dateKey);
     if (bucket !== undefined) {
@@ -225,9 +229,9 @@ function dumpRawData(result: ReviewLatencyEvent[]) {
                        (left: string, right: string) =>
                            new Date(left) < new Date(right) ? -1 : 1);
   for (const date of keys) {
-    let entries = buckets.get(date)!;
+    const entries = buckets.get(date)!;
     let totalLatency = 0;
-    entries.forEach((entry) => {totalLatency += entry.latency});
+    entries.forEach((entry) => totalLatency += entry.latency);
     console.log(`${date}\t${totalLatency / entries.length / 1000 / 60 / 60}`);
   }
 }

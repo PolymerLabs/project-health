@@ -17,7 +17,7 @@
 import * as commandLineArgs from 'command-line-args';
 
 import {GitHub} from './gql';
-import reviewLatency from './metrics/review-latency';
+import {reviewLatency} from './metrics/review-latency';
 
 const argDefs = [
   {
