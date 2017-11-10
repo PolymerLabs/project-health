@@ -1,4 +1,4 @@
-# project-health
+# project-health [![Build status](https://img.shields.io/travis/PolymerLabs/project-health.svg?style=flat-square)](https://travis-ci.org/PolymerLabs/project-health)
 
 ## Building
 Use `build` or `build:watch` to build the project.
