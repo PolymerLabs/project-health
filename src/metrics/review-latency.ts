@@ -35,6 +35,39 @@ export class ReviewLatencyResult {
     return `There were ${this.reviews.length} reviews ` +
         `with an average latency of ${avg} hours.`;
   }
+
+
+  /**
+   * Logs raw data for review latency. Currently logs average review latency by
+   * weeks starting on Sunday.
+   */
+  logRawData() {
+    // Sort results into date buckets.
+    const buckets: Map<string, Review[]> = new Map();
+    for (const entry of this.reviews) {
+      const date = new Date(entry.reviewedAt);
+      // Sort into weekly buckets.
+      date.setDate(date.getDate() - date.getDay());
+      const dateKey = date.toDateString();
+      const bucket = buckets.get(dateKey);
+      if (bucket !== undefined) {
+        bucket.push(entry);
+      } else {
+        buckets.set(dateKey, [entry]);
+      }
+    }
+
+    // Log by date bucket.
+    const dateComparator = (left: string, right: string) =>
+        new Date(left) < new Date(right) ? -1 : 1;
+    const keys = Array.from(buckets.keys()).sort(dateComparator);
+    for (const date of keys) {
+      const entries = buckets.get(date)!;
+      let totalLatency = 0;
+      entries.forEach((entry) => totalLatency += entry.latency);
+      console.log(`${date}\t${totalLatency / entries.length / 1000 / 60 / 60}`);
+    }
+  }
 }
 
 type ReviewLatencyOpts = {
@@ -47,10 +80,9 @@ type ReviewLatencyOpts = {
  */
 export async function getReviewLatency(
     github: GitHub, opts: ReviewLatencyOpts): Promise<ReviewLatencyResult> {
-
   let repos;
   if (opts.repo) {
-    repos = [{owner:opts.org, name:opts.repo}];
+    repos = [{owner: opts.org, name: opts.repo}];
   } else {
     repos = await getOrgRepos(github, opts.org);
   }
@@ -232,39 +264,3 @@ async function fetchPullRequestsForId(
   }
   return prs;
 }
-
-/**
- * Logs raw data for review latency. Currently logs average review latency by
- * weeks starting on Sunday.
- */
-
-/*
-function dumpRawData(result: Review[]) {
- // Sort results into date buckets.
- const buckets: Map<string, Review[]> = new Map();
- for (const entry of result) {
-   const date = new Date(entry.reviewedAt);
-   // Sort into weekly buckets.
-   date.setDate(date.getDate() - date.getDay());
-   const dateKey = date.toDateString();
-   const bucket = buckets.get(dateKey);
-   if (bucket !== undefined) {
-     bucket.push(entry);
-   } else {
-     buckets.set(dateKey, [entry]);
-   }
- }
-
- // Log by date bucket.
- const keys = Array.from(buckets.keys())
-                  .sort(
-                      (left: string, right: string) =>
-                          new Date(left) < new Date(right) ? -1 : 1);
- for (const date of keys) {
-   const entries = buckets.get(date)!;
-   let totalLatency = 0;
-   entries.forEach((entry) => totalLatency += entry.latency);
-   console.log(`${date}\t${totalLatency / entries.length / 1000 / 60 / 60}`);
- }
-}
-*/

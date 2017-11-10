@@ -57,6 +57,11 @@ export async function run(argv: string[]) {
   const github = new GitHub();
 
   if (args.metric === 'review-latency') {
-    console.info((await getReviewLatency(github, {org: args.org, repo: args.repo})).format());
+    const result = await getReviewLatency(github, {org: args.org, repo: args.repo});
+    if (!args.raw) {
+      console.info(result.format());
+    } else {
+      result.logRawData();
+    }
   }
 }
