@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import {reviewLatency} from '../../metrics/review-latency';
+import {getReviewLatency} from '../../metrics/review-latency';
 import {startTestReplayServer} from '../replay-server';
 
 test.beforeEach(async (t) => {
@@ -14,7 +14,8 @@ test.afterEach.cb((t) => {
 });
 
 test('WebComponents review latency', async (t) => {
-  const latency =
-      await reviewLatency(t.context.client, {org: 'WebComponents', raw: false});
-  t.is(latency, 262575635000);
+  const result =
+      await getReviewLatency(t.context.client, {org: 'WebComponents'});
+  t.is(result.totalLatency, 262575635000);
+  t.is(result.reviews.length, 684);
 });

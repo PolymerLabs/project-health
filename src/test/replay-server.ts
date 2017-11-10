@@ -58,6 +58,7 @@ export async function startTestReplayServer(t: ava.TestContext):
       const replayFile =
           path.join(replayDir, query.operationName + '-' + varsHash);
 
+          // TODO: don't rewrite headers
       if (record) {
         const opts = {
           url: githubApiUrl,
