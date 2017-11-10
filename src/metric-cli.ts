@@ -17,7 +17,7 @@
 import * as commandLineArgs from 'command-line-args';
 
 import {GitHub} from './gql';
-import {reviewLatency} from './metrics/review-latency';
+import {getReviewLatency} from './metrics/review-latency';
 
 const argDefs = [
   {
@@ -36,10 +36,14 @@ const argDefs = [
     type: String,
     description: 'Name of the GitHub org to measure',
   },
-
+  {
+    name: 'repo',
+    type: String,
+    description: 'Owner/name of the GitHub repo to measure',
+  },
 ];
 
-export function run(argv: string[]) {
+export async function run(argv: string[]) {
   const args = commandLineArgs(argDefs, {argv});
 
   if (!args.metric) {
@@ -53,6 +57,6 @@ export function run(argv: string[]) {
   const github = new GitHub();
 
   if (args.metric === 'review-latency') {
-    reviewLatency(github, args);
+    console.info((await getReviewLatency(github, {org: args.org, repo: args.repo})).format());
   }
 }
