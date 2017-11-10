@@ -19,3 +19,10 @@ test('WebComponents review latency', async (t) => {
   t.is(result.totalLatency, 262575635000);
   t.is(result.reviews.length, 684);
 });
+
+test('WebComponents/webcomponents.org review latency', async (t) => {
+  const result = await getReviewLatency(
+      t.context.client, {org: 'WebComponents', repo: 'webcomponents.org'});
+  t.is(result.totalLatency, 19466495000);
+  t.is(result.reviews.length, 425);
+});

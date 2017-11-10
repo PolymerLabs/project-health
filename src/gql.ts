@@ -38,7 +38,7 @@ export class GitHub {
         // Retry the request up to 5 times, backing off an extra second each
         // time.
         if (e.networkError && e.networkError.statusCode === 403 &&
-            retries < 5) {
+            retries < 10) {
           await promisify(setTimeout)((retries + 1) * 1000);
           retries++;
         } else {

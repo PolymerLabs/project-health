@@ -30,7 +30,7 @@ export class ReviewLatencyResult {
     this.averageLatency = this.totalLatency / this.reviews.length;
   }
 
-  format():string {
+  format(): string {
     const avg = Math.round(this.averageLatency / 1000 / 60 / 60);
     return `There were ${this.reviews.length} reviews ` +
         `with an average latency of ${avg} hours.`;
@@ -39,6 +39,7 @@ export class ReviewLatencyResult {
 
 type ReviewLatencyOpts = {
   org: string,
+  repo?: string,
 };
 
 /**
@@ -46,13 +47,19 @@ type ReviewLatencyOpts = {
  */
 export async function getReviewLatency(
     github: GitHub, opts: ReviewLatencyOpts): Promise<ReviewLatencyResult> {
-  const repos = await getOrgRepos(github, opts.org);
+
+  let repos;
+  if (opts.repo) {
+    repos = [{owner:opts.org, name:opts.repo}];
+  } else {
+    repos = await getOrgRepos(github, opts.org);
+  }
 
   const fetches = [];
   const reviews: Review[] = [];
 
-  for (const id of repos) {
-    fetches.push(fetchPullRequestsForId(github, id));
+  for (const {owner, name} of repos) {
+    fetches.push(fetchPullRequestsForId(github, owner, name));
   }
   for (const prs of fetches) {
     for (const pr of await prs) {
@@ -69,8 +76,8 @@ export async function getReviewLatency(
   return new ReviewLatencyResult(totalLatency, reviews);
 }
 
-
-async function getOrgRepos(github: GitHub, orgName: string): Promise<string[]> {
+async function getOrgRepos(github: GitHub, orgName: string):
+    Promise<Array<{owner: string, name: string}>> {
   let hasNextPage = true;
   let cursor: string|null = null;
   const ids = [];
@@ -86,7 +93,7 @@ async function getOrgRepos(github: GitHub, orgName: string): Promise<string[]> {
 
     for (const repo of result.data.organization.repositories.nodes || []) {
       if (repo) {
-        ids.push(repo.id);
+        ids.push({owner: repo.owner.login, name: repo.name});
       }
     }
 
@@ -104,8 +111,10 @@ const orgReposQuery = gql`
     organization(login: $login) {
       repositories(first: 100, after: $cursor) {
         nodes {
-          id
-          nameWithOwner
+          owner {
+            login
+          }
+          name
         }
         pageInfo {
           endCursor
@@ -117,28 +126,25 @@ const orgReposQuery = gql`
 `;
 
 const pullRequestsQuery = gql`
-  query PullRequests($id: ID!, $cursor: String) {
-    node(id: $id) {
-      __typename
-      ... on Repository {
-        pullRequests(first: 100, after: $cursor) {
-          pageInfo {
-            endCursor
-            hasNextPage
+  query PullRequests($owner: String!, $name: String!, $cursor: String) {
+    repository(owner: $owner, name: $name) {
+      pullRequests(first: 100, after: $cursor) {
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+        nodes {
+          author {
+            login
           }
-          nodes {
-            author {
-              login
-            }
-            createdAt
-            url
-            reviews(first: 20, states: [APPROVED, CHANGES_REQUESTED, COMMENTED]) {
-              nodes {
-                author {
-                  login
-                }
-                submittedAt
+          createdAt
+          url
+          reviews(first: 20, states: [APPROVED, CHANGES_REQUESTED, COMMENTED]) {
+            nodes {
+              author {
+                login
               }
+              submittedAt
             }
           }
         }
@@ -202,24 +208,25 @@ type PullRequest = {
  * Fetches all pull requests for the specified repository node.
  */
 async function fetchPullRequestsForId(
-    github: GitHub, id: string): Promise<PullRequest[]> {
+    github: GitHub, owner: string, name: string): Promise<PullRequest[]> {
   let hasNextPage = true;
   let cursor: string|null = null;
   const prs: PullRequest[] = [];
   while (hasNextPage) {
-    const variables: gqlTypes.PullRequestsQueryVariables = {id, cursor};
+    const variables:
+        gqlTypes.PullRequestsQueryVariables = {owner, name, cursor};
     const result = await github.query<gqlTypes.PullRequestsQuery>(
         {query: pullRequestsQuery, variables});
-    const node = result.data.node;
-    if (!node || node.__typename !== 'Repository') {
+    const repo = result.data.repository;
+    if (!repo) {
       break;
     }
-    for (const pr of node.pullRequests.nodes || []) {
+    for (const pr of repo.pullRequests.nodes || []) {
       if (pr) {
         prs.push(pr);
       }
     }
-    const pageInfo = node.pullRequests.pageInfo;
+    const pageInfo = repo.pullRequests.pageInfo;
     hasNextPage = pageInfo.hasNextPage;
     cursor = pageInfo.endCursor;
   }

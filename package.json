@@ -9,8 +9,8 @@
     "format": "find src -name '*.ts' | xargs clang-format --style=file -i",
     "generate-gql-types": "apollo-codegen generate src/**/*.ts --schema src/github-schema.json --target typescript --addTypename --output src/gql-types.ts",
     "lint": "tslint -c tslint.json  src/**/*.ts -t stylish",
-    "test": "RECORD=false; npm run build && npm run test:ava -- --timeout=10sec",
-    "test:record": "RECORD=true; npm run build && npm run test:ava -- --timeout=1min",
+    "test": "npm run build && RECORD=false npm run test:ava -- --timeout=10sec",
+    "test:record": "npm run build && RECORD=true npm run test:ava -- --timeout=1min",
     "test:ava": "ava lib/test/**/*-test.js --verbose"
   },
   "repository": {
