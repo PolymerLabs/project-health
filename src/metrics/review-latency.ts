@@ -16,6 +16,7 @@
 
 import gql from 'graphql-tag';
 
+import {getOrgRepos} from '../common-queries';
 import {GitHub} from '../gql';
 import * as gqlTypes from '../gql-types';
 
@@ -107,55 +108,6 @@ export async function getReviewLatency(
 
   return new ReviewLatencyResult(totalLatency, reviews);
 }
-
-async function getOrgRepos(github: GitHub, orgName: string):
-    Promise<Array<{owner: string, name: string}>> {
-  let hasNextPage = true;
-  let cursor: string|null = null;
-  const ids = [];
-
-  // Fetches the list of repos in the specified org.
-  while (hasNextPage) {
-    const variables: gqlTypes.OrgReposQueryVariables = {login: orgName, cursor};
-    const result = await github.query<gqlTypes.OrgReposQuery>(
-        {query: orgReposQuery, variables});
-    if (!result.data.organization) {
-      break;
-    }
-
-    for (const repo of result.data.organization.repositories.nodes || []) {
-      if (repo) {
-        ids.push({owner: repo.owner.login, name: repo.name});
-      }
-    }
-
-    const pageInfo = result.data.organization.repositories.pageInfo;
-    hasNextPage = pageInfo.hasNextPage;
-    cursor = pageInfo.endCursor;
-  }
-
-  return ids;
-}
-
-
-const orgReposQuery = gql`
-  query OrgRepos($login: String!, $cursor: String) {
-    organization(login: $login) {
-      repositories(first: 100, after: $cursor) {
-        nodes {
-          owner {
-            login
-          }
-          name
-        }
-        pageInfo {
-          endCursor
-          hasNextPage
-        }
-      }
-    }
-  }
-`;
 
 const pullRequestsQuery = gql`
   query PullRequests($owner: String!, $name: String!, $cursor: String) {
