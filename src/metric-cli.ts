@@ -17,6 +17,7 @@
 import * as commandLineArgs from 'command-line-args';
 
 import {GitHub} from './gql';
+import {getIssueCounts} from './metrics/issue-counts';
 import {getReviewLatency} from './metrics/review-latency';
 
 const argDefs = [
@@ -57,11 +58,23 @@ export async function run(argv: string[]) {
   const github = new GitHub();
 
   if (args.metric === 'review-latency') {
-    const result = await getReviewLatency(github, {org: args.org, repo: args.repo});
+    const result =
+        await getReviewLatency(github, {org: args.org, repo: args.repo});
     if (!args.raw) {
       console.info(result.format());
     } else {
       result.logRawData();
+    }
+
+  } else if (args.metric === 'issue-counts') {
+    const counts =
+        await getIssueCounts(github, {org: args.org, repo: args.repo});
+    if (args.raw) {
+      for (const point of counts.timeSeries()) {
+        console.log([point.date, point.numOpened, point.numClosed].join('\t'));
+      }
+    } else {
+      console.info(counts.summary());
     }
   }
 }
