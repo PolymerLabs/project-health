@@ -8,7 +8,7 @@ When GitHub's API changes, the corresponding schema needs to be updated. Run
 the following command to generate the schema from GitHub's introspection API.
 
 ```bash
-$(npm bin)/apollo-codegen introspect-schema https://api.github.com/graphql --output src/github-schema.json --header "Authorization: bearer <your token>"
+$(npm bin)/apollo-codegen introspect-schema https://api.github.com/graphql --output github-schema.json --header "Authorization: bearer <your token>"
 ```
 
 ## Running the CLI
