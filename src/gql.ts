@@ -3,10 +3,17 @@ import ApolloClient from 'apollo-client';
 import {ApolloQueryResult} from 'apollo-client/core/types';
 import {WatchQueryOptions} from 'apollo-client/core/watchQueryOptions';
 import {HttpLink} from 'apollo-link-http';
+import {DocumentNode} from 'graphql';
 import fetch from 'node-fetch';
 import {promisify} from 'util';
 
 const schema = require('../github-schema.json');
+
+// Until more widely included, we need to define this symbol to use
+// for-await-of statements.
+// https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-3.html#the-for-await-of-statement
+(Symbol as any).asyncIterator =
+    Symbol.asyncIterator || Symbol.for('Symbol.asyncIterator');
 
 export class GitHub {
   private apollo: ApolloClient<NormalizedCache>;
@@ -56,4 +63,45 @@ export class GitHub {
     }
     return result;
   }
+
+  /**
+   * Issue a multi-page query with automatic cursor management.
+   *
+   * @template Q The automatically generated query result type.
+   * @template V The automatically generated query variables type. It must
+   * contain a `cursor` field. This function will automatically update this
+   * field for each page.
+   *
+   * @param query The GraphQL query to execute.
+   * @param variables The query variables to pass.
+   * @param getPageInfo A function that receives a query result page, and
+   * returns an object that contains a `pageInfo` object (which must contain
+   * `hasNextPage` and `endCursor`). Note that this `pageInfo` object should be
+   * automatically generated from the GraphQL query, so this function should
+   * typically just be a short path expression to extract it from the result
+   * (e.g. `(data) => data.foo && data.foo.bar`).
+   *
+   * @returns An async iterator over each page of query results. Use with a
+   * `for-await-of` loop.
+   */
+  async *
+      cursorQuery<Q, V extends {cursor?: string | null}>(
+          query: DocumentNode,
+          variables: V,
+          getPageInfo: (result: Q) => {pageInfo: PageInfo} | null):
+          AsyncIterable<Q> {
+    variables = Object.assign({}, variables);
+    let hasNextPage = true;
+    while (hasNextPage) {
+      const result = await this.query<Q>({query, variables});
+      const pageInfo = getPageInfo(result.data);
+      hasNextPage = !!pageInfo && pageInfo.pageInfo.hasNextPage;
+      variables.cursor = pageInfo && pageInfo.pageInfo.endCursor;
+      yield result.data;
+    }
+  }
+}
+
+type PageInfo = {
+  hasNextPage: boolean; endCursor: string | null;
 }

@@ -18,7 +18,7 @@ import gql from 'graphql-tag';
 
 import {getOrgRepos} from '../common-queries';
 import {GitHub} from '../gql';
-import * as gqlTypes from '../gql-types';
+import {PullRequestsQuery, PullRequestsQueryVariables} from '../gql-types';
 
 export class ReviewLatencyResult {
   reviews: Review[];
@@ -193,15 +193,16 @@ type PullRequest = {
  */
 async function fetchPullRequestsForId(
     github: GitHub, owner: string, name: string): Promise<PullRequest[]> {
-  let hasNextPage = true;
-  let cursor: string|null = null;
   const prs: PullRequest[] = [];
-  while (hasNextPage) {
-    const variables:
-        gqlTypes.PullRequestsQueryVariables = {owner, name, cursor};
-    const result = await github.query<gqlTypes.PullRequestsQuery>(
-        {query: pullRequestsQuery, variables});
-    const repo = result.data.repository;
+
+  const results =
+      github.cursorQuery<PullRequestsQuery, PullRequestsQueryVariables>(
+          pullRequestsQuery,
+          {owner, name},
+          (data) => data.repository && data.repository.pullRequests);
+
+  for await (const data of results) {
+    const repo = data.repository;
     if (!repo) {
       break;
     }
@@ -210,9 +211,6 @@ async function fetchPullRequestsForId(
         prs.push(pr);
       }
     }
-    const pageInfo = repo.pullRequests.pageInfo;
-    hasNextPage = pageInfo.hasNextPage;
-    cursor = pageInfo.endCursor;
   }
   return prs;
 }
