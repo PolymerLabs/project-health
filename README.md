@@ -32,7 +32,7 @@ Options:
 
 ## Adding a new metric
 A few tips when creating a new metric:
- * Write your queries using [GitHub's API explorer](generate-gql-types). The
+ * Write your queries using [GitHub's API explorer](https://developer.github.com/v4/explorer/). The
    validation will make it much easier to write.
  * After any changes to queries using the `gql` template tag, run `npm run
    generate-gql-types`. This command will validate your query against the
