@@ -1,0 +1,51 @@
+{
+  "data": {
+    "repository": {
+      "issues": {
+        "pageInfo": {
+          "endCursor": "Y3Vyc29yOnYyOpHOD8FsmQ==",
+          "hasNextPage": false,
+          "__typename": "PageInfo"
+        },
+        "nodes": [
+          {
+            "createdAt": "2017-09-27T15:31:35Z",
+            "url": "https://github.com/webcomponents/community/issues/47",
+            "closed": false,
+            "timeline": {
+              "nodes": [],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2017-09-27T15:33:07Z",
+            "url": "https://github.com/webcomponents/community/issues/48",
+            "closed": false,
+            "timeline": {
+              "nodes": [],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2017-10-10T18:42:37Z",
+            "url": "https://github.com/webcomponents/community/issues/50",
+            "closed": false,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "RenamedTitleEvent"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          }
+        ],
+        "__typename": "IssueConnection"
+      },
+      "__typename": "Repository"
+    }
+  }
+}

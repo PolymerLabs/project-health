@@ -1,0 +1,259 @@
+{
+  "data": {
+    "repository": {
+      "pullRequests": {
+        "pageInfo": {
+          "endCursor": "Y3Vyc29yOnYyOpHOCDnUjg==",
+          "hasNextPage": false,
+          "__typename": "PageInfo"
+        },
+        "nodes": [
+          {
+            "author": {
+              "login": "arv",
+              "__typename": "User"
+            },
+            "createdAt": "2014-01-22T22:31:19Z",
+            "url": "https://github.com/webcomponents/URL/pull/1",
+            "reviews": {
+              "nodes": [],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "azakus",
+              "__typename": "User"
+            },
+            "createdAt": "2014-01-24T23:20:52Z",
+            "url": "https://github.com/webcomponents/URL/pull/2",
+            "reviews": {
+              "nodes": [],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "azakus",
+              "__typename": "User"
+            },
+            "createdAt": "2014-02-03T19:07:20Z",
+            "url": "https://github.com/webcomponents/URL/pull/3",
+            "reviews": {
+              "nodes": [],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "arv",
+              "__typename": "User"
+            },
+            "createdAt": "2014-07-24T20:26:37Z",
+            "url": "https://github.com/webcomponents/URL/pull/5",
+            "reviews": {
+              "nodes": [],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "fd",
+              "__typename": "User"
+            },
+            "createdAt": "2014-07-25T09:55:49Z",
+            "url": "https://github.com/webcomponents/URL/pull/6",
+            "reviews": {
+              "nodes": [],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "jokeyrhyme",
+              "__typename": "User"
+            },
+            "createdAt": "2014-09-25T23:50:13Z",
+            "url": "https://github.com/webcomponents/URL/pull/9",
+            "reviews": {
+              "nodes": [],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "josh",
+              "__typename": "User"
+            },
+            "createdAt": "2015-01-07T22:17:49Z",
+            "url": "https://github.com/webcomponents/URL/pull/11",
+            "reviews": {
+              "nodes": [],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "pukapukan",
+              "__typename": "User"
+            },
+            "createdAt": "2015-02-21T16:32:30Z",
+            "url": "https://github.com/webcomponents/URL/pull/12",
+            "reviews": {
+              "nodes": [],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "tomalec",
+              "__typename": "User"
+            },
+            "createdAt": "2015-05-19T23:55:54Z",
+            "url": "https://github.com/webcomponents/URL/pull/14",
+            "reviews": {
+              "nodes": [],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "tomalec",
+              "__typename": "User"
+            },
+            "createdAt": "2015-05-20T00:10:56Z",
+            "url": "https://github.com/webcomponents/URL/pull/15",
+            "reviews": {
+              "nodes": [],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "tomalec",
+              "__typename": "User"
+            },
+            "createdAt": "2015-05-20T21:59:00Z",
+            "url": "https://github.com/webcomponents/URL/pull/16",
+            "reviews": {
+              "nodes": [],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "Artazor",
+              "__typename": "User"
+            },
+            "createdAt": "2015-07-16T07:26:06Z",
+            "url": "https://github.com/webcomponents/URL/pull/17",
+            "reviews": {
+              "nodes": [],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "notwaldorf",
+              "__typename": "User"
+            },
+            "createdAt": "2016-12-14T19:19:45Z",
+            "url": "https://github.com/webcomponents/URL/pull/18",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "azakus",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2016-12-14T19:29:56Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "josh",
+              "__typename": "User"
+            },
+            "createdAt": "2016-12-14T22:33:45Z",
+            "url": "https://github.com/webcomponents/URL/pull/19",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "josh",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2016-12-14T22:34:15Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "notwaldorf",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2016-12-14T22:35:43Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "josh",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2016-12-14T22:37:19Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "kei-ito",
+              "__typename": "User"
+            },
+            "createdAt": "2017-06-14T07:59:55Z",
+            "url": "https://github.com/webcomponents/URL/pull/23",
+            "reviews": {
+              "nodes": [],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "Moatilliatta",
+              "__typename": "User"
+            },
+            "createdAt": "2017-08-28T18:29:30Z",
+            "url": "https://github.com/webcomponents/URL/pull/25",
+            "reviews": {
+              "nodes": [],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "__typename": "PullRequest"
+          }
+        ],
+        "__typename": "PullRequestConnection"
+      },
+      "__typename": "Repository"
+    }
+  }
+}

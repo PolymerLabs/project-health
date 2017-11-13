@@ -1,0 +1,30 @@
+{
+  "data": {
+    "repository": {
+      "pullRequests": {
+        "pageInfo": {
+          "endCursor": "Y3Vyc29yOnYyOpHOAXEvzQ==",
+          "hasNextPage": false,
+          "__typename": "PageInfo"
+        },
+        "nodes": [
+          {
+            "author": {
+              "login": "mateusortiz",
+              "__typename": "User"
+            },
+            "createdAt": "2014-11-11T02:46:09Z",
+            "url": "https://github.com/webcomponents/xtag-boilerplate/pull/3",
+            "reviews": {
+              "nodes": [],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "__typename": "PullRequest"
+          }
+        ],
+        "__typename": "PullRequestConnection"
+      },
+      "__typename": "Repository"
+    }
+  }
+}
