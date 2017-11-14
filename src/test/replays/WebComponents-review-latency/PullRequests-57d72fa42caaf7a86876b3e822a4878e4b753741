@@ -1,0 +1,43 @@
+{
+  "data": {
+    "repository": {
+      "pullRequests": {
+        "pageInfo": {
+          "endCursor": "Y3Vyc29yOnYyOpHOAmwCnw==",
+          "hasNextPage": false,
+          "__typename": "PageInfo"
+        },
+        "nodes": [
+          {
+            "author": {
+              "login": "sindresorhus",
+              "__typename": "User"
+            },
+            "createdAt": "2014-02-05T19:08:10Z",
+            "url": "https://github.com/webcomponents/webcomponents-icons/pull/1",
+            "reviews": {
+              "nodes": [],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "obetomuniz",
+              "__typename": "User"
+            },
+            "createdAt": "2015-07-23T03:01:10Z",
+            "url": "https://github.com/webcomponents/webcomponents-icons/pull/3",
+            "reviews": {
+              "nodes": [],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "__typename": "PullRequest"
+          }
+        ],
+        "__typename": "PullRequestConnection"
+      },
+      "__typename": "Repository"
+    }
+  }
+}

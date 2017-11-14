@@ -4,6 +4,7 @@ import * as fsExtra from 'fs-extra';
 import * as http from 'http';
 import * as path from 'path';
 import * as request from 'request';
+
 import {GitHub} from '../gql';
 
 const replayRoot = path.join(__dirname, '..', '..', 'src', 'test', 'replays');
@@ -26,7 +27,6 @@ let recordingLogged = false;
 export async function startTestReplayServer(t: ava.TestContext):
     Promise<{server: http.Server, client: GitHub}> {
   const record = process.env.RECORD === 'true';
-  const githubToken = process.env.GITHUB_TOKEN;
 
   // Kind of weirdly, t.title will include the name of the current function
   // plus " for " as a prefix. Get the original name instead.
@@ -36,7 +36,7 @@ export async function startTestReplayServer(t: ava.TestContext):
   const replayDir = path.join(replayRoot, testTitle.replace(/\s+/g, '-'));
 
   if (record) {
-    if (!githubToken) {
+    if (!process.env.GITHUB_TOKEN) {
       throw new Error('GITHUB_TOKEN env var must be set when recording.');
     }
     if (!recordingLogged) {
@@ -52,42 +52,43 @@ export async function startTestReplayServer(t: ava.TestContext):
 
     req.on('end', async () => {
       const query = JSON.parse(body);
-      const varsHash = crypto.createHash('sha1')
-                           .update(JSON.stringify(query.variables))
-                           .digest('hex');
-      const replayFile =
-          path.join(replayDir, query.operationName + '-' + varsHash);
+      const replayFile = path.join(
+          replayDir,
+          query.operationName + '-' + fingerprintQueryVars(query.variables));
 
-          // TODO: don't rewrite headers
       if (record) {
+        // Don't forward the host header, it's for the wrong host.
+        const headers = Object.assign({}, req.headers);
+        delete headers['host'];
+
         const opts = {
           url: githubApiUrl,
           body,
           timeout,
-          headers: {
-            'Authorization': 'bearer ' + githubToken,
-            'User-Agent': 'Project Health',
-          },
+          headers,
+          gzip: true,
         };
-        const proxyRes = request.post(opts, async (err, res, body) => {
+        const proxyRes = request.post(opts, async (err, _res, body) => {
           if (!err) {
-            await fsExtra.writeJSON(replayFile, {status: res.statusCode, body});
+            // Re-indent the JSON so that it's easier to read in diffs.
+            const indentedResult = JSON.stringify(JSON.parse(body), null, 2);
+            await fsExtra.writeFile(replayFile, indentedResult);
           }
         });
         proxyRes.pipe(res);
 
       } else {
-        let replay;
+        let replayBody;
         try {
-          replay = await fsExtra.readJSON(replayFile);
+          replayBody = await fsExtra.readFile(replayFile);
         } catch (e) {
           res.statusCode = 500;
           res.statusMessage = 'No replay file: ' + replayFile;
           res.end();
           return;
         }
-        res.statusCode = replay.status;
-        res.end(replay.body);
+        res.statusCode = 200;
+        res.end(replayBody);
       }
     });
   }
@@ -101,3 +102,30 @@ export async function startTestReplayServer(t: ava.TestContext):
     });
   });
 }
+
+/**
+ * Hash the given GitHub GraphQL query variables object to create a fingerprint
+ * that can be used for creating a unique, deterministic replay filename.
+ */
+function fingerprintQueryVars(vars: queryVars): string {
+  // SHA1 is good enough for a fingerprint.
+  const hash = crypto.createHash('sha1');
+  // Don't rely on JSON serialization being deterministic; properties can be
+  // serializated in any order (in V8 it follows property creation order).
+  for (const key of Object.keys(vars).sort()) {
+    const val = vars[key];
+    // The difference between null, undefined, and omitted is not significant.
+    if (val === null || val === undefined) {
+      continue;
+    }
+    hash.update(key);
+    hash.update('\u241F');  // UNIT SEPERATOR
+    hash.update(val);
+    hash.update('\u241E');  // RECORD SEPERATOR
+  }
+  return hash.digest('hex');
+}
+
+type queryVars = {
+  [key: string]: any  // tslint:disable-line:no-any
+};

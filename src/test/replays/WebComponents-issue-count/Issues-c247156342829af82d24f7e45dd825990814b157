@@ -1,0 +1,84 @@
+{
+  "data": {
+    "repository": {
+      "issues": {
+        "pageInfo": {
+          "endCursor": "Y3Vyc29yOnYyOpHOEEys0Q==",
+          "hasNextPage": false,
+          "__typename": "PageInfo"
+        },
+        "nodes": [
+          {
+            "createdAt": "2017-10-30T14:19:45Z",
+            "url": "https://github.com/webcomponents/webcomponents.org/issues/1070",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2017-11-01T17:27:42Z"
+                },
+                {
+                  "__typename": "IssueComment"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2017-10-30T20:13:37Z",
+            "url": "https://github.com/webcomponents/webcomponents.org/issues/1071",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2017-11-01T02:52:08Z"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2017-11-13T12:14:32Z",
+            "url": "https://github.com/webcomponents/webcomponents.org/issues/1073",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2017-11-13T18:07:45Z"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2017-11-13T15:02:26Z",
+            "url": "https://github.com/webcomponents/webcomponents.org/issues/1074",
+            "closed": false,
+            "timeline": {
+              "nodes": [],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          }
+        ],
+        "__typename": "IssueConnection"
+      },
+      "__typename": "Repository"
+    }
+  }
+}

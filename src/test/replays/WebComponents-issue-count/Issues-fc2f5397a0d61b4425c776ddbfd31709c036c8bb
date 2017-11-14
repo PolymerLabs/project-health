@@ -1,0 +1,1001 @@
+{
+  "data": {
+    "repository": {
+      "issues": {
+        "pageInfo": {
+          "endCursor": "Y3Vyc29yOnYyOpHODbFzBw==",
+          "hasNextPage": false,
+          "__typename": "PageInfo"
+        },
+        "nodes": [
+          {
+            "createdAt": "2015-12-01T01:21:51Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/1",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "AssignedEvent"
+                },
+                {
+                  "__typename": "MilestonedEvent"
+                },
+                {
+                  "__typename": "MilestonedEvent"
+                },
+                {
+                  "__typename": "DemilestonedEvent"
+                },
+                {
+                  "__typename": "LabeledEvent"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2016-01-30T08:31:37Z"
+                },
+                {
+                  "__typename": "UnassignedEvent"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2015-12-01T01:25:10Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/2",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2016-05-02T22:38:08Z"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-05-02T22:38:24Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/7",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "CrossReferencedEvent"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2016-05-04T23:15:10Z"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-05-11T01:01:49Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/11",
+            "closed": false,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "AssignedEvent"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "CrossReferencedEvent"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "UnassignedEvent"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-05-18T04:36:16Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/12",
+            "closed": false,
+            "timeline": {
+              "nodes": [],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-05-18T10:26:34Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/13",
+            "closed": false,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "IssueComment"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-06-06T01:51:31Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/14",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "LabeledEvent"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2016-06-22T01:17:39Z"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-06-14T01:43:32Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/15",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "RenamedTitleEvent"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "CrossReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2016-09-05T01:44:49Z"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-06-19T23:11:04Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/16",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "LabeledEvent"
+                },
+                {
+                  "__typename": "CrossReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2016-06-22T01:17:39Z"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-06-19T23:12:14Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/17",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "LabeledEvent"
+                },
+                {
+                  "__typename": "CrossReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2016-06-22T01:17:39Z"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-06-20T12:09:34Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/19",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "LabeledEvent"
+                },
+                {
+                  "__typename": "CrossReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2016-06-22T01:17:39Z"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-06-20T12:11:17Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/20",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "LabeledEvent"
+                },
+                {
+                  "__typename": "CrossReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2016-06-22T01:17:39Z"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-07-01T04:18:36Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/22",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "LabeledEvent"
+                },
+                {
+                  "__typename": "AssignedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "CrossReferencedEvent"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2016-07-01T04:46:50Z"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-07-06T02:18:13Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/24",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2016-07-06T09:58:54Z"
+                },
+                {
+                  "__typename": "AssignedEvent"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-07-06T02:23:57Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/25",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "LabeledEvent"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2016-08-30T09:52:23Z"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-07-11T07:13:22Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/26",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "LabeledEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "CrossReferencedEvent"
+                },
+                {
+                  "__typename": "CrossReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2016-07-12T02:37:35Z"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-07-11T08:11:02Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/28",
+            "closed": false,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-07-26T23:01:34Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/30",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "LabeledEvent"
+                },
+                {
+                  "__typename": "CrossReferencedEvent"
+                },
+                {
+                  "__typename": "CrossReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2016-08-30T09:49:13Z"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-08-10T01:00:29Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/35",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "CrossReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2016-09-05T01:44:49Z"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-09-05T23:57:00Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/37",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2016-09-17T14:45:00Z"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-09-13T04:29:45Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/39",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2016-09-13T05:43:37Z"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-09-20T03:40:27Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/40",
+            "closed": false,
+            "timeline": {
+              "nodes": [],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-09-20T03:46:46Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/41",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "LabeledEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "CrossReferencedEvent"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2016-09-20T11:38:56Z"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-09-21T12:04:50Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/43",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "CrossReferencedEvent"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2016-09-21T12:47:51Z"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-09-21T12:29:37Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/46",
+            "closed": false,
+            "timeline": {
+              "nodes": [],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-09-26T15:12:55Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/47",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2016-09-29T03:48:27Z"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-09-27T05:51:24Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/50",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "CrossReferencedEvent"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2016-09-27T10:40:16Z"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-09-27T07:30:12Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/52",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "CrossReferencedEvent"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2016-09-27T10:41:14Z"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                },
+                {
+                  "__typename": "ReferencedEvent"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-09-28T03:55:01Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/54",
+            "closed": false,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "CrossReferencedEvent"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-12-20T02:04:12Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/58",
+            "closed": false,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "AssignedEvent"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2016-12-21T23:44:10Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/59",
+            "closed": false,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "CrossReferencedEvent"
+                },
+                {
+                  "__typename": "CrossReferencedEvent"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2017-01-11T11:09:23Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/61",
+            "closed": false,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "LabeledEvent"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2017-01-12T10:03:43Z"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "ReopenedEvent"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2017-01-14T09:58:16Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/62",
+            "closed": false,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "LabeledEvent"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2017-01-14T10:00:37Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/63",
+            "closed": false,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "LabeledEvent"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2017-02-02T04:56:19Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/64",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2017-02-02T10:04:23Z"
+                },
+                {
+                  "__typename": "LabeledEvent"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2017-02-03T09:19:23Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/65",
+            "closed": false,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "CrossReferencedEvent"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2017-03-02T07:08:03Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/66",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2017-03-03T00:21:21Z"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2017-05-18T16:27:53Z",
+            "url": "https://github.com/webcomponents/react-integration/issues/67",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2017-05-24T16:54:23Z"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          }
+        ],
+        "__typename": "IssueConnection"
+      },
+      "__typename": "Repository"
+    }
+  }
+}

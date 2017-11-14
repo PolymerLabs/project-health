@@ -1,0 +1,100 @@
+{
+  "data": {
+    "repository": {
+      "issues": {
+        "pageInfo": {
+          "endCursor": "Y3Vyc29yOnYyOpHOBuYtSQ==",
+          "hasNextPage": false,
+          "__typename": "PageInfo"
+        },
+        "nodes": [
+          {
+            "createdAt": "2014-07-24T14:10:46Z",
+            "url": "https://github.com/webcomponents/hello-world-element/issues/4",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2014-11-28T23:12:01Z"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2014-12-02T22:57:03Z",
+            "url": "https://github.com/webcomponents/hello-world-element/issues/7",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2015-01-08T14:23:19Z"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2015-08-05T23:15:12Z",
+            "url": "https://github.com/webcomponents/hello-world-element/issues/9",
+            "closed": true,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "ClosedEvent",
+                  "createdAt": "2015-08-05T23:54:23Z"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2015-11-08T17:40:54Z",
+            "url": "https://github.com/webcomponents/hello-world-element/issues/11",
+            "closed": false,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                },
+                {
+                  "__typename": "IssueComment"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          }
+        ],
+        "__typename": "IssueConnection"
+      },
+      "__typename": "Repository"
+    }
+  }
+}

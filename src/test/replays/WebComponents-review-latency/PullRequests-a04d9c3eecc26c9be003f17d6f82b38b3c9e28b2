@@ -1,0 +1,30 @@
+{
+  "data": {
+    "repository": {
+      "pullRequests": {
+        "pageInfo": {
+          "endCursor": "Y3Vyc29yOnYyOpHOAixLaQ==",
+          "hasNextPage": false,
+          "__typename": "PageInfo"
+        },
+        "nodes": [
+          {
+            "author": {
+              "login": "mateusortiz",
+              "__typename": "User"
+            },
+            "createdAt": "2015-05-28T22:23:36Z",
+            "url": "https://github.com/webcomponents/sass-interop/pull/1",
+            "reviews": {
+              "nodes": [],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "__typename": "PullRequest"
+          }
+        ],
+        "__typename": "PullRequestConnection"
+      },
+      "__typename": "Repository"
+    }
+  }
+}

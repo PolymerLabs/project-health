@@ -1,1 +1,0 @@
-{"status":200,"body":"{\"data\":{\"repository\":{\"pullRequests\":{\"pageInfo\":{\"endCursor\":null,\"hasNextPage\":false,\"__typename\":\"PageInfo\"},\"nodes\":[],\"__typename\":\"PullRequestConnection\"},\"__typename\":\"Repository\"}}}"}

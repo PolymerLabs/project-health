@@ -1,0 +1,59 @@
+{
+  "data": {
+    "repository": {
+      "issues": {
+        "pageInfo": {
+          "endCursor": "Y3Vyc29yOnYyOpHODKxMXA==",
+          "hasNextPage": false,
+          "__typename": "PageInfo"
+        },
+        "nodes": [
+          {
+            "createdAt": "2017-01-10T19:00:13Z",
+            "url": "https://github.com/webcomponents/webcomponents-platform/issues/2",
+            "closed": false,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "CrossReferencedEvent"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2017-02-07T23:20:38Z",
+            "url": "https://github.com/webcomponents/webcomponents-platform/issues/3",
+            "closed": false,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "CrossReferencedEvent"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          },
+          {
+            "createdAt": "2017-03-08T02:16:14Z",
+            "url": "https://github.com/webcomponents/webcomponents-platform/issues/5",
+            "closed": false,
+            "timeline": {
+              "nodes": [
+                {
+                  "__typename": "CrossReferencedEvent"
+                }
+              ],
+              "__typename": "IssueTimelineConnection"
+            },
+            "__typename": "Issue"
+          }
+        ],
+        "__typename": "IssueConnection"
+      },
+      "__typename": "Repository"
+    }
+  }
+}
