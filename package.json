@@ -43,6 +43,7 @@
     "apollo-client": "^2.0.1",
     "apollo-link-http": "^1.1.0",
     "command-line-args": "^4.0.7",
+    "command-line-usage": "^4.0.1",
     "graphql-tag": "^2.5.0",
     "node-fetch": "^1.7.3"
   }
