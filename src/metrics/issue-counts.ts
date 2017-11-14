@@ -18,7 +18,7 @@ import gql from 'graphql-tag';
 
 import {getOrgRepos} from '../common-queries';
 import {GitHub} from '../gql';
-import * as gqlTypes from '../gql-types';
+import {IssuesQuery, IssuesQueryVariables} from '../gql-types';
 
 export type IssueCountOpts = {
   org: string,
@@ -132,15 +132,15 @@ type Issue = {
  */
 async function getIssues(
     github: GitHub, owner: string, name: string): Promise<Issue[]> {
-  let hasNextPage = true;
-  let cursor: string|null = null;
   const issues: Issue[] = [];
 
-  while (hasNextPage) {
-    const variables: gqlTypes.IssuesQueryVariables = {owner, name, cursor};
-    const result = await github.query<gqlTypes.IssuesQuery>(
-        {query: issuesQuery, variables});
-    const repo = result.data.repository;
+  const results = github.cursorQuery<IssuesQuery, IssuesQueryVariables>(
+      issuesQuery,
+      {owner, name},
+      (data) => data.repository && data.repository.issues);
+
+  for await (const data of results) {
+    const repo = data.repository;
     if (!repo) {
       break;
     }
@@ -169,10 +169,6 @@ async function getIssues(
 
       issues.push({openedAt: issue.createdAt, closedAt});
     }
-
-    const pageInfo = repo.issues.pageInfo;
-    hasNextPage = pageInfo.hasNextPage;
-    cursor = pageInfo.endCursor;
   }
 
   return issues;

@@ -17,34 +17,29 @@
 import gql from 'graphql-tag';
 
 import {GitHub} from './gql';
-import * as gqlTypes from './gql-types';
+import {OrgReposQuery, OrgReposQueryVariables} from './gql-types';
 
 /**
  * Fetch the repos under the given GitHub organization.
  */
 export async function getOrgRepos(github: GitHub, orgName: string):
     Promise<Array<{owner: string, name: string}>> {
-  let hasNextPage = true;
-  let cursor: string|null = null;
   const ids = [];
 
-  while (hasNextPage) {
-    const variables: gqlTypes.OrgReposQueryVariables = {login: orgName, cursor};
-    const result = await github.query<gqlTypes.OrgReposQuery>(
-        {query: orgReposQuery, variables});
-    if (!result.data.organization) {
+  const results = github.cursorQuery<OrgReposQuery, OrgReposQueryVariables>(
+      orgReposQuery,
+      {login: orgName},
+      (data) => data.organization && data.organization.repositories);
+
+  for await (const data of results) {
+    if (!data.organization) {
       break;
     }
-
-    for (const repo of result.data.organization.repositories.nodes || []) {
+    for (const repo of data.organization.repositories.nodes || []) {
       if (repo) {
         ids.push({owner: repo.owner.login, name: repo.name});
       }
     }
-
-    const pageInfo = result.data.organization.repositories.pageInfo;
-    hasNextPage = pageInfo.hasNextPage;
-    cursor = pageInfo.endCursor;
   }
 
   return ids;
