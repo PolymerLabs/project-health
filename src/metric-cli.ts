@@ -20,11 +20,18 @@ import {GitHub} from './gql';
 import {getIssueCounts} from './metrics/issue-counts';
 import {getReviewLatency} from './metrics/review-latency';
 
+const commandLineUsage = require('command-line-usage') as any;
+
 const argDefs = [
+  {
+    name: 'help',
+    type: Boolean,
+    description: 'Print this help text',
+  },
   {
     name: 'metric',
     type: String,
-    description: 'Name of the metric to measure',
+    description: 'Name of the metric to measure (review-latency, issue-counts)',
   },
   {
     name: 'raw',
@@ -40,12 +47,26 @@ const argDefs = [
   {
     name: 'repo',
     type: String,
-    description: 'Owner/name of the GitHub repo to measure',
+    description: 'Optional. Owner/name of the GitHub repo to measure',
   },
 ];
 
 export async function run(argv: string[]) {
   const args = commandLineArgs(argDefs, {argv});
+
+  if (args.help) {
+    console.log(commandLineUsage([
+      {
+        header: `[blue]{Project Health metrics}`,
+        content: 'https://github.com/PolymerLabs/project-health',
+      },
+      {
+        header: `Options`,
+        optionList: argDefs,
+      }
+    ]));
+    return;
+  }
 
   if (!args.metric) {
     throw new Error('No metric specified');
@@ -76,5 +97,7 @@ export async function run(argv: string[]) {
     } else {
       console.info(counts.summary());
     }
+  } else {
+    throw new Error('Metric not found');
   }
 }
