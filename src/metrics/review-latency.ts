@@ -148,7 +148,7 @@ type Review = {
  * must not be from the pull request author and must be from different
  * reviewers.
  */
-function getReviewsForPullRequest(pullRequest: PullRequest): Review[] {
+export function getReviewsForPullRequest(pullRequest: PullRequest): Review[] {
   const reviewEvents = [];
   const authors = new Set<string>();
 

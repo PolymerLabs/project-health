@@ -32,16 +32,23 @@ export class ReviewCoverageResult {
   }
 
   summary() {
+    const count = this.numReviewed();
+    return `There are ${this.commits.size} commits of which ${
+        count} are reviewed. \nReview coverage is ${
+        Math.round(count / this.commits.size * 100)}%.`;
+  }
+
+  numReviewed(): number {
     let numReviewed = 0;
     this.commits.forEach((x) => x.reviewed ? numReviewed++ : '');
-    return `There are ${this.commits.size} commits of which ${
-        numReviewed} are reviewed. Review coverage is ${Math.round(numReviewed / this.commits.size * 100)}%`;
+    return numReviewed;
   }
 }
 
 type ReviewCoverageOpts = {
   org: string,
   repo?: string,
+  since?: string,  // ISO date string
 };
 
 type Commit = {
@@ -49,9 +56,9 @@ type Commit = {
   committedDate: string,
 };
 
-type ReviewedCommit = Commit & {
+type ReviewedCommit = Commit&{
   reviewed: boolean,
-}
+};
 
 /**
  * Computes how much of an org/repository is reviewed.
@@ -65,7 +72,7 @@ export async function getReviewCoverage(
     repos = await getOrgRepos(github, opts.org);
   }
 
-  const commits:Map<string, ReviewedCommit> = new Map();
+  const commits: Map<string, ReviewedCommit> = new Map();
   for (const {owner, name} of repos) {
     // Get all commits on the master branch.
     for (const commit of await getMasterCommits(github, owner, name)) {
@@ -83,21 +90,16 @@ export async function getReviewCoverage(
   return new ReviewCoverageResult(commits);
 }
 
-
 /**
  * Get all the commits on the default (normally master) branch for the last
  * year.
  */
 async function getMasterCommits(
-    github: GitHub, owner: string, name: string): Promise<Commit[]> {
-  const yearAgo = new Date();
-  yearAgo.setFullYear(yearAgo.getFullYear() - 1);
-
+    github: GitHub, owner: string, name: string, since?: string):
+    Promise<Commit[]> {
   const results =
       github.cursorQuery<RepoCommitsQuery, RepoCommitsQueryVariables>(
-          repoCommitsQuery,
-          {owner, name, since: yearAgo.toISOString()},
-          (data) => {
+          repoCommitsQuery, {owner, name, since}, (data) => {
             if (!data.repository || !data.repository.defaultBranchRef ||
                 data.repository.defaultBranchRef.target.__typename !==
                     'Commit') {

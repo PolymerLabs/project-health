@@ -18,8 +18,8 @@ import * as commandLineArgs from 'command-line-args';
 
 import {GitHub} from './gql';
 import {getIssueCounts} from './metrics/issue-counts';
-import {getReviewLatency} from './metrics/review-latency';
 import {getReviewCoverage} from './metrics/review-coverage';
+import {getReviewLatency} from './metrics/review-latency';
 
 const commandLineUsage = require('command-line-usage') as any;
 
@@ -99,7 +99,10 @@ export async function run(argv: string[]) {
       console.info(counts.summary());
     }
   } else if (args.metric === 'review-coverage') {
-    const result = await getReviewCoverage(github, {org: args.org, repo: args.repo});
+    const yearAgo = new Date();
+    yearAgo.setFullYear(yearAgo.getFullYear() - 1);
+    const result = await getReviewCoverage(
+        github, {org: args.org, repo: args.repo, since: yearAgo.toISOString()});
     // TODO: Implement a raw API.
     if (!args.raw) {
       console.log(result.summary());
