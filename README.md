@@ -1,4 +1,7 @@
-# project-health [![Build status](https://img.shields.io/travis/PolymerLabs/project-health.svg?style=flat-square)](https://travis-ci.org/PolymerLabs/project-health)
+[![Build status](https://img.shields.io/travis/PolymerLabs/project-health.svg?style=flat-square)](https://travis-ci.org/PolymerLabs/project-health)
+[![Coverage Status](https://coveralls.io/repos/github/PolymerLabs/project-health/badge.svg?branch=coverage)](https://coveralls.io/github/PolymerLabs/project-health?branch=coverage)
+
+# `project-health`
 
 ## Building
 Use `build` or `build:watch` to build the project.
