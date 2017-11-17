@@ -38,7 +38,11 @@ export class ReviewCoverageResult {
 
   numReviewed(): number {
     let numReviewed = 0;
-    this.commits.forEach(({reviewed}) => numReviewed += reviewed ? 1 : 0);
+    for (const commit of this.commits) {
+      if (commit.reviewed) {
+        numReviewed++;
+      }
+    }
     return numReviewed;
   }
 }
@@ -79,7 +83,7 @@ export async function getReviewCoverage(
     }
 
     // Get all commits on the master branch.
-    for (const commit of await getMasterCommits(github, owner, name)) {
+    for (const commit of await getMasterCommits(github, owner, name, opts.since)) {
       commits.push(
           Object.assign({reviewed: reviewedCommits.has(commit.oid)}, commit));
     }
