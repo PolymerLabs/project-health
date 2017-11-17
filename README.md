@@ -1,5 +1,5 @@
-[![Build status](https://img.shields.io/travis/PolymerLabs/project-health.svg?style=flat-square)](https://travis-ci.org/PolymerLabs/project-health)
-[![Coverage Status](https://coveralls.io/repos/github/PolymerLabs/project-health/badge.svg?branch=coverage)](https://coveralls.io/github/PolymerLabs/project-health?branch=coverage)
+[![Build status](https://img.shields.io/travis/PolymerLabs/project-health.svg)](https://travis-ci.org/PolymerLabs/project-health)
+[![Coverage Status](https://coveralls.io/repos/github/PolymerLabs/project-health/badge.svg?branch=master)](https://coveralls.io/github/PolymerLabs/project-health?branch=master)
 
 # `project-health`
 

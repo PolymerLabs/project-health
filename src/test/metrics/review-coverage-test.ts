@@ -21,12 +21,10 @@ test('gen-typescript-declarations review coverage', async (t) => {
 });
 
 test('webcomponents.org review coverage', async (t) => {
-  const since = new Date(2016, 10, 1);
   const result = await getReviewCoverage(t.context.client, {
     org: 'webcomponents',
     repo: 'webcomponents.org',
-    since: since.toISOString()
   });
-  t.is(result.numReviewed(), 383);
-  t.is(result.commits.length, 383);
+  t.is(result.numReviewed(), 552);
+  t.is(result.commits.length, 904);
 });
