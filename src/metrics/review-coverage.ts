@@ -16,31 +16,29 @@
 
 import gql from 'graphql-tag';
 
-import {getOrgRepos} from '../common-queries';
+import {getOrgRepos, getReviewsForPullRequest} from '../common';
 import {GitHub} from '../gql';
 import {PullRequestCommitsQuery, PullRequestCommitsQueryVariables} from '../gql-types';
 import {RepoCommitsQuery, RepoCommitsQueryVariables} from '../gql-types';
 import {RepoPRsCommitsQuery, RepoPRsCommitsQueryVariables} from '../gql-types';
 
-import {getReviewsForPullRequest} from './review-latency';
-
 export class ReviewCoverageResult {
-  commits: Map<string, ReviewedCommit>;
+  commits: ReviewedCommit[];
 
-  constructor(commits: Map<string, ReviewedCommit>) {
+  constructor(commits: ReviewedCommit[]) {
     this.commits = commits;
   }
 
   summary() {
     const count = this.numReviewed();
-    return `There are ${this.commits.size} commits of which ${
-        count} are reviewed. \nReview coverage is ${
-        Math.round(count / this.commits.size * 100)}%.`;
+    return `There are ${this.commits.length} commits of which ` +
+        `${count} are reviewed. \nReview coverage is ` +
+        `${Math.round(count / this.commits.length * 100)}%.`;
   }
 
   numReviewed(): number {
     let numReviewed = 0;
-    this.commits.forEach((x) => x.reviewed ? numReviewed++ : '');
+    this.commits.forEach(({reviewed}) => numReviewed += reviewed ? 1 : 0);
     return numReviewed;
   }
 }
@@ -72,18 +70,18 @@ export async function getReviewCoverage(
     repos = await getOrgRepos(github, opts.org);
   }
 
-  const commits: Map<string, ReviewedCommit> = new Map();
+  const commits = [];
+  const reviewedCommits: Set<string> = new Set();
   for (const {owner, name} of repos) {
-    // Get all commits on the master branch.
-    for (const commit of await getMasterCommits(github, owner, name)) {
-      commits.set(commit.oid, Object.assign({reviewed: false}, commit));
+    // Fetched all reviewed commits.
+    for (const commit of await getPRCommitsForRepo(github, owner, name)) {
+      reviewedCommits.add(commit.oid);
     }
 
-    // Mark all reviewed PR commits as reviewed.
-    for (const commit of await getPRCommitsForRepo(github, owner, name)) {
-      if (commits.has(commit.oid)) {
-        commits.get(commit.oid)!.reviewed = true;
-      }
+    // Get all commits on the master branch.
+    for (const commit of await getMasterCommits(github, owner, name)) {
+      commits.push(
+          Object.assign({reviewed: reviewedCommits.has(commit.oid)}, commit));
     }
   }
 
@@ -97,16 +95,16 @@ export async function getReviewCoverage(
 async function getMasterCommits(
     github: GitHub, owner: string, name: string, since?: string):
     Promise<Commit[]> {
+  const getPageInfo = (data: RepoCommitsQuery) => {
+    if (!data.repository || !data.repository.defaultBranchRef ||
+        data.repository.defaultBranchRef.target.__typename !== 'Commit') {
+      return null;
+    }
+    return data.repository.defaultBranchRef.target.history;
+  };
   const results =
       github.cursorQuery<RepoCommitsQuery, RepoCommitsQueryVariables>(
-          repoCommitsQuery, {owner, name, since}, (data) => {
-            if (!data.repository || !data.repository.defaultBranchRef ||
-                data.repository.defaultBranchRef.target.__typename !==
-                    'Commit') {
-              return null;
-            }
-            return data.repository.defaultBranchRef.target.history;
-          });
+          repoCommitsQuery, {owner, name, since}, getPageInfo);
 
   const commits = [];
   for await (const data of results) {

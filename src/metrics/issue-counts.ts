@@ -16,7 +16,7 @@
 
 import gql from 'graphql-tag';
 
-import {getOrgRepos} from '../common-queries';
+import {getOrgRepos} from '../common';
 import {GitHub} from '../gql';
 import {IssuesQuery, IssuesQueryVariables} from '../gql-types';
 

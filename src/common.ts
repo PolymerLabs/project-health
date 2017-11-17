@@ -63,3 +63,53 @@ const orgReposQuery = gql`
     }
   }
 `;
+
+/**
+ * Given a pull request, returns the reviews made for that pull request. Reviews
+ * must not be from the pull request author and must be from different
+ * reviewers.
+ */
+export function getReviewsForPullRequest(pullRequest: PullRequest): Review[] {
+  const reviewEvents = [];
+  const authors = new Set<string>();
+
+  if (!pullRequest.reviews || !pullRequest.reviews.nodes ||
+      !pullRequest.author) {
+    return [];
+  }
+
+  for (const review of pullRequest.reviews.nodes) {
+    if (!review || !review.author || !review.submittedAt) {
+      continue;
+    }
+    // Exclude 'reviews' made by the author of the pull request
+    // & only count a maximum of 1 review per reviewer.
+    if (review.author.login !== pullRequest.author.login &&
+        !authors.has(review.author.login)) {
+      authors.add(review.author.login);
+      reviewEvents.push({
+        latency: new Date(review.submittedAt).getTime() -
+            new Date(pullRequest.createdAt).getTime(),
+        reviewedAt: review.submittedAt,
+      });
+    }
+  }
+
+  return reviewEvents;
+}
+
+export type PullRequest = {
+  author: {login: string}|null,
+  createdAt: string,
+  reviews: {
+    nodes: Array<{
+      author: {login: string} | null,
+      submittedAt: string | null,
+    }|null>|null,
+  }|null,
+};
+
+export type Review = {
+  reviewedAt: string,
+  latency: number,
+};

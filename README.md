@@ -46,5 +46,5 @@ A few tips when creating a new metric:
 To run the tests, use `npm test`. The tests use a mock server which emulates
 the GitHub API by allowing you to record GitHub API responses. To add a new
 test, write your test then run the following: ``` npm run test:record --
---match 'testname*``` Check in the generated files so that tests will use
+--match 'testname*'``` Check in the generated files so that tests will use
 these snapshotted responses.
