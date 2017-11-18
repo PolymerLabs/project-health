@@ -1,5 +1,5 @@
-[![Build status](https://img.shields.io/travis/PolymerLabs/project-health.svg?style=flat-square)](https://travis-ci.org/PolymerLabs/project-health)
-[![Coverage Status](https://coveralls.io/repos/github/PolymerLabs/project-health/badge.svg?branch=coverage)](https://coveralls.io/github/PolymerLabs/project-health?branch=coverage)
+[![Build status](https://img.shields.io/travis/PolymerLabs/project-health.svg)](https://travis-ci.org/PolymerLabs/project-health)
+[![Coverage Status](https://coveralls.io/repos/github/PolymerLabs/project-health/badge.svg?branch=master)](https://coveralls.io/github/PolymerLabs/project-health?branch=master)
 
 # `project-health`
 
@@ -45,8 +45,6 @@ A few tips when creating a new metric:
 ## Testing
 To run the tests, use `npm test`. The tests use a mock server which emulates
 the GitHub API by allowing you to record GitHub API responses. To add a new
-test, write your test then run the following: ``` npm run test:record ```
-
-To avoid re-recording repsonses for other tests, use Ava's `test.only` when
-recording. Check the generated files so that tests will use these snapshotted
-responses.
+test, write your test then run the following: ``` npm run test:record --
+--match 'testname*'``` Check in the generated files so that tests will use
+these snapshotted responses.

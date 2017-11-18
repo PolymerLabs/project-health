@@ -6,14 +6,14 @@
     "build": "npm run clean && npm run generate-gql-types && tsc && npm run lint",
     "build:watch": "npm run generate-gql-types && tsc --watch",
     "clean": "rm -rf lib",
-    "check-coverage": "nyc check-coverage --lines 70 --functions 70 --branches 60",
+    "check-coverage": "nyc check-coverage --lines 70 --functions 70",
     "report-coverage": "nyc report --reporter=text-lcov | coveralls",
     "format": "find src -name '*.ts' | xargs clang-format --style=file -i",
     "generate-gql-types": "apollo-codegen generate src/*.ts src/**/*.ts --schema github-schema.json --target typescript --addTypename --output src/gql-types.ts",
     "lint": "tslint -c tslint.json  src/**/*.ts -t stylish",
-    "test": "npm run build && RECORD=false npm run test:ava -- --timeout=10sec",
+    "test": "npm run build && RECORD=false npm run test:ava -- --timeout=10sec && npm run check-coverage",
     "test:record": "npm run build && RECORD=true npm run test:ava -- --timeout=1min",
-    "test:ava": "nyc ava lib/test/**/*-test.js --verbose && npm run check-coverage"
+    "test:ava": "nyc ava lib/test/**/*-test.js --verbose"
   },
   "repository": {
     "type": "git",
