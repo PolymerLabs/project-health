@@ -20,6 +20,7 @@ import {GitHub} from './gql';
 import {getIssueCounts} from './metrics/issue-counts';
 import {getReviewCoverage} from './metrics/review-coverage';
 import {getReviewLatency} from './metrics/review-latency';
+import {getStars} from './metrics/stars';
 
 const commandLineUsage = require('command-line-usage') as any;
 
@@ -32,7 +33,7 @@ const argDefs = [
   {
     name: 'metric',
     type: String,
-    description: 'Name of the metric to measure (review-latency, issue-counts)',
+    description: 'Name of the metric to measure (review-latency, issue-counts, stars)',
   },
   {
     name: 'raw',
@@ -106,6 +107,12 @@ export async function run(argv: string[]) {
     // TODO: Implement a raw API.
     if (!args.raw) {
       console.log(result.summary());
+    }
+  } else if (args.metric === 'stars') {
+    const stars = await getStars(github, {org: args.org, repo: args.repo});
+    // TODO: Implement a raw API.
+    if (!args.raw) {
+      console.log(stars.summary());
     }
   } else {
     throw new Error('Metric not found');
