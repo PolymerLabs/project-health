@@ -1,0 +1,417 @@
+{
+  "data": {
+    "repository": {
+      "stargazers": {
+        "pageInfo": {
+          "endCursor": "Y3Vyc29yOnYyOpIAzgSdE/Q=",
+          "hasNextPage": true,
+          "__typename": "PageInfo"
+        },
+        "edges": [
+          {
+            "starredAt": "2016-11-16T12:02:45Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-11-16T15:37:27Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-11-17T16:04:41Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-11-17T16:05:37Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-11-18T02:58:15Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-11-19T04:10:13Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-11-19T08:58:11Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-11-21T07:22:59Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-11-22T16:58:59Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-11-23T04:58:00Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-11-24T21:42:36Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-11-25T12:31:51Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-11-25T21:34:18Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-11-26T21:30:40Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-11-27T10:26:22Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-11-27T11:55:21Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-11-27T14:46:42Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-11-28T05:18:04Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-11-29T15:05:47Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-11-29T15:45:10Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-11-30T01:52:44Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-01T01:03:22Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-01T06:33:02Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-01T07:47:48Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-01T15:55:08Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-02T02:18:51Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-02T04:38:50Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-02T08:24:09Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-02T10:40:14Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-02T17:59:21Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-02T18:26:42Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-03T22:33:31Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-04T22:10:17Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-05T08:22:30Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-05T17:21:22Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-05T19:37:29Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-06T19:45:23Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-07T04:20:13Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-07T04:33:37Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-07T17:02:23Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-07T19:29:27Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-08T00:59:30Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-08T14:29:08Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-08T19:30:58Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-09T15:52:57Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-10T07:29:14Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-11T01:04:29Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-11T07:26:18Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-11T07:56:16Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-12T11:13:32Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-13T15:37:21Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-14T07:05:52Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-14T23:03:56Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-15T06:39:09Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-15T13:45:15Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-15T18:32:59Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-20T20:38:30Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-22T08:53:04Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-22T09:38:56Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-22T10:35:42Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-23T05:12:45Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-23T14:23:33Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-23T15:16:49Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-24T11:29:47Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-25T14:46:05Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-25T16:04:42Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-25T23:17:05Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-26T00:31:36Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-27T01:15:28Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-27T03:53:23Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-27T09:13:58Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-28T09:14:12Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-28T13:43:30Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-28T21:57:28Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-30T10:18:24Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-30T15:19:03Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-31T05:53:32Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2016-12-31T15:14:35Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-01-03T10:27:03Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-01-04T14:55:38Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-01-04T20:31:37Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-01-06T02:04:31Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-01-07T12:40:48Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-01-09T13:05:51Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-01-10T00:00:49Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-01-10T01:35:04Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-01-10T02:30:45Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-01-10T17:07:46Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-01-11T09:07:57Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-01-11T09:27:07Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-01-11T19:19:35Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-01-12T02:24:54Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-01-13T09:39:34Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-01-13T19:14:22Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-01-13T19:18:32Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-01-15T03:30:23Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-01-15T12:39:33Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-01-16T05:54:08Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-01-16T18:51:15Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-01-17T03:22:18Z",
+            "__typename": "StargazerEdge"
+          }
+        ],
+        "__typename": "StargazerConnection"
+      },
+      "__typename": "Repository"
+    }
+  }
+}
