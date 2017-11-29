@@ -16,11 +16,11 @@ test.afterEach.cb((t) => {
 test('WebComponents stars', async (t) => {
   const result =
       await getStars(t.context.client, {org: 'WebComponents'});
-  t.is(result.stars.length, 5000);
+  t.is(result.stars.length, 6144);
 });
 
 test('WebComponents/webcomponents.org stars', async (t) => {
   const result = await getStars(
       t.context.client, {org: 'WebComponents', repo: 'webcomponents.org'});
-  t.is(result.stars.length, 123);
+  t.is(result.stars.length, 127);
 });

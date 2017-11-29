@@ -1,0 +1,49 @@
+{
+  "data": {
+    "repository": {
+      "stargazers": {
+        "pageInfo": {
+          "endCursor": "Y3Vyc29yOnYyOpIAzgZS1EA=",
+          "hasNextPage": false,
+          "__typename": "PageInfo"
+        },
+        "edges": [
+          {
+            "starredAt": "2017-11-08T08:28:20Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-11-14T10:11:15Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-11-17T14:05:31Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-11-18T17:53:10Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-11-20T16:13:18Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-11-21T21:13:25Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-11-24T15:15:35Z",
+            "__typename": "StargazerEdge"
+          },
+          {
+            "starredAt": "2017-11-28T10:51:15Z",
+            "__typename": "StargazerEdge"
+          }
+        ],
+        "__typename": "StargazerConnection"
+      },
+      "__typename": "Repository"
+    }
+  }
+}

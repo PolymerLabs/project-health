@@ -32,7 +32,7 @@ export class StarsResult {
   }
 }
 
-type StarOpts = {
+type StarsOpts = {
   org: string,
   repo?: string,
 };
@@ -45,7 +45,7 @@ type Star = {
  * Get all the stars for specified org/repo.
  */
 export async function getStars(
-    github: GitHub, opts: StarOpts): Promise<StarsResult> {
+    github: GitHub, opts: StarsOpts): Promise<StarsResult> {
   let repos;
   if (opts.repo) {
     repos = [{owner: opts.org, name: opts.repo}];
@@ -99,7 +99,7 @@ async function fetchStarsForRepo(
   for await (const data of results) {
     const repo = data.repository;
     if (!repo) {
-      break;
+      continue;
     }
     for (const star of repo.stargazers.edges || []) {
       if (star) {
