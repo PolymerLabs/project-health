@@ -1,4 +1,4 @@
-import {InMemoryCache, IntrospectionFragmentMatcher, NormalizedCache} from 'apollo-cache-inmemory';
+import {InMemoryCache, IntrospectionFragmentMatcher, NormalizedCacheObject} from 'apollo-cache-inmemory';
 import ApolloClient from 'apollo-client';
 import {ApolloQueryResult} from 'apollo-client/core/types';
 import {WatchQueryOptions} from 'apollo-client/core/watchQueryOptions';
@@ -16,7 +16,7 @@ const schema = require('../github-schema.json');
     Symbol.asyncIterator || Symbol.for('Symbol.asyncIterator');
 
 export class GitHub {
-  private apollo: ApolloClient<NormalizedCache>;
+  private apollo: ApolloClient<NormalizedCacheObject>;
 
   constructor(uri = 'https://api.github.com/graphql') {
     // Providing this fragment matcher initialized with the GitHub schema
