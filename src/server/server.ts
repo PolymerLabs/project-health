@@ -1,4 +1,8 @@
+import * as bodyParser from 'body-parser';
+import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
+import * as request from 'request-promise-native';
+
 // tslint:disable-next-line:no-require-imports
 const ansi = require('ansi-escape-sequences');
 
@@ -92,16 +96,39 @@ fragment fullPR on PullRequest {
   }
 }`;
 
-async function fetchUserData() {
+async function fetchUserData(token: string) {
   const result = await github.query<ViewerPullRequestsQuery>(
-      {query: prsQuery, fetchPolicy: 'network-only'});
+      {query: prsQuery, fetchPolicy: 'network-only', context: {token}});
   return result.data;
 }
 
-app.get('/dash.json', async (_req, res) => {
-  const userData = await fetchUserData();
+app.use(cookieParser());
+
+app.get('/dash.json', async (req, res) => {
+  const token = req.cookies['id'];
+  const userData = await fetchUserData(token);
   res.header('content-type', 'application/json');
   res.send(JSON.stringify(userData, null, 2));
+});
+
+app.post('/login', bodyParser.text(), async (req, res) => {
+  if (!req.body) {
+    res.sendStatus(400);
+  }
+
+  const postResp = await request.post({
+    url: 'https://github.com/login/oauth/access_token',
+    headers: {'Accept': 'application/json'},
+    form: {
+      'client_id': '23b7d82aec29a3a1a2a8',
+      'client_secret': process.env.GITHUB_CLIENT_SECRET,
+      'code': req.body,
+    },
+    json: true,
+  });
+
+  res.cookie('id', postResp['access_token'], {httpOnly: true});
+  res.end();
 });
 
 app.use('/lit-html', express.static('node_modules/lit-html'));

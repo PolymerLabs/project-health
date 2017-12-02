@@ -2,6 +2,7 @@ import {InMemoryCache, IntrospectionFragmentMatcher, NormalizedCacheObject} from
 import ApolloClient from 'apollo-client';
 import {ApolloQueryResult} from 'apollo-client/core/types';
 import {WatchQueryOptions} from 'apollo-client/core/watchQueryOptions';
+import {setContext} from 'apollo-link-context';
 import {HttpLink} from 'apollo-link-http';
 import {DocumentNode} from 'graphql';
 import fetch from 'node-fetch';
@@ -25,15 +26,24 @@ export class GitHub {
     const fragmentMatcher = new IntrospectionFragmentMatcher(
         {introspectionQueryResultData: schema.data});
 
+    const authLink = setContext((_request, previousContext) => {
+      const token = previousContext.token || process.env.GITHUB_TOKEN;
+      return {
+        headers: {
+          ...previousContext.headers,
+          authorization: token ? `Bearer ${token}` : null,
+        }
+      }
+    });
+
     this.apollo = new ApolloClient({
-      link: new HttpLink({
+      link: authLink.concat(new HttpLink({
         uri,
         headers: {
-          'Authorization': 'bearer ' + process.env.GITHUB_TOKEN,
           'User-Agent': 'Project Health'
         },
         fetch: fetch,
-      }),
+      })),
       cache: new InMemoryCache({fragmentMatcher}),
     });
   }

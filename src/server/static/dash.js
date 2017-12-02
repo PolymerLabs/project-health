@@ -1,7 +1,7 @@
 import {html, render} from '/lit-html/lit-html.js'
 
 async function start() {
-  const res = await fetch('/dash.json');
+  const res = await fetch('/dash.json', {credentials: 'include'});
   const json = await res.json();
 
   const authorTemplate = (author) => html`
@@ -11,11 +11,11 @@ async function start() {
   // TODO: review requests can be less than totalCount.
   const reviewRequestsTemplate = (requests) => html`
     ${
-      requests.totalCount > 0 ? html
-          `waiting on ${
-              requests.nodes.map(
-                  (request) => authorTemplate(request.requestedReviewer))}` :
-                                ``}
+      requests.totalCount > 0 ?
+      html
+  `waiting on ${
+      requests.nodes.map(
+          (request) => authorTemplate(request.requestedReviewer))}`: ``}
   `;
 
   const reviewTemplate = (review) => html`
