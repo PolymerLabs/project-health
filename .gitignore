@@ -1,3 +1,4 @@
 /node_modules/
 /lib/
 /src/gql-types.ts
+/.nyc_output/

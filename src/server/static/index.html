@@ -1,0 +1,15 @@
+<script>
+  var queryParams = new URLSearchParams(window.location.search);
+
+  if (queryParams.has('code')) {
+    fetch('/login', {
+      method: 'POST',
+      body: queryParams.get('code'),
+      credentials: 'include',
+    }).then(() => {
+      window.location.href = '/dash.html';
+    });
+  } else {
+    window.location = 'https://github.com/login/oauth/authorize?client_id=23b7d82aec29a3a1a2a8';
+  }
+</script>
