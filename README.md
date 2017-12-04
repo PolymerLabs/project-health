@@ -48,3 +48,15 @@ the GitHub API by allowing you to record GitHub API responses. To add a new
 test, write your test then run the following: ``` npm run test:record --
 --match 'testname*'``` Check in the generated files so that tests will use
 these snapshotted responses.
+
+## Running the dashboard
+Set the right env variables:
+```
+export GITHUB_CLIENT_SECRET=<client-secret>
+```
+
+```
+node lib/server/server.js
+```
+
+To test using the auth flow, open http://localhost:8080/ in your browser.
