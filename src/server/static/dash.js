@@ -1,7 +1,9 @@
 import {html, render} from '/lit-html/lit-html.js'
 
 async function start() {
-  const res = await fetch('/dash.json', {credentials: 'include'});
+  const queryParams = new URLSearchParams(window.location.search);
+  const endpoint = queryParams.has('test') ? '/test-dash.json' : '/dash.json';
+  const res = await fetch(endpoint, {credentials: 'include'});
   const json = await res.json();
 
   const authorTemplate = (author) => html`
