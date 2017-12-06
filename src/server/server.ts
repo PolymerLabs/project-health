@@ -108,21 +108,23 @@ app.use(cookieParser());
  * Merges two objects that have the same structure. It always folds into the
  * first argument and always concats any array that is found in the tree.
  */
-export function mergeObjects(
-    left: {[key: string]: any},             // tslint:disable-line: no-any
-    right: {[key: string]: any}): object {  // tslint:disable-line: no-any
+export function mergeObjects<
+    T extends {[key:string]: {}}>(
+    left: T,
+    right: T): T {
   if (Object.keys(left).length === 0) {
     return right;
   }
 
-  for (const key in left) {
-    if (typeof left[key] !== typeof right[key]) {
+  for (const key of Object.keys(left)) {
+    const value = left[key];
+    if (typeof value !== typeof right[key]) {
       throw new Error('Type mismatch between objects');
-    } else if (Array.isArray(left[key])) {
-      left[key] = left[key].concat(right[key]);
+    } else if (Array.isArray(value)) {
+      left[key] = value.concat(right[key]);
       delete right[key];
-    } else if (typeof left[key] === 'object') {
-      left[key] = mergeObjects(left[key], right[key]);
+    } else if (typeof value === 'object') {
+      left[key] = mergeObjects(value, right[key]);
     }
   }
 
