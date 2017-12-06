@@ -1,0 +1,6 @@
+runtime: nodejs8
+threadsafe: true
+
+handlers:
+- url: /.*
+  script: server.js
