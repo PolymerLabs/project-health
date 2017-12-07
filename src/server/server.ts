@@ -3,11 +3,12 @@ import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
 import * as fs from 'fs-extra';
 import gql from 'graphql-tag';
+import {Server} from 'http';
 import * as path from 'path';
 import * as request from 'request-promise-native';
+
 import {GitHub} from '../gql';
 import {ViewerPullRequestsQuery} from '../gql-types';
-import {Server} from 'http';
 
 const app = express();
 const github = new GitHub();
@@ -187,9 +188,9 @@ app.use(express.static('src/server/static'));
 
 const environment = process.env.NODE_ENV;
 if (environment !== 'test') {
-  const port = +(process.env.PORT || '') || 8080;
-  let server:Server;
-  const callback = () => {
+  const port = Number(process.env.PORT || '') || 8080;
+  let server: Server;
+  const printStatus = () => {
     const addr = server.address();
     let urlHost = addr.address;
     if (addr.family === 'IPv6') {
@@ -200,8 +201,8 @@ if (environment !== 'test') {
   };
 
   if (environment === 'production') {
-    server = app.listen(port, callback);
+    server = app.listen(port, printStatus);
   } else {
-    server = app.listen(port, 'localhost', callback);
+    server = app.listen(port, 'localhost', printStatus);
   }
 }
