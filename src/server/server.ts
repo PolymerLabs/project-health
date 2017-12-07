@@ -3,13 +3,12 @@ import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
 import * as fs from 'fs-extra';
 import gql from 'graphql-tag';
+import {Server} from 'http';
 import * as path from 'path';
 import * as request from 'request-promise-native';
+
 import {GitHub} from '../gql';
 import {ViewerPullRequestsQuery} from '../gql-types';
-
-// tslint:disable-next-line:no-require-imports
-const ansi = require('ansi-escape-sequences');
 
 const app = express();
 const github = new GitHub();
@@ -108,10 +107,8 @@ app.use(cookieParser());
  * Merges two objects that have the same structure. It always folds into the
  * first argument and always concats any array that is found in the tree.
  */
-export function mergeObjects<
-    T extends {[key:string]: {}}>(
-    left: T,
-    right: T): T {
+export function mergeObjects<T extends {[key: string]: {}}>(
+    left: T, right: T): T {
   if (Object.keys(left).length === 0) {
     return right;
   }
@@ -165,7 +162,6 @@ app.post('/login', bodyParser.text(), async (req, res) => {
     res.sendStatus(400);
     return;
   }
-
   const postResp = await request.post({
     url: 'https://github.com/login/oauth/access_token',
     headers: {'Accept': 'application/json'},
@@ -190,17 +186,23 @@ app.post('/login', bodyParser.text(), async (req, res) => {
 app.use('/lit-html', express.static('node_modules/lit-html'));
 app.use(express.static('src/server/static'));
 
-// Don't actually start the server when running inside of a test.
-if (!module.parent) {
-  const server = app.listen(8080, 'localhost', () => {
+const environment = process.env.NODE_ENV;
+if (environment !== 'test') {
+  const port = Number(process.env.PORT || '') || 8080;
+  let server: Server;
+  const printStatus = () => {
     const addr = server.address();
     let urlHost = addr.address;
     if (addr.family === 'IPv6') {
       urlHost = '[' + urlHost + ']';
     }
-    console.log();
-    console.log(ansi.format('[blue bold]{project health server} listening'));
-    console.log(ansi.format(`[blue]{http://${urlHost}:${addr.port}}`));
-    console.log();
-  });
+    console.log('project health server listening');
+    console.log(`http://${urlHost}:${addr.port}`);
+  };
+
+  if (environment === 'production') {
+    server = app.listen(port, printStatus);
+  } else {
+    server = app.listen(port, 'localhost', printStatus);
+  }
 }
