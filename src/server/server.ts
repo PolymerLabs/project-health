@@ -58,6 +58,7 @@ fragment fullPR on PullRequest {
   createdAt
   lastEditedAt
   url
+  number
   reviews(last: 10) {
     totalCount
     nodes {
