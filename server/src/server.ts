@@ -7,6 +7,8 @@ import {Server} from 'http';
 import * as path from 'path';
 import * as request from 'request-promise-native';
 
+import {DashResponse, PullRequest} from '../../api';
+
 import {GitHub} from './gql';
 import {ViewerLoginQuery, ViewerPullRequestsQuery} from './gql-types';
 
@@ -103,22 +105,6 @@ fragment fullPR on PullRequest {
     }
   }
 }`;
-
-interface PullRequest {
-  repository: string;
-  title: string;
-  number: number;
-  avatarUrl: string;
-  approvedBy: string[];
-  changesRequestedBy: string[];
-  commentedBy: string[];
-  pendingReviews: string[];
-  statusState: 'passed'|'pending'|'failed';
-}
-
-interface DashResponse {
-  prs: PullRequest[];
-}
 
 async function fetchUserData(token: string): Promise<DashResponse> {
   const loginResult = await github.query<ViewerLoginQuery>(
@@ -239,8 +225,10 @@ app.post('/login', bodyParser.text(), async (req, res) => {
   res.end();
 });
 
-app.use('/lit-html', express.static('../client/node_modules/lit-html'));
-app.use(express.static('../client'));
+app.use(
+    '/lit-html',
+    express.static(path.join(__dirname, '../../client/node_modules/lit-html')));
+app.use(express.static(path.join(__dirname, '../../client')));
 
 const environment = process.env.NODE_ENV;
 if (environment !== 'test') {
