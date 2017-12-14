@@ -1,4 +1,4 @@
-/node_modules/
-/lib/
-/src/gql-types.ts
-/.nyc_output/
+server/node_modules/
+server/lib/
+server/src/gql-types.ts
+server/.nyc_output/
