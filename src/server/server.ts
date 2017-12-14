@@ -8,13 +8,21 @@ import * as path from 'path';
 import * as request from 'request-promise-native';
 
 import {GitHub} from '../gql';
-import {ViewerPullRequestsQuery} from '../gql-types';
+import {ViewerLoginQuery, ViewerPullRequestsQuery} from '../gql-types';
 
 const app = express();
 const github = new GitHub();
 
+const viewerLoginQuery = gql`
+query ViewerLogin {
+  viewer {
+    login
+  }
+}
+`;
+
 const prsQuery = gql`
-query ViewerPullRequests {
+query ViewerPullRequests($query: String!) {
 	viewer {
     pullRequests(last: 10, states: [OPEN]) {
       nodes {
@@ -22,7 +30,7 @@ query ViewerPullRequests {
       }
     }
   }
-  incomingReviews: search(type: ISSUE, query: "is:open is:pr review-requested:samuelli archived:false", last: 10) {
+  incomingReviews: search(type: ISSUE, query: $query, last: 10) {
     nodes {
       __typename
       ... on PullRequest {
@@ -96,10 +104,57 @@ fragment fullPR on PullRequest {
   }
 }`;
 
-async function fetchUserData(token: string) {
-  const result = await github.query<ViewerPullRequestsQuery>(
-      {query: prsQuery, fetchPolicy: 'network-only', context: {token}});
-  return result.data;
+interface PullRequest {
+  repository: string;
+  title: string;
+  number: number;
+  avatarUrl: string;
+  approvedBy: string[];
+  changesRequestedBy: string[];
+  commentedBy: string[];
+  pendingReviews: string[];
+  statusState: 'passed'|'pending'|'failed';
+}
+
+interface DashResponse {
+  prs: PullRequest[];
+}
+
+async function fetchUserData(token: string): Promise<DashResponse> {
+  const loginResult = await github.query<ViewerLoginQuery>(
+      {query: viewerLoginQuery, context: {token}});
+  const login = loginResult.data.viewer.login;
+  const incomingReviewsQuery =
+      `is:open is:pr review-requested:${login} archived:false`;
+
+  const result = await github.query<ViewerPullRequestsQuery>({
+    query: prsQuery,
+    variables: {query: incomingReviewsQuery},
+    fetchPolicy: 'network-only',
+    context: {token}
+  });
+  const prs = [];
+  for (const pr of result.data.viewer.pullRequests.nodes || []) {
+    if (!pr) {
+      continue;
+    }
+    const object: PullRequest = {
+      repository: pr.repository.nameWithOwner,
+      title: pr.title,
+      number: pr.number,
+      avatarUrl: '',
+      approvedBy: [],
+      changesRequestedBy: [],
+      commentedBy: [],
+      pendingReviews: [],
+      statusState: 'passed',
+    };
+    if (pr.author && pr.author.__typename === 'User') {
+      object.avatarUrl = pr.author.avatarUrl;
+    }
+    prs.push(object);
+  }
+  return {prs};
 }
 
 app.use(cookieParser());
