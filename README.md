@@ -56,7 +56,7 @@ export GITHUB_CLIENT_SECRET=<client-secret>
 ```
 
 ```
-node lib/server/server.js
+node lib/server.js
 ```
 
 To test using the auth flow, open http://localhost:8080/ in your browser.

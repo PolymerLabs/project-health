@@ -1,5 +1,5 @@
 import test from 'ava';
-import {mergeObjects} from '../../server/server';
+import {mergeObjects} from '../../server';
 
 test('mergeObjects should merge objects', (t) => {
   t.deepEqual({a: 1}, mergeObjects({a: 1}, {a: 2}));

@@ -7,8 +7,8 @@ import {Server} from 'http';
 import * as path from 'path';
 import * as request from 'request-promise-native';
 
-import {GitHub} from '../gql';
-import {ViewerLoginQuery, ViewerPullRequestsQuery} from '../gql-types';
+import {GitHub} from './gql';
+import {ViewerLoginQuery, ViewerPullRequestsQuery} from './gql-types';
 
 const app = express();
 const github = new GitHub();
@@ -240,7 +240,7 @@ app.post('/login', bodyParser.text(), async (req, res) => {
 });
 
 app.use('/lit-html', express.static('node_modules/lit-html'));
-app.use(express.static('src/server/static'));
+app.use(express.static('../client'));
 
 const environment = process.env.NODE_ENV;
 if (environment !== 'test') {
