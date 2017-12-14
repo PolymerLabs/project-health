@@ -4,6 +4,11 @@ sudo: false
 dist: trusty
 cache:
   directories:
-    - node_modules
+    - server/node_modules
+install:
+  - (cd server && npm install)
+  - (cd client && npm install)
+script:
+  - (cd server && npm run test)
 after_script:
-  - npm run report-coverage
+  - (cd server && npm run report-coverage)
