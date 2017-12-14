@@ -239,7 +239,7 @@ app.post('/login', bodyParser.text(), async (req, res) => {
   res.end();
 });
 
-app.use('/lit-html', express.static('node_modules/lit-html'));
+app.use('/lit-html', express.static('../client/node_modules/lit-html'));
 app.use(express.static('../client'));
 
 const environment = process.env.NODE_ENV;

@@ -12,7 +12,7 @@
     "report-coverage": "nyc report --reporter=text-lcov | coveralls",
     "format": "find src -name '*.ts' | xargs clang-format --style=file -i",
     "generate-gql-types": "apollo-codegen generate src/*.ts src/**/*.ts --schema github-schema.json --target typescript --addTypename --output src/gql-types.ts",
-    "lint": "tslint -c tslint.json  src/**/*.ts -t stylish",
+    "lint": "tslint -c ../tslint.json  src/**/*.ts -t stylish",
     "test": "npm run build && RECORD=false npm run test:ava -- --timeout=10sec && npm run check-coverage",
     "test:record": "npm run build && RECORD=true npm run test:ava -- --timeout=1min",
     "test:ava": "nyc ava lib/test/**/*-test.js --verbose"
@@ -58,7 +58,6 @@
     "fs-extra": "^4.0.2",
     "graphql": "^0.11.7",
     "graphql-tag": "^2.5.0",
-    "lit-html": "^0.7.1",
     "node-fetch": "^1.7.3",
     "request": "^2.83.0",
     "request-promise-native": "^1.0.5"
