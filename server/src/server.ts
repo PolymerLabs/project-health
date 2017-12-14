@@ -24,8 +24,8 @@ query ViewerLogin {
 `;
 
 const prsQuery = gql`
-query ViewerPullRequests($query: String!) {
-	viewer {
+query ViewerPullRequests($login: String!, $query: String!) {
+	user(login: $login) {
     pullRequests(last: 10, states: [OPEN]) {
       nodes {
         ...fullPR
@@ -115,30 +115,32 @@ async function fetchUserData(token: string): Promise<DashResponse> {
 
   const result = await github.query<ViewerPullRequestsQuery>({
     query: prsQuery,
-    variables: {query: incomingReviewsQuery},
+    variables: {login, query: incomingReviewsQuery},
     fetchPolicy: 'network-only',
     context: {token}
   });
   const prs = [];
-  for (const pr of result.data.viewer.pullRequests.nodes || []) {
-    if (!pr) {
-      continue;
+  if (result.data.user) {
+    for (const pr of result.data.user.pullRequests.nodes || []) {
+      if (!pr) {
+        continue;
+      }
+      const object: PullRequest = {
+        repository: pr.repository.nameWithOwner,
+        title: pr.title,
+        number: pr.number,
+        avatarUrl: '',
+        approvedBy: [],
+        changesRequestedBy: [],
+        commentedBy: [],
+        pendingReviews: [],
+        statusState: 'passed',
+      };
+      if (pr.author && pr.author.__typename === 'User') {
+        object.avatarUrl = pr.author.avatarUrl;
+      }
+      prs.push(object);
     }
-    const object: PullRequest = {
-      repository: pr.repository.nameWithOwner,
-      title: pr.title,
-      number: pr.number,
-      avatarUrl: '',
-      approvedBy: [],
-      changesRequestedBy: [],
-      commentedBy: [],
-      pendingReviews: [],
-      statusState: 'passed',
-    };
-    if (pr.author && pr.author.__typename === 'User') {
-      object.avatarUrl = pr.author.avatarUrl;
-    }
-    prs.push(object);
   }
   return {prs};
 }
