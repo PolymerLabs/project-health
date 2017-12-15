@@ -12,8 +12,8 @@ import {GitHub} from './gql';
 import {ViewerLoginQuery, ViewerPullRequestsQuery} from './gql-types';
 
 export class DashServer {
-  github: GitHub;
-  app: express.Express;
+  private github: GitHub;
+  private app: express.Express;
 
   constructor(github: GitHub) {
     this.github = github;
