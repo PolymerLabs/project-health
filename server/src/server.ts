@@ -11,7 +11,7 @@ import {DashResponse, PullRequest} from '../../api';
 import {GitHub} from './gql';
 import {ViewerLoginQuery, ViewerPullRequestsQuery} from './gql-types';
 
-class DashServer {
+export class DashServer {
   github: GitHub;
   app: express.Express;
 
