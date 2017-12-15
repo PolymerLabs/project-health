@@ -34,7 +34,8 @@ test.afterEach.cb((t) => {
 });
 
 test('basic PR', async (t) => {
-  const result = await t.context.dash.fetchUserData(t.context.token);
+  const result =
+      await t.context.dash.fetchUserData('project-health1', t.context.token);
   t.deepEqual(result, {
     prs: [{
       repository: 'project-health1/repo',

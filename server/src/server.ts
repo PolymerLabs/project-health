@@ -84,15 +84,15 @@ export class DashServer {
 
   async handleDashJson(req: express.Request, res: express.Response) {
     const token = req.cookies['id'];
-    const userData = await this.fetchUserData(token);
+    const loginResult = await this.github.query<ViewerLoginQuery>(
+        {query: viewerLoginQuery, context: {token}});
+    const login = loginResult.data.viewer.login;
+    const userData = await this.fetchUserData(login, token);
     res.header('content-type', 'application/json');
     res.send(JSON.stringify(userData, null, 2));
   };
 
-  async fetchUserData(token: string): Promise<DashResponse> {
-    const loginResult = await this.github.query<ViewerLoginQuery>(
-        {query: viewerLoginQuery, context: {token}});
-    const login = loginResult.data.viewer.login;
+  async fetchUserData(login: string, token: string): Promise<DashResponse> {
     const incomingReviewsQuery =
         `is:open is:pr review-requested:${login} archived:false`;
 

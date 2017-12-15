@@ -57,8 +57,8 @@
     "rateLimit": {
       "cost": 1,
       "limit": 5000,
-      "remaining": 4998,
-      "resetAt": "2017-12-15T23:38:36Z",
+      "remaining": 4999,
+      "resetAt": "2017-12-16T00:25:17Z",
       "nodeCount": 140,
       "__typename": "RateLimit"
     }
