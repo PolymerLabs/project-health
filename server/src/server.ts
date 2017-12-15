@@ -87,7 +87,7 @@ export class DashServer {
     const userData = await this.fetchUserData(token);
     res.header('content-type', 'application/json');
     res.send(JSON.stringify(userData, null, 2));
-  }
+  };
 
   async fetchUserData(token: string): Promise<DashResponse> {
     const loginResult = await this.github.query<ViewerLoginQuery>(
