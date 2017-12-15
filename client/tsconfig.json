@@ -7,18 +7,10 @@
     "noUnusedParameters": true,
     "pretty": true,
     "skipLibCheck": true,
-    "rootDirs": [
-      "./",
-      "node_modules",
-      "node_modules/@types"
-    ],
-    "rootDir": "src",
-    "outDir": "./",
     "lib": [
       "es2017",
       "esnext.asynciterable",
       "dom"
     ]
-  },
-  "exclude": []
+  }
 }

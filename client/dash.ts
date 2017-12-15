@@ -1,5 +1,5 @@
-import {DashResponse, PullRequest} from '../../api';
-import {html, render} from '../lit-html/lit-html.js'
+import {DashResponse, PullRequest} from '../api'
+import {html, render} from './node_modules/lit-html/lit-html.js'
 
 async function start() {
   const queryParams = new URLSearchParams(window.location.search);
@@ -12,15 +12,14 @@ async function start() {
       <img class="avatar" src="${pr.avatarUrl}">
       <div class="item-contents">
         <div class="header">
-          ${pr.repository} <b>${pr.title}</b> ${pr.number}
+          ${pr.repository} <b>${pr.title}</b> #${pr.number}
         </div>
         <div class="footer">
           <div>
-            <span>Approved by people</span>
-            <span>Maybe</span>
+            Approved by nobody
           </div>
           <div>
-            <span>by <a href="#">nobody</a></span>
+            Line 2
           </div>
         </div>
       </div>

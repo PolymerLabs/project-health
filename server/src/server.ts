@@ -226,7 +226,7 @@ app.post('/login', bodyParser.text(), async (req, res) => {
 });
 
 app.use(
-    '/lit-html',
+    '/node_modules/lit-html',
     express.static(path.join(__dirname, '../../client/node_modules/lit-html')));
 app.use(express.static(path.join(__dirname, '../../client')));
 
