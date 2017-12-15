@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2015",
+    "module": "ES6",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "pretty": true,
+    "skipLibCheck": true,
+    "lib": [
+      "es2017",
+      "esnext.asynciterable",
+      "dom"
+    ]
+  }
+}
