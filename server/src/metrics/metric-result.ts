@@ -14,14 +14,14 @@
  * the License.
  */
 
-export abstract class MetricResult {
+export interface MetricResult {
   /**
    * Prints a summary of the metric results
    */
-  abstract logSummary(): void;
+  summary(): string;
 
   /**
    * Prints a more verbose set of data used for the Metric results
    */
-  abstract logRawData(): void;
+  rawData(): string;
 }

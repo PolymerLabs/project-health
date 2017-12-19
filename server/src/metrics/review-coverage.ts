@@ -23,24 +23,23 @@ import {PullRequestCommitsQuery, PullRequestCommitsQueryVariables} from '../gql-
 import {RepoCommitsQuery, RepoCommitsQueryVariables} from '../gql-types';
 import {RepoPRsCommitsQuery, RepoPRsCommitsQueryVariables} from '../gql-types';
 
-export class ReviewCoverageResult extends MetricResult {
+export class ReviewCoverageResult implements MetricResult {
   commits: ReviewedCommit[];
 
   constructor(commits: ReviewedCommit[]) {
-    super();
-
     this.commits = commits;
   }
 
-  logSummary() {
+  summary() {
     const count = this.numReviewed();
-    console.log(`There are ${this.commits.length} commits of which ` +
-        `${count} are reviewed. \nReview coverage is ` +
-        `${Math.round(count / this.commits.length * 100)}%.`);
+    return `There are ${this.commits.length} commits of which ` +
+        `${count} are reviewed.\nReview coverage is ` +
+        `${Math.round(count / this.commits.length * 100)}%.`;
   }
 
-  logRawData() {
+  rawData() {
     // TODO: Implement a raw API
+    return this.summary();
   }
 
   numReviewed(): number {

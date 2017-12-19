@@ -67,12 +67,10 @@ export type TimeSeriesPoint = {
 /**
  * Issue counts metric result object.
  */
-export class IssueCountResult extends MetricResult {
+export class IssueCountResult implements MetricResult {
   issues: Issue[];
 
   constructor(issues: Issue[]) {
-    super();
-
     this.issues = issues;
   }
 
@@ -108,7 +106,7 @@ export class IssueCountResult extends MetricResult {
   /**
    * Return a string summarizing the latest count of open and closed issues.
    */
-  logSummary() {
+  summary() {
     const total = this.issues.length;
     let open = 0;
     let closed = 0;
@@ -120,14 +118,15 @@ export class IssueCountResult extends MetricResult {
       }
     }
 
-    console.log(`Found ${total} issues of which ${open} were open and ` +
-        `${closed} were closed.`);
+    return `Found ${total} issues of which ${open} were open and ` +
+        `${closed} were closed.`;
   }
 
-  logRawData() {
-    for (const point of this.timeSeries()) {
-      console.log([point.date, point.numOpened, point.numClosed].join('\t'));
-    }
+  rawData() {
+    const heading = `Date\t\tOpened\tClosed\n`;
+    return heading + this.timeSeries().map((point) => {
+      return [point.date, point.numOpened, point.numClosed].join('\t');
+    }).join('\n');
   }
 }
 

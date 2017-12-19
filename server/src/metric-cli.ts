@@ -112,8 +112,8 @@ export async function run(argv: string[]) {
   metricSpinner.stop();
 
   if (!args.raw) {
-    metricResult.logSummary();
+    console.log(metricResult.summary());
   } else {
-    metricResult.logRawData();
+    console.log(metricResult.rawData());
   }
 }

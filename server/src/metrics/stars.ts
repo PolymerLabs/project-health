@@ -21,21 +21,20 @@ import {getOrgRepos} from '../common';
 import {GitHub} from '../gql';
 import {StarsQuery, StarsQueryVariables} from '../gql-types';
 
-export class StarsResult extends MetricResult {
+export class StarsResult implements MetricResult {
   stars: Star[];
 
   constructor(stars: Star[]) {
-    super();
-
     this.stars = stars;
   }
 
-  logSummary() {
-    console.log(`There are ${this.stars.length} stars.`);
+  summary() {
+    return `There are ${this.stars.length} stars.`;
   }
 
-  logRawData() {
+  rawData() {
     // TODO: Implement a raw API
+    return this.summary();
   }
 }
 

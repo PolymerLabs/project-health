@@ -21,23 +21,21 @@ import {getOrgRepos, Review, PullRequest, getReviewsForPullRequest} from '../com
 import {GitHub} from '../gql';
 import {PullRequestsQuery, PullRequestsQueryVariables} from '../gql-types';
 
-export class ReviewLatencyResult extends MetricResult {
+export class ReviewLatencyResult implements MetricResult {
   reviews: Review[];
   totalLatency: number;
   averageLatency: number;
 
   constructor(totalLatency: number, reviews: Review[]) {
-    super();
-
     this.reviews = reviews;
     this.totalLatency = totalLatency;
     this.averageLatency = this.totalLatency / this.reviews.length;
   }
 
-  logSummary() {
+  summary() {
     const avg = Math.round(this.averageLatency / 1000 / 60 / 60);
-    console.log(`There were ${this.reviews.length} reviews ` +
-      `with an average latency of ${avg} hours.`);
+    return `There were ${this.reviews.length} reviews ` +
+      `with an average latency of ${avg} hours.`;
   }
 
 
@@ -45,7 +43,7 @@ export class ReviewLatencyResult extends MetricResult {
    * Logs raw data for review latency. Currently logs average review latency by
    * weeks starting on Sunday.
    */
-  logRawData() {
+  rawData() {
     // Sort results into date buckets.
     const buckets: Map<string, Review[]> = new Map();
     for (const entry of this.reviews) {
@@ -65,12 +63,12 @@ export class ReviewLatencyResult extends MetricResult {
     const dateComparator = (left: string, right: string) =>
         new Date(left) < new Date(right) ? -1 : 1;
     const keys = Array.from(buckets.keys()).sort(dateComparator);
-    for (const date of keys) {
+    return keys.map((date) => {
       const entries = buckets.get(date)!;
       let totalLatency = 0;
       entries.forEach((entry) => totalLatency += entry.latency);
-      console.log(`${date}\t${totalLatency / entries.length / 1000 / 60 / 60}`);
-    }
+      return `${date}\t${totalLatency / entries.length / 1000 / 60 / 60}`;
+    }).join('\n');
   }
 }
 
