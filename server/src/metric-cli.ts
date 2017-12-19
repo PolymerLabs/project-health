@@ -15,6 +15,7 @@
  */
 
 import * as commandLineArgs from 'command-line-args';
+import * as ora from 'ora';
 
 import {GitHub} from './gql';
 import {getIssueCounts} from './metrics/issue-counts';
@@ -80,41 +81,39 @@ export async function run(argv: string[]) {
 
   const github = new GitHub();
 
-  if (args.metric === 'review-latency') {
-    const result =
-        await getReviewLatency(github, {org: args.org, repo: args.repo});
-    if (!args.raw) {
-      console.info(result.format());
-    } else {
-      result.logRawData();
-    }
+  const metricSpinner = ora(`Gathering '${args.metric}' metric data`).start();
 
-  } else if (args.metric === 'issue-counts') {
-    const counts =
-        await getIssueCounts(github, {org: args.org, repo: args.repo});
-    if (args.raw) {
-      for (const point of counts.timeSeries()) {
-        console.log([point.date, point.numOpened, point.numClosed].join('\t'));
-      }
-    } else {
-      console.info(counts.summary());
-    }
-  } else if (args.metric === 'review-coverage') {
-    const yearAgo = new Date();
-    yearAgo.setFullYear(yearAgo.getFullYear() - 1);
-    const result = await getReviewCoverage(
-        github, {org: args.org, repo: args.repo, since: yearAgo.toISOString()});
-    // TODO: Implement a raw API.
-    if (!args.raw) {
-      console.log(result.summary());
-    }
-  } else if (args.metric === 'stars') {
-    const stars = await getStars(github, {org: args.org, repo: args.repo});
-    // TODO: Implement a raw API.
-    if (!args.raw) {
-      console.log(stars.summary());
-    }
+  let metricResult;
+  let orgInfo = {org: args.org, repo: args.repo};
+  switch (args.metric) {
+    case 'review-latency':
+      metricResult = await getReviewLatency(github, orgInfo);
+      break;
+    case 'issue-counts':
+      metricResult = await getIssueCounts(github, orgInfo);
+      break;
+    case 'review-coverage':
+      const yearAgo = new Date();
+      yearAgo.setFullYear(yearAgo.getFullYear() - 1);
+      metricResult = await getReviewCoverage(github, {
+        org: args.org,
+        repo: args.repo,
+        since: yearAgo.toISOString()
+      });
+      break;
+    case 'stars':
+      metricResult = await getStars(github, {org: args.org, repo: args.repo});
+      break;
+    default:
+      metricSpinner.fail('Metric not found.');
+      throw new Error('Metric not found');
+  }
+
+  metricSpinner.stop();
+
+  if (!args.raw) {
+    metricResult.logSummary();
   } else {
-    throw new Error('Metric not found');
+    metricResult.logRawData();
   }
 }

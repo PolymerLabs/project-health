@@ -16,25 +16,28 @@
 
 import gql from 'graphql-tag';
 
+import {MetricResult} from './metric-result';
 import {getOrgRepos, Review, PullRequest, getReviewsForPullRequest} from '../common';
 import {GitHub} from '../gql';
 import {PullRequestsQuery, PullRequestsQueryVariables} from '../gql-types';
 
-export class ReviewLatencyResult {
+export class ReviewLatencyResult extends MetricResult {
   reviews: Review[];
   totalLatency: number;
   averageLatency: number;
 
   constructor(totalLatency: number, reviews: Review[]) {
+    super();
+
     this.reviews = reviews;
     this.totalLatency = totalLatency;
     this.averageLatency = this.totalLatency / this.reviews.length;
   }
 
-  format(): string {
+  logSummary() {
     const avg = Math.round(this.averageLatency / 1000 / 60 / 60);
-    return `There were ${this.reviews.length} reviews ` +
-        `with an average latency of ${avg} hours.`;
+    console.log(`There were ${this.reviews.length} reviews ` +
+      `with an average latency of ${avg} hours.`);
   }
 
 

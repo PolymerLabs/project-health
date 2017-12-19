@@ -16,6 +16,7 @@
 
 import gql from 'graphql-tag';
 
+import {MetricResult} from './metric-result';
 import {getOrgRepos} from '../common';
 import {GitHub} from '../gql';
 import {IssuesQuery, IssuesQueryVariables} from '../gql-types';
@@ -66,10 +67,12 @@ export type TimeSeriesPoint = {
 /**
  * Issue counts metric result object.
  */
-export class IssueCountResult {
+export class IssueCountResult extends MetricResult {
   issues: Issue[];
 
   constructor(issues: Issue[]) {
+    super();
+
     this.issues = issues;
   }
 
@@ -105,7 +108,7 @@ export class IssueCountResult {
   /**
    * Return a string summarizing the latest count of open and closed issues.
    */
-  summary(): string {
+  logSummary() {
     const total = this.issues.length;
     let open = 0;
     let closed = 0;
@@ -116,8 +119,15 @@ export class IssueCountResult {
         open++;
       }
     }
-    return `Found ${total} issues of which ${open} were open and ` +
-        `${closed} were closed.`;
+
+    console.log(`Found ${total} issues of which ${open} were open and ` +
+        `${closed} were closed.`);
+  }
+
+  logRawData() {
+    for (const point of this.timeSeries()) {
+      console.log([point.date, point.numOpened, point.numClosed].join('\t'));
+    }
   }
 }
 

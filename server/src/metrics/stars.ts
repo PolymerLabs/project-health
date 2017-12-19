@@ -16,19 +16,26 @@
 
 import gql from 'graphql-tag';
 
+import {MetricResult} from './metric-result';
 import {getOrgRepos} from '../common';
 import {GitHub} from '../gql';
 import {StarsQuery, StarsQueryVariables} from '../gql-types';
 
-export class StarsResult {
+export class StarsResult extends MetricResult {
   stars: Star[];
 
   constructor(stars: Star[]) {
+    super();
+
     this.stars = stars;
   }
 
-  summary(): string {
-    return `There are ${this.stars.length} stars.`;
+  logSummary() {
+    console.log(`There are ${this.stars.length} stars.`);
+  }
+
+  logRawData() {
+    // TODO: Implement a raw API
   }
 }
 
