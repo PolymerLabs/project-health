@@ -23,4 +23,6 @@ test('WebComponents/webcomponents.org stars', async (t) => {
   const result = await getStars(
       t.context.client, {org: 'WebComponents', repo: 'webcomponents.org'});
   t.is(result.stars.length, 127);
+  t.truthy(result.summary());
+  t.truthy(result.rawData());
 });

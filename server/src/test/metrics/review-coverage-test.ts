@@ -27,4 +27,6 @@ test('webcomponents.org review coverage', async (t) => {
   });
   t.is(result.numReviewed(), 552);
   t.is(result.commits.length, 904);
+  t.truthy(result.summary());
+  t.truthy(result.rawData());
 });

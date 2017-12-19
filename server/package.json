@@ -15,7 +15,7 @@
     "lint": "tslint -c ../tslint.json  src/**/*.ts -t stylish",
     "test": "npm run build && RECORD=false npm run test:ava -- --timeout=10sec && npm run check-coverage",
     "test:record": "npm run build && RECORD=true npm run test:ava -- --timeout=1min",
-    "test:ava": "nyc ava lib/test/**/*-test.js --verbose"
+    "test:ava": "nyc --reporter=text --reporter=html ava lib/test/**/*-test.js --verbose"
   },
   "repository": {
     "type": "git",
