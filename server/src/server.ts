@@ -27,13 +27,13 @@ export class DashServer {
     app.get('/dash.json', this.handleDashJson.bind(this));
     app.post('/login', bodyParser.text(), this.handleLogin.bind(this));
 
+    this.app = app;
+
     // TODO: Move to the creator of the server.
     const environment = process.env.NODE_ENV;
     if (environment !== 'test') {
       this.listen();
     }
-
-    this.app = app;
   }
 
   listen() {
