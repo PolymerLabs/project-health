@@ -16,13 +16,14 @@
 
 import gql from 'graphql-tag';
 
+import {MetricResult} from './metric-result';
 import {getOrgRepos, getReviewsForPullRequest} from '../common';
 import {GitHub} from '../gql';
 import {PullRequestCommitsQuery, PullRequestCommitsQueryVariables} from '../gql-types';
 import {RepoCommitsQuery, RepoCommitsQueryVariables} from '../gql-types';
 import {RepoPRsCommitsQuery, RepoPRsCommitsQueryVariables} from '../gql-types';
 
-export class ReviewCoverageResult {
+export class ReviewCoverageResult implements MetricResult {
   commits: ReviewedCommit[];
 
   constructor(commits: ReviewedCommit[]) {
@@ -32,8 +33,13 @@ export class ReviewCoverageResult {
   summary() {
     const count = this.numReviewed();
     return `There are ${this.commits.length} commits of which ` +
-        `${count} are reviewed. \nReview coverage is ` +
+        `${count} are reviewed.\nReview coverage is ` +
         `${Math.round(count / this.commits.length * 100)}%.`;
+  }
+
+  rawData() {
+    // TODO: Implement a raw API
+    return this.summary();
   }
 
   numReviewed(): number {

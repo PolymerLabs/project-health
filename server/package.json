@@ -15,7 +15,7 @@
     "lint": "tslint -c ../tslint.json  src/**/*.ts -t stylish",
     "test": "npm run build && RECORD=false npm run test:ava -- --timeout=10sec && npm run check-coverage",
     "test:record": "npm run build && RECORD=true npm run test:ava -- --timeout=1min",
-    "test:ava": "nyc ava lib/test/**/*-test.js --verbose"
+    "test:ava": "nyc --reporter=text --reporter=html ava lib/test/**/*-test.js --verbose"
   },
   "repository": {
     "type": "git",
@@ -28,6 +28,7 @@
   "homepage": "https://github.com/PolymerLabs/project-health#readme",
   "devDependencies": {
     "@types/fs-extra": "^4.0.5",
+    "@types/ora": "^1.3.1",
     "apollo-codegen": "^0.17.2",
     "ava": "^0.23.0",
     "clang-format": "^1.1.1",
@@ -59,6 +60,7 @@
     "graphql": "^0.11.7",
     "graphql-tag": "^2.5.0",
     "node-fetch": "^1.7.3",
+    "ora": "^1.3.0",
     "request": "^2.83.0",
     "request-promise-native": "^1.0.5"
   },

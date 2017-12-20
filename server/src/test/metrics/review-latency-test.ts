@@ -25,4 +25,6 @@ test('WebComponents/webcomponents.org review latency', async (t) => {
       t.context.client, {org: 'WebComponents', repo: 'webcomponents.org'});
   t.is(result.totalLatency, 19466495000);
   t.is(result.reviews.length, 425);
+  t.truthy(result.summary());
+  t.truthy(result.rawData());
 });
