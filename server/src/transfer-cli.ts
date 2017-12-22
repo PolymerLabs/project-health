@@ -18,6 +18,7 @@ import * as commandLineArgs from 'command-line-args';
 import * as ora from 'ora';
 import * as request from 'request-promise-native';
 
+// tslint:disable-next-line:no-require-imports no-any
 const commandLineUsage = require('command-line-usage') as any;
 
 const argDefs = [
@@ -66,8 +67,7 @@ function readInput(): Promise<string[]> {
     });
 
     process.stdin.on('end', () => {
-      process.stdout.write(input);
-      resolve(input.split('\n').filter((x) => x != ''));
+      resolve(input.split('\n').filter((x) => x !== ''));
     });
   });
 }
@@ -75,24 +75,31 @@ function readInput(): Promise<string[]> {
 /**
  * Returns whether or not the repo uses GitHub pages.
  */
-function checkRepo(org: string, repo: string, token: string): Promise<boolean> {
+function hasGitHubPages(
+    org: string, repo: string, token: string): Promise<boolean> {
   return new Promise((resolve, reject) => {
     request
         .get({
           url: `https://api.github.com/repos/${org}/${repo}`,
           headers: {
-            'Accept': 'application/vnd.github.mister-fantastic-preview+json',
+            'Accept': 'application/json',
             'Authorization': `token ${token}`,
             'User-Agent': 'Project Health Bot',
           },
           json: true,
         })
         .then((result) => {
+          // Check that this wasn't redirected.
+          if (result.owner.login !== org) {
+            reject(`Error: ${repo} was not found in ${org} and instead in ${
+                result.owner.login}`);
+            return;
+          }
           if (result.has_pages) {
             console.log(`[Warning] ${
                 repo} uses GitHub pages. This will not be transferred.`);
           }
-          resolve(true);
+          resolve(result.has_pages);
         })
         .catch((_err) => {
           reject(`Error: ${org}/${repo} not found`);
@@ -101,10 +108,9 @@ function checkRepo(org: string, repo: string, token: string): Promise<boolean> {
 }
 
 /**
- * Returns whether or not the repo uses GitHub pages.
+ * Starts the transfer of a repo. Transfer is asynchronous on GitHub's side.
  */
-async function transferRepo(
-    from: string, to: string, repo: string, token: string) {
+function transferRepo(from: string, to: string, repo: string, token: string) {
   return new Promise((resolve, reject) => {
     request
         .post({
@@ -119,11 +125,7 @@ async function transferRepo(
           },
           json: true,
         })
-        .then((result) => {
-          if (result.has_pages) {
-            console.log(`[Warning] ${
-                repo} uses GitHub pages. This will not be transferred.`);
-          }
+        .then(() => {
           resolve();
         })
         .catch((err) => {
@@ -165,7 +167,7 @@ export async function run(argv: string[]) {
 
   const checks = [];
   for (const repo of repos) {
-    checks.push(checkRepo(args.from, repo, args.token));
+    checks.push(hasGitHubPages(args.from, repo, args.token));
   }
 
   Promise.all(checks)
@@ -183,9 +185,12 @@ export async function run(argv: string[]) {
             await transferRepo(args.from, args.to, repo, args.token);
           }
           spinner.stop();
+          console.log(`Transferred ${repos.length} repositories from ${
+              args.from} to ${args.to}`);
         }
       })
-      .catch(() => {
+      .catch((err) => {
         spinner.stop();
+        console.error(err);
       });
 }
