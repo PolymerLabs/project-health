@@ -101,8 +101,12 @@ function hasGitHubPages(
           }
           resolve(result.has_pages);
         })
-        .catch((_err) => {
-          reject(`Error: ${org}/${repo} not found`);
+        .catch((err) => {
+          if (err.statusCode === 404) {
+            reject(`Error: ${org}/${repo} not found`);
+          } else {
+            reject(err);
+          }
         });
   });
 }
@@ -170,27 +174,26 @@ export async function run(argv: string[]) {
     checks.push(hasGitHubPages(args.from, repo, args.token));
   }
 
-  Promise.all(checks)
-      .then(async () => {
-        spinner.stop();
+  try {
+    await Promise.all(checks);
+    spinner.stop();
 
-        console.log(`Ready to transfer ${repos.length} repositories from ${
-            args.from} to ${args.to}`);
+    console.log(`Ready to transfer ${repos.length} repositories from ${
+        args.from} to ${args.to}`);
 
-        if (!args.force) {
-          console.log('Rerun with -f to transfer');
-        } else {
-          spinner = ora(`Transferring ${repos.length} repos`).start();
-          for (const repo of repos) {
-            await transferRepo(args.from, args.to, repo, args.token);
-          }
-          spinner.stop();
-          console.log(`Transferred ${repos.length} repositories from ${
-              args.from} to ${args.to}`);
-        }
-      })
-      .catch((err) => {
-        spinner.stop();
-        console.error(err);
-      });
+    if (!args.force) {
+      console.log('Rerun with -f to transfer');
+    } else {
+      spinner = ora(`Transferring ${repos.length} repos`).start();
+      for (const repo of repos) {
+        await transferRepo(args.from, args.to, repo, args.token);
+      }
+      spinner.stop();
+      console.log(`Transferred ${repos.length} repositories from ${
+          args.from} to ${args.to}`);
+    }
+  } catch (err) {
+    spinner.stop();
+    console.error(err);
+  }
 }
