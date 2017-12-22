@@ -28,12 +28,6 @@ export class DashServer {
     app.post('/login', bodyParser.text(), this.handleLogin.bind(this));
 
     this.app = app;
-
-    // TODO: Move to the creator of the server.
-    const environment = process.env.NODE_ENV;
-    if (environment !== 'test') {
-      this.listen();
-    }
   }
 
   listen() {
@@ -90,7 +84,7 @@ export class DashServer {
     const userData = await this.fetchUserData(login, token);
     res.header('content-type', 'application/json');
     res.send(JSON.stringify(userData, null, 2));
-  };
+  }
 
   async fetchUserData(login: string, token: string): Promise<DashResponse> {
     const incomingReviewsQuery =
@@ -219,5 +213,3 @@ fragment fullPR on PullRequest {
     }
   }
 }`;
-
-new DashServer(new GitHub());

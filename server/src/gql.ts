@@ -8,11 +8,13 @@ import {DocumentNode} from 'graphql';
 import fetch from 'node-fetch';
 import {promisify} from 'util';
 
+// tslint:disable-next-line:no-require-imports
 const schema = require('../github-schema.json');
 
 // Until more widely included, we need to define this symbol to use
 // for-await-of statements.
 // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-3.html#the-for-await-of-statement
+// tslint:disable-next-line:no-any
 (Symbol as any).asyncIterator =
     Symbol.asyncIterator || Symbol.for('Symbol.asyncIterator');
 
@@ -33,16 +35,14 @@ export class GitHub {
           ...previousContext.headers,
           authorization: token ? `Bearer ${token}` : null,
         }
-      }
+      };
     });
 
     this.apollo = new ApolloClient({
       link: authLink.concat(new HttpLink({
         uri,
-        headers: {
-          'User-Agent': 'Project Health'
-        },
-        fetch: fetch,
+        headers: {'User-Agent': 'Project Health'},
+        fetch,
       })),
       cache: new InMemoryCache({fragmentMatcher}),
     });
@@ -56,8 +56,6 @@ export class GitHub {
     let retries = 0;
     while (!result) {
       try {
-        if (options.notifyOnNetworkStatusChange != undefined)
-          debugger;
         result = await this.apollo.query<T>(Object.assign({}, options));
       } catch (e) {
         // Retry the request up to 5 times, backing off an extra second each
@@ -114,4 +112,4 @@ export class GitHub {
 
 type PageInfo = {
   hasNextPage: boolean; endCursor: string | null;
-}
+};
