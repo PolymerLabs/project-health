@@ -60,3 +60,11 @@ node server.js
 ```
 
 To test using the auth flow, open http://localhost:8080/ in your browser.
+
+## Transferring repositories
+This script allows you to move many repositories between organizations. A data file with each repo name per line should be provided via `stdin`. Invoke as follows:
+```
+./server/bin/transfer --token <github-token> --from OrganizationFrom --to OrganizationTo
+```
+
+To perform the transfer, repeat with the `--force` parameter.
