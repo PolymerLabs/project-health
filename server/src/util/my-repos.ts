@@ -15,7 +15,7 @@
  */
 
 import gql from 'graphql-tag';
-import {GitHub} from '../gql';
+import {GitHub} from '../github';
 import {MyReposQuery, MyReposQueryVariables} from '../gql-types';
 
 const MAX_STATS_RETRIES = 5;

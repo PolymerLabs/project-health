@@ -9,7 +9,6 @@ import fetch from 'node-fetch';
 import * as request from 'request-promise-native';
 import {promisify} from 'util';
 
-
 // tslint:disable-next-line:no-require-imports
 const schema = require('../github-schema.json');
 
@@ -22,11 +21,11 @@ const schema = require('../github-schema.json');
 
 export class GitHub {
   private apollo: ApolloClient<NormalizedCacheObject>;
-  private v3endpoint: string;
+  private jsonUrl: string;
 
   constructor(
       uri = 'https://api.github.com/graphql',
-      v3endpoint = 'https://api.github.com') {
+      jsonUrl = 'https://api.github.com') {
     // Providing this fragment matcher initialized with the GitHub schema
     // allows the Apollo client to better distinguish polymorphic result types
     // by their "__type" field, which is required for certain queries.
@@ -52,7 +51,7 @@ export class GitHub {
       cache: new InMemoryCache({fragmentMatcher}),
     });
 
-    this.v3endpoint = v3endpoint;
+    this.jsonUrl = jsonUrl;
   }
 
   /**
@@ -120,7 +119,7 @@ export class GitHub {
   async get(path: string, userToken: string, parseJSON = true): Promise<any> {
     const token = userToken || process.env.GITHUB_TOKEN;
     const query = {
-      url: this.v3endpoint + '/' + path,
+      url: this.jsonUrl + '/' + path,
       headers: {
         'Accept': 'application/json',
         'Authorization': `token ${token}`,
@@ -135,8 +134,7 @@ export class GitHub {
       query.resolveWithFullResponse = true;
       query.simple = false;
     }
-    const response = await request.get(query);
-    return response;
+    return await request.get(query);
   }
 }
 

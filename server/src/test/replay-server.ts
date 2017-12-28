@@ -5,11 +5,11 @@ import * as http from 'http';
 import * as path from 'path';
 import * as request from 'request';
 
-import {GitHub} from '../gql';
+import {GitHub} from '../github';
 
 const replayRoot = path.join(__dirname, '..', '..', 'src', 'test', 'replays');
 const githubApiUrl = 'https://api.github.com/graphql';
-const githubV3Url = 'https://api.github.com';
+const githubJsonUrl = 'https://api.github.com';
 const timeout = 1000 * 10;
 
 // We want to log something to make it obvious when we're recording new test
@@ -117,7 +117,7 @@ export async function startTestReplayServer(t: ava.TestContext):
       delete headers['host'];
 
       const opts = {
-        url: githubV3Url + req.url,
+        url: githubJsonUrl + req.url,
         timeout,
         headers,
         gzip: true,
