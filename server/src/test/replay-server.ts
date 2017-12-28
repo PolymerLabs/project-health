@@ -9,6 +9,7 @@ import {GitHub} from '../gql';
 
 const replayRoot = path.join(__dirname, '..', '..', 'src', 'test', 'replays');
 const githubApiUrl = 'https://api.github.com/graphql';
+const githubV3Url = 'https://api.github.com';
 const timeout = 1000 * 10;
 
 // We want to log something to make it obvious when we're recording new test
@@ -46,7 +47,29 @@ export async function startTestReplayServer(t: ava.TestContext):
     await fsExtra.emptyDir(replayDir);
   }
 
-  function handler(req: http.IncomingMessage, res: http.ServerResponse) {
+  function router(req: http.IncomingMessage, res: http.ServerResponse) {
+    if (req.method === 'POST' && req.url === '/') {
+      gqlHandler(req, res);
+    } else {
+      jsonHandler(req, res);
+    }
+  }
+
+  async function sendReplayFile(res: http.ServerResponse, replayFile: string) {
+    let replayBody;
+    try {
+      replayBody = await fsExtra.readFile(replayFile);
+    } catch (e) {
+      res.statusCode = 500;
+      res.statusMessage = 'No replay file: ' + replayFile;
+      res.end();
+      return;
+    }
+    res.statusCode = 200;
+    res.end(replayBody);
+  }
+
+  function gqlHandler(req: http.IncomingMessage, res: http.ServerResponse) {
     let body = '';
     req.on('readable', () => body += req.read() || '');
 
@@ -78,26 +101,46 @@ export async function startTestReplayServer(t: ava.TestContext):
         proxyRes.pipe(res);
 
       } else {
-        let replayBody;
-        try {
-          replayBody = await fsExtra.readFile(replayFile);
-        } catch (e) {
-          res.statusCode = 500;
-          res.statusMessage = 'No replay file: ' + replayFile;
-          res.end();
-          return;
-        }
-        res.statusCode = 200;
-        res.end(replayBody);
+        await sendReplayFile(res, replayFile);
       }
     });
   }
 
+  async function jsonHandler(
+      req: http.IncomingMessage, res: http.ServerResponse) {
+    const replayFile =
+        path.join(replayDir, (req.url || '').replace(/\//g, '#'));
+
+    if (record) {
+      // Don't forward the host header, it's for the wrong host.
+      const headers = Object.assign({}, req.headers);
+      delete headers['host'];
+
+      const opts = {
+        url: githubV3Url + req.url,
+        timeout,
+        headers,
+        gzip: true,
+      };
+      const proxyRes = request.get(opts, async (err, res, body) => {
+        if (!err && res.statusCode === 200) {
+          // Re-indent the JSON so that it's easier to read in diffs.
+          const indentedResult = JSON.stringify(JSON.parse(body), null, 2);
+          await fsExtra.writeFile(replayFile, indentedResult);
+        }
+      });
+      proxyRes.pipe(res);
+    } else {
+      await sendReplayFile(res, replayFile);
+    }
+  }
+
   return new Promise<{server: http.Server, client: GitHub}>((resolve) => {
-    const server = http.createServer(handler);
+    const server = http.createServer(router);
     server.listen(/* random */ 0, '127.0.0.1', () => {
       const {address, port} = server.address();
-      const client = new GitHub(`http://${address}:${port}`);
+      const url = `http://${address}:${port}`;
+      const client = new GitHub(url, url);
       resolve({server, client});
     });
   });

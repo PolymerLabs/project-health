@@ -14,8 +14,8 @@ test.afterEach.cb((t) => {
 });
 
 test('top contributed repos for samuelli', async (t) => {
-  const result = await getMyRepos(t.context.client, 'samuelli');
-  t.is(result, [
+  const result = await getMyRepos(t.context.client, 'samuelli', '');
+  t.deepEqual(result, [
     'webcomponents/webcomponents.org',
     'GoogleChrome/rendertron',
     'webcomponents/community',

@@ -15,8 +15,6 @@
  */
 
 import gql from 'graphql-tag';
-import * as request from 'request-promise-native';
-
 import {GitHub} from '../gql';
 import {MyReposQuery, MyReposQueryVariables} from '../gql-types';
 
@@ -32,7 +30,7 @@ const CONTRIBUTION_WINDOW = 1000 * 60 * 60 * 24 * 90;  // 90 days.
  * based on contribution recency and consistency.
  */
 export async function getMyRepos(
-    github: GitHub, login: string): Promise<string[]> {
+    github: GitHub, login: string, userToken: string): Promise<string[]> {
   const repos = new Map<string, number>();
   const results = github.cursorQuery<MyReposQuery, MyReposQueryVariables>(
       reposQuery, {login}, (q) => q.user && q.user.contributedRepositories);
@@ -42,10 +40,7 @@ export async function getMyRepos(
       for (const repo of data.user.contributedRepositories.nodes || []) {
         if (repo) {
           const promise = getContributionWeight(
-              repo.owner.login,
-              repo.name,
-              login,
-              process.env.GITHUB_TOKEN || '');
+              github, repo.owner.login, repo.name, login, userToken);
           promises.push(promise.then((score) => {
             repos.set(repo.owner.login + '/' + repo.name, score);
           }));
@@ -68,29 +63,21 @@ export async function getMyRepos(
  * (0-100).
  */
 function getContributionWeight(
-    org: string, repo: string, user: string, token: string): Promise<number> {
+    github: GitHub, org: string, repo: string, user: string, userToken: string):
+    Promise<number> {
   return new Promise(async (resolve, reject) => {
     try {
       // GitHub doesn't provide a v4 API equivalent for stats, so v3 API must be
       // used.
-      const query = {
-        url: `https://api.github.com/repos/${org}/${repo}/stats/contributors`,
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': `token ${token}`,  // TODO
-          'User-Agent': 'Project Health Bot',
-        },
-        resolveWithFullResponse: true,
-        simple: false,
-      };
+      const queryPath = `repos/${org}/${repo}/stats/contributors`;
 
-      let response = await request.get(query);
+      let response = await github.get(queryPath, userToken, false);
       let retries = 0;
       // GitHub's API may serve a cached response and begin an asynchronous
       // job to calculate required data.
       while (response.statusCode !== 200 && retries++ < MAX_STATS_RETRIES) {
         await sleep(1000 * retries);
-        response = await request.get(query);
+        response = await github.get(queryPath, userToken, false);
       }
 
       if (response.statusCode === 200) {
