@@ -1,5 +1,5 @@
-import {DashResponse, PullRequest} from '../../api';
-import {html, render} from '../node_modules/lit-html/lit-html.js';
+import {DashResponse, PullRequest} from '../api';
+import {html, render} from './node_modules/lit-html/lit-html.js';
 
 async function start() {
   const queryParams = new URLSearchParams(window.location.search);

@@ -1,4 +1,4 @@
-import {html, render} from '../node_modules/lit-html/lit-html.js';
+import {html, render} from './node_modules/lit-html/lit-html.js';
 
 const PUBLIC_VAPID_KEY = 'BOX5Lqb44uosZL4_UtV7XW9dHaBj9ERFbCzlsYZBObMZjIB-yxPIbjI5pTBgIt09iy-Hl57AWpr7lJ6QXaQjy30';
 
@@ -37,7 +37,7 @@ function urlBase64ToUint8Array(base64String: string) {
  * handle push messages and not control any pages due to it's scope.
  */
 function getRegistration(): Promise<ServiceWorkerRegistration> {
-  return navigator.serviceWorker.register('./build/push-sw.js', {
+  return navigator.serviceWorker.register('/push-sw.js', {
     scope: '/build/__dash/push/',
   });
 }
