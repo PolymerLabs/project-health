@@ -16,10 +16,11 @@
 
 import gql from 'graphql-tag';
 
-import {MetricResult} from './metric-result';
 import {getOrgRepos} from '../common';
-import {GitHub} from '../gql';
+import {GitHub} from '../github';
 import {StarsQuery, StarsQueryVariables} from '../gql-types';
+
+import {MetricResult} from './metric-result';
 
 export class StarsResult implements MetricResult {
   stars: Star[];
@@ -96,11 +97,10 @@ async function fetchStarsForRepo(
     github: GitHub, owner: string, name: string): Promise<Star[]> {
   const stars: Star[] = [];
 
-  const results =
-      github.cursorQuery<StarsQuery, StarsQueryVariables>(
-          starsQuery,
-          {owner, name},
-          (data) => data.repository && data.repository.stargazers);
+  const results = github.cursorQuery<StarsQuery, StarsQueryVariables>(
+      starsQuery,
+      {owner, name},
+      (data) => data.repository && data.repository.stargazers);
 
   for await (const data of results) {
     const repo = data.repository;

@@ -17,7 +17,7 @@
 import * as commandLineArgs from 'command-line-args';
 import * as ora from 'ora';
 
-import {GitHub} from './gql';
+import {GitHub} from './github';
 import {getIssueCounts} from './metrics/issue-counts';
 import {getReviewCoverage} from './metrics/review-coverage';
 import {getReviewLatency} from './metrics/review-latency';

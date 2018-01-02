@@ -16,12 +16,13 @@
 
 import gql from 'graphql-tag';
 
-import {MetricResult} from './metric-result';
 import {getOrgRepos, getReviewsForPullRequest} from '../common';
-import {GitHub} from '../gql';
+import {GitHub} from '../github';
 import {PullRequestCommitsQuery, PullRequestCommitsQueryVariables} from '../gql-types';
 import {RepoCommitsQuery, RepoCommitsQueryVariables} from '../gql-types';
 import {RepoPRsCommitsQuery, RepoPRsCommitsQueryVariables} from '../gql-types';
+
+import {MetricResult} from './metric-result';
 
 export class ReviewCoverageResult implements MetricResult {
   commits: ReviewedCommit[];
@@ -89,7 +90,8 @@ export async function getReviewCoverage(
     }
 
     // Get all commits on the master branch.
-    for (const commit of await getMasterCommits(github, owner, name, opts.since)) {
+    for (const commit of await getMasterCommits(
+             github, owner, name, opts.since)) {
       commits.push(
           Object.assign({reviewed: reviewedCommits.has(commit.oid)}, commit));
     }

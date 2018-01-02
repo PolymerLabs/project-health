@@ -6,6 +6,7 @@ import {setContext} from 'apollo-link-context';
 import {HttpLink} from 'apollo-link-http';
 import {DocumentNode} from 'graphql';
 import fetch from 'node-fetch';
+import * as request from 'request-promise-native';
 import {promisify} from 'util';
 
 // tslint:disable-next-line:no-require-imports
@@ -20,8 +21,11 @@ const schema = require('../github-schema.json');
 
 export class GitHub {
   private apollo: ApolloClient<NormalizedCacheObject>;
+  private jsonUrl: string;
 
-  constructor(uri = 'https://api.github.com/graphql') {
+  constructor(
+      gqlUrl = 'https://api.github.com/graphql',
+      jsonUrl = 'https://api.github.com') {
     // Providing this fragment matcher initialized with the GitHub schema
     // allows the Apollo client to better distinguish polymorphic result types
     // by their "__type" field, which is required for certain queries.
@@ -40,12 +44,14 @@ export class GitHub {
 
     this.apollo = new ApolloClient({
       link: authLink.concat(new HttpLink({
-        uri,
+        uri: gqlUrl,
         headers: {'User-Agent': 'Project Health'},
         fetch,
       })),
       cache: new InMemoryCache({fragmentMatcher}),
     });
+
+    this.jsonUrl = jsonUrl;
   }
 
   /**
@@ -107,6 +113,28 @@ export class GitHub {
       variables.cursor = pageInfo && pageInfo.pageInfo.endCursor;
       yield result.data;
     }
+  }
+
+  // tslint:disable-next-line:no-any
+  async get(path: string, userToken: string, parseJSON = true): Promise<any> {
+    const token = userToken || process.env.GITHUB_TOKEN;
+    const query = {
+      url: this.jsonUrl + '/' + path,
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `token ${token}`,
+        'User-Agent': 'Project Health Bot',
+      },
+      json: true,
+      resolveWithFullResponse: false,
+      simple: true,
+    };
+    if (!parseJSON) {
+      query.json = false;
+      query.resolveWithFullResponse = true;
+      query.simple = false;
+    }
+    return await request.get(query);
   }
 }
 

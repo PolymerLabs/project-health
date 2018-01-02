@@ -8,7 +8,7 @@ import * as request from 'request-promise-native';
 
 import {DashResponse, PullRequest} from '../../api';
 
-import {GitHub} from './gql';
+import {GitHub} from './github';
 import {ViewerLoginQuery, ViewerPullRequestsQuery} from './gql-types';
 
 export class DashServer {

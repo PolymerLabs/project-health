@@ -16,10 +16,11 @@
 
 import gql from 'graphql-tag';
 
-import {MetricResult} from './metric-result';
-import {getOrgRepos, Review, PullRequest, getReviewsForPullRequest} from '../common';
-import {GitHub} from '../gql';
+import {getOrgRepos, getReviewsForPullRequest, PullRequest, Review} from '../common';
+import {GitHub} from '../github';
 import {PullRequestsQuery, PullRequestsQueryVariables} from '../gql-types';
+
+import {MetricResult} from './metric-result';
 
 export class ReviewLatencyResult implements MetricResult {
   reviews: Review[];
@@ -35,7 +36,7 @@ export class ReviewLatencyResult implements MetricResult {
   summary() {
     const avg = Math.round(this.averageLatency / 1000 / 60 / 60);
     return `There were ${this.reviews.length} reviews ` +
-      `with an average latency of ${avg} hours.`;
+        `with an average latency of ${avg} hours.`;
   }
 
 
@@ -63,12 +64,14 @@ export class ReviewLatencyResult implements MetricResult {
     const dateComparator = (left: string, right: string) =>
         new Date(left) < new Date(right) ? -1 : 1;
     const keys = Array.from(buckets.keys()).sort(dateComparator);
-    return keys.map((date) => {
-      const entries = buckets.get(date)!;
-      let totalLatency = 0;
-      entries.forEach((entry) => totalLatency += entry.latency);
-      return `${date}\t${totalLatency / entries.length / 1000 / 60 / 60}`;
-    }).join('\n');
+    return keys
+        .map((date) => {
+          const entries = buckets.get(date)!;
+          let totalLatency = 0;
+          entries.forEach((entry) => totalLatency += entry.latency);
+          return `${date}\t${totalLatency / entries.length / 1000 / 60 / 60}`;
+        })
+        .join('\n');
   }
 }
 

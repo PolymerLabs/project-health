@@ -16,10 +16,11 @@
 
 import gql from 'graphql-tag';
 
-import {MetricResult} from './metric-result';
 import {getOrgRepos} from '../common';
-import {GitHub} from '../gql';
+import {GitHub} from '../github';
 import {IssuesQuery, IssuesQueryVariables} from '../gql-types';
+
+import {MetricResult} from './metric-result';
 
 export type IssueCountOpts = {
   org: string,
@@ -124,9 +125,12 @@ export class IssueCountResult implements MetricResult {
 
   rawData() {
     const heading = `Date\t\tOpened\tClosed\n`;
-    return heading + this.timeSeries().map((point) => {
-      return [point.date, point.numOpened, point.numClosed].join('\t');
-    }).join('\n');
+    return heading +
+        this.timeSeries()
+            .map((point) => {
+              return [point.date, point.numOpened, point.numClosed].join('\t');
+            })
+            .join('\n');
   }
 }
 
