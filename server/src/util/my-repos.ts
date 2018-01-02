@@ -15,13 +15,19 @@
  */
 
 import gql from 'graphql-tag';
+import {promisify} from 'util';
+
 import {GitHub} from '../github';
 import {MyReposQuery, MyReposQueryVariables} from '../gql-types';
 
 const MAX_STATS_RETRIES = 5;
 
 // Variables that impact the scoring algorithm.
+
+// Repos below this score are discarded from the list.
 const SCORE_THRESHOLD = 20;
+// A contribution is roughly a commit. This parameter impacts the distribution &
+// scale of the resulting scores.
 const CONTRIBUTION_SIZE = 10;
 const CONTRIBUTION_WINDOW = 1000 * 60 * 60 * 24 * 90;  // 90 days.
 
@@ -36,16 +42,18 @@ export async function getMyRepos(
       reposQuery, {login}, (q) => q.user && q.user.contributedRepositories);
   const promises = [];
   for await (const data of results) {
-    if (data.user) {
-      for (const repo of data.user.contributedRepositories.nodes || []) {
-        if (repo) {
-          const promise = getContributionWeight(
-              github, repo.owner.login, repo.name, login, userToken);
-          promises.push(promise.then((score) => {
-            repos.set(repo.owner.login + '/' + repo.name, score);
-          }));
-        }
+    if (!data.user) {
+      continue;
+    }
+    for (const repo of data.user.contributedRepositories.nodes || []) {
+      if (!repo) {
+        continue;
       }
+      const promise = getContributionWeight(
+          github, repo.owner.login, repo.name, login, userToken);
+      promises.push(promise.then((score) => {
+        repos.set(repo.owner.login + '/' + repo.name, score);
+      }));
     }
   }
   await Promise.all(promises);
@@ -62,60 +70,58 @@ export async function getMyRepos(
  * Given a repo and a user, returns a weighted contribution score for the repo
  * (0-100).
  */
-function getContributionWeight(
+async function getContributionWeight(
     github: GitHub, org: string, repo: string, user: string, userToken: string):
     Promise<number> {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // GitHub doesn't provide a v4 API equivalent for stats, so v3 API must be
-      // used.
-      const queryPath = `repos/${org}/${repo}/stats/contributors`;
+  try {
+    // GitHub doesn't provide a v4 API equivalent for stats, so v3 API must be
+    // used.
+    const queryPath = `repos/${org}/${repo}/stats/contributors`;
 
-      let response = await github.get(queryPath, userToken, false);
-      let retries = 0;
-      // GitHub's API may serve a cached response and begin an asynchronous
-      // job to calculate required data.
-      while (response.statusCode !== 200 && retries++ < MAX_STATS_RETRIES) {
-        await sleep(1000 * retries);
-        response = await github.get(queryPath, userToken, false);
-      }
-
-      if (response.statusCode === 200) {
-        const stats = JSON.parse(response.body) as GitHubStatsResponse;
-        // Find contribution stats for the specified user.
-        const stat = stats.filter((x) => x.author.login === user);
-        if (stat.length === 0) {
-          resolve(0);
-          return;
-        }
-
-        let contributions = 0;
-        for (const week of stat[0].weeks) {
-          // Convert UNIX timestamp in seconds to Date object.
-          const date = new Date(Number(week.w) * 1000);
-          const timeSince = Math.max(
-                                (new Date().getTime() - date.getTime()),
-                                CONTRIBUTION_WINDOW) /
-              CONTRIBUTION_WINDOW;
-          // Produce a weight between 0-1 based on the weeks passed. Anything
-          // less than CONTRIBUTION_WINDOW will be ~1.
-          const timeWeight = Math.tanh(5 / timeSince);
-          // Weight any contribution by recency. Delta sizes are ignored.
-          if (week.a + week.d + week.c) {
-            contributions += timeWeight;
-          }
-        }
-
-        const score = 100 * Math.tanh(contributions / CONTRIBUTION_SIZE);
-        resolve(Math.round(score * 100) / 100);
-      } else {
-        reject(`Unable to fetch contribution stats for ${repo}. Got ${
-            response.statusCode} from GitHub.`);
-      }
-    } catch (err) {
-      reject(err);
+    let response = await github.get(queryPath, userToken, false);
+    let retries = 0;
+    // GitHub's API may serve a cached response and begin an asynchronous
+    // job to calculate required data.
+    while (response.statusCode !== 200 && retries++ < MAX_STATS_RETRIES) {
+      await setTimeoutPromise(1000 * retries);
+      response = await github.get(queryPath, userToken, false);
     }
-  });
+
+    if (response.statusCode === 200) {
+      const stats = JSON.parse(response.body) as GitHubStatsResponse;
+      // Find contribution stats for the specified user.
+      const stat = stats.filter((x) => x.author.login === user);
+      if (stat.length === 0) {
+        return 0;
+      }
+
+      let contributions = 0;
+      for (const week of stat[0].weeks) {
+        // Convert UNIX timestamp in seconds to Date object.
+        const date = new Date(Number(week.w) * 1000);
+        // Multiple of CONTRIBUTION_WINDOW. Minimum is 1.
+        const timeSince =
+            Math.max(
+                (new Date().getTime() - date.getTime()), CONTRIBUTION_WINDOW) /
+            CONTRIBUTION_WINDOW;
+        // Produce a weight between 0-1 based on the weeks passed. Anything
+        // less than CONTRIBUTION_WINDOW will be ~1.
+        const timeWeight = Math.tanh(5 / timeSince);
+        // Weight any contribution by recency. Delta sizes are ignored.
+        if (week.a || week.d || week.c) {
+          contributions += timeWeight;
+        }
+      }
+
+      const score = 100 * Math.tanh(contributions / CONTRIBUTION_SIZE);
+      return Math.round(score * 100) / 100;
+    } else {
+      throw new Error(`Unable to fetch contribution stats for ${repo}. Got ${
+          response.statusCode} from GitHub.`);
+    }
+  } catch (err) {
+    throw err;
+  }
 }
 
 const reposQuery = gql`
@@ -142,9 +148,8 @@ const reposQuery = gql`
 type GitHubStatsResponse = [{
   author: {login: string},
   total: number,
+  // (w)eek unix timestamp, (a)dditions, (d)eletions, (c)ommits
   weeks: [{w: string, a: number, d: number, c: number}],
 }];
 
-async function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+const setTimeoutPromise = promisify(setTimeout);

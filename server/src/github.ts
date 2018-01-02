@@ -24,7 +24,7 @@ export class GitHub {
   private jsonUrl: string;
 
   constructor(
-      uri = 'https://api.github.com/graphql',
+      gqlUrl = 'https://api.github.com/graphql',
       jsonUrl = 'https://api.github.com') {
     // Providing this fragment matcher initialized with the GitHub schema
     // allows the Apollo client to better distinguish polymorphic result types
@@ -44,7 +44,7 @@ export class GitHub {
 
     this.apollo = new ApolloClient({
       link: authLink.concat(new HttpLink({
-        uri,
+        uri: gqlUrl,
         headers: {'User-Agent': 'Project Health'},
         fetch,
       })),

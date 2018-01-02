@@ -108,6 +108,8 @@ export async function startTestReplayServer(t: ava.TestContext):
 
   async function jsonHandler(
       req: http.IncomingMessage, res: http.ServerResponse) {
+    // Replace file delimiters with arbitary hash character to create a flat
+    // file structure based on the requested URLs.
     const replayFile =
         path.join(replayDir, (req.url || '').replace(/\//g, '#'));
 
