@@ -1,5 +1,5 @@
-import {DashResponse, PullRequest} from '../api'
-import {html, render} from './node_modules/lit-html/lit-html.js'
+import {DashResponse, PullRequest} from '../../api';
+import {html, render} from '../node_modules/lit-html/lit-html.js';
 
 async function start() {
   const queryParams = new URLSearchParams(window.location.search);
@@ -61,7 +61,7 @@ async function start() {
     </style>
     ${json.prs.map(pullRequestTemplate)}
   `;
-  render(tmpl, document.body);
+  render(tmpl, (document.querySelector('.dash-container') as Element));
 }
 
 start();
