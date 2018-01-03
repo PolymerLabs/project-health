@@ -1,16 +1,8 @@
 'use strict';
 
-const {DashServer} = require('./server/lib/server');
+const {DashServer} = require('./server/lib/dash-server');
 const {GitHub} = require('./server/lib/github');
+const secrets = require('./secrets.json');
 
-try {
-  const secrets = require('./secrets.json');
-  if (secrets['GITHUB_CLIENT_SECRET']) {
-    process.env.GITHUB_CLIENT_SECRET = secrets['GITHUB_CLIENT_SECRET'];
-  }
-} catch (err) {
-  // No secrets defined.
-}
-
-const server = new DashServer(new GitHub());
+const server = new DashServer(new GitHub(), secrets);
 server.listen();
