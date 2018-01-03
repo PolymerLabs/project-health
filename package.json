@@ -14,7 +14,7 @@
     "npm-install:server": "cd ./server/ && npm install",
     "npm-install": "npm run npm-install:client && npm run npm-install:server",
     "deploy:gcloud": "gcloud app deploy app.yaml --project project-health-test",
-    "deploy": "npm run build && npm run clean-modules && npm run deploy:gcloud && npm run npm-install",
+    "deploy": "npm run build && npm run clean && npm run deploy:gcloud && npm run npm-install",
     "server": "npm run build && node server.js"
   },
   "repository": {
