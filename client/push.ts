@@ -12,10 +12,9 @@ function updateBackend(isUnsubscribed: boolean, subscription: PushSubscription) 
 
 /**
  * The pushManage.subscribe() method expects an ArrayBuffer and not a string.
- * This method convertys a base64 string into a Uint8Array.
+ * This method converts a base64 string into a Uint8Array.
  *
- * (Note: The spec has changed to allow strings, but browser suppoer is lacking)
- * @param base64String
+ * (Note: The spec has changed to allow strings, but browser support is lacking)
  */
 function urlBase64ToUint8Array(base64String: string) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -82,7 +81,7 @@ async function onNotificationToggleClick() {
 
 /**
  * This method is called when the UI is updated. It ensures the correct
- * message is displayed to the user to enable or disable notifications,
+ * message is displayed to the user to enable or disable notifications.
  */
 async function getNotificationButtonText() {
   const registration = await getRegistration();
