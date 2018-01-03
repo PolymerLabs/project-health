@@ -6,9 +6,9 @@ cache:
   directories:
     - server/node_modules
 install:
-  - (cd server && npm install)
-  - (cd client && npm install)
+  - npm run npm-install
 script:
+  - (cd client && npm run build)
   - (cd server && npm run test)
 after_script:
   - (cd server && npm run report-coverage)

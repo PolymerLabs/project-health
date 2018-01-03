@@ -1,0 +1,25 @@
+{
+  "name": "project-health",
+  "version": "1.0.0",
+  "description": "[![Build status](https://img.shields.io/travis/PolymerLabs/project-health.svg)](https://travis-ci.org/PolymerLabs/project-health) [![Coverage Status](https://coveralls.io/repos/github/PolymerLabs/project-health/badge.svg?branch=master)](https://coveralls.io/github/PolymerLabs/project-health?branch=master)",
+  "private": true,
+  "scripts": {
+    "clean:client": "cd ./client/ && rm -rf ./node_modules && npm install --only=production",
+    "clean:server": "cd ./server/ && rm -rf ./node_modules && npm install --only=production",
+    "clean": "npm run clean:client && npm run clean:server",
+    "build:client": "cd ./client/ && npm run build",
+    "build:server": "cd ./server/ && npm run build",
+    "build": "npm run build:client && npm run build:server",
+    "npm-install:client": "cd ./client/ && npm install",
+    "npm-install:server": "cd ./server/ && npm install",
+    "npm-install": "npm run npm-install:client && npm run npm-install:server",
+    "deploy:gcloud": "gcloud app deploy app.yaml --project project-health-test",
+    "deploy": "npm run build && npm run clean-modules && npm run deploy:gcloud && npm run npm-install",
+    "server": "npm run build && node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PolymerLabs/project-health.git"
+  },
+  "license": "Apache-2.0"
+}

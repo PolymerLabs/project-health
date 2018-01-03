@@ -1,10 +1,9 @@
 {
   "name": "client",
   "scripts": {
-    "build": "npm run clean && tsc && npm run lint",
+    "build": "tsc && npm run lint",
     "build:watch": "tsc --watch",
-    "lint": "tslint -c ../tslint.json  src/**/*.ts -t stylish",
-    "clean": "rm -rf lib"
+    "lint": "tslint -c ../tslint.json  src/**/*.ts -t stylish"
   },
   "dependencies": {
     "lit-html": "^0.7.1"

@@ -7,8 +7,6 @@
     "build:watch": "npm run generate-gql-types && tsc --watch",
     "clean": "rm -rf lib",
     "check-coverage": "nyc check-coverage --lines 70 --functions 70",
-    "deploy": "rm -rf node_modules && npm install --production && npm run deploy:gcloud && npm install",
-    "deploy:gcloud": "gcloud app deploy app.yaml --project project-health-test",
     "report-coverage": "nyc report --reporter=text-lcov | coveralls",
     "format": "find src -name '*.ts' | xargs clang-format --style=file -i",
     "generate-gql-types": "apollo-codegen generate src/*.ts src/**/*.ts --schema github-schema.json --target typescript --addTypename --output src/gql-types.ts",
