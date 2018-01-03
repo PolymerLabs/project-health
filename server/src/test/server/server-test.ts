@@ -1,6 +1,6 @@
 import * as ava from 'ava';
 
-import {DashServer} from '../../server';
+import {DashServer} from '../../dash-server';
 import {startTestReplayServer} from '../replay-server';
 
 /**
@@ -23,7 +23,10 @@ const test = contextualize(async (t) => {
   return {
     replayServer: server,
     client,
-    dash: new DashServer(client),
+    dash: new DashServer(client, {
+      GITHUB_CLIENT_ID: '',
+      GITHUB_CLIENT_SECRET: '',
+    }),
     // This token must be set in the environment during recording.
     token: process.env.GITHUB_TOKEN || '',
   };

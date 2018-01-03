@@ -1,0 +1,25 @@
+<script>
+  const CLIENT_ID = '23b7d82aec29a3a1a2a8';
+  const REDIRECT_ORIGIN = window.location.origin;
+
+  var queryParams = new URLSearchParams(window.location.search);
+
+  if (queryParams.has('code')) {
+    fetch('/login', {
+      method: 'POST',
+      body: queryParams.get('code'),
+      credentials: 'include',
+    }).then(() => {
+      const redirectOrigin = queryParams.get('redirect-origin');
+      if (redirectOrigin) {
+        window.location = new URL('/dash.html', redirectOrigin).toString();
+      } else {
+        window.location.href = '/dash.html';
+      }
+    });
+  } else if (queryParams.has('error')) {
+    throw new Error(`Error returned by Github: '${queryParams.get('error_description')}'`);
+  } else {
+    window.location = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=https://project-health-test.appspot.com/oauth.html?redirect-origin=${REDIRECT_ORIGIN}`;
+  }
+</script>

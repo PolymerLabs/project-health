@@ -12,11 +12,19 @@ import {GitHub} from './github';
 import {ViewerLoginQuery, ViewerPullRequestsQuery} from './gql-types';
 
 export class DashServer {
+  private secrets: {
+    GITHUB_CLIENT_ID: string,
+    GITHUB_CLIENT_SECRET: string,
+  };
   private github: GitHub;
   private app: express.Express;
 
-  constructor(github: GitHub) {
+  constructor(github: GitHub, secrets: {
+    GITHUB_CLIENT_ID: string,
+    GITHUB_CLIENT_SECRET: string,
+  }) {
     this.github = github;
+    this.secrets = secrets;
     const app = express();
     const litPath = path.join(__dirname, '../../client/node_modules/lit-html');
 
@@ -59,8 +67,8 @@ export class DashServer {
       url: 'https://github.com/login/oauth/access_token',
       headers: {'Accept': 'application/json'},
       form: {
-        'client_id': '23b7d82aec29a3a1a2a8',
-        'client_secret': process.env.GITHUB_CLIENT_SECRET,
+        'client_id': this.secrets.GITHUB_CLIENT_ID,
+        'client_secret': this.secrets.GITHUB_CLIENT_SECRET,
         'code': req.body,
       },
       json: true,
