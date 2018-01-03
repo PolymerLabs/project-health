@@ -4,3 +4,4 @@ server/lib/
 server/src/gql-types.ts
 server/.nyc_output/
 coverage/
+secrets.json
