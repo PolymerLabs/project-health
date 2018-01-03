@@ -1,4 +1,5 @@
 client/node_modules/
+client/*.js
 server/node_modules/
 server/lib/
 server/src/gql-types.ts
