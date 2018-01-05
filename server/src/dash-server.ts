@@ -90,17 +90,21 @@ export class DashServer {
   }
 
   async addPushSubscription(req: express.Request, res: express.Response) {
-    const token = req.cookies['id'];
-    const loginResult = await this.github.query<ViewerLoginQuery>(
-        {query: viewerLoginQuery, context: {token}});
-    const login = loginResult.data.viewer.login;
-
     if (!req.body) {
       res.sendStatus(400);
       return;
     }
 
-    // console.log(this.pushSubscriptions.addPushSubscription());
+    const token = req.cookies['id'];
+    const loginResult = await this.github.query<ViewerLoginQuery>(
+        {query: viewerLoginQuery, context: {token}});
+    const login = loginResult.data.viewer.login;
+
+    if (!login) {
+      res.sendStatus(400);
+      return;
+    }
+
     this.pushSubscriptions.addPushSubscription(
       login,
       req.body.subscription,

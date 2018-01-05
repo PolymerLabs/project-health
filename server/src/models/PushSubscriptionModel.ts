@@ -13,7 +13,7 @@ class PubscriptionInfo {
 }
 
 class PushSubscriptionModel {
-  private pushSubscriptions: {[id: string]: PubscriptionInfo[]};
+  private pushSubscriptions: {[id: string]: Set<PubscriptionInfo>};
 
   constructor() {
     this.pushSubscriptions = {};
@@ -21,9 +21,9 @@ class PushSubscriptionModel {
 
   addPushSubscription(userId: string, subscription: PushSubscription, supportedContentEncodings: string[]) {
     if (!this.pushSubscriptions[userId]) {
-      this.pushSubscriptions[userId] = [];
+      this.pushSubscriptions[userId] = new Set();
     }
-    this.pushSubscriptions[userId].push({
+    this.pushSubscriptions[userId].add({
       subscription,
       supportedContentEncodings,
     });
