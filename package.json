@@ -13,13 +13,20 @@
     "npm-install:client": "cd ./client/ && npm install",
     "npm-install:server": "cd ./server/ && npm install",
     "npm-install": "npm run npm-install:client && npm run npm-install:server",
+    "install": "npm run npm-install",
     "deploy:gcloud": "gcloud app deploy app.yaml --project project-health-test",
     "deploy": "npm run build && npm run clean && npm run deploy:gcloud && npm run npm-install",
+    "format": "find server/src client -path client/node_modules -prune -o -name '*.ts' | xargs clang-format --style=file -i",
+    "precommit": "npm run format",
     "server": "npm run build && node server.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/PolymerLabs/project-health.git"
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "clang-format": "^1.1.1",
+    "husky": "^0.14.3"
+  }
 }

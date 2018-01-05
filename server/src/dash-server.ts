@@ -8,9 +8,9 @@ import * as request from 'request-promise-native';
 
 import {DashResponse, PullRequest} from '../../api';
 
-import {PushSubscriptionModel} from './models/PushSubscriptionModel';
 import {GitHub} from './github';
 import {ViewerLoginQuery, ViewerPullRequestsQuery} from './gql-types';
+import {PushSubscriptionModel} from './models/PushSubscriptionModel';
 
 export class DashServer {
   private secrets: {
@@ -38,7 +38,10 @@ export class DashServer {
 
     app.get('/dash.json', this.handleDashJson.bind(this));
     app.post('/login', bodyParser.text(), this.handleLogin.bind(this));
-    app.post('/api/push-subscription/add', bodyParser.json(), this.addPushSubscription.bind(this));
+    app.post(
+        '/api/push-subscription/add',
+        bodyParser.json(),
+        this.addPushSubscription.bind(this));
 
     this.app = app;
   }
@@ -97,8 +100,11 @@ export class DashServer {
 
     // TODO: We shouldn't make this request for Github login repeatedly.
     const token = req.cookies['id'];
-    const loginResult = await this.github.query<ViewerLoginQuery>(
-        {query: viewerLoginQuery, context: {token}});
+    const loginResult = await this.github.query<ViewerLoginQuery>({
+      query: viewerLoginQuery,
+      fetchPolicy: 'network-only',
+      context: {token},
+    });
     const login = loginResult.data.viewer.login;
 
     if (!login) {
@@ -107,18 +113,18 @@ export class DashServer {
     }
 
     this.pushSubscriptions.addPushSubscription(
-      login,
-      req.body.subscription,
-      req.body.supportedContentEncodings
-    );
+        login, req.body.subscription, req.body.supportedContentEncodings);
 
     res.end();
   }
 
   async handleDashJson(req: express.Request, res: express.Response) {
     const token = req.cookies['id'];
-    const loginResult = await this.github.query<ViewerLoginQuery>(
-        {query: viewerLoginQuery, context: {token}});
+    const loginResult = await this.github.query<ViewerLoginQuery>({
+      query: viewerLoginQuery,
+      fetchPolicy: 'network-only',
+      context: {token},
+    });
     const login = loginResult.data.viewer.login;
     const userData = await this.fetchUserData(login, token);
     res.header('content-type', 'application/json');

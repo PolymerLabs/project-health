@@ -1,15 +1,19 @@
 import {html, render} from './node_modules/lit-html/lit-html.js';
 
-const PUBLIC_VAPID_KEY = 'BOX5Lqb44uosZL4_UtV7XW9dHaBj9ERFbCzlsYZBObMZjIB-yxPIbjI5pTBgIt09iy-Hl57AWpr7lJ6QXaQjy30';
+const PUBLIC_VAPID_KEY =
+    'BOX5Lqb44uosZL4_UtV7XW9dHaBj9ERFbCzlsYZBObMZjIB-yxPIbjI5pTBgIt09iy-Hl57AWpr7lJ6QXaQjy30';
 
-async function updateBackend(isUnsubscribed: boolean, subscription: PushSubscription) {
+async function updateBackend(
+    isUnsubscribed: boolean, subscription: PushSubscription) {
   if (isUnsubscribed) {
     console.log('TODO: Must remove subscription from backend', subscription);
   } else {
     const bodyContent = {
       subscription: subscription.toJSON(),
-      supportedContentEncodings:
-        (PushManager as {supportedContentEncodings?: string[]}).supportedContentEncodings || [],
+      supportedContentEncodings: (PushManager as {
+                                   supportedContentEncodings?: string[]
+                                 }).supportedContentEncodings ||
+          [],
     };
 
     await fetch(`/api/push-subscription/add`, {
@@ -31,9 +35,8 @@ async function updateBackend(isUnsubscribed: boolean, subscription: PushSubscrip
  */
 function urlBase64ToUint8Array(base64String: string) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding)
-    .replace(/\-/g, '+')
-    .replace(/_/g, '/');
+  const base64 =
+      (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
 
   const rawData = window.atob(base64);
   const outputArray = new Uint8Array(rawData.length);
