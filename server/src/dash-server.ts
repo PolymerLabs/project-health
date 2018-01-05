@@ -8,6 +8,7 @@ import * as request from 'request-promise-native';
 
 import {DashResponse, PullRequest} from '../../api';
 
+import {PushSubscriptionModel} from './models/PushSubscriptionModel';
 import {GitHub} from './github';
 import {ViewerLoginQuery, ViewerPullRequestsQuery} from './gql-types';
 
@@ -18,6 +19,7 @@ export class DashServer {
   };
   private github: GitHub;
   private app: express.Express;
+  private pushSubscriptions: PushSubscriptionModel;
 
   constructor(github: GitHub, secrets: {
     GITHUB_CLIENT_ID: string,
@@ -25,6 +27,8 @@ export class DashServer {
   }) {
     this.github = github;
     this.secrets = secrets;
+    this.pushSubscriptions = new PushSubscriptionModel();
+
     const app = express();
     const litPath = path.join(__dirname, '../../client/node_modules/lit-html');
 
@@ -34,6 +38,7 @@ export class DashServer {
 
     app.get('/dash.json', this.handleDashJson.bind(this));
     app.post('/login', bodyParser.text(), this.handleLogin.bind(this));
+    app.post('/api/push-subscription/add', bodyParser.json(), this.addPushSubscription.bind(this));
 
     this.app = app;
   }
@@ -81,6 +86,32 @@ export class DashServer {
     }
 
     res.cookie('id', postResp['access_token'], {httpOnly: true});
+    res.end();
+  }
+
+  async addPushSubscription(req: express.Request, res: express.Response) {
+    if (!req.body) {
+      res.sendStatus(400);
+      return;
+    }
+
+    // TODO: We shouldn't make this request for Github login repeatedly.
+    const token = req.cookies['id'];
+    const loginResult = await this.github.query<ViewerLoginQuery>(
+        {query: viewerLoginQuery, context: {token}});
+    const login = loginResult.data.viewer.login;
+
+    if (!login) {
+      res.sendStatus(400);
+      return;
+    }
+
+    this.pushSubscriptions.addPushSubscription(
+      login,
+      req.body.subscription,
+      req.body.supportedContentEncodings
+    );
+
     res.end();
   }
 

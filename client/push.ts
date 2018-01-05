@@ -2,11 +2,24 @@ import {html, render} from './node_modules/lit-html/lit-html.js';
 
 const PUBLIC_VAPID_KEY = 'BOX5Lqb44uosZL4_UtV7XW9dHaBj9ERFbCzlsYZBObMZjIB-yxPIbjI5pTBgIt09iy-Hl57AWpr7lJ6QXaQjy30';
 
-function updateBackend(isUnsubscribed: boolean, subscription: PushSubscription) {
+async function updateBackend(isUnsubscribed: boolean, subscription: PushSubscription) {
   if (isUnsubscribed) {
     console.log('TODO: Must remove subscription from backend', subscription);
   } else {
-    console.log('TODO: Add subscription to backend', subscription);
+    const bodyContent = {
+      subscription: subscription.toJSON(),
+      supportedContentEncodings:
+        (PushManager as {supportedContentEncodings?: string[]}).supportedContentEncodings || [],
+    };
+
+    await fetch(`/api/push-subscription/add`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(bodyContent),
+    });
   }
 }
 
@@ -37,7 +50,7 @@ function urlBase64ToUint8Array(base64String: string) {
  */
 function getRegistration(): Promise<ServiceWorkerRegistration> {
   return navigator.serviceWorker.register('/push-sw.js', {
-    scope: '/build/__dash/push/',
+    scope: '/__dash/push/',
   });
 }
 
@@ -110,6 +123,12 @@ async function updateUI() {
 async function start() {
   if (!navigator.serviceWorker || !('PushManager' in window)) {
     return;
+  }
+
+  const registration = await getRegistration();
+  const subscription = await registration.pushManager.getSubscription();
+  if (subscription) {
+    await updateBackend(false, subscription);
   }
 
   updateUI();
