@@ -1,5 +1,9 @@
 import {html, render} from './node_modules/lit-html/lit-html.js';
 
+declare var PushManager: {
+  supportedContentEncodings?: string[];
+};
+
 const PUBLIC_VAPID_KEY = 'BOX5Lqb44uosZL4_UtV7XW9dHaBj9ERFbCzlsYZBObMZjIB-yxPIbjI5pTBgIt09iy-Hl57AWpr7lJ6QXaQjy30';
 
 async function updateBackend(isUnsubscribed: boolean, subscription: PushSubscription) {
@@ -8,7 +12,7 @@ async function updateBackend(isUnsubscribed: boolean, subscription: PushSubscrip
   } else {
     const bodyContent = {
       subscription: subscription.toJSON(),
-      supportedContentEncodings: (PushManager as any).supportedContentEncodings || [],
+      supportedContentEncodings: PushManager.supportedContentEncodings || [],
     };
 
     await fetch(`/api/push-subscription/add`, {
