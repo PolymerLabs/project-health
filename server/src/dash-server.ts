@@ -95,6 +95,7 @@ export class DashServer {
       return;
     }
 
+    // TODO: We shouldn't make this request for Github login repeatedly.
     const token = req.cookies['id'];
     const loginResult = await this.github.query<ViewerLoginQuery>(
         {query: viewerLoginQuery, context: {token}});

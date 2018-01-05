@@ -7,13 +7,13 @@ class PushSubscription {
   };
 }
 
-class PubscriptionInfo {
+class PubSubscriptionInfo {
   subscription: PushSubscription;
   supportedContentEncodings: string[];
 }
 
-class PushSubscriptionModel {
-  private pushSubscriptions: {[id: string]: Set<PubscriptionInfo>};
+export class PushSubscriptionModel {
+  private pushSubscriptions: {[id: string]: Set<PubSubscriptionInfo>};
 
   constructor() {
     this.pushSubscriptions = {};
@@ -29,5 +29,3 @@ class PushSubscriptionModel {
     });
   }
 }
-
-export { PushSubscriptionModel };
