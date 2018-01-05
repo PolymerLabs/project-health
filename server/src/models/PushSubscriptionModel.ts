@@ -1,10 +1,7 @@
 class PushSubscription {
   endpoint: string;
-  expirationTime: number | null;
-  keys: {
-    p256dh: string;
-    auth: string;
-  };
+  expirationTime: number|null;
+  keys: {p256dh: string; auth: string;};
 }
 
 class PubSubscriptionInfo {
@@ -19,7 +16,10 @@ export class PushSubscriptionModel {
     this.pushSubscriptions = {};
   }
 
-  addPushSubscription(userId: string, subscription: PushSubscription, supportedContentEncodings: string[]) {
+  addPushSubscription(
+      userId: string,
+      subscription: PushSubscription,
+      supportedContentEncodings: string[]) {
     if (!this.pushSubscriptions[userId]) {
       this.pushSubscriptions[userId] = new Set();
     }

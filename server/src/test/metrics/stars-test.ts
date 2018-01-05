@@ -14,8 +14,7 @@ test.afterEach.cb((t) => {
 });
 
 test('WebComponents stars', async (t) => {
-  const result =
-      await getStars(t.context.client, {org: 'WebComponents'});
+  const result = await getStars(t.context.client, {org: 'WebComponents'});
   t.is(result.stars.length, 6144);
 });
 
