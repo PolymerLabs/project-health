@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import { PushSubscriptionModel } from '../../models/PushSubscriptionModel';
+import {PushSubscriptionModel} from '../../models/PushSubscriptionModel';
 
 const USER_LOGIN = 'user-login';
 const PUSH_SUBSCRIPTION = {
@@ -67,36 +67,40 @@ test(`getSubscriptionsForUser for specific user`, (t) => {
   });
 });
 
-test(`getSubscriptionsForUser during adding and remove of subscriptiosn`, (t) => {
-  const model = new PushSubscriptionModel();
+test(
+    `getSubscriptionsForUser during adding and remove of subscriptiosn`,
+    (t) => {
+      const model = new PushSubscriptionModel();
 
-  model.addPushSubscription(USER_LOGIN, PUSH_SUBSCRIPTION, CONTENT_ENCODINGS);
-  model.addPushSubscription(USER_LOGIN, PUSH_SUBSCRIPTION_2, []);
+      model.addPushSubscription(
+          USER_LOGIN, PUSH_SUBSCRIPTION, CONTENT_ENCODINGS);
+      model.addPushSubscription(USER_LOGIN, PUSH_SUBSCRIPTION_2, []);
 
-  const subscriptionsAfterAdd = model.getSubscriptionsForUser(USER_LOGIN);
-  t.deepEqual(subscriptionsAfterAdd, {
-    [PUSH_SUBSCRIPTION.endpoint]: {
-      subscription: PUSH_SUBSCRIPTION,
-      supportedContentEncodings: CONTENT_ENCODINGS,
-    },
-    [PUSH_SUBSCRIPTION_2.endpoint]: {
-      subscription: PUSH_SUBSCRIPTION_2,
-      supportedContentEncodings: [],
-    },
-  });
+      const subscriptionsAfterAdd = model.getSubscriptionsForUser(USER_LOGIN);
+      t.deepEqual(subscriptionsAfterAdd, {
+        [PUSH_SUBSCRIPTION.endpoint]: {
+          subscription: PUSH_SUBSCRIPTION,
+          supportedContentEncodings: CONTENT_ENCODINGS,
+        },
+        [PUSH_SUBSCRIPTION_2.endpoint]: {
+          subscription: PUSH_SUBSCRIPTION_2,
+          supportedContentEncodings: [],
+        },
+      });
 
-  model.removePushSubscription(USER_LOGIN, PUSH_SUBSCRIPTION_2);
+      model.removePushSubscription(USER_LOGIN, PUSH_SUBSCRIPTION_2);
 
-  const subscriptionsAfterRemove = model.getSubscriptionsForUser(USER_LOGIN);
-  t.deepEqual(subscriptionsAfterRemove, {
-    [PUSH_SUBSCRIPTION.endpoint]: {
-      subscription: PUSH_SUBSCRIPTION,
-      supportedContentEncodings: CONTENT_ENCODINGS,
-    },
-  });
+      const subscriptionsAfterRemove =
+          model.getSubscriptionsForUser(USER_LOGIN);
+      t.deepEqual(subscriptionsAfterRemove, {
+        [PUSH_SUBSCRIPTION.endpoint]: {
+          subscription: PUSH_SUBSCRIPTION,
+          supportedContentEncodings: CONTENT_ENCODINGS,
+        },
+      });
 
-  model.removePushSubscription(USER_LOGIN, PUSH_SUBSCRIPTION);
+      model.removePushSubscription(USER_LOGIN, PUSH_SUBSCRIPTION);
 
-  const allSubscriptionsRemoved = model.getSubscriptionsForUser(USER_LOGIN);
-  t.deepEqual(allSubscriptionsRemoved, null);
-});
+      const allSubscriptionsRemoved = model.getSubscriptionsForUser(USER_LOGIN);
+      t.deepEqual(allSubscriptionsRemoved, null);
+    });

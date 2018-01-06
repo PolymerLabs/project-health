@@ -10,9 +10,8 @@ class PubSubscriptionInfo {
 }
 
 export class PushSubscriptionModel {
-  private pushSubscriptions: {[id: string]: {
-    [endpoint: string]: PubSubscriptionInfo}
-  };
+  private pushSubscriptions:
+      {[id: string]: {[endpoint: string]: PubSubscriptionInfo}};
 
   constructor() {
     this.pushSubscriptions = {};
@@ -39,7 +38,8 @@ export class PushSubscriptionModel {
     delete this.pushSubscriptions[userId][subscription.endpoint];
   }
 
-  getSubscriptionsForUser (userId: string): {[endpoint: string]: PubSubscriptionInfo} | null {
+  getSubscriptionsForUser(userId: string):
+      {[endpoint: string]: PubSubscriptionInfo}|null {
     if (!this.pushSubscriptions[userId]) {
       return null;
     }
