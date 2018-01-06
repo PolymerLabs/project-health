@@ -10,7 +10,9 @@ class PubSubscriptionInfo {
 }
 
 export class PushSubscriptionModel {
-  private pushSubscriptions: {[id: string]: Set<PubSubscriptionInfo>};
+  private pushSubscriptions: {[id: string]: {
+    [endpoint: string]: PubSubscriptionInfo}
+  };
 
   constructor() {
     this.pushSubscriptions = {};
@@ -21,11 +23,31 @@ export class PushSubscriptionModel {
       subscription: PushSubscription,
       supportedContentEncodings: string[]) {
     if (!this.pushSubscriptions[userId]) {
-      this.pushSubscriptions[userId] = new Set();
+      this.pushSubscriptions[userId] = {};
     }
-    this.pushSubscriptions[userId].add({
+    this.pushSubscriptions[userId][subscription.endpoint] = {
       subscription,
       supportedContentEncodings,
-    });
+    };
+  }
+
+  removePushSubscription(userId: string, subscription: PushSubscription) {
+    if (!this.pushSubscriptions[userId]) {
+      return;
+    }
+
+    delete this.pushSubscriptions[userId][subscription.endpoint];
+  }
+
+  getSubscriptionsForUser (userId: string): {[endpoint: string]: PubSubscriptionInfo} | null {
+    if (!this.pushSubscriptions[userId]) {
+      return null;
+    }
+
+    if (Object.keys(this.pushSubscriptions[userId]).length === 0) {
+      return null;
+    }
+
+    return this.pushSubscriptions[userId];
   }
 }

@@ -3,28 +3,25 @@ import {html, render} from './node_modules/lit-html/lit-html.js';
 const PUBLIC_VAPID_KEY =
     'BOX5Lqb44uosZL4_UtV7XW9dHaBj9ERFbCzlsYZBObMZjIB-yxPIbjI5pTBgIt09iy-Hl57AWpr7lJ6QXaQjy30';
 
-async function updateBackend(
-    isUnsubscribed: boolean, subscription: PushSubscription) {
-  if (isUnsubscribed) {
-    console.log('TODO: Must remove subscription from backend', subscription);
-  } else {
-    const bodyContent = {
-      subscription: subscription.toJSON(),
-      supportedContentEncodings: (PushManager as {
-                                   supportedContentEncodings?: string[]
-                                 }).supportedContentEncodings ||
-          [],
-    };
+async function updateBackend(isUnsubscribed: boolean, subscription: PushSubscription) {
+  const action = isUnsubscribed ? 'remove' : 'add';
+  const bodyContent: {
+    subscription: PushSubscription,
+    supportedContentEncodings?: string[],
+  } = {
+    subscription,
+    supportedContentEncodings:
+      (PushManager as {supportedContentEncodings?: string[]}).supportedContentEncodings || [],
+  };
 
-    await fetch(`/api/push-subscription/add`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(bodyContent),
-    });
-  }
+  await fetch(`/api/push-subscription/${action}`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(bodyContent),
+  });
 }
 
 /**
