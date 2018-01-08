@@ -21,12 +21,12 @@ const PUSH_SUBSCRIPTION_2 = {
 };
 const CONTENT_ENCODINGS = ['aes128gcm', 'aesgcm'];
 
-test(`constructor`, (t) => {
+test('constructor', (t) => {
   const model = new PushSubscriptionModel();
   t.truthy(model);
 });
 
-test(`addPushSubscription should support multiple subscriptions`, (t) => {
+test('addPushSubscription should support multiple subscriptions', (t) => {
   const model = new PushSubscriptionModel();
   model.addPushSubscription(USER_LOGIN, PUSH_SUBSCRIPTION, CONTENT_ENCODINGS);
   model.addPushSubscription(USER_LOGIN, PUSH_SUBSCRIPTION_2, []);
@@ -39,20 +39,20 @@ test(`removePushSubscription non-existant subscription`, (t) => {
   t.pass();
 });
 
-test(`removePushSubscription existing subscription`, (t) => {
+test('removePushSubscription existing subscription', (t) => {
   const model = new PushSubscriptionModel();
   model.addPushSubscription(USER_LOGIN, PUSH_SUBSCRIPTION, CONTENT_ENCODINGS);
   model.removePushSubscription(USER_LOGIN, PUSH_SUBSCRIPTION);
   t.pass();
 });
 
-test(`getSubscriptionsForUser for user with no subscriptions`, (t) => {
+test('getSubscriptionsForUser for user with no subscriptions', (t) => {
   const model = new PushSubscriptionModel();
   const subscriptions = model.getSubscriptionsForUser(USER_LOGIN);
   t.deepEqual(subscriptions, null);
 });
 
-test(`getSubscriptionsForUser for specific user`, (t) => {
+test('getSubscriptionsForUser for specific user', (t) => {
   const model = new PushSubscriptionModel();
 
   model.addPushSubscription(USER_LOGIN, PUSH_SUBSCRIPTION, CONTENT_ENCODINGS);
@@ -67,40 +67,40 @@ test(`getSubscriptionsForUser for specific user`, (t) => {
   });
 });
 
-test(
-    `getSubscriptionsForUser during adding and remove of subscriptiosn`,
-    (t) => {
-      const model = new PushSubscriptionModel();
+test('getSubscriptionsForUser during adding and removal',
+  (t) => {
+    const model = new PushSubscriptionModel();
 
-      model.addPushSubscription(
-          USER_LOGIN, PUSH_SUBSCRIPTION, CONTENT_ENCODINGS);
-      model.addPushSubscription(USER_LOGIN, PUSH_SUBSCRIPTION_2, []);
+    model.addPushSubscription(
+        USER_LOGIN, PUSH_SUBSCRIPTION, CONTENT_ENCODINGS);
+    model.addPushSubscription(USER_LOGIN, PUSH_SUBSCRIPTION_2, []);
 
-      const subscriptionsAfterAdd = model.getSubscriptionsForUser(USER_LOGIN);
-      t.deepEqual(subscriptionsAfterAdd, {
-        [PUSH_SUBSCRIPTION.endpoint]: {
-          subscription: PUSH_SUBSCRIPTION,
-          supportedContentEncodings: CONTENT_ENCODINGS,
-        },
-        [PUSH_SUBSCRIPTION_2.endpoint]: {
-          subscription: PUSH_SUBSCRIPTION_2,
-          supportedContentEncodings: [],
-        },
-      });
-
-      model.removePushSubscription(USER_LOGIN, PUSH_SUBSCRIPTION_2);
-
-      const subscriptionsAfterRemove =
-          model.getSubscriptionsForUser(USER_LOGIN);
-      t.deepEqual(subscriptionsAfterRemove, {
-        [PUSH_SUBSCRIPTION.endpoint]: {
-          subscription: PUSH_SUBSCRIPTION,
-          supportedContentEncodings: CONTENT_ENCODINGS,
-        },
-      });
-
-      model.removePushSubscription(USER_LOGIN, PUSH_SUBSCRIPTION);
-
-      const allSubscriptionsRemoved = model.getSubscriptionsForUser(USER_LOGIN);
-      t.deepEqual(allSubscriptionsRemoved, null);
+    const subscriptionsAfterAdd = model.getSubscriptionsForUser(USER_LOGIN);
+    t.deepEqual(subscriptionsAfterAdd, {
+      [PUSH_SUBSCRIPTION.endpoint]: {
+        subscription: PUSH_SUBSCRIPTION,
+        supportedContentEncodings: CONTENT_ENCODINGS,
+      },
+      [PUSH_SUBSCRIPTION_2.endpoint]: {
+        subscription: PUSH_SUBSCRIPTION_2,
+        supportedContentEncodings: [],
+      },
     });
+
+    model.removePushSubscription(USER_LOGIN, PUSH_SUBSCRIPTION_2);
+
+    const subscriptionsAfterRemove =
+        model.getSubscriptionsForUser(USER_LOGIN);
+    t.deepEqual(subscriptionsAfterRemove, {
+      [PUSH_SUBSCRIPTION.endpoint]: {
+        subscription: PUSH_SUBSCRIPTION,
+        supportedContentEncodings: CONTENT_ENCODINGS,
+      },
+    });
+
+    model.removePushSubscription(USER_LOGIN, PUSH_SUBSCRIPTION);
+
+    const allSubscriptionsRemoved = model.getSubscriptionsForUser(USER_LOGIN);
+    t.deepEqual(allSubscriptionsRemoved, null);
+  }
+);

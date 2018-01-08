@@ -112,21 +112,15 @@ export class DashServer {
       return;
     }
 
-    switch (req.params.action) {
-      case 'add': {
-        this.pushSubscriptions.addPushSubscription(
-            login, req.body.subscription, req.body.supportedContentEncodings);
-        break;
-      }
-      case 'remove': {
-        this.pushSubscriptions.removePushSubscription(
-            login, req.body.subscription);
-        break;
-      }
-      default: {
-        res.sendStatus(400);
-        return;
-      }
+    if (req.params.action === 'add') {
+      this.pushSubscriptions.addPushSubscription(
+        login, req.body.subscription, req.body.supportedContentEncodings);
+    } else if (req.params.action === 'remove') {
+      this.pushSubscriptions.removePushSubscription(
+        login, req.body.subscription);
+    } else {
+      res.sendStatus(400);
+      return;
     }
 
     res.end();

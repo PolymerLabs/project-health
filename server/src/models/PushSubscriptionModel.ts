@@ -4,14 +4,14 @@ class PushSubscription {
   keys: {p256dh: string; auth: string;};
 }
 
-class PubSubscriptionInfo {
+class PushSubscriptionInfo {
   subscription: PushSubscription;
   supportedContentEncodings: string[];
 }
 
 export class PushSubscriptionModel {
   private pushSubscriptions:
-      {[id: string]: {[endpoint: string]: PubSubscriptionInfo}};
+      {[id: string]: {[endpoint: string]: PushSubscriptionInfo}};
 
   constructor() {
     this.pushSubscriptions = {};
@@ -39,7 +39,7 @@ export class PushSubscriptionModel {
   }
 
   getSubscriptionsForUser(userId: string):
-      {[endpoint: string]: PubSubscriptionInfo}|null {
+      {[endpoint: string]: PushSubscriptionInfo}|null {
     if (!this.pushSubscriptions[userId]) {
       return null;
     }
