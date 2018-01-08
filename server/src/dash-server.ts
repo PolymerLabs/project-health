@@ -114,10 +114,10 @@ export class DashServer {
 
     if (req.params.action === 'add') {
       this.pushSubscriptions.addPushSubscription(
-        login, req.body.subscription, req.body.supportedContentEncodings);
+          login, req.body.subscription, req.body.supportedContentEncodings);
     } else if (req.params.action === 'remove') {
       this.pushSubscriptions.removePushSubscription(
-        login, req.body.subscription);
+          login, req.body.subscription);
     } else {
       res.sendStatus(400);
       return;
