@@ -39,9 +39,9 @@ export class DashServer {
     app.get('/dash.json', this.handleDashJson.bind(this));
     app.post('/login', bodyParser.text(), this.handleLogin.bind(this));
     app.post(
-        '/api/push-subscription/add',
+        '/api/push-subscription/:action',
         bodyParser.json(),
-        this.addPushSubscription.bind(this));
+        this.handlePushSubscription.bind(this));
 
     this.app = app;
   }
@@ -92,7 +92,7 @@ export class DashServer {
     res.end();
   }
 
-  async addPushSubscription(req: express.Request, res: express.Response) {
+  async handlePushSubscription(req: express.Request, res: express.Response) {
     if (!req.body) {
       res.sendStatus(400);
       return;
@@ -112,8 +112,16 @@ export class DashServer {
       return;
     }
 
-    this.pushSubscriptions.addPushSubscription(
-        login, req.body.subscription, req.body.supportedContentEncodings);
+    if (req.params.action === 'add') {
+      this.pushSubscriptions.addPushSubscription(
+          login, req.body.subscription, req.body.supportedContentEncodings);
+    } else if (req.params.action === 'remove') {
+      this.pushSubscriptions.removePushSubscription(
+          login, req.body.subscription);
+    } else {
+      res.sendStatus(400);
+      return;
+    }
 
     res.end();
   }
