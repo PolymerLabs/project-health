@@ -50,16 +50,17 @@ test, write your test then run the following: ``` npm run test:record --
 these snapshotted responses.
 
 ## Running the dashboard
-Set the right env variables:
-```
-export GITHUB_CLIENT_SECRET=<client-secret>
-```
-
-```
-node server.js
-```
-
-To test using the auth flow, open http://localhost:8080/ in your browser.
+- Be in the top-level `project-health` directory. 
+- Create a `secrets.json` file with this format (note: do not commit this file):
+  ```
+  {
+    "GITHUB_CLIENT_ID": "<MY_ID>",
+    "GITHUB_CLIENT_SECRET": "<MY_SECRET>"
+  }
+  ```
+- `npm run build`
+- `node server.js`
+- To test using the auth flow, open http://localhost:8080/ in your browser.
 
 ## Transferring repositories
 This script allows you to move many repositories between organizations. A data file with each repo name per line should be provided via `stdin`. Invoke as follows:
