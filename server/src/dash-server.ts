@@ -31,11 +31,9 @@ export class DashServer {
 
     const app = express();
     const litPath = path.join(__dirname, '../../client/node_modules/lit-html');
-    const momentPath = path.join(__dirname, '../../client/node_modules/moment');
 
     app.use(cookieParser());
     app.use('/node_modules/lit-html', express.static(litPath));
-    app.use('/node_modules/moment', express.static(momentPath));
     app.use(express.static(path.join(__dirname, '../../client')));
 
     app.get('/dash.json', this.handleDashJson.bind(this));
