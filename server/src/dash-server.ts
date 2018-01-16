@@ -31,9 +31,11 @@ export class DashServer {
 
     const app = express();
     const litPath = path.join(__dirname, '../../client/node_modules/lit-html');
+    const momentPath = path.join(__dirname, '../../client/node_modules/moment');
 
     app.use(cookieParser());
     app.use('/node_modules/lit-html', express.static(litPath));
+    app.use('/node_modules/moment', express.static(momentPath));
     app.use(express.static(path.join(__dirname, '../../client')));
 
     app.get('/dash.json', this.handleDashJson.bind(this));
@@ -159,16 +161,22 @@ export class DashServer {
           repository: pr.repository.nameWithOwner,
           title: pr.title,
           number: pr.number,
+          createdAt: Date.parse(pr.createdAt),
+          prUrl: pr.url,
           avatarUrl: '',
+          login: '',
           approvedBy: [],
           changesRequestedBy: [],
           commentedBy: [],
           pendingReviews: [],
           statusState: 'passed',
+          actionable: true,
         };
         if (pr.author && pr.author.__typename === 'User') {
+          object.login = pr.author.login;
           object.avatarUrl = pr.author.avatarUrl;
         }
+
         prs.push(object);
       }
     }
