@@ -55,7 +55,7 @@ async function start() {
       <img class="pr-avatar__img" src="${pr.avatarUrl}">
     </div>
 
-    <div class="pr-details">
+    <div class="pr-body">
       <div class="pr-status">
         <span class="pr-status__msg ${
         pr.actionable ? 'actionable' :
@@ -131,7 +131,7 @@ async function start() {
         color: var(--secondary-text-color);
       }
 
-      .pr-details {
+      .pr-body {
         grid-column: 3 / 3;
       }
 
