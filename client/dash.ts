@@ -10,9 +10,10 @@ async function start() {
   const pullRequestTemplate = (pr: PullRequest) => {
     let approverElements = ``;
     if (pr.approvedBy.length > 0) {
-      approverElements =`
+      approverElements = `
       <span class="pr-status__seperator">&middot;</span>
-      <span class="pr-status__approvals">approved by ${pr.approvedBy.join(', ')}</span>
+      <span class="pr-status__approvals">approved by ${
+          pr.approvedBy.join(', ')}</span>
       `;
     }
 
@@ -46,7 +47,8 @@ async function start() {
     return html`
     <div class="pr-author">
       <div class="pr-author__name">${pr.login}</div>
-      <time class="pr-author__creation-time" datetime="${new Date(pr.createdAt).toISOString()}">${ellapsedString}</time>
+      <time class="pr-author__creation-time" datetime="${
+        new Date(pr.createdAt).toISOString()}">${ellapsedString}</time>
     </div>
 
     <div class="pr-avatar">
@@ -55,7 +57,9 @@ async function start() {
 
     <div class="pr-details">
       <div class="pr-status">
-        <span class="pr-status__msg ${pr.actionable ? 'actionable' : 'non-actionable'}">Example Status Msg</span>
+        <span class="pr-status__msg ${
+        pr.actionable ? 'actionable' :
+                        'non-actionable'}">Example Status Msg</span>
         ${approverElements}
       </div>
       <a href="${pr.prUrl}" target="_blank" class="pr-info">
