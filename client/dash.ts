@@ -146,7 +146,6 @@ async function start() {
         margin-right: var(--padding);
       }
 
-      /** States **/
       .non-actionable {
         color: var(--non-actionable-color);
       }
