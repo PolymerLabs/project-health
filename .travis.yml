@@ -23,6 +23,9 @@ after_script:
 
 before_deploy:
 - npm run clean
+# Without these checkouts, the deploy will file due to unstaged commits
+- git checkout server/package-lock.json
+- git checkout client/package-lock.json
 
 deploy:
   provider: gae
