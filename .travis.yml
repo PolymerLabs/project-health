@@ -1,14 +1,26 @@
 language: node_js
-node_js: "8"
+node_js: '8'
 sudo: false
 dist: trusty
 cache:
   directories:
-    - server/node_modules
+  - server/node_modules
+
+before_install:
+- openssl aes-256-cbc -K $encrypted_7d0d32b20bf3_key -iv $encrypted_7d0d32b20bf3_iv
+  -in project-health-test-358b8bfb05e4.json.enc -out project-health-test-358b8bfb05e4.json
+  -d
 install:
-  - npm run npm-install
+- npm run npm-install
+
 script:
-  - (cd client && npm run build)
-  - (cd server && npm run test)
+- "(cd client && npm run build)"
+- "(cd server && npm run test)"
+
 after_script:
-  - (cd server && npm run report-coverage)
+- "(cd server && npm run report-coverage)"
+
+deploy:
+  provider: gae
+  keyfile: project-health-test-358b8bfb05e4.json
+  project: project-health-test
