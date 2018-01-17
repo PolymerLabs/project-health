@@ -8,35 +8,35 @@ async function start() {
   const json = await res.json() as DashResponse;
 
   const pullRequestTemplate = (pr: PullRequest) => {
-    let approverElements = ``;
+    let approverElements = '';
     if (pr.approvedBy.length > 0) {
       approverElements = `
-      <span class="pr-status__seperator">&middot;</span>
+      <span class="pr-status__separator">&middot;</span>
       <span class="pr-status__approvals">approved by ${
           pr.approvedBy.join(', ')}</span>
       `;
     }
 
-    let ellapsedValue = (Date.now() - pr.createdAt) / 1000;
-    let ellapsedUnit = 'seconds';
-    if (ellapsedValue > 60) {
-      ellapsedValue = ellapsedValue / 60;
-      ellapsedUnit = 'minutes';
+    let elapsedValue = (Date.now() - pr.createdAt) / 1000;
+    let elapsedUnit = 'seconds';
+    if (elapsedValue > 60) {
+      elapsedValue = elapsedValue / 60;
+      elapsedUnit = 'minutes';
 
-      if (ellapsedValue > 60) {
-        ellapsedValue = ellapsedValue / 60;
-        ellapsedUnit = 'hours';
+      if (elapsedValue > 60) {
+        elapsedValue = elapsedValue / 60;
+        elapsedUnit = 'hours';
 
-        if (ellapsedValue > 24) {
-          ellapsedValue = ellapsedValue / 24;
-          ellapsedUnit = 'days';
+        if (elapsedValue > 24) {
+          elapsedValue = elapsedValue / 24;
+          elapsedUnit = 'days';
 
-          if (ellapsedValue > 365) {
-            ellapsedValue = ellapsedValue / 365;
-            ellapsedUnit = 'years';
-          } else if (ellapsedValue > 30) {
-            ellapsedValue = ellapsedValue / 30;
-            ellapsedUnit = 'months';
+          if (elapsedValue > 365) {
+            elapsedValue = elapsedValue / 365;
+            elapsedUnit = 'years';
+          } else if (elapsedValue > 30) {
+            elapsedValue = elapsedValue / 30;
+            elapsedUnit = 'months';
           }
         }
       }
@@ -46,7 +46,7 @@ async function start() {
 
     return html`
     <div class="pr-author">
-      <div class="pr-author__name">${pr.login}</div>
+      <div class="pr-author__name">${pr.author}</div>
       <time class="pr-author__creation-time" datetime="${
         new Date(pr.createdAt).toISOString()}">${ellapsedString}</time>
     </div>
@@ -121,7 +121,7 @@ async function start() {
         font-weight: bold;
       }
 
-      .pr-status__seperator {
+      .pr-status__separator {
         margin: 0 calc(var(--padding) / 2);
       }
 

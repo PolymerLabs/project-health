@@ -164,9 +164,9 @@ function fingerprintQueryVars(vars: queryVars): string {
       continue;
     }
     hash.update(key);
-    hash.update('\u241F');  // UNIT SEPERATOR
+    hash.update('\u241F');  // UNIT SEPARATOR
     hash.update(val);
-    hash.update('\u241E');  // RECORD SEPERATOR
+    hash.update('\u241E');  // RECORD SEPARATOR
   }
   return hash.digest('hex');
 }

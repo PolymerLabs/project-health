@@ -3,7 +3,7 @@ export interface PullRequest {
   title: string;
   number: number;
   prUrl: string,
-  login: string,
+  author: string,
   createdAt: number,
   avatarUrl: string;
   approvedBy: string[];

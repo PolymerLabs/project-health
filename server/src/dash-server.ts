@@ -162,7 +162,7 @@ export class DashServer {
           createdAt: Date.parse(pr.createdAt),
           prUrl: pr.url,
           avatarUrl: '',
-          login: '',
+          author: '',
           approvedBy: [],
           changesRequestedBy: [],
           commentedBy: [],
@@ -171,7 +171,7 @@ export class DashServer {
           actionable: true,
         };
         if (pr.author && pr.author.__typename === 'User') {
-          object.login = pr.author.login;
+          object.author = pr.author.login;
           object.avatarUrl = pr.author.avatarUrl;
         }
 
