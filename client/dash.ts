@@ -42,13 +42,13 @@ async function start() {
       }
     }
 
-    let ellapsedString = `${(ellapsedValue).toFixed(0)} ${ellapsedUnit} ago`;
+    let elapsedString = `${(elapsedValue).toFixed(0)} ${elapsedUnit} ago`;
 
     return html`
     <div class="pr-author">
       <div class="pr-author__name">${pr.author}</div>
       <time class="pr-author__creation-time" datetime="${
-        new Date(pr.createdAt).toISOString()}">${ellapsedString}</time>
+        new Date(pr.createdAt).toISOString()}">${elapsedString}</time>
     </div>
 
     <div class="pr-avatar">
