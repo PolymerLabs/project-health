@@ -10,6 +10,7 @@ before_install:
 - openssl aes-256-cbc -K $encrypted_7d0d32b20bf3_key -iv $encrypted_7d0d32b20bf3_iv
   -in project-health-test-358b8bfb05e4.json.enc -out project-health-test-358b8bfb05e4.json
   -d
+
 install:
 - npm run npm-install
 
@@ -19,6 +20,9 @@ script:
 
 after_script:
 - "(cd server && npm run report-coverage)"
+
+before_deploy:
+- npm run clean
 
 deploy:
   provider: gae
