@@ -159,16 +159,22 @@ export class DashServer {
           repository: pr.repository.nameWithOwner,
           title: pr.title,
           number: pr.number,
+          createdAt: Date.parse(pr.createdAt),
+          prUrl: pr.url,
           avatarUrl: '',
+          author: '',
           approvedBy: [],
           changesRequestedBy: [],
           commentedBy: [],
           pendingReviews: [],
           statusState: 'passed',
+          actionable: true,
         };
         if (pr.author && pr.author.__typename === 'User') {
+          object.author = pr.author.login;
           object.avatarUrl = pr.author.avatarUrl;
         }
+
         prs.push(object);
       }
     }

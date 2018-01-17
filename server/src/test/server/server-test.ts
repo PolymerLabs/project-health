@@ -44,12 +44,16 @@ test('basic PR', async (t) => {
       repository: 'project-health1/repo',
       title: 'Update README.md',
       number: 1,
+      prUrl: 'https://github.com/project-health1/repo/pull/1',
+      author: 'project-health1',
+      createdAt: 1513370262000,
       avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
       approvedBy: [],
       changesRequestedBy: [],
       commentedBy: [],
       pendingReviews: [],
-      statusState: 'passed'
+      statusState: 'passed',
+      actionable: true,
     }]
   });
 });
