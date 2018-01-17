@@ -24,3 +24,4 @@ deploy:
   provider: gae
   keyfile: project-health-test-358b8bfb05e4.json
   project: project-health-test
+  on: master
