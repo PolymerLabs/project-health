@@ -12,6 +12,7 @@ export interface PullRequest {
   pendingReviews: string[];
   statusState: 'passed'|'pending'|'failed';
   actionable: boolean;
+  actionMsg: string|null;
 }
 
 export interface DashResponse {

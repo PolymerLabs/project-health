@@ -8,9 +8,9 @@ async function start() {
   const json = await res.json() as DashResponse;
 
   const pullRequestTemplate = (pr: PullRequest) => {
-    let approverElements = '';
+    let approverElements = null;
     if (pr.approvedBy.length > 0) {
-      approverElements = `
+      approverElements = html`
       <span class="pr-status__separator">&middot;</span>
       <span class="pr-status__approvals">approved by ${
           pr.approvedBy.join(', ')}</span>
@@ -58,8 +58,7 @@ async function start() {
     <div class="pr-body">
       <div class="pr-status">
         <span class="pr-status__msg ${
-        pr.actionable ? 'actionable' :
-                        'non-actionable'}">Example Status Msg</span>
+        pr.actionable ? 'actionable' : 'non-actionable'}">${pr.actionMsg}</span>
         ${approverElements}
       </div>
       <a href="${pr.prUrl}" target="_blank" class="pr-info">
