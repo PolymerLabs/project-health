@@ -9,7 +9,7 @@ import * as request from 'request-promise-native';
 import {DashResponse, PullRequest} from '../../api';
 
 import {GitHub} from './github';
-import {ViewerLoginQuery, ViewerPullRequestsQuery} from './gql-types';
+import {PullRequestReviewState, ViewerLoginQuery, ViewerPullRequestsQuery} from './gql-types';
 import {PushSubscriptionModel} from './models/PushSubscriptionModel';
 
 export class DashServer {
@@ -155,6 +155,86 @@ export class DashServer {
         if (!pr) {
           continue;
         }
+
+        let totalReviewCount = 0;
+        let actionable = false;
+        let actionMsg = null;
+        const pendingReviews: string[] = [];
+        const approvedBy: string[] = [];
+        const changesRequestedBy: string[] = [];
+        const commentedBy: string[] = [];
+
+        // Handle Reviews that have been started / completed
+        if (pr.reviews) {
+          if (pr.reviews.totalCount) {
+            totalReviewCount += pr.reviews.totalCount;
+          }
+
+          if (pr.reviews && pr.reviews.nodes && pr.reviews.nodes.length > 0) {
+            for (const prReview of pr.reviews.nodes) {
+              if (!prReview) {
+                continue;
+              }
+
+              if (!prReview.author) {
+                continue;
+              }
+
+              if (prReview.author.__typename !== 'User') {
+                continue;
+              }
+
+              if (prReview.state === PullRequestReviewState.APPROVED) {
+                approvedBy.push(prReview.author.login);
+              } else if (
+                  prReview.state === PullRequestReviewState.CHANGES_REQUESTED) {
+                changesRequestedBy.push(prReview.author.login);
+              } else if (prReview.state === PullRequestReviewState.COMMENTED) {
+                commentedBy.push(prReview.author.login);
+              } else if (prReview.state === PullRequestReviewState.PENDING) {
+                pendingReviews.push(prReview.author.login);
+              }
+            }
+          }
+        }
+
+        if (pr.reviewRequests) {
+          if (pr.reviewRequests.totalCount) {
+            totalReviewCount += pr.reviewRequests.totalCount;
+          }
+
+          if (pr.reviewRequests.nodes && pr.reviewRequests.nodes.length > 0) {
+            for (const prReview of pr.reviewRequests.nodes) {
+              if (!prReview) {
+                continue;
+              }
+
+              if (!prReview.requestedReviewer) {
+                continue;
+              }
+
+              if (prReview.requestedReviewer.__typename !== 'User') {
+                continue;
+              }
+
+              pendingReviews.push(prReview.requestedReviewer.login);
+            }
+          }
+        }
+
+        if (totalReviewCount === 0) {
+          actionMsg = 'Add reviewers';
+          actionable = true;
+        } else if (changesRequestedBy.length > 0) {
+          actionMsg = 'Changes requested';
+          actionable = true;
+        } else if (pendingReviews.length > 0) {
+          actionMsg = `Waiting on ${pendingReviews.join(' & ')}`;
+        } else {
+          actionMsg = 'Waiting on you to merge';
+          actionable = true;
+        }
+
         const object: PullRequest = {
           repository: pr.repository.nameWithOwner,
           title: pr.title,
@@ -163,12 +243,13 @@ export class DashServer {
           prUrl: pr.url,
           avatarUrl: '',
           author: '',
-          approvedBy: [],
-          changesRequestedBy: [],
-          commentedBy: [],
-          pendingReviews: [],
+          approvedBy,
+          changesRequestedBy,
+          pendingReviews,
+          commentedBy,
           statusState: 'passed',
-          actionable: true,
+          actionable,
+          actionMsg,
         };
         if (pr.author && pr.author.__typename === 'User') {
           object.author = pr.author.login;

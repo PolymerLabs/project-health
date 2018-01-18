@@ -54,6 +54,7 @@ test('basic PR', async (t) => {
       pendingReviews: [],
       statusState: 'passed',
       actionable: true,
+      actionMsg: 'Add reviewers',
     }]
   });
 });
