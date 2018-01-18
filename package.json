@@ -14,7 +14,7 @@
     "npm-install:server": "cd ./server/ && npm install",
     "npm-install": "npm run npm-install:client && npm run npm-install:server",
     "install": "npm run npm-install",
-    "deploy:gcloud": "gcloud app deploy app.yaml --project project-health-test --quiet",
+    "deploy:gcloud": "gcloud app deploy app.yaml --project google.com:project-health-internal --quiet",
     "deploy": "npm run build && npm run clean && npm run deploy:gcloud && npm run npm-install",
     "format": "find server/src client/*.ts -name '*.ts' | xargs clang-format --style=file -i",
     "precommit": "npm run format",
