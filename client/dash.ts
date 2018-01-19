@@ -48,9 +48,7 @@ async function start() {
 
     <div class="pr-body">
       <div class="pr-status">
-        <span class="pr-status__msg ${
-        pr.actionable ? 'actionable' :
-                        'non-actionable'}">Example Status Msg</span>
+        <span class="pr-status__msg actionable">Example Status Msg</span>
       </div>
       <a href="${pr.url}" target="_blank" class="pr-info">
         <span class="pr-info__repo-name">${pr.repository}</span>
