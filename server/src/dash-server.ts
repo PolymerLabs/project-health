@@ -6,7 +6,7 @@ import {Server} from 'http';
 import * as path from 'path';
 import * as request from 'request-promise-native';
 
-import {DashResponse, PullRequest} from '../../api';
+import {DashResponse, OutgoingPullRequest} from '../../api';
 
 import {GitHub} from './github';
 import {ViewerLoginQuery, ViewerPullRequestsQuery} from './gql-types';
@@ -149,36 +149,63 @@ export class DashServer {
       fetchPolicy: 'network-only',
       context: {token}
     });
-    const prs = [];
+    const outgoingPrs = [];
     if (result.data.user) {
       for (const pr of result.data.user.pullRequests.nodes || []) {
         if (!pr) {
           continue;
         }
-        const object: PullRequest = {
+        const object: OutgoingPullRequest = {
           repository: pr.repository.nameWithOwner,
           title: pr.title,
-          number: pr.number,
           createdAt: Date.parse(pr.createdAt),
-          prUrl: pr.url,
+          url: pr.url,
           avatarUrl: '',
           author: '',
-          approvedBy: [],
-          changesRequestedBy: [],
-          commentedBy: [],
-          pendingReviews: [],
-          statusState: 'passed',
-          actionable: true,
+          reviews: [],
+          reviewRequests: [],
         };
         if (pr.author && pr.author.__typename === 'User') {
           object.author = pr.author.login;
           object.avatarUrl = pr.author.avatarUrl;
         }
 
-        prs.push(object);
+        if (pr.reviewRequests) {
+          for (const request of pr.reviewRequests.nodes || []) {
+            if (!request || !request.requestedReviewer ||
+                request.requestedReviewer.__typename !== 'User') {
+              continue;
+            }
+            object.reviewRequests.push(request.requestedReviewer.login);
+          }
+        }
+
+        if (pr.reviews && pr.reviews.nodes) {
+          for (const review of pr.reviews.nodes) {
+            if (!review) {
+              continue;
+            }
+            const result = {
+              author: '',
+              createdAt: review.createdAt,
+              reviewState: review.state,
+            };
+            if (review.author && review.author.__typename === 'User') {
+              result.author = review.author.login;
+            }
+            object.reviews.push(result);
+          }
+          pr.reviews.nodes.map((review) => {
+            if (!review) {
+              return {};
+            }
+          });
+        }
+
+        outgoingPrs.push(object);
       }
     }
-    return {prs};
+    return {outgoingPrs};
   }
 }
 
@@ -195,7 +222,29 @@ query ViewerPullRequests($login: String!, $query: String!) {
 	user(login: $login) {
     pullRequests(last: 10, states: [OPEN]) {
       nodes {
-        ...fullPR
+        ...prFields
+        ...statusFields
+        reviews(last: 10) {
+          totalCount
+          nodes {
+            createdAt
+            state
+            author {
+              login
+            }
+          }
+        }
+        reviewRequests(last: 2) {
+          totalCount
+          nodes {
+            requestedReviewer {
+              __typename
+              ... on User {
+                login
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -203,7 +252,7 @@ query ViewerPullRequests($login: String!, $query: String!) {
     nodes {
       __typename
       ... on PullRequest {
-        ...fullPR
+        ...prFields
       }
     }
   }
@@ -216,46 +265,21 @@ query ViewerPullRequests($login: String!, $query: String!) {
   }
 }
 
-fragment userFields on User {
-  avatarUrl
-  login
-  resourcePath
-  url
-}
-
-fragment fullPR on PullRequest {
-  author {
-    ...userFields
-  }
-  title
+fragment prFields on PullRequest {
   repository {
     nameWithOwner
   }
-  state
-  createdAt
-  lastEditedAt
+  title
   url
-  number
-  reviews(last: 10) {
-    totalCount
-    nodes {
-      state
-      author {
-        ...userFields
-      }
-    }
+  createdAt
+  author {
+    avatarUrl
+    login
+    url
   }
-  reviewRequests(last: 2) {
-    totalCount
-    nodes {
-      requestedReviewer {
-        __typename
-        ... on User {
-          ...userFields
-        }
-      }
-    }
-  }
+}
+
+fragment statusFields on PullRequest {
 	commits(last: 1) {
     nodes {
       commit {

@@ -8,15 +8,6 @@ async function start() {
   const json = await res.json() as DashResponse;
 
   const pullRequestTemplate = (pr: PullRequest) => {
-    let approverElements = '';
-    if (pr.approvedBy.length > 0) {
-      approverElements = `
-      <span class="pr-status__separator">&middot;</span>
-      <span class="pr-status__approvals">approved by ${
-          pr.approvedBy.join(', ')}</span>
-      `;
-    }
-
     let elapsedValue = (Date.now() - pr.createdAt) / 1000;
     let elapsedUnit = 'seconds';
     if (elapsedValue > 60) {
@@ -57,12 +48,9 @@ async function start() {
 
     <div class="pr-body">
       <div class="pr-status">
-        <span class="pr-status__msg ${
-        pr.actionable ? 'actionable' :
-                        'non-actionable'}">Example Status Msg</span>
-        ${approverElements}
+        <span class="pr-status__msg actionable">Example Status Msg</span>
       </div>
-      <a href="${pr.prUrl}" target="_blank" class="pr-info">
+      <a href="${pr.url}" target="_blank" class="pr-info">
         <span class="pr-info__repo-name">${pr.repository}</span>
         <span class="pr-info__title">${pr.title}</span>
       </a>
@@ -155,7 +143,7 @@ async function start() {
       }
     </style>
     <div class="pr-container">
-    ${json.prs.map(pullRequestTemplate)}
+    ${json.outgoingPrs.map(pullRequestTemplate)}
     </div>
   `;
   render(tmpl, (document.querySelector('.dash-container') as Element));
