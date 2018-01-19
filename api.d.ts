@@ -1,19 +1,26 @@
+import {PullRequestReviewState} from 'server/src/gql-types';
+
 export interface PullRequest {
   repository: string;
   title: string;
-  number: number;
-  prUrl: string,
-  author: string,
-  createdAt: number,
+  url: string;
+  author: string;
+  createdAt: number;
   avatarUrl: string;
-  approvedBy: string[];
-  changesRequestedBy: string[];
-  commentedBy: string[];
-  pendingReviews: string[];
-  statusState: 'passed'|'pending'|'failed';
   actionable: boolean;
 }
 
+export interface OutgoingPullRequest extends PullRequest {
+  reviews: Review[];
+  reviewRequests: string[];
+}
+
 export interface DashResponse {
-  prs: PullRequest[];
+  outgoingPrs: OutgoingPullRequest[];
+}
+
+export interface Review {
+  author: string;
+  createdAt: string;
+  reviewState: PullRequestReviewState;
 }

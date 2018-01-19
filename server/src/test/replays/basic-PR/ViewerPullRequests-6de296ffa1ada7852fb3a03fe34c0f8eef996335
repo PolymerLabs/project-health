@@ -4,34 +4,25 @@
       "pullRequests": {
         "nodes": [
           {
-            "__typename": "PullRequest",
-            "author": {
-              "__typename": "User",
-              "avatarUrl": "https://avatars3.githubusercontent.com/u/34584679?v=4",
-              "login": "project-health1",
-              "resourcePath": "/project-health1",
-              "url": "https://github.com/project-health1"
-            },
-            "title": "Update README.md",
-            "repository": {
-              "nameWithOwner": "project-health1/repo",
-              "__typename": "Repository"
-            },
-            "state": "OPEN",
-            "createdAt": "2017-12-15T20:37:42Z",
-            "lastEditedAt": null,
-            "url": "https://github.com/project-health1/repo/pull/1",
-            "number": 1,
             "reviews": {
               "totalCount": 0,
               "nodes": [],
               "__typename": "PullRequestReviewConnection"
             },
             "reviewRequests": {
-              "totalCount": 0,
-              "nodes": [],
+              "totalCount": 1,
+              "nodes": [
+                {
+                  "requestedReviewer": {
+                    "__typename": "User",
+                    "login": "project-health2"
+                  },
+                  "__typename": "ReviewRequest"
+                }
+              ],
               "__typename": "ReviewRequestConnection"
             },
+            "__typename": "PullRequest",
             "commits": {
               "nodes": [
                 {
@@ -43,6 +34,19 @@
                 }
               ],
               "__typename": "PullRequestCommitConnection"
+            },
+            "repository": {
+              "nameWithOwner": "project-health1/repo",
+              "__typename": "Repository"
+            },
+            "title": "Update README.md",
+            "url": "https://github.com/project-health1/repo/pull/1",
+            "createdAt": "2017-12-15T20:37:42Z",
+            "author": {
+              "avatarUrl": "https://avatars3.githubusercontent.com/u/34584679?v=4",
+              "login": "project-health1",
+              "url": "https://github.com/project-health1",
+              "__typename": "User"
             }
           }
         ],
@@ -58,7 +62,7 @@
       "cost": 1,
       "limit": 5000,
       "remaining": 4999,
-      "resetAt": "2017-12-16T00:25:17Z",
+      "resetAt": "2018-01-19T00:44:10Z",
       "nodeCount": 140,
       "__typename": "RateLimit"
     }
