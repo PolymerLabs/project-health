@@ -42,7 +42,6 @@ test('basic PR', async (t) => {
   t.deepEqual(result, {
     outgoingPrs: [
       {
-        actionable: true,
         author: 'project-health1',
         avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
         createdAt: 1513370262000,
@@ -53,6 +52,22 @@ test('basic PR', async (t) => {
         reviews: [],
         title: 'Update README.md',
         url: 'https://github.com/project-health1/repo/pull/1',
+      },
+      {
+        author: 'project-health1',
+        avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
+        createdAt: 1516324726000,
+        repository: 'project-health1/repo',
+        reviewRequests: [],
+        reviews: [
+          {
+            author: 'project-health2',
+            createdAt: '2018-01-19T01:19:35Z',
+            reviewState: 'COMMENTED',
+          },
+        ],
+        title: 'Update all the things',
+        url: 'https://github.com/project-health1/repo/pull/2',
       },
     ],
   });

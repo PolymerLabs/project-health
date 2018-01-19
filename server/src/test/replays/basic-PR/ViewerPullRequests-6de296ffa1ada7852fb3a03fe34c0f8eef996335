@@ -48,6 +48,54 @@
               "url": "https://github.com/project-health1",
               "__typename": "User"
             }
+          },
+          {
+            "reviews": {
+              "totalCount": 1,
+              "nodes": [
+                {
+                  "createdAt": "2018-01-19T01:19:35Z",
+                  "state": "COMMENTED",
+                  "author": {
+                    "login": "project-health2",
+                    "__typename": "User"
+                  },
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "reviewRequests": {
+              "totalCount": 0,
+              "nodes": [],
+              "__typename": "ReviewRequestConnection"
+            },
+            "__typename": "PullRequest",
+            "commits": {
+              "nodes": [
+                {
+                  "commit": {
+                    "status": null,
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "repository": {
+              "nameWithOwner": "project-health1/repo",
+              "__typename": "Repository"
+            },
+            "title": "Update all the things",
+            "url": "https://github.com/project-health1/repo/pull/2",
+            "createdAt": "2018-01-19T01:18:46Z",
+            "author": {
+              "avatarUrl": "https://avatars3.githubusercontent.com/u/34584679?v=4",
+              "login": "project-health1",
+              "url": "https://github.com/project-health1",
+              "__typename": "User"
+            }
           }
         ],
         "__typename": "PullRequestConnection"
@@ -61,8 +109,8 @@
     "rateLimit": {
       "cost": 1,
       "limit": 5000,
-      "remaining": 4999,
-      "resetAt": "2018-01-19T00:44:10Z",
+      "remaining": 4993,
+      "resetAt": "2018-01-19T02:12:52Z",
       "nodeCount": 140,
       "__typename": "RateLimit"
     }

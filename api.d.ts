@@ -7,7 +7,6 @@ export interface PullRequest {
   author: string;
   createdAt: number;
   avatarUrl: string;
-  actionable: boolean;
 }
 
 export interface OutgoingPullRequest extends PullRequest {

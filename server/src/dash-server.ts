@@ -162,7 +162,6 @@ export class DashServer {
           url: pr.url,
           avatarUrl: '',
           author: '',
-          actionable: true,
           reviews: [],
           reviewRequests: [],
         };
@@ -183,14 +182,7 @@ export class DashServer {
 
         if (pr.reviews && pr.reviews.nodes) {
           for (const review of pr.reviews.nodes) {
-            if (!review || review.state === 'DISMISSED') {
-              continue;
-            }
-            // Treat 'pending' reviews which are unsubmitted as review requests.
-            if (review.state === 'PENDING') {
-              if (review.author && review.author.__typename === 'User') {
-                object.reviewRequests.push(review.author.login);
-              }
+            if (!review) {
               continue;
             }
             const result = {
@@ -201,9 +193,7 @@ export class DashServer {
             if (review.author && review.author.__typename === 'User') {
               result.author = review.author.login;
             }
-            if (result.reviewState === 'APPROVED') {
-              object.reviews.push(result);
-            }
+            object.reviews.push(result);
           }
           pr.reviews.nodes.map((review) => {
             if (!review) {
