@@ -1,3 +1,4 @@
+import {Firestore} from '@google-cloud/firestore';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
@@ -20,6 +21,7 @@ export class DashServer {
   private github: GitHub;
   private app: express.Express;
   private pushSubscriptions: PushSubscriptionModel;
+  private firestore: Firestore;
 
   constructor(github: GitHub, secrets: {
     GITHUB_CLIENT_ID: string,
@@ -28,6 +30,8 @@ export class DashServer {
     this.github = github;
     this.secrets = secrets;
     this.pushSubscriptions = new PushSubscriptionModel();
+    this.pushSubscriptions = new PushSubscriptionModel();
+    this.firestore = new Firestore();
 
     const app = express();
     const litPath = path.join(__dirname, '../../client/node_modules/lit-html');
@@ -42,6 +46,7 @@ export class DashServer {
         '/api/push-subscription/:action',
         bodyParser.json(),
         this.handlePushSubscription.bind(this));
+    app.get('/test-firestore', this.handleTestFirestore.bind(this));
 
     this.app = app;
   }
@@ -206,6 +211,14 @@ export class DashServer {
       }
     }
     return {outgoingPrs};
+  }
+
+  async handleTestFirestore(_req: express.Request, res: express.Response) {
+    const colRef = this.firestore.collection('test');
+    const snapshot = await colRef.get();
+    const data = snapshot.docs.map((doc) => doc.data());
+    res.header('content-type', 'application/json');
+    res.send(JSON.stringify(data, null, 2));
   }
 }
 

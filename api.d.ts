@@ -14,9 +14,7 @@ export interface OutgoingPullRequest extends PullRequest {
   reviewRequests: string[];
 }
 
-export interface DashResponse {
-  outgoingPrs: OutgoingPullRequest[];
-}
+export interface DashResponse { outgoingPrs: OutgoingPullRequest[]; }
 
 export interface Review {
   author: string;
