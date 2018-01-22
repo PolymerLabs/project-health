@@ -20,6 +20,6 @@ export interface DashResponse {
 
 export interface Review {
   author: string;
-  createdAt: string;
+  createdAt: number;
   reviewState: PullRequestReviewState;
 }

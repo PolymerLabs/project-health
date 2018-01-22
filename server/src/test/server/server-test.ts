@@ -62,7 +62,7 @@ test('basic PR', async (t) => {
         reviews: [
           {
             author: 'project-health2',
-            createdAt: '2018-01-19T01:19:35Z',
+            createdAt: 1516324775000,
             reviewState: 'COMMENTED',
           },
         ],
