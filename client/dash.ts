@@ -2,8 +2,7 @@ import {DashResponse, OutgoingPullRequest} from '../api';
 import {html, render} from './node_modules/lit-html/lit-html.js';
 
 type PullRequestEvent = {
-  time: number,
-  text: string,
+  time: number; text: string;
 };
 
 function timeToString(dateTime: number) {
