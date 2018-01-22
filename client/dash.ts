@@ -2,9 +2,9 @@ import {DashResponse, OutgoingPullRequest} from '../api';
 import {html, render} from './node_modules/lit-html/lit-html.js';
 
 type PullRequestEvent = {
-  time: number;
-  text: string;
-}
+  time: number,
+  text: string,
+};
 
 function timeToString(dateTime: number) {
   let secondsSince = (Date.now() - dateTime) / 1000;
@@ -40,12 +40,12 @@ async function start() {
   const res = await fetch(endpoint, {credentials: 'include'});
   const json = await res.json() as DashResponse;
 
-  const eventTemplate = (event: PullRequestEvent) => {
-
-    return html`
+  const eventTemplate =
+      (event: PullRequestEvent) => {
+        return html`
       <time class="pr-event__time" datetime="${
-      new Date(event.time).toISOString()}">${
-      timeToString(event.time)}</time>
+            new Date(event.time).toISOString()}">${
+            timeToString(event.time)}</time>
       <div class="pr-event__bullet">
         <svg width="40" height="26">
           <line x1="20" x2="20" y1="0" y2="16"/>
@@ -53,14 +53,17 @@ async function start() {
         </svg>
       </div>
       <div class="pr-event__title">${event.text}</div>`
-  }
+      }
 
   const pullRequestTemplate = (pr: OutgoingPullRequest) => {
     const events: PullRequestEvent[] = [];
 
     // Naive implementation for now.
     for (const review of pr.reviews) {
-      events.push({time: review.createdAt, text: `${review.author} ${review.reviewState}`});
+      events.push({
+        time: review.createdAt,
+        text: `${review.author} ${review.reviewState}`
+      });
     }
 
     return html`
