@@ -30,7 +30,6 @@ export class DashServer {
     this.github = github;
     this.secrets = secrets;
     this.pushSubscriptions = new PushSubscriptionModel();
-    this.pushSubscriptions = new PushSubscriptionModel();
     this.firestore = new Firestore();
 
     const app = express();

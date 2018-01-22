@@ -6,8 +6,20 @@
   "scripts": {
     "clean:client": "cd ./client/ && rm -rf ./node_modules && npm install --only=production",
     "clean:server": "cd ./server/ && rm -rf ./node_modules && npm install --only=production && cd - && npm run build-prod-grpc-extension && npm run prune-server-deps",
+
+    "//": [
+      "grpc comes with a native extension that is built upon install. However, unless we happen ",
+      "to be deploying from the exact same architecture that we are deploying to, we need to ",
+      "recompile it for App Engine."
+    ],
     "build-prod-grpc-extension": "cd ./server/node_modules/grpc && node_modules/.bin/node-pre-gyp install --fallback-to-build --library=static_library --target_arch=x64 --target_platform=linux --runtime=node --target=8.9.0 --target_libc=glibc",
+
+    "//": [
+      "We have a 20K file limit for App Engine. Our server node_modules gets us close to this ",
+      "limit. Delete all unnecessary files to buy us some time."
+    ],
     "prune-server-deps": "cd ./server/node_modules && echo num dep files before prune: $(find . -type f | wc -l) && find . -type f -not \\( -name '*.js' -or -name '*.json' -or -name '*.node' -or -name '*.pem' -or -name '*.proto' \\) -delete && echo num dep files after prune: $(find . -type f | wc -l)",
+
     "clean": "npm run clean:client && npm run clean:server",
     "build:client": "cd ./client/ && npm run build",
     "build:server": "cd ./server/ && npm run build",
