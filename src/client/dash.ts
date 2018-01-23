@@ -1,4 +1,4 @@
-import {DashResponse, OutgoingPullRequest} from '../types/shared-types';
+import {DashResponse, OutgoingPullRequest} from '../types/api';
 import {html, render} from '../../node_modules/lit-html/lit-html.js';
 
 type PullRequestEvent = {

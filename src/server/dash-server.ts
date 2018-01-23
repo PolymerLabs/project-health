@@ -6,7 +6,7 @@ import {Server} from 'http';
 import * as path from 'path';
 import * as request from 'request-promise-native';
 
-import {DashResponse, OutgoingPullRequest} from '../types/shared-types';
+import {DashResponse, OutgoingPullRequest} from '../types/api';
 
 import {GitHub} from '../utils/github';
 import {ViewerLoginQuery, ViewerPullRequestsQuery} from '../types/gql-types';
