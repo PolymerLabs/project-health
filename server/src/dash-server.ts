@@ -187,7 +187,7 @@ export class DashServer {
             }
             const result = {
               author: '',
-              createdAt: review.createdAt,
+              createdAt: Date.parse(review.createdAt),
               reviewState: review.state,
             };
             if (review.author && review.author.__typename === 'User') {

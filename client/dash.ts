@@ -1,5 +1,37 @@
-import {DashResponse, PullRequest} from '../api';
+import {DashResponse, OutgoingPullRequest} from '../api';
 import {html, render} from './node_modules/lit-html/lit-html.js';
+
+type PullRequestEvent = {
+  time: number; text: string;
+};
+
+function timeToString(dateTime: number) {
+  let secondsSince = (Date.now() - dateTime) / 1000;
+  let unit = 'seconds';
+  if (secondsSince > 60) {
+    secondsSince = secondsSince / 60;
+    unit = 'minutes';
+
+    if (secondsSince > 60) {
+      secondsSince = secondsSince / 60;
+      unit = 'hours';
+
+      if (secondsSince > 24) {
+        secondsSince = secondsSince / 24;
+        unit = 'days';
+
+        if (secondsSince > 365) {
+          secondsSince = secondsSince / 365;
+          unit = 'years';
+        } else if (secondsSince > 30) {
+          secondsSince = secondsSince / 30;
+          unit = 'months';
+        }
+      }
+    }
+  }
+  return `${(secondsSince).toFixed(0)} ${unit} ago`;
+}
 
 async function start() {
   const queryParams = new URLSearchParams(window.location.search);
@@ -7,65 +39,67 @@ async function start() {
   const res = await fetch(endpoint, {credentials: 'include'});
   const json = await res.json() as DashResponse;
 
-  const pullRequestTemplate = (pr: PullRequest) => {
-    let elapsedValue = (Date.now() - pr.createdAt) / 1000;
-    let elapsedUnit = 'seconds';
-    if (elapsedValue > 60) {
-      elapsedValue = elapsedValue / 60;
-      elapsedUnit = 'minutes';
-
-      if (elapsedValue > 60) {
-        elapsedValue = elapsedValue / 60;
-        elapsedUnit = 'hours';
-
-        if (elapsedValue > 24) {
-          elapsedValue = elapsedValue / 24;
-          elapsedUnit = 'days';
-
-          if (elapsedValue > 365) {
-            elapsedValue = elapsedValue / 365;
-            elapsedUnit = 'years';
-          } else if (elapsedValue > 30) {
-            elapsedValue = elapsedValue / 30;
-            elapsedUnit = 'months';
-          }
-        }
+  const eventTemplate =
+      (event: PullRequestEvent) => {
+        return html`
+      <time class="pr-event__time" datetime="${
+            new Date(event.time).toISOString()}">${
+            timeToString(event.time)}</time>
+      <div class="pr-event__bullet">
+        <svg width="40" height="26">
+          <line x1="20" x2="20" y1="0" y2="16"/>
+          <circle cx="20" cy="20" r="4.5" />
+        </svg>
+      </div>
+      <div class="pr-event__title">${event.text}</div>`
       }
-    }
 
-    let elapsedString = `${(elapsedValue).toFixed(0)} ${elapsedUnit} ago`;
+  const pullRequestTemplate = (pr: OutgoingPullRequest) => {
+    const events: PullRequestEvent[] = [];
+
+    // Naive implementation for now.
+    for (const review of pr.reviews) {
+      events.push({
+        time: review.createdAt,
+        text: `${review.author} ${review.reviewState}`
+      });
+    }
 
     return html`
     <div class="pr-author">
       <div class="pr-author__name">${pr.author}</div>
       <time class="pr-author__creation-time" datetime="${
-        new Date(pr.createdAt).toISOString()}">${elapsedString}</time>
+        new Date(pr.createdAt).toISOString()}">${
+        timeToString(pr.createdAt)}</time>
     </div>
 
     <div class="pr-avatar">
       <img class="pr-avatar__img" src="${pr.avatarUrl}">
     </div>
 
-    <div class="pr-body">
+    <a class="pr-body" href="${pr.url}" target="_blank">
       <div class="pr-status">
         <span class="pr-status__msg actionable">Example Status Msg</span>
       </div>
-      <a href="${pr.url}" target="_blank" class="pr-info">
+      <div class="pr-info">
         <span class="pr-info__repo-name">${pr.repository}</span>
         <span class="pr-info__title">${pr.title}</span>
-      </a>
-    </div>
+      </div>
+    </a>
+
+    ${events.map(eventTemplate)}
     `;
   };
 
   const tmpl = html`
     <style>
       :root {
-        --padding: 8px;
+        --padding: 12px;
 
         --actionable-color: #ee9709;
         --non-actionable-color: #4a90e2;
-        --secondary-text-color: #696969;
+        --secondary-text-color: hsl(0, 0%, 40%); /* 5.7 contrast ratio on white */
+        --small-text: 12px;
       }
 
       .pr-container {
@@ -74,8 +108,8 @@ async function start() {
 
         display: grid;
         align-items: center;
-        grid-template-columns: auto 52px 1fr;
-        grid-gap: var(--padding);
+        grid-template-columns: auto 40px 1fr;
+        grid-gap: 0px var(--padding);
 
         font-size: 14px;
       }
@@ -84,8 +118,8 @@ async function start() {
         grid-column: 1 / 1;
 
         text-align: right;
-        font-size: 0.8rem;
-        font-weight: normal;chat.
+        font-size: var(--small-text);
+        font-weight: normal;
       }
 
       .pr-author__creation-time {
@@ -94,12 +128,15 @@ async function start() {
 
       .pr-avatar {
         grid-column: 2 / 2;
+        height: 40px;
+        margin: 4px 0;
       }
 
       .pr-avatar__img {
-        width: 52px;
-        height: 52px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
+        position: absolute;
       }
 
       .pr-status {
@@ -107,26 +144,17 @@ async function start() {
         flex-direction: row;
         align-items: center;
         font-weight: bold;
-      }
-
-      .pr-status__separator {
-        margin: 0 calc(var(--padding) / 2);
-      }
-
-      .pr-status__approvals {
-        font-weight: normal;
-        font-size: 14px;
-        color: var(--secondary-text-color);
+        line-height: 24px;
       }
 
       .pr-body {
         grid-column: 3 / 3;
+        text-decoration: none;
+        color: inherit;
       }
 
       .pr-info {
-        text-decoration: none;
         font-weight: bold;
-        color: inherit;
       }
 
       .pr-info__repo-name {
@@ -141,9 +169,30 @@ async function start() {
       .actionable {
         color: var(--actionable-color);
       }
+
+      .pr-event__title {
+        grid-column: 3 / 3;
+      }
+
+      .pr-event__bullet {
+        height: 26px;
+      }
+
+      .pr-event__time {
+        text-align: right;
+        font-size: var(--small-text);
+        color: var(--secondary-text-color);
+      }
+
+      .pr-event__bullet svg {
+        margin-top: -7px;
+        stroke: hsl(0, 0%, 75%);
+        fill: none;
+        stroke-width: 3px;
+      }
     </style>
     <div class="pr-container">
-    ${json.outgoingPrs.map(pullRequestTemplate)}
+      ${json.outgoingPrs.map(pullRequestTemplate)}
     </div>
   `;
   render(tmpl, (document.querySelector('.dash-container') as Element));
