@@ -51,8 +51,8 @@ async function start() {
           <circle cx="20" cy="20" r="4.5" />
         </svg>
       </div>
-      <div class="pr-event__title">${event.text}</div>`
-      }
+      <div class="pr-event__title">${event.text}</div>`;
+      };
 
   const pullRequestTemplate = (pr: OutgoingPullRequest) => {
     const events: PullRequestEvent[] = [];
