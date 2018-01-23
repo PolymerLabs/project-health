@@ -24,7 +24,7 @@ export GITHUB_TOKEN=<your token>
 
 After building the project, run the CLI:
 ```bash
-./bin/project-health --metric review-latency --org webcomponents
+./build/cli/project-health.js --metric review-latency --org webcomponents
 ```
 
 Options:

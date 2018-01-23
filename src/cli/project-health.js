@@ -18,7 +18,7 @@
 
 'use strict';
 
-const cli = require('../transfer-cli.js');
+const cli = require('./metric-cli.js');
 
 try {
   cli.run(process.argv)
