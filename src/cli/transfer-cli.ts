@@ -96,8 +96,7 @@ function hasGitHubPages(
             return;
           }
           if (result.has_pages) {
-            console.log(`[Warning] ${
-                repo} uses GitHub pages. This will not be transferred.`);
+            console.log(`[Warning] ${repo} uses GitHub pages.`);
           }
           resolve(result.has_pages);
         })
