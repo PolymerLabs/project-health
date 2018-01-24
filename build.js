@@ -43,7 +43,7 @@ const copyFiles = async (globPattern) => {
 };
 
 const copyAssetFiles = async () => {
-  await copyFiles('./src/**/*.{html,js,json}');
+  await copyFiles('./src/**/*.{html,js,json,css}');
 };
 
 const build = async () => {
