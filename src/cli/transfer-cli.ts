@@ -144,11 +144,11 @@ export async function run(argv: string[]) {
   if (args.help) {
     console.log(commandLineUsage([
       {
-        header: `[blue]{Project Health transfer script}`,
+        header: '[blue]{Project Health transfer script}',
         content: 'https://github.com/PolymerLabs/project-health',
       },
       {
-        header: `Options`,
+        header: 'Options',
         optionList: argDefs,
       }
     ]));
