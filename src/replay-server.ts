@@ -5,9 +5,9 @@ import * as http from 'http';
 import * as path from 'path';
 import * as request from 'request';
 
-import {GitHub} from '../../utils/github';
+import {GitHub} from './utils/github';
 
-const replayRoot = path.join(__dirname, 'replays');
+const replayRoot = path.join(__dirname, '..', 'replays');
 const githubApiUrl = 'https://api.github.com/graphql';
 const githubJsonUrl = 'https://api.github.com';
 const timeout = 1000 * 10;
@@ -77,7 +77,7 @@ export async function startTestReplayServer(t: ava.TestContext):
       const query = JSON.parse(body);
       const replayFile = path.join(
           replayDir,
-          query.operationName + '-' + fingerprintQueryVars(query.variables));
+          `${query.operationName}-${fingerprintQueryVars(query.variables)}`);
 
       if (record) {
         // Don't forward the host header, it's for the wrong host.

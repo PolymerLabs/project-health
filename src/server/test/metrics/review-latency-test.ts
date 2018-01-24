@@ -1,7 +1,7 @@
 import test from 'ava';
 
 import {getReviewLatency} from '../../../cli/metrics/review-latency';
-import {startTestReplayServer} from '../replay-server';
+import {startTestReplayServer} from '../../../replay-server';
 
 test.beforeEach(async (t) => {
   const {server, client} = await startTestReplayServer(t);

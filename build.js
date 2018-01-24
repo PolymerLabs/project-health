@@ -46,13 +46,8 @@ const copyAssetFiles = async () => {
   await copyFiles('./src/**/*.{html,js,json}');
 };
 
-const copyTestReplays = async () => {
-  await copyFiles('./src/server/test/replays/**/*');
-};
-
 const build = async () => {
   await copyAssetFiles();
-  await copyTestReplays();
 };
 
 build();

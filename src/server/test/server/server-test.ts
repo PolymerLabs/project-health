@@ -1,7 +1,7 @@
 import * as ava from 'ava';
 
 import {DashServer} from '../../dash-server';
-import {startTestReplayServer} from '../replay-server';
+import {startTestReplayServer} from '../../../replay-server';
 import {PullRequestReviewState} from '../../../types/gql-types';
 
 /**
