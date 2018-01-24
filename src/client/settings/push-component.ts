@@ -28,15 +28,12 @@ async function getState() {
     (async () => {
       const registration = await getRegistration();
       state.subscription = await registration.pushManager.getSubscription();
-      console.log(registration.pushManager);
     })(),
     (async () => {
       const permissionState = await (navigator as any).permissions.query({name: 'notifications'});
       state.permissionBlocked = permissionState.state === 'denied';
     })()
   ]);
-
-  console.log(state);
 
   return state;
 }
@@ -69,10 +66,10 @@ async function toggleSubscription() {
 async function updateUI() {
   const state = await getState();
   if (!state.isSupported) {
-    pushStatus.textContent = `[Not Supported]`;
+    pushStatus.textContent = '[Not Supported]';
     pushToggle.setAttribute('disabled', 'true');
   } else if (state.permissionBlocked) {
-    pushStatus.textContent = `[Notification Permission Blocked]`;
+    pushStatus.textContent = '[Notification Permission Blocked]';
     pushToggle.setAttribute('disabled', 'true');
   } else {
     pushToggle.removeAttribute('disabled');
@@ -85,10 +82,10 @@ function start() {
   const statusElement = document.querySelector('.push-component__status');
 
   if (!toggleElement) {
-    throw new Error(`Unable to find toggle element.`);
+    throw new Error('Unable to find toggle element.');
   }
   if (!statusElement) {
-    throw new Error(`Unable to find status element.`);
+    throw new Error('Unable to find status element.');
   }
 
   pushToggle = toggleElement;
