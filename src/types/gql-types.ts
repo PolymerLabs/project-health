@@ -595,7 +595,7 @@ export interface ViewerLoginQuery {
 
 export interface ViewerPullRequestsQueryVariables {
   login: string,
-  query: string,
+  reviewRequestsQueryString: string,
 };
 
 export interface ViewerPullRequestsQuery {
@@ -774,6 +774,33 @@ export interface ViewerPullRequestsQuery {
             url: string,
           }
         ) | null,
+        // A list of reviews associated with the pull request.
+        reviews:  {
+          __typename: string,
+          // A list of nodes.
+          nodes:  Array< {
+            __typename: string,
+            // Identifies the date and time when the object was created.
+            createdAt: string,
+            // Identifies the current state of the pull request review.
+            state: PullRequestReviewState,
+            // The actor who authored the comment.
+            author: ( {
+                __typename: "Organization",
+                // The username of the actor.
+                login: string,
+              } | {
+                __typename: "User",
+                // The username of the actor.
+                login: string,
+              } | {
+                __typename: "Bot",
+                // The username of the actor.
+                login: string,
+              }
+            ) | null,
+          } | null > | null,
+        } | null,
       } | {
         __typename: "Repository",
       } | {
@@ -840,6 +867,29 @@ export interface MyReposQuery {
       } | null > | null,
     },
   } | null,
+};
+
+export interface reviewFieldsFragment {
+  __typename: "PullRequestReview",
+  // Identifies the date and time when the object was created.
+  createdAt: string,
+  // Identifies the current state of the pull request review.
+  state: PullRequestReviewState,
+  // The actor who authored the comment.
+  author: ( {
+      __typename: "Organization",
+      // The username of the actor.
+      login: string,
+    } | {
+      __typename: "User",
+      // The username of the actor.
+      login: string,
+    } | {
+      __typename: "Bot",
+      // The username of the actor.
+      login: string,
+    }
+  ) | null,
 };
 
 export interface prFieldsFragment {

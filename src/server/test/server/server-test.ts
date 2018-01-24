@@ -71,5 +71,16 @@ test('basic PR', async (t) => {
         url: 'https://github.com/project-health1/repo/pull/2',
       },
     ],
+    incomingPrs: [
+      {
+       author: 'project-health2',
+       avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
+       createdAt: 1516753159000,
+       myReview: null,
+       repository: 'project-health1/repo',
+       title: 'Add a field for getting the template of an element',
+       url: 'https://github.com/project-health1/repo/pull/4',
+     },
+    ]
   });
 });

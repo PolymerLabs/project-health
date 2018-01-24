@@ -6,10 +6,10 @@ import {Server} from 'http';
 import * as path from 'path';
 import * as request from 'request-promise-native';
 
-import {DashResponse, OutgoingPullRequest} from '../types/api';
-
+import {DashResponse, IncomingPullRequest, OutgoingPullRequest, PullRequest, Review} from '../types/api';
+import {prFieldsFragment, reviewFieldsFragment, ViewerLoginQuery, ViewerPullRequestsQuery} from '../types/gql-types';
 import {GitHub} from '../utils/github';
-import {ViewerLoginQuery, ViewerPullRequestsQuery} from '../types/gql-types';
+
 import {PushSubscriptionModel} from './models/PushSubscriptionModel';
 
 export class DashServer {
@@ -140,34 +140,31 @@ export class DashServer {
   }
 
   async fetchUserData(login: string, token: string): Promise<DashResponse> {
-    const incomingReviewsQuery =
+    const reviewRequestsQueryString =
         `is:open is:pr review-requested:${login} archived:false`;
 
-    const result = await this.github.query<ViewerPullRequestsQuery>({
+    const viewerPrsResult = await this.github.query<ViewerPullRequestsQuery>({
       query: prsQuery,
-      variables: {login, query: incomingReviewsQuery},
+      variables: {login, reviewRequestsQueryString},
       fetchPolicy: 'network-only',
       context: {token}
     });
     const outgoingPrs = [];
-    if (result.data.user) {
-      for (const pr of result.data.user.pullRequests.nodes || []) {
+    const incomingPrs = [];
+    if (viewerPrsResult.data.user) {
+      for (const pr of viewerPrsResult.data.user.pullRequests.nodes || []) {
         if (!pr) {
           continue;
         }
-        const object: OutgoingPullRequest = {
-          repository: pr.repository.nameWithOwner,
-          title: pr.title,
-          createdAt: Date.parse(pr.createdAt),
-          url: pr.url,
-          avatarUrl: '',
-          author: '',
+
+        const outgoingPr: OutgoingPullRequest = {
+          ...convertPrFields(pr),
           reviews: [],
           reviewRequests: [],
         };
         if (pr.author && pr.author.__typename === 'User') {
-          object.author = pr.author.login;
-          object.avatarUrl = pr.author.avatarUrl;
+          outgoingPr.author = pr.author.login;
+          outgoingPr.avatarUrl = pr.author.avatarUrl;
         }
 
         if (pr.reviewRequests) {
@@ -176,7 +173,7 @@ export class DashServer {
                 request.requestedReviewer.__typename !== 'User') {
               continue;
             }
-            object.reviewRequests.push(request.requestedReviewer.login);
+            outgoingPr.reviewRequests.push(request.requestedReviewer.login);
           }
         }
 
@@ -185,15 +182,8 @@ export class DashServer {
             if (!review) {
               continue;
             }
-            const result = {
-              author: '',
-              createdAt: Date.parse(review.createdAt),
-              reviewState: review.state,
-            };
-            if (review.author && review.author.__typename === 'User') {
-              result.author = review.author.login;
-            }
-            object.reviews.push(result);
+
+            outgoingPr.reviews.push(convertReviewFields(review));
           }
           pr.reviews.nodes.map((review) => {
             if (!review) {
@@ -202,11 +192,63 @@ export class DashServer {
           });
         }
 
-        outgoingPrs.push(object);
+        outgoingPrs.push(outgoingPr);
+      }
+
+      // Incoming reviews
+      for (const pr of viewerPrsResult.data.incomingReviews.nodes || []) {
+        if (!pr || pr.__typename !== 'PullRequest') {
+          continue;
+        }
+
+        const incomingPr: IncomingPullRequest = {
+          ...convertPrFields(pr),
+          myReview: null,
+        };
+
+        incomingPrs.push(incomingPr);
       }
     }
-    return {outgoingPrs};
+    return {outgoingPrs, incomingPrs};
   }
+}
+
+/**
+ * Converts a pull request GraphQL object to an API object.
+ */
+function convertPrFields(fields: prFieldsFragment): PullRequest {
+  const pr: PullRequest = {
+    repository: fields.repository.nameWithOwner,
+    title: fields.title,
+    createdAt: Date.parse(fields.createdAt),
+    url: fields.url,
+    avatarUrl: '',
+    author: '',
+  };
+
+  if (fields.author && fields.author.__typename === 'User') {
+    pr.author = fields.author.login;
+    pr.avatarUrl = fields.author.avatarUrl;
+  }
+
+  return pr;
+}
+
+/**
+ * Converts a review GraphQL object to an API object.
+ */
+function convertReviewFields(fields: reviewFieldsFragment): Review {
+  const review = {
+    author: '',
+    createdAt: Date.parse(fields.createdAt),
+    reviewState: fields.state,
+  };
+
+  if (fields.author && fields.author.__typename === 'User') {
+    review.author = fields.author.login;
+  }
+
+  return review;
 }
 
 const viewerLoginQuery = gql`
@@ -218,7 +260,7 @@ query ViewerLogin {
 `;
 
 const prsQuery = gql`
-query ViewerPullRequests($login: String!, $query: String!) {
+query ViewerPullRequests($login: String!, $reviewRequestsQueryString: String!) {
 	user(login: $login) {
     pullRequests(last: 10, states: [OPEN]) {
       nodes {
@@ -227,11 +269,7 @@ query ViewerPullRequests($login: String!, $query: String!) {
         reviews(last: 10) {
           totalCount
           nodes {
-            createdAt
-            state
-            author {
-              login
-            }
+            ...reviewFields
           }
         }
         reviewRequests(last: 2) {
@@ -248,11 +286,16 @@ query ViewerPullRequests($login: String!, $query: String!) {
       }
     }
   }
-  incomingReviews: search(type: ISSUE, query: $query, last: 10) {
+  incomingReviews: search(type: ISSUE, query: $reviewRequestsQueryString, last: 10) {
     nodes {
       __typename
       ... on PullRequest {
         ...prFields
+        reviews(author: $login, last: 1) {
+          nodes {
+            ...reviewFields
+          }
+        }
       }
     }
   }
@@ -262,6 +305,14 @@ query ViewerPullRequests($login: String!, $query: String!) {
     remaining
     resetAt
     nodeCount
+  }
+}
+
+fragment reviewFields on PullRequestReview {
+  createdAt
+  state
+  author {
+    login
   }
 }
 

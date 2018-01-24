@@ -14,8 +14,13 @@ export interface OutgoingPullRequest extends PullRequest {
   reviewRequests: string[];
 }
 
+export interface IncomingPullRequest extends PullRequest {
+  myReview: Review|null;
+}
+
 export interface DashResponse {
   outgoingPrs: OutgoingPullRequest[];
+  incomingPrs: IncomingPullRequest[];
 }
 
 export interface Review {
