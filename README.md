@@ -1,7 +1,7 @@
 [![Build status](https://img.shields.io/travis/PolymerLabs/project-health.svg)](https://travis-ci.org/PolymerLabs/project-health)
 [![Coverage Status](https://coveralls.io/repos/github/PolymerLabs/project-health/badge.svg?branch=master)](https://coveralls.io/github/PolymerLabs/project-health?branch=master)
 
-# `project-health`
+# `project-health` test
 
 ## Building
 Use `build` or `build:watch` to build the project.
