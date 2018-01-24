@@ -54,13 +54,13 @@
               "totalCount": 1,
               "nodes": [
                 {
+                  "__typename": "PullRequestReview",
                   "createdAt": "2018-01-19T01:19:35Z",
                   "state": "COMMENTED",
                   "author": {
                     "login": "project-health2",
                     "__typename": "User"
-                  },
-                  "__typename": "PullRequestReview"
+                  }
                 }
               ],
               "__typename": "PullRequestReviewConnection"
@@ -103,14 +103,35 @@
       "__typename": "User"
     },
     "incomingReviews": {
-      "nodes": [],
+      "nodes": [
+        {
+          "__typename": "PullRequest",
+          "reviews": {
+            "nodes": [],
+            "__typename": "PullRequestReviewConnection"
+          },
+          "repository": {
+            "nameWithOwner": "project-health1/repo",
+            "__typename": "Repository"
+          },
+          "title": "Add a field for getting the template of an element",
+          "url": "https://github.com/project-health1/repo/pull/4",
+          "createdAt": "2018-01-24T00:19:19Z",
+          "author": {
+            "avatarUrl": "https://avatars3.githubusercontent.com/u/34584974?v=4",
+            "login": "project-health2",
+            "url": "https://github.com/project-health2",
+            "__typename": "User"
+          }
+        }
+      ],
       "__typename": "SearchResultItemConnection"
     },
     "rateLimit": {
       "cost": 1,
       "limit": 5000,
-      "remaining": 4993,
-      "resetAt": "2018-01-19T02:12:52Z",
+      "remaining": 4999,
+      "resetAt": "2018-01-24T20:02:48Z",
       "nodeCount": 140,
       "__typename": "RateLimit"
     }
