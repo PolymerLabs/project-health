@@ -6,10 +6,10 @@ import {Server} from 'http';
 import * as path from 'path';
 import * as request from 'request-promise-native';
 
-import {DashResponse, OutgoingPullRequest} from '../types/api';
-
+import {DashResponse, IncomingPullRequest, OutgoingPullRequest, PullRequest, Review} from '../types/api';
+import {prFieldsFragment, reviewFieldsFragment, ViewerLoginQuery, ViewerPullRequestsQuery} from '../types/gql-types';
 import {GitHub} from '../utils/github';
-import {ViewerLoginQuery, ViewerPullRequestsQuery} from '../types/gql-types';
+
 import {PushSubscriptionModel} from './models/PushSubscriptionModel';
 
 export class DashServer {
@@ -145,23 +145,20 @@ export class DashServer {
 
     const result = await this.github.query<ViewerPullRequestsQuery>({
       query: prsQuery,
-      variables: {login, query: incomingReviewsQuery},
+      variables: {login, incomingReviewsQuery},
       fetchPolicy: 'network-only',
       context: {token}
     });
     const outgoingPrs = [];
+    const incomingPrs = [];
     if (result.data.user) {
       for (const pr of result.data.user.pullRequests.nodes || []) {
         if (!pr) {
           continue;
         }
+
         const object: OutgoingPullRequest = {
-          repository: pr.repository.nameWithOwner,
-          title: pr.title,
-          createdAt: Date.parse(pr.createdAt),
-          url: pr.url,
-          avatarUrl: '',
-          author: '',
+          ...prFieldsToResult(pr),
           reviews: [],
           reviewRequests: [],
         };
@@ -185,15 +182,8 @@ export class DashServer {
             if (!review) {
               continue;
             }
-            const result = {
-              author: '',
-              createdAt: Date.parse(review.createdAt),
-              reviewState: review.state,
-            };
-            if (review.author && review.author.__typename === 'User') {
-              result.author = review.author.login;
-            }
-            object.reviews.push(result);
+
+            object.reviews.push(reviewFieldsToResult(review));
           }
           pr.reviews.nodes.map((review) => {
             if (!review) {
@@ -204,9 +194,61 @@ export class DashServer {
 
         outgoingPrs.push(object);
       }
+
+      // Incoming reviews
+      for (const pr of result.data.incomingReviews.nodes || []) {
+        if (!pr || pr.__typename !== 'PullRequest') {
+          continue;
+        }
+
+        const object: IncomingPullRequest = {
+          ...prFieldsToResult(pr),
+          myReview: null,
+        };
+
+        incomingPrs.push(object);
+      }
     }
-    return {outgoingPrs};
+    return {outgoingPrs, incomingPrs};
   }
+}
+
+/**
+ * Converts a pull request GraphQL object to an API object.
+ */
+function prFieldsToResult(fields: prFieldsFragment): PullRequest {
+  const object: PullRequest = {
+    repository: fields.repository.nameWithOwner,
+    title: fields.title,
+    createdAt: Date.parse(fields.createdAt),
+    url: fields.url,
+    avatarUrl: '',
+    author: '',
+  };
+
+  if (fields.author && fields.author.__typename === 'User') {
+    object.author = fields.author.login;
+    object.avatarUrl = fields.author.avatarUrl;
+  }
+
+  return object;
+}
+
+/**
+ * Converts a review GraphQL object to an API object.
+ */
+function reviewFieldsToResult(fields: reviewFieldsFragment): Review {
+  const object = {
+    author: '',
+    createdAt: Date.parse(fields.createdAt),
+    reviewState: fields.state,
+  };
+
+  if (fields.author && fields.author.__typename === 'User') {
+    object.author = fields.author.login;
+  }
+
+  return object;
 }
 
 const viewerLoginQuery = gql`
@@ -218,7 +260,7 @@ query ViewerLogin {
 `;
 
 const prsQuery = gql`
-query ViewerPullRequests($login: String!, $query: String!) {
+query ViewerPullRequests($login: String!, $incomingReviewsQuery: String!) {
 	user(login: $login) {
     pullRequests(last: 10, states: [OPEN]) {
       nodes {
@@ -227,11 +269,7 @@ query ViewerPullRequests($login: String!, $query: String!) {
         reviews(last: 10) {
           totalCount
           nodes {
-            createdAt
-            state
-            author {
-              login
-            }
+            ...reviewFields
           }
         }
         reviewRequests(last: 2) {
@@ -248,11 +286,16 @@ query ViewerPullRequests($login: String!, $query: String!) {
       }
     }
   }
-  incomingReviews: search(type: ISSUE, query: $query, last: 10) {
+  incomingReviews: search(type: ISSUE, query: $incomingReviewsQuery, last: 10) {
     nodes {
       __typename
       ... on PullRequest {
         ...prFields
+        reviews(author: $login, last: 1) {
+          nodes {
+            ...reviewFields
+          }
+        }
       }
     }
   }
@@ -262,6 +305,14 @@ query ViewerPullRequests($login: String!, $query: String!) {
     remaining
     resetAt
     nodeCount
+  }
+}
+
+fragment reviewFields on PullRequestReview {
+  createdAt
+  state
+  author {
+    login
   }
 }
 
