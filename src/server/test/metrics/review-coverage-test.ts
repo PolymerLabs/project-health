@@ -1,7 +1,7 @@
 import test from 'ava';
 
 import {getReviewCoverage} from '../../../cli/metrics/review-coverage';
-import {startTestReplayServer} from '../replay-server';
+import {startTestReplayServer} from '../../../replay-server';
 
 test.beforeEach(async (t) => {
   const {server, client} = await startTestReplayServer(t);

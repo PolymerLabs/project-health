@@ -1,7 +1,7 @@
 import * as ava from 'ava';
 
 import {getMyRepos} from '../../util/my-repos';
-import {startTestReplayServer} from '../replay-server';
+import {startTestReplayServer} from '../../../replay-server';
 
 /**
  * Assigns the test context object before each test to ensure it is correctly
