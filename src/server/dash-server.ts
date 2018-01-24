@@ -140,25 +140,25 @@ export class DashServer {
   }
 
   async fetchUserData(login: string, token: string): Promise<DashResponse> {
-    const incomingReviewsQuery =
+    const reviewRequestsQueryString =
         `is:open is:pr review-requested:${login} archived:false`;
 
-    const result = await this.github.query<ViewerPullRequestsQuery>({
+    const viewerPrsResult = await this.github.query<ViewerPullRequestsQuery>({
       query: prsQuery,
-      variables: {login, incomingReviewsQuery},
+      variables: {login, reviewRequestsQueryString},
       fetchPolicy: 'network-only',
       context: {token}
     });
     const outgoingPrs = [];
     const incomingPrs = [];
-    if (result.data.user) {
-      for (const pr of result.data.user.pullRequests.nodes || []) {
+    if (viewerPrsResult.data.user) {
+      for (const pr of viewerPrsResult.data.user.pullRequests.nodes || []) {
         if (!pr) {
           continue;
         }
 
         const outgoingPr: OutgoingPullRequest = {
-          ...prFieldsToResult(pr),
+          ...convertPrFields(pr),
           reviews: [],
           reviewRequests: [],
         };
@@ -183,7 +183,7 @@ export class DashServer {
               continue;
             }
 
-            outgoingPr.reviews.push(reviewFieldsToResult(review));
+            outgoingPr.reviews.push(convertReviewFields(review));
           }
           pr.reviews.nodes.map((review) => {
             if (!review) {
@@ -196,13 +196,13 @@ export class DashServer {
       }
 
       // Incoming reviews
-      for (const pr of result.data.incomingReviews.nodes || []) {
+      for (const pr of viewerPrsResult.data.incomingReviews.nodes || []) {
         if (!pr || pr.__typename !== 'PullRequest') {
           continue;
         }
 
         const incomingPr: IncomingPullRequest = {
-          ...prFieldsToResult(pr),
+          ...convertPrFields(pr),
           myReview: null,
         };
 
@@ -216,7 +216,7 @@ export class DashServer {
 /**
  * Converts a pull request GraphQL object to an API object.
  */
-function prFieldsToResult(fields: prFieldsFragment): PullRequest {
+function convertPrFields(fields: prFieldsFragment): PullRequest {
   const pr: PullRequest = {
     repository: fields.repository.nameWithOwner,
     title: fields.title,
@@ -237,7 +237,7 @@ function prFieldsToResult(fields: prFieldsFragment): PullRequest {
 /**
  * Converts a review GraphQL object to an API object.
  */
-function reviewFieldsToResult(fields: reviewFieldsFragment): Review {
+function convertReviewFields(fields: reviewFieldsFragment): Review {
   const review = {
     author: '',
     createdAt: Date.parse(fields.createdAt),
@@ -260,7 +260,7 @@ query ViewerLogin {
 `;
 
 const prsQuery = gql`
-query ViewerPullRequests($login: String!, $incomingReviewsQuery: String!) {
+query ViewerPullRequests($login: String!, $reviewRequestsQueryString: String!) {
 	user(login: $login) {
     pullRequests(last: 10, states: [OPEN]) {
       nodes {
@@ -286,7 +286,7 @@ query ViewerPullRequests($login: String!, $incomingReviewsQuery: String!) {
       }
     }
   }
-  incomingReviews: search(type: ISSUE, query: $incomingReviewsQuery, last: 10) {
+  incomingReviews: search(type: ISSUE, query: $reviewRequestsQueryString, last: 10) {
     nodes {
       __typename
       ... on PullRequest {

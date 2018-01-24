@@ -595,7 +595,7 @@ export interface ViewerLoginQuery {
 
 export interface ViewerPullRequestsQueryVariables {
   login: string,
-  incomingReviewsQuery: string,
+  reviewRequestsQueryString: string,
 };
 
 export interface ViewerPullRequestsQuery {
