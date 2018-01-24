@@ -157,14 +157,14 @@ export class DashServer {
           continue;
         }
 
-        const object: OutgoingPullRequest = {
+        const outgoingPr: OutgoingPullRequest = {
           ...prFieldsToResult(pr),
           reviews: [],
           reviewRequests: [],
         };
         if (pr.author && pr.author.__typename === 'User') {
-          object.author = pr.author.login;
-          object.avatarUrl = pr.author.avatarUrl;
+          outgoingPr.author = pr.author.login;
+          outgoingPr.avatarUrl = pr.author.avatarUrl;
         }
 
         if (pr.reviewRequests) {
@@ -173,7 +173,7 @@ export class DashServer {
                 request.requestedReviewer.__typename !== 'User') {
               continue;
             }
-            object.reviewRequests.push(request.requestedReviewer.login);
+            outgoingPr.reviewRequests.push(request.requestedReviewer.login);
           }
         }
 
@@ -183,7 +183,7 @@ export class DashServer {
               continue;
             }
 
-            object.reviews.push(reviewFieldsToResult(review));
+            outgoingPr.reviews.push(reviewFieldsToResult(review));
           }
           pr.reviews.nodes.map((review) => {
             if (!review) {
@@ -192,7 +192,7 @@ export class DashServer {
           });
         }
 
-        outgoingPrs.push(object);
+        outgoingPrs.push(outgoingPr);
       }
 
       // Incoming reviews
@@ -201,12 +201,12 @@ export class DashServer {
           continue;
         }
 
-        const object: IncomingPullRequest = {
+        const incomingPr: IncomingPullRequest = {
           ...prFieldsToResult(pr),
           myReview: null,
         };
 
-        incomingPrs.push(object);
+        incomingPrs.push(incomingPr);
       }
     }
     return {outgoingPrs, incomingPrs};
@@ -217,7 +217,7 @@ export class DashServer {
  * Converts a pull request GraphQL object to an API object.
  */
 function prFieldsToResult(fields: prFieldsFragment): PullRequest {
-  const object: PullRequest = {
+  const pr: PullRequest = {
     repository: fields.repository.nameWithOwner,
     title: fields.title,
     createdAt: Date.parse(fields.createdAt),
@@ -227,28 +227,28 @@ function prFieldsToResult(fields: prFieldsFragment): PullRequest {
   };
 
   if (fields.author && fields.author.__typename === 'User') {
-    object.author = fields.author.login;
-    object.avatarUrl = fields.author.avatarUrl;
+    pr.author = fields.author.login;
+    pr.avatarUrl = fields.author.avatarUrl;
   }
 
-  return object;
+  return pr;
 }
 
 /**
  * Converts a review GraphQL object to an API object.
  */
 function reviewFieldsToResult(fields: reviewFieldsFragment): Review {
-  const object = {
+  const review = {
     author: '',
     createdAt: Date.parse(fields.createdAt),
     reviewState: fields.state,
   };
 
   if (fields.author && fields.author.__typename === 'User') {
-    object.author = fields.author.login;
+    review.author = fields.author.login;
   }
 
-  return object;
+  return review;
 }
 
 const viewerLoginQuery = gql`
