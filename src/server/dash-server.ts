@@ -14,10 +14,10 @@ import {GitHub} from '../utils/github';
 import {getRouter as getWebhookRouter} from './apis/webhook';
 import {getRouter as getPushSubRouter} from './apis/push-subscription';
 
-class DashSecrets {
+type DashSecrets = {
   GITHUB_CLIENT_ID: string;
   GITHUB_CLIENT_SECRET: string;
-}
+};
 
 export class DashServer {
   private secrets: DashSecrets;

@@ -29,12 +29,12 @@ function getRouter(): express.Router {
           return;
         default:
           console.warn(`Unsupported event type received: ${eventName}`);
-          response.status(400).send(`Unsupported event type.`);
+          response.status(202).send('Unsupported event type.');
           return;
       }
     } catch (err) {
       console.error(err);
-      response.status(500).send(`An unhandled error occured.`);
+      response.status(500).send('An unhandled error occured.');
     }
   });
 

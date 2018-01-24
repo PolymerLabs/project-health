@@ -3,7 +3,7 @@ import * as bodyParser from 'body-parser';
 
 import {GitHub} from '../../utils/github';
 import {PushSubscriptionModel} from '../models/PushSubscriptionModel';
-import { getLoginFromRequest } from '../utils/login-from-request';
+import {getLoginFromRequest} from '../utils/login-from-request';
 
 function getRouter(github: GitHub): express.Router {
   const pushSubscriptions = new PushSubscriptionModel();
