@@ -62,11 +62,11 @@ export async function run(argv: string[]) {
   if (args.help) {
     console.log(commandLineUsage([
       {
-        header: `[blue]{Project Health metrics}`,
+        header: '[blue]{Project Health metrics}',
         content: 'https://github.com/PolymerLabs/project-health',
       },
       {
-        header: `Options`,
+        header: 'Options',
         optionList: argDefs,
       }
     ]));

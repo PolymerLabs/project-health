@@ -106,9 +106,9 @@ async function getNotificationButtonText() {
   const subscription = await registration.pushManager.getSubscription();
 
   if (subscription) {
-    return `Disable Notifications`;
+    return 'Disable Notifications';
   } else {
-    return `Enable Notifications`;
+    return 'Enable Notifications';
   }
 }
 
