@@ -584,15 +584,6 @@ export interface StarsQuery {
   } | null,
 };
 
-export interface ViewerLoginQuery {
-  // The currently authenticated user.
-  viewer:  {
-    __typename: "User",
-    // The username used to login.
-    login: string,
-  },
-};
-
 export interface ViewerPullRequestsQueryVariables {
   login: string,
   reviewRequestsQueryString: string,
@@ -826,6 +817,15 @@ export interface ViewerPullRequestsQuery {
     // The maximum number of nodes this query may return
     nodeCount: number,
   } | null,
+};
+
+export interface ViewerLoginQuery {
+  // The currently authenticated user.
+  viewer:  {
+    __typename: "User",
+    // The username used to login.
+    login: string,
+  },
 };
 
 export interface MyReposQueryVariables {
