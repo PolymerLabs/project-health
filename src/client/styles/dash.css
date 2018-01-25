@@ -1,0 +1,102 @@
+:root {
+  --padding: 12px;
+
+  --actionable-color: #ee9709;
+  --non-actionable-color: #4a90e2;
+  --secondary-text-color: hsl(0, 0%, 40%); /* 5.7 contrast ratio on white */
+  --small-text: 12px;
+}
+
+h1 {
+  font-size: 24px;
+  font-weight: normal;
+}
+
+.pr-list {
+  max-width: 1024px;
+  margin: 0 auto;
+
+  display: grid;
+  align-items: center;
+  grid-template-columns: auto 40px 1fr;
+  grid-gap: 0px var(--padding);
+
+  font-size: 14px;
+}
+
+.pr-author {
+  grid-column: 1 / 1;
+
+  text-align: right;
+  font-size: var(--small-text);
+  font-weight: normal;
+}
+
+.pr-author__creation-time {
+  color: var(--secondary-text-color);
+}
+
+.pr-avatar {
+  grid-column: 2 / 2;
+  height: 40px;
+  margin: 4px 0;
+}
+
+.pr-avatar__img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  position: absolute;
+}
+
+.pr-status {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-weight: bold;
+  line-height: 24px;
+}
+
+.pr-body {
+  grid-column: 3 / 3;
+  text-decoration: none;
+  color: inherit;
+}
+
+.pr-info {
+  font-weight: bold;
+}
+
+.pr-info__repo-name {
+  color: var(--secondary-text-color);
+  margin-right: var(--padding);
+}
+
+.non-actionable {
+  color: var(--non-actionable-color);
+}
+
+.actionable {
+  color: var(--actionable-color);
+}
+
+.pr-event__title {
+  grid-column: 3 / 3;
+}
+
+.pr-event__bullet {
+  height: 26px;
+}
+
+.pr-event__time {
+  text-align: right;
+  font-size: var(--small-text);
+  color: var(--secondary-text-color);
+}
+
+.pr-event__bullet svg {
+  margin-top: -7px;
+  stroke: hsl(0, 0%, 75%);
+  fill: none;
+  stroke-width: 3px;
+}

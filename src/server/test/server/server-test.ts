@@ -81,6 +81,19 @@ test('basic PR', async (t) => {
        title: 'Add a field for getting the template of an element',
        url: 'https://github.com/project-health1/repo/pull/4',
      },
+     {
+       author: 'project-health2',
+       avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
+       createdAt: 1516750523000,
+       myReview: {
+         author: 'project-health1',
+         createdAt: 1516753105000,
+         reviewState: PullRequestReviewState.CHANGES_REQUESTED,
+       },
+       repository: 'project-health1/repo',
+       title: 'A couple minor changes for browserify compatibility',
+       url: 'https://github.com/project-health1/repo/pull/3',
+     },
     ]
   });
 });

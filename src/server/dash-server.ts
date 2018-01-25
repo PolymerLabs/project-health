@@ -1,22 +1,21 @@
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
+import gql from 'graphql-tag';
 import {Server} from 'http';
 import * as path from 'path';
 import * as request from 'request-promise-native';
-import gql from 'graphql-tag';
 
 import {DashResponse, IncomingPullRequest, OutgoingPullRequest, PullRequest, Review} from '../types/api';
-import {prFieldsFragment, reviewFieldsFragment, ViewerPullRequestsQuery} from '../types/gql-types';
-
-import {getLoginFromRequest} from './utils/login-from-request';
+import {prFieldsFragment, PullRequestReviewState, reviewFieldsFragment, ViewerPullRequestsQuery} from '../types/gql-types';
 import {GitHub} from '../utils/github';
-import {getRouter as getWebhookRouter} from './apis/webhook';
+
 import {getRouter as getPushSubRouter} from './apis/push-subscription';
+import {getRouter as getWebhookRouter} from './apis/webhook';
+import {getLoginFromRequest} from './utils/login-from-request';
 
 type DashSecrets = {
-  GITHUB_CLIENT_ID: string;
-  GITHUB_CLIENT_SECRET: string;
+  GITHUB_CLIENT_ID: string; GITHUB_CLIENT_SECRET: string;
 };
 
 export class DashServer {
@@ -97,18 +96,22 @@ export class DashServer {
       return;
     }
 
-    const userData = await this.fetchUserData(loginDetails.username, loginDetails.token);
+    const userData =
+        await this.fetchUserData(loginDetails.username, loginDetails.token);
     res.header('content-type', 'application/json');
     res.send(JSON.stringify(userData, null, 2));
   }
 
   async fetchUserData(login: string, token: string): Promise<DashResponse> {
-    const reviewRequestsQueryString =
-        `is:open is:pr review-requested:${login} archived:false`;
+    const openPrQuery = 'is:open is:pr archived:false';
 
     const viewerPrsResult = await this.github.query<ViewerPullRequestsQuery>({
       query: prsQuery,
-      variables: {login, reviewRequestsQueryString},
+      variables: {
+        login,
+        reviewRequestsQueryString: `review-requested:${login} ${openPrQuery}`,
+        reviewedQueryString: `reviewed-by:${login} ${openPrQuery}`,
+      },
       fetchPolicy: 'network-only',
       context: {token}
     });
@@ -159,7 +162,7 @@ export class DashServer {
       }
 
       // Incoming reviews
-      for (const pr of viewerPrsResult.data.incomingReviews.nodes || []) {
+      for (const pr of viewerPrsResult.data.reviewRequests.nodes || []) {
         if (!pr || pr.__typename !== 'PullRequest') {
           continue;
         }
@@ -170,6 +173,48 @@ export class DashServer {
         };
 
         incomingPrs.push(incomingPr);
+      }
+
+      for (const pr of viewerPrsResult.data.reviewed.nodes || []) {
+        if (!pr || pr.__typename !== 'PullRequest') {
+          continue;
+        }
+
+        // Find relevant review.
+        let relevantReview = null;
+        if (pr.reviews && pr.reviews.nodes) {
+          for (let i = pr.reviews.nodes.length - 1; i >= 0; i--) {
+            const nextReview = pr.reviews.nodes[i];
+            // Pending reviews have not been sent yet.
+            if (!relevantReview && nextReview &&
+                nextReview.state !== PullRequestReviewState.PENDING) {
+              relevantReview = nextReview;
+            } else if (
+                relevantReview &&
+                relevantReview.state === PullRequestReviewState.COMMENTED &&
+                nextReview &&
+                (nextReview.state === PullRequestReviewState.APPROVED ||
+                 nextReview.state ===
+                     PullRequestReviewState.CHANGES_REQUESTED)) {
+              // Use last approved/changes requested if it exists.
+              relevantReview = nextReview;
+            }
+          }
+        }
+
+        let myReview = null;
+        if (relevantReview) {
+          // Cast because inner type has less strict type for __typename.
+          myReview =
+              convertReviewFields(relevantReview as reviewFieldsFragment);
+        }
+
+        const reviewedPr: IncomingPullRequest = {
+          ...convertPrFields(pr),
+          myReview,
+        };
+
+        incomingPrs.push(reviewedPr);
       }
     }
     return {outgoingPrs, incomingPrs};
@@ -215,7 +260,7 @@ function convertReviewFields(fields: reviewFieldsFragment): Review {
 }
 
 const prsQuery = gql`
-query ViewerPullRequests($login: String!, $reviewRequestsQueryString: String!) {
+query ViewerPullRequests($login: String!, $reviewRequestsQueryString: String!, $reviewedQueryString: String!) {
 	user(login: $login) {
     pullRequests(last: 10, states: [OPEN]) {
       nodes {
@@ -231,7 +276,6 @@ query ViewerPullRequests($login: String!, $reviewRequestsQueryString: String!) {
           totalCount
           nodes {
             requestedReviewer {
-              __typename
               ... on User {
                 login
               }
@@ -241,12 +285,18 @@ query ViewerPullRequests($login: String!, $reviewRequestsQueryString: String!) {
       }
     }
   }
-  incomingReviews: search(type: ISSUE, query: $reviewRequestsQueryString, last: 10) {
+  reviewRequests: search(type: ISSUE, query: $reviewRequestsQueryString, last: 10) {
     nodes {
-      __typename
       ... on PullRequest {
         ...prFields
-        reviews(author: $login, last: 1) {
+      }
+    }
+  }
+  reviewed: search(type: ISSUE, query: $reviewedQueryString, last: 10) {
+    nodes {
+      ... on PullRequest {
+        ...prFields
+        reviews(author: $login, last: 10) {
           nodes {
             ...reviewFields
           }

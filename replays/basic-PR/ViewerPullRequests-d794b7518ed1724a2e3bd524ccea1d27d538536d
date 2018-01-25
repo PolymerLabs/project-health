@@ -14,8 +14,8 @@
               "nodes": [
                 {
                   "requestedReviewer": {
-                    "__typename": "User",
-                    "login": "project-health2"
+                    "login": "project-health2",
+                    "__typename": "User"
                   },
                   "__typename": "ReviewRequest"
                 }
@@ -102,14 +102,10 @@
       },
       "__typename": "User"
     },
-    "incomingReviews": {
+    "reviewRequests": {
       "nodes": [
         {
           "__typename": "PullRequest",
-          "reviews": {
-            "nodes": [],
-            "__typename": "PullRequestReviewConnection"
-          },
           "repository": {
             "nameWithOwner": "project-health1/repo",
             "__typename": "Repository"
@@ -127,11 +123,46 @@
       ],
       "__typename": "SearchResultItemConnection"
     },
+    "reviewed": {
+      "nodes": [
+        {
+          "reviews": {
+            "nodes": [
+              {
+                "__typename": "PullRequestReview",
+                "createdAt": "2018-01-24T00:18:25Z",
+                "state": "CHANGES_REQUESTED",
+                "author": {
+                  "login": "project-health1",
+                  "__typename": "User"
+                }
+              }
+            ],
+            "__typename": "PullRequestReviewConnection"
+          },
+          "__typename": "PullRequest",
+          "repository": {
+            "nameWithOwner": "project-health1/repo",
+            "__typename": "Repository"
+          },
+          "title": "A couple minor changes for browserify compatibility",
+          "url": "https://github.com/project-health1/repo/pull/3",
+          "createdAt": "2018-01-23T23:35:23Z",
+          "author": {
+            "avatarUrl": "https://avatars3.githubusercontent.com/u/34584974?v=4",
+            "login": "project-health2",
+            "url": "https://github.com/project-health2",
+            "__typename": "User"
+          }
+        }
+      ],
+      "__typename": "SearchResultItemConnection"
+    },
     "rateLimit": {
       "cost": 1,
       "limit": 5000,
       "remaining": 4999,
-      "resetAt": "2018-01-24T21:24:34Z",
+      "resetAt": "2018-01-25T21:38:23Z",
       "nodeCount": 140,
       "__typename": "RateLimit"
     }
