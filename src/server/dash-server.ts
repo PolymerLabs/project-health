@@ -1,33 +1,32 @@
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
-import gql from 'graphql-tag';
 import {Server} from 'http';
 import * as path from 'path';
 import * as request from 'request-promise-native';
+import gql from 'graphql-tag';
 
 import {DashResponse, IncomingPullRequest, OutgoingPullRequest, PullRequest, Review} from '../types/api';
-import {prFieldsFragment, reviewFieldsFragment, ViewerLoginQuery, ViewerPullRequestsQuery} from '../types/gql-types';
-import {GitHub} from '../utils/github';
+import {prFieldsFragment, reviewFieldsFragment, ViewerPullRequestsQuery} from '../types/gql-types';
 
-import {PushSubscriptionModel} from './models/PushSubscriptionModel';
+import {getLoginFromRequest} from './utils/login-from-request';
+import {GitHub} from '../utils/github';
+import {getRouter as getWebhookRouter} from './apis/webhook';
+import {getRouter as getPushSubRouter} from './apis/push-subscription';
+
+type DashSecrets = {
+  GITHUB_CLIENT_ID: string;
+  GITHUB_CLIENT_SECRET: string;
+};
 
 export class DashServer {
-  private secrets: {
-    GITHUB_CLIENT_ID: string,
-    GITHUB_CLIENT_SECRET: string,
-  };
+  private secrets: DashSecrets;
   private github: GitHub;
   private app: express.Express;
-  private pushSubscriptions: PushSubscriptionModel;
 
-  constructor(github: GitHub, secrets: {
-    GITHUB_CLIENT_ID: string,
-    GITHUB_CLIENT_SECRET: string,
-  }) {
+  constructor(github: GitHub, secrets: DashSecrets) {
     this.github = github;
     this.secrets = secrets;
-    this.pushSubscriptions = new PushSubscriptionModel();
 
     const app = express();
     const litPath = path.join(__dirname, '../../node_modules/lit-html');
@@ -38,10 +37,9 @@ export class DashServer {
 
     app.get('/dash.json', this.handleDashJson.bind(this));
     app.post('/login', bodyParser.text(), this.handleLogin.bind(this));
-    app.post(
-        '/api/push-subscription/:action',
-        bodyParser.json(),
-        this.handlePushSubscription.bind(this));
+
+    app.use('/api/push-subscription/', getPushSubRouter(this.github));
+    app.use('/api/webhook/', getWebhookRouter());
 
     this.app = app;
   }
@@ -92,49 +90,14 @@ export class DashServer {
     res.end();
   }
 
-  async handlePushSubscription(req: express.Request, res: express.Response) {
-    if (!req.body) {
-      res.sendStatus(400);
-      return;
-    }
-
-    // TODO: We shouldn't make this request for Github login repeatedly.
-    const token = req.cookies['id'];
-    const loginResult = await this.github.query<ViewerLoginQuery>({
-      query: viewerLoginQuery,
-      fetchPolicy: 'network-only',
-      context: {token},
-    });
-    const login = loginResult.data.viewer.login;
-
-    if (!login) {
-      res.sendStatus(400);
-      return;
-    }
-
-    if (req.params.action === 'add') {
-      this.pushSubscriptions.addPushSubscription(
-          login, req.body.subscription, req.body.supportedContentEncodings);
-    } else if (req.params.action === 'remove') {
-      this.pushSubscriptions.removePushSubscription(
-          login, req.body.subscription);
-    } else {
-      res.sendStatus(400);
-      return;
-    }
-
-    res.end();
-  }
-
   async handleDashJson(req: express.Request, res: express.Response) {
-    const token = req.cookies['id'];
-    const loginResult = await this.github.query<ViewerLoginQuery>({
-      query: viewerLoginQuery,
-      fetchPolicy: 'network-only',
-      context: {token},
-    });
-    const login = loginResult.data.viewer.login;
-    const userData = await this.fetchUserData(login, token);
+    const loginDetails = await getLoginFromRequest(this.github, req);
+    if (!loginDetails) {
+      res.send(401);
+      return;
+    }
+
+    const userData = await this.fetchUserData(loginDetails.username, loginDetails.token);
     res.header('content-type', 'application/json');
     res.send(JSON.stringify(userData, null, 2));
   }
@@ -250,14 +213,6 @@ function convertReviewFields(fields: reviewFieldsFragment): Review {
 
   return review;
 }
-
-const viewerLoginQuery = gql`
-query ViewerLogin {
-  viewer {
-    login
-  }
-}
-`;
 
 const prsQuery = gql`
 query ViewerPullRequests($login: String!, $reviewRequestsQueryString: String!) {

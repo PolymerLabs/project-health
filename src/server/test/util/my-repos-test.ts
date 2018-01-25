@@ -1,6 +1,6 @@
 import * as ava from 'ava';
 
-import {getMyRepos} from '../../util/my-repos';
+import {getMyRepos} from '../../utils/my-repos';
 import {startTestReplayServer} from '../../../replay-server';
 
 /**
