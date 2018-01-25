@@ -587,6 +587,7 @@ export interface StarsQuery {
 export interface ViewerPullRequestsQueryVariables {
   login: string,
   reviewRequestsQueryString: string,
+  reviewedQueryString: string,
 };
 
 export interface ViewerPullRequestsQuery {
@@ -719,7 +720,65 @@ export interface ViewerPullRequestsQuery {
     },
   } | null,
   // Perform a search across resources.
-  incomingReviews:  {
+  reviewRequests:  {
+    __typename: "SearchResultItemConnection",
+    // A list of nodes.
+    nodes:  Array<( {
+        __typename: "Issue",
+      } | {
+        __typename: "PullRequest",
+        // The repository associated with this node.
+        repository:  {
+          __typename: string,
+          // The repository's name with owner.
+          nameWithOwner: string,
+        },
+        // Identifies the pull request title.
+        title: string,
+        // The HTTP URL for this pull request.
+        url: string,
+        // Identifies the date and time when the object was created.
+        createdAt: string,
+        // The actor who authored the comment.
+        author: ( {
+            __typename: "Organization",
+            // A URL pointing to the actor's public avatar.
+            avatarUrl: string,
+            // The username of the actor.
+            login: string,
+            // The HTTP URL for this actor.
+            url: string,
+          } | {
+            __typename: "User",
+            // A URL pointing to the actor's public avatar.
+            avatarUrl: string,
+            // The username of the actor.
+            login: string,
+            // The HTTP URL for this actor.
+            url: string,
+          } | {
+            __typename: "Bot",
+            // A URL pointing to the actor's public avatar.
+            avatarUrl: string,
+            // The username of the actor.
+            login: string,
+            // The HTTP URL for this actor.
+            url: string,
+          }
+        ) | null,
+      } | {
+        __typename: "Repository",
+      } | {
+        __typename: "User",
+      } | {
+        __typename: "Organization",
+      } | {
+        __typename: "MarketplaceListing",
+      }
+    ) | null > | null,
+  },
+  // Perform a search across resources.
+  reviewed:  {
     __typename: "SearchResultItemConnection",
     // A list of nodes.
     nodes:  Array<( {
