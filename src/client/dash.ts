@@ -42,10 +42,10 @@ function eventTemplate(event: PullRequestEvent) {
     <time class="pr-event__time" datetime="${
       new Date(event.time).toISOString()}">${timeToString(event.time)}</time>
     <div class="pr-event__bullet">
-    <svg width="40" height="26">
-      <line x1="20" x2="20" y1="0" y2="16"/>
-      <circle cx="20" cy="20" r="4.5" />
-    </svg>
+      <svg width="40" height="26">
+        <line x1="20" x2="20" y1="0" y2="16"/>
+        <circle cx="20" cy="20" r="4.5" />
+      </svg>
     </div>
     <div class="pr-event__title">${event.text}</div>`;
 }
