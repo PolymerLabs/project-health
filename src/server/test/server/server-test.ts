@@ -1,6 +1,6 @@
 import * as ava from 'ava';
 
-import {DashServer} from '../../dash-server';
+import {DashData} from '../../apis/dash-data';
 import {startTestReplayServer} from '../../../replay-server';
 import {PullRequestReviewState} from '../../../types/gql-types';
 
@@ -24,10 +24,7 @@ const test = contextualize(async (t) => {
   return {
     replayServer: server,
     client,
-    dash: new DashServer(client, {
-      GITHUB_CLIENT_ID: '',
-      GITHUB_CLIENT_SECRET: '',
-    }),
+    dashData: new DashData(client),
     // This token must be set in the environment during recording.
     token: process.env.GITHUB_TOKEN || '',
   };
@@ -39,7 +36,7 @@ test.afterEach.cb((t) => {
 
 test('basic PR', async (t) => {
   const result =
-      await t.context.dash.fetchUserData('project-health1', t.context.token);
+      await t.context.dashData.fetchUserData('project-health1', t.context.token);
   t.deepEqual(result, {
     outgoingPrs: [
       {
