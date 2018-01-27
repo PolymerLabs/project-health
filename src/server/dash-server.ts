@@ -9,8 +9,8 @@ import {GitHub} from '../utils/github';
 
 import {DashData} from './apis/dash-data';
 import {getRouter as getPushSubRouter} from './apis/push-subscription';
-import {getRouter as getWebhookRouter} from './apis/webhook';
 import {getRouter as getSettingsRouter} from './apis/settings';
+import {getRouter as getWebhookRouter} from './apis/webhook';
 
 type DashSecrets = {
   GITHUB_CLIENT_ID: string; GITHUB_CLIENT_SECRET: string;
