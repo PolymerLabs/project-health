@@ -55,6 +55,7 @@ h1 {
   align-items: center;
   font-weight: bold;
   line-height: 24px;
+  color: var(--non-actionable-color);
 }
 
 .pr-body {
@@ -70,10 +71,6 @@ h1 {
 .pr-info__repo-name {
   color: var(--secondary-text-color);
   margin-right: var(--padding);
-}
-
-.non-actionable {
-  color: var(--non-actionable-color);
 }
 
 .actionable {

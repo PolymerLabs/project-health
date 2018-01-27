@@ -1,11 +1,11 @@
 import {html, render} from '../../node_modules/lit-html/lit-html.js';
-import {DashResponse, IncomingPullRequest, OutgoingPullRequest, PullRequest} from '../types/api';
+import {DashResponse, IncomingPullRequest, OutgoingPullRequest, PullRequest, PullRequestStatus} from '../types/api';
 
 type PullRequestEvent = {
   time: number; text: string;
 };
 
-type PullRequestStatus = {
+type StatusDisplay = {
   actionable: boolean; text: string;
 };
 
@@ -50,7 +50,46 @@ function eventTemplate(event: PullRequestEvent) {
     <div class="pr-event__title">${event.text}</div>`;
 }
 
-function prBaseTemplate(pr: PullRequest, status: PullRequestStatus) {
+function outgoingStatusToDisplay(pr: OutgoingPullRequest) {
+  if (pr.status === PullRequestStatus.WaitingReview) {
+    const reviewAuthors = pr.reviews.map((review) => review.author);
+    const reviewers = pr.reviewRequests.concat(reviewAuthors);
+    return {actionable: false, text: `Waiting on ${reviewers.join(', ')}`};
+  }
+  return statusToDisplay(pr);
+}
+
+function statusToDisplay(pr: PullRequest): StatusDisplay {
+  switch (pr.status) {
+    case PullRequestStatus.Unknown:
+      return {text: '', actionable: false};
+    case PullRequestStatus.NoActionRequired:
+      return {text: 'No action required', actionable: false};
+    case PullRequestStatus.NewActivity:
+      return {text: 'New activity', actionable: false};
+    case PullRequestStatus.StatusChecksPending:
+      return {text: 'Status checks pending', actionable: false};
+    case PullRequestStatus.WaitingReview:
+      return {text: 'Waiting on reviewers', actionable: false};
+    case PullRequestStatus.PendingChanges:
+      return {text: 'Waiting on you', actionable: true};
+    case PullRequestStatus.PendingMerge:
+      return {text: 'Ready to merge', actionable: true};
+    case PullRequestStatus.StatusChecksFailed:
+      return {text: 'Status checks failed', actionable: true};
+    case PullRequestStatus.ReviewRequired:
+      return {text: 'Pending your review', actionable: true};
+    case PullRequestStatus.ApprovalRequired:
+      return {text: 'Pending your approval', actionable: true};
+    case PullRequestStatus.MergeRequired:
+      return {text: 'Requires merging', actionable: true};
+    default:
+      const unknown: never = pr.status;
+      throw new Error(`Unknown PullRequestStatus: ${unknown}`);
+  }
+}
+
+function prBaseTemplate(pr: PullRequest, status: StatusDisplay) {
   return html`
     <div class="pr-author">
       <div class="pr-author__name">${pr.author}</div>
@@ -78,7 +117,7 @@ function prBaseTemplate(pr: PullRequest, status: PullRequestStatus) {
 function outgoingPrTemplate(pr: OutgoingPullRequest) {
   const events: PullRequestEvent[] = [];
 
-  // Naive implementation for now.
+  // TODO: this should be moved to the server.
   for (const review of pr.reviews) {
     events.push({
       time: review.createdAt,
@@ -87,19 +126,12 @@ function outgoingPrTemplate(pr: OutgoingPullRequest) {
   }
 
   return html`
-    ${prBaseTemplate(pr, {
-    actionable: true,
-    text: 'Waiting on you',
-  })}
+    ${prBaseTemplate(pr, outgoingStatusToDisplay(pr))}
     ${events.map(eventTemplate)}`;
 }
 
 function incomingPrTemplate(pr: IncomingPullRequest) {
-  let status = {actionable: true, text: 'Pending your review'};
-  if (pr.myReview && pr.myReview.reviewState !== 'APPROVED') {
-    status = {actionable: false, text: 'Pending your approval'};
-  }
-  return html`${prBaseTemplate(pr, status)}`;
+  return html`${prBaseTemplate(pr, statusToDisplay(pr))}`;
 }
 
 async function start() {
