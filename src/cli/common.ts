@@ -16,8 +16,8 @@
 
 import gql from 'graphql-tag';
 
-import {GitHub} from '../utils/github';
 import {OrgReposQuery, OrgReposQueryVariables} from '../types/gql-types';
+import {GitHub} from '../utils/github';
 
 /**
  * Fetch the repos under the given GitHub organization.
