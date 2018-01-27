@@ -10,6 +10,7 @@ import {GitHub} from '../utils/github';
 import {DashData} from './apis/dash-data';
 import {getRouter as getPushSubRouter} from './apis/push-subscription';
 import {getRouter as getWebhookRouter} from './apis/webhook';
+import {getRouter as getSettingsRouter} from './apis/settings';
 
 type DashSecrets = {
   GITHUB_CLIENT_ID: string; GITHUB_CLIENT_SECRET: string;
@@ -36,6 +37,7 @@ export class DashServer {
 
     app.use('/api/push-subscription/', getPushSubRouter(this.github));
     app.use('/api/webhook/', getWebhookRouter());
+    app.use('/api/settings/', getSettingsRouter(this.github));
 
     this.app = app;
   }

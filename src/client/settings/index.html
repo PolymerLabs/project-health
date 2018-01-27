@@ -8,34 +8,48 @@
 </head>
 
 <body>
-  <section class="push-component">
-    <style>
-    :root {
-      --padding: 8px;
-    }
-    
-    .push-component {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-    }
-  
-    .push-component__toggle {
-      margin-right: var(--padding);
-    }
-  
-    .push-component__details h6, .push-component__details p {
-      margin: 0;
-    }
-    </style>
-    <input class="push-component__toggle" type="checkbox" disabled></input>
-    <div class="push-component__details">
-      <h6>Push Notifications <span class="push-component__status"></span></h6>
-      <p>Push notifications are enabled. Toggle to no longer receive push notifications on this device.</p>
+  <h1>Settings</h1>
+
+  <section>
+    <h2>Your Notifications</h2>
+    <div class="push-component">
+      <style>
+      :root {
+        --padding: 8px;
+      }
+
+      .push-component {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+      }
+
+      .push-component__toggle {
+        margin-right: var(--padding);
+      }
+
+      .push-component__details h6, .push-component__details p {
+        margin: 0;
+      }
+      </style>
+      <input class="push-component__toggle" type="checkbox" disabled></input>
+      <div class="push-component__details">
+        <h6>Push Notifications <span class="push-component__status"></span></h6>
+        <p>Push notifications are enabled. Toggle to no longer receive push notifications on this device.</p>
+      </div>
     </div>
+  </section>
+
+  <section>
+    <h2>Organization Permissions</h2>
+    <p>Each organization must add a webhook before any push notifications can be
+      received by anyone in the organization.
+    </p>
+    <div class="org-webhook-list"></div>
   </section>
 </body>
 
 <script src="./push-component.js" type="module"></script>
+<script src="./org-webhook-list.js" type="module"></script>
 
 </html>

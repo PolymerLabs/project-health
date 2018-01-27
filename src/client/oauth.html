@@ -26,7 +26,10 @@
     } else if (queryParams.has('error')) {
       throw new Error(`Error returned by Github: '${queryParams.get('error_description')}'`);
     } else {
-      window.location = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=https://project-health-internal.googleplex.com/oauth.html?redirect-origin=${REDIRECT_ORIGIN}`;
+      const scopes = [
+        'read:org',
+      ];
+      window.location = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=${scopes.join(' ')},redirect_uri=https://project-health-internal.googleplex.com/oauth.html?redirect-origin=${REDIRECT_ORIGIN}`;
     }
   })();
 </script>

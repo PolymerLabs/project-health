@@ -878,6 +878,27 @@ export interface ViewerPullRequestsQuery {
   } | null,
 };
 
+export interface OrgDetailsQuery {
+  // The currently authenticated user.
+  viewer:  {
+    __typename: "User",
+    // A list of organizations the user belongs to.
+    organizations:  {
+      __typename: "OrganizationConnection",
+      // A list of nodes.
+      nodes:  Array< {
+        __typename: "Organization",
+        // The organization's public profile name.
+        name: string | null,
+        // Organization is adminable by the viewer.
+        viewerCanAdminister: boolean,
+      } | null > | null,
+      // Identifies the total count of items in the connection.
+      totalCount: number,
+    },
+  },
+};
+
 export interface ViewerLoginQuery {
   // The currently authenticated user.
   viewer:  {

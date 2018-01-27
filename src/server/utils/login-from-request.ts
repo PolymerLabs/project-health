@@ -5,8 +5,8 @@ import {GitHub} from '../../utils/github';
 import {ViewerLoginQuery} from '../../types/gql-types';
 
 class LoginDetails {
-  public username: string;
-  public token: string;
+  username: string;
+  token: string;
 }
 
 // TODO: Move this to Firestore instead of in memory.
@@ -21,7 +21,7 @@ async function getLoginFromRequest(github: GitHub, request: express.Request): Pr
   if (!token) {
     return null;
   }
-  
+
   if (cachedLogins[token]) {
     return cachedLogins[token];
   }
