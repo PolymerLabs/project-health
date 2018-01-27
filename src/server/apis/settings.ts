@@ -16,17 +16,60 @@ function getRouter(github: GitHub): express.Router {
       }
 
       // TODO: Run github query to get org web hook state etc
-      const orgDetails = await github.query<OrgDetailsQuery>({
-        query: orgsDetailsQuery,
-        fetchPolicy: 'network-only',
-        context: {
-          token: loginDetails.token,
+      let orgDetails;
+      try {
+        orgDetails = await github.query<OrgDetailsQuery>({
+          query: orgsDetailsQuery,
+          fetchPolicy: 'network-only',
+          context: {
+            token: loginDetails.token,
+          }
+        });
+      } catch (err) {
+        // TODO: Hack until scopes can be pushed.
+        orgDetails = {
+          data: {
+            viewer: {
+              organizations: {
+                nodes: [
+                  {
+                    name: 'Google',
+                    viewerCanAdminister: false
+                  },
+                  {
+                    name: 'Udacity',
+                    viewerCanAdminister: false
+                  },
+                  {
+                    name: 'HTML5Rocks',
+                    viewerCanAdminister: false
+                  },
+                  {
+                    name: 'PolymerLabs',
+                    viewerCanAdminister: false
+                  },
+                  {
+                    name: 'Web Starter Kit',
+                    viewerCanAdminister: true
+                  },
+                  {
+                    name: 'GoogleChromeLabs',
+                    viewerCanAdminister: true
+                  }
+                ]
+              }
+            }
+          }
         }
-      });
-      console.log(orgDetails);
+      }
+
+      const orgs = orgDetails.data.viewer.organizations.nodes;
+
+      // TODO: Handle orgDetails.data.view.origanizations.totalCount requiring
+      // pagination
 
       response.send(JSON.stringify({
-        orgs: [],
+        orgs,
       }));
     } catch (err) {
       console.error(err);
