@@ -9,3 +9,4 @@ coverage/
 secrets.json
 project-health-test-358b8bfb05e4.json
 .nyc_output/
+build/

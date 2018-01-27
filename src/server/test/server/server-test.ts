@@ -3,6 +3,7 @@ import * as ava from 'ava';
 import {DashData} from '../../apis/dash-data';
 import {startTestReplayServer} from '../../../replay-server';
 import {PullRequestReviewState} from '../../../types/gql-types';
+import {PullRequestStatus} from '../../../types/api';
 
 /**
  * Assigns the test context object before each test to ensure it is correctly
@@ -50,6 +51,7 @@ test('basic PR', async (t) => {
         reviews: [],
         title: 'Update README.md',
         url: 'https://github.com/project-health1/repo/pull/1',
+        status: PullRequestStatus.WaitingReview,
       },
       {
         author: 'project-health1',
@@ -66,6 +68,7 @@ test('basic PR', async (t) => {
         ],
         title: 'Update all the things',
         url: 'https://github.com/project-health1/repo/pull/2',
+        status: PullRequestStatus.WaitingReview,
       },
     ],
     incomingPrs: [
@@ -77,6 +80,7 @@ test('basic PR', async (t) => {
        repository: 'project-health1/repo',
        title: 'Add a field for getting the template of an element',
        url: 'https://github.com/project-health1/repo/pull/4',
+       status: PullRequestStatus.ReviewRequired,
      },
      {
        author: 'project-health2',
@@ -90,6 +94,7 @@ test('basic PR', async (t) => {
        repository: 'project-health1/repo',
        title: 'A couple minor changes for browserify compatibility',
        url: 'https://github.com/project-health1/repo/pull/3',
+       status: PullRequestStatus.ApprovalRequired,
      },
     ]
   });

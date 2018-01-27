@@ -31,7 +31,7 @@ export class DashServer {
     app.use('/node_modules/lit-html', express.static(litPath));
     app.use(express.static(path.join(__dirname, '../client')));
 
-    app.get('/dash.json', new DashData(github).handler);
+    app.get('/dash.json', new DashData(this.github).getHandler());
     app.post('/login', bodyParser.text(), this.handleLogin.bind(this));
 
     app.use('/api/push-subscription/', getPushSubRouter(this.github));

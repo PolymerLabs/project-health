@@ -1,9 +1,8 @@
 import * as express from 'express';
 import gql from 'graphql-tag';
 
-import {DashResponse, IncomingPullRequest, OutgoingPullRequest, PullRequest, Review} from '../../types/api';
+import {DashResponse, IncomingPullRequest, OutgoingPullRequest, PullRequest, PullRequestStatus, Review} from '../../types/api';
 import {prFieldsFragment, PullRequestReviewState, reviewFieldsFragment, ViewerPullRequestsQuery} from '../../types/gql-types';
-
 import {GitHub} from '../../utils/github';
 import {getLoginFromRequest} from '../utils/login-from-request';
 
@@ -14,18 +13,22 @@ export class DashData {
     this.github = github;
   }
 
-  async handler(req: express.Request, res: express.Response) {
-    const loginDetails = await getLoginFromRequest(this.github, req);
-      if (!loginDetails) {
-        res.send(401);
-        return;
-      }
+  getHandler() {
+    return this.handler.bind(this);
+  }
 
-      const userData =
-          await this.fetchUserData(loginDetails.username, loginDetails.token);
-      res.header('content-type', 'application/json');
-      res.send(JSON.stringify(userData, null, 2));
+  private async handler(req: express.Request, res: express.Response) {
+    const loginDetails = await getLoginFromRequest(this.github, req);
+    if (!loginDetails) {
+      res.send(401);
+      return;
     }
+
+    const userData =
+        await this.fetchUserData(loginDetails.username, loginDetails.token);
+    res.header('content-type', 'application/json');
+    res.send(JSON.stringify(userData, null, 2));
+  }
 
   async fetchUserData(login: string, token: string): Promise<DashResponse> {
     const openPrQuery = 'is:open is:pr archived:false';
@@ -52,6 +55,7 @@ export class DashData {
           ...convertPrFields(pr),
           reviews: [],
           reviewRequests: [],
+          status: PullRequestStatus.WaitingReview,
         };
         if (pr.author && pr.author.__typename === 'User') {
           outgoingPr.author = pr.author.login;
@@ -72,6 +76,12 @@ export class DashData {
           for (const review of pr.reviews.nodes) {
             if (!review) {
               continue;
+            }
+
+            if (outgoingPr.status === PullRequestStatus.WaitingReview && review.state === PullRequestReviewState.APPROVED) {
+              outgoingPr.status = PullRequestStatus.PendingMerge;
+            } else if (review.state === PullRequestReviewState.CHANGES_REQUESTED) {
+              outgoingPr.status = PullRequestStatus.PendingChanges;
             }
 
             outgoingPr.reviews.push(convertReviewFields(review));
@@ -95,6 +105,7 @@ export class DashData {
         const incomingPr: IncomingPullRequest = {
           ...convertPrFields(pr),
           myReview: null,
+          status: PullRequestStatus.ReviewRequired,
         };
 
         incomingPrs.push(incomingPr);
@@ -128,15 +139,21 @@ export class DashData {
         }
 
         let myReview = null;
+        let status = PullRequestStatus.NoActionRequired;
         if (relevantReview) {
           // Cast because inner type has less strict type for __typename.
           myReview =
               convertReviewFields(relevantReview as reviewFieldsFragment);
+
+          if (relevantReview.state !== PullRequestReviewState.APPROVED) {
+            status = PullRequestStatus.ApprovalRequired;
+          }
         }
 
         const reviewedPr: IncomingPullRequest = {
           ...convertPrFields(pr),
           myReview,
+          status,
         };
 
         incomingPrs.push(reviewedPr);
@@ -157,6 +174,7 @@ function convertPrFields(fields: prFieldsFragment): PullRequest {
     url: fields.url,
     avatarUrl: '',
     author: '',
+    status: PullRequestStatus.Unknown,
   };
 
   if (fields.author && fields.author.__typename === 'User') {
