@@ -60,53 +60,33 @@ function outgoingStatusToDisplay(pr: OutgoingPullRequest) {
 }
 
 function statusToDisplay(pr: PullRequest):StatusDisplay {
-  let text = '';
-  let actionable = false;
   switch (pr.status) {
     case PullRequestStatus.Unknown:
-      text = '';
-      break;
+      return {text: '', actionable: false};
     case PullRequestStatus.NoActionRequired:
-      text = 'No action required';
-      break;
+      return {text: 'No action required', actionable: false};
     case PullRequestStatus.NewActivity:
-      text = 'New activity';
-      break;
+      return {text: 'New activity', actionable: false};
     case PullRequestStatus.StatusChecksPending:
-      text = 'Status checks pending';
-      break;
+      return {text: 'Status checks pending', actionable: false};
     case PullRequestStatus.WaitingReview:
-      text = 'Waiting on reviewers';
-      break;
+      return {text: 'Waiting on reviewers', actionable: false};
     case PullRequestStatus.PendingChanges:
-      text = 'Waiting on you';
-      actionable = true;
-      break;
+      return {text: 'Waiting on you', actionable: true};
     case PullRequestStatus.PendingMerge:
-      text = 'Ready to merge';
-      actionable = true;
-      break;
+      return {text: 'Ready to merge', actionable: true};
     case PullRequestStatus.StatusChecksFailed:
-      text = 'Status checks failed';
-      actionable = true;
-      break;
+      return {text: 'Status checks failed', actionable: true};
     case PullRequestStatus.ReviewRequired:
-      text = 'Pending your review';
-      actionable = true;
-      break;
+      return {text: 'Pending your review', actionable: true};
     case PullRequestStatus.ApprovalRequired:
-      text = 'Pending your approval';
-      actionable = true;
-      break;
+      return {text: 'Pending your approval', actionable: true};
     case PullRequestStatus.MergeRequired:
-      text = 'Requires merging';
-      actionable = true;
-      break;
+      return {text: 'Requires merging', actionable: true};
     default:
       const unknown: never = pr.status;
-      throw new Error(`Unknown thing: ${unknown}`);
+      throw new Error(`Unknown PullRequestStatus: ${unknown}`);
   }
-  return {text, actionable};
 }
 
 function prBaseTemplate(pr: PullRequest, status: StatusDisplay) {
