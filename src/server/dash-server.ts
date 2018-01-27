@@ -7,9 +7,9 @@ import * as request from 'request-promise-native';
 
 import {GitHub} from '../utils/github';
 
+import {DashData} from './apis/dash-data';
 import {getRouter as getPushSubRouter} from './apis/push-subscription';
 import {getRouter as getWebhookRouter} from './apis/webhook';
-import {DashData} from './apis/dash-data';
 
 type DashSecrets = {
   GITHUB_CLIENT_ID: string; GITHUB_CLIENT_SECRET: string;

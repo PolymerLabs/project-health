@@ -59,7 +59,7 @@ function outgoingStatusToDisplay(pr: OutgoingPullRequest) {
   return statusToDisplay(pr);
 }
 
-function statusToDisplay(pr: PullRequest):StatusDisplay {
+function statusToDisplay(pr: PullRequest): StatusDisplay {
   switch (pr.status) {
     case PullRequestStatus.Unknown:
       return {text: '', actionable: false};
