@@ -17,7 +17,9 @@
     "report-coverage": "nyc report --reporter=text-lcov | coveralls",
     "test": "npm run build && RECORD=false npm run test:ava -- --timeout=10sec && npm run check-coverage",
     "test:record": "npm run build && RECORD=true npm run test:ava -- --timeout=1min",
-    "test:ava": "nyc --reporter=text --reporter=html ava build/*/test/**/*-test.js --verbose"
+    "test:ava": "nyc --reporter=text --reporter=html ava build/*/test/**/*-test.js --verbose",
+    "format": "find src/*.ts src/**/*.ts | xargs clang-format --style=file -i",
+    "precommit": "npm run format"
   },
   "repository": {
     "type": "git",
