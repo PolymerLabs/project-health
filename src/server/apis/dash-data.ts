@@ -163,10 +163,8 @@ export class DashData {
     }
     return {
       // Sort newest first.
-      outgoingPrs: outgoingPrs.sort((a, b) => {
-        return a.createdAt < b.createdAt ? 1 : -1;
-      }),
-      incomingPrs
+      outgoingPrs: outgoingPrs.sort((a, b) => b.createdAt - a.createdAt),
+      incomingPrs,
     };
   }
 }
