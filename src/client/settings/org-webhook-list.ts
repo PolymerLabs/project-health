@@ -28,9 +28,8 @@ async function getState() {
 }
 
 function hookTemplate(org: OrgWebHookState) {
-  // TODO: Lit is doing something unexpected here.
-  // https://github.com/Polymer/lit-html/issues/257
-  // const disabledString = org.viewerCanAdminister ? '' : ' disabled';
+  // TODO: No idea how to add disabled state (i.e. bring
+  // org.viewerCanAdminister to checkbox)
   return html`
   <div class="settings-toggle-item">
     <input class="settings-toggle-item__toggle" type="checkbox"></input>
