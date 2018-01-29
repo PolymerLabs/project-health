@@ -7,7 +7,7 @@ import {getLoginFromRequest} from '../utils/login-from-request';
 
 function getRouter(github: GitHub): express.Router {
   const pushSubscriptions = new PushSubscriptionModel();
-  
+
   const pushSubscriptionRouter = express.Router();
   pushSubscriptionRouter.post('/:action', bodyParser.json(), async (request: express.Request, response: express.Response) => {
     try {
@@ -39,7 +39,7 @@ function getRouter(github: GitHub): express.Router {
       response.send();
     } catch (err) {
       console.error(err);
-      response.status(500).send(`An unhandled error occured.`);
+      response.status(500).send('An unhandled error occured.');
     }
   });
 

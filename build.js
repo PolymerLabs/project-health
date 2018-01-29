@@ -38,7 +38,7 @@ const copyFiles = async (globPattern) => {
     const relativePath = path.relative(path.join(__dirname, 'src'), fileToCopy);
     const buildPath = path.join(__dirname, 'build', relativePath);
     await fse.ensureDir(path.dirname(buildPath));
-    await fse.copyFile(fileToCopy, buildPath);
+    await fse.copy(fileToCopy, buildPath);
   }
 };
 
