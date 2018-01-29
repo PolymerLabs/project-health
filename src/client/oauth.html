@@ -26,10 +26,7 @@
     } else if (queryParams.has('error')) {
       throw new Error(`Error returned by Github: '${queryParams.get('error_description')}'`);
     } else {
-      let scopes = queryParams.get('scopes');
-      if (!scopes) {
-        scopes = '';
-      }
+      const scopes = queryParams.get('scopes') || '';
       window.location = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=${scopes}&redirect_uri=https://project-health-internal.googleplex.com/oauth.html?redirect-origin=${REDIRECT_ORIGIN}`;
     }
   })();
