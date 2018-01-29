@@ -67,6 +67,7 @@ function getRouter(github: GitHub): express.Router {
 
       // TODO: Handle orgDetails.data.view.origanizations.totalCount requiring
       // pagination
+      // Switching to GitHub.cursorQuery() would be best option.
 
       response.send(JSON.stringify({
         orgs,
