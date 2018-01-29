@@ -30,9 +30,12 @@ async function getState() {
 function hookTemplate(org: OrgWebHookState) {
   // TODO: No idea how to add disabled state (i.e. bring
   // org.viewerCanAdminister to checkbox)
+  const checkboxClick = () => {
+    console.log(`Click: `, org);
+  };
   return html`
   <div class="settings-toggle-item">
-    <input class="settings-toggle-item__toggle" type="checkbox"></input>
+    <input class="settings-toggle-item__toggle" type="checkbox" on-click="${event => checkboxClick(event)}"></input>
     <div class="settings-toggle-item__details">
       <h6>${org.name}</h6>
       <p>TODO: Add state message</p>
