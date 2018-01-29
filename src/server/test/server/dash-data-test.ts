@@ -35,24 +35,48 @@ test.afterEach.cb((t) => {
   t.context.replayServer.close(t.end);
 });
 
-test('basic PR', async (t) => {
+test('project-health1 dashboard', async (t) => {
   const result =
       await t.context.dashData.fetchUserData('project-health1', t.context.token);
   t.deepEqual(result, {
     outgoingPrs: [
+      // Outgoing PR, changes requested.
       {
         author: 'project-health1',
         avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
-        createdAt: 1513370262000,
+        createdAt: 1517253689000,
         repository: 'project-health1/repo',
-        reviewRequests: [
-          'project-health2',
+        reviewRequests: [],
+        reviews: [
+          {
+            author: 'project-health2',
+            createdAt: 1517253712000,
+            reviewState: PullRequestReviewState.CHANGES_REQUESTED,
+          },
         ],
-        reviews: [],
-        title: 'Update README.md',
-        url: 'https://github.com/project-health1/repo/pull/1',
-        status: PullRequestStatus.WaitingReview,
+        status: PullRequestStatus.PendingChanges,
+        title: 'Adding an oauth page',
+        url: 'https://github.com/project-health1/repo/pull/6',
       },
+      // Outgoing PR, approved, ready to merge.
+      {
+        author: 'project-health1',
+        avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
+        createdAt: 1517253583000,
+        repository: 'project-health1/repo',
+        reviewRequests: [],
+        reviews: [
+          {
+            author: 'project-health2',
+            createdAt: 1517253614000,
+            reviewState: PullRequestReviewState.APPROVED,
+          },
+        ],
+        status: PullRequestStatus.PendingMerge,
+        title: 'Add lint for TS files',
+        url: 'https://github.com/project-health1/repo/pull/5',
+      },
+      // Outgoing PR, has 1 commented review.
       {
         author: 'project-health1',
         avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
@@ -70,8 +94,23 @@ test('basic PR', async (t) => {
         url: 'https://github.com/project-health1/repo/pull/2',
         status: PullRequestStatus.WaitingReview,
       },
+      // Outgoing PR, requested reviews, no reviews.
+      {
+        author: 'project-health1',
+        avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
+        createdAt: 1513370262000,
+        repository: 'project-health1/repo',
+        reviewRequests: [
+          'project-health2',
+        ],
+        reviews: [],
+        title: 'Update README.md',
+        url: 'https://github.com/project-health1/repo/pull/1',
+        status: PullRequestStatus.WaitingReview,
+      },
     ],
     incomingPrs: [
+      // Incoming review request.
       {
        author: 'project-health2',
        avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
@@ -82,6 +121,7 @@ test('basic PR', async (t) => {
        url: 'https://github.com/project-health1/repo/pull/4',
        status: PullRequestStatus.ReviewRequired,
      },
+     // Incoming PR, I requested changes.
      {
        author: 'project-health2',
        avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',

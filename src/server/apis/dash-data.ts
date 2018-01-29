@@ -78,9 +78,11 @@ export class DashData {
               continue;
             }
 
-            if (outgoingPr.status === PullRequestStatus.WaitingReview && review.state === PullRequestReviewState.APPROVED) {
+            if (outgoingPr.status === PullRequestStatus.WaitingReview &&
+                review.state === PullRequestReviewState.APPROVED) {
               outgoingPr.status = PullRequestStatus.PendingMerge;
-            } else if (review.state === PullRequestReviewState.CHANGES_REQUESTED) {
+            } else if (
+                review.state === PullRequestReviewState.CHANGES_REQUESTED) {
               outgoingPr.status = PullRequestStatus.PendingChanges;
             }
 
@@ -159,7 +161,13 @@ export class DashData {
         incomingPrs.push(reviewedPr);
       }
     }
-    return {outgoingPrs, incomingPrs};
+    return {
+      // Sort newest first.
+      outgoingPrs: outgoingPrs.sort((a, b) => {
+        return a.createdAt < b.createdAt ? 1 : -1;
+      }),
+      incomingPrs
+    };
   }
 }
 
