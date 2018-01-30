@@ -45,7 +45,7 @@ function requestPermissionTemplate() {
   const readOrgsClick = () => {
     window.location.href = `/oauth.html?scope=read:org&final-redirect=${window.location.href}`;
   };
-  const requestPermissionTemplate = html`<p><button on-click="${() => readOrgsClick()}">Enable Org Reading</button></p>`;
+  const requestPermissionTemplate = html`<p><button on-click="${() => readOrgsClick()}">Allow Project Health read-only access to your organizations</button></p>`;
   return requestPermissionTemplate;
 }
 
