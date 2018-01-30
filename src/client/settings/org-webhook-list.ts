@@ -1,5 +1,5 @@
-import {html, render} from '../../../node_modules/lit-html/lit-html.js';
-
+import {html} from '../../../node_modules/lit-html/lit-html.js';
+import {render} from '../../../node_modules/lit-html/lib/lit-extended.js';
 let orgListContainer: Element;
 
 type OrgWebHookState = {
@@ -28,14 +28,12 @@ async function getState() {
 }
 
 function hookTemplate(org: OrgWebHookState) {
-  // TODO: No idea how to add disabled state (i.e. bring
-  // org.viewerCanAdminister to checkbox)
   const checkboxClick = () => {
-    console.log(`Click: `, org);
+    console.log('Checkbox Click: ', org);
   };
   return html`
   <div class="settings-toggle-item">
-    <input class="settings-toggle-item__toggle" type="checkbox" on-click="${event => checkboxClick(event)}"></input>
+    <input class="settings-toggle-item__toggle" type="checkbox" on-click="${() => checkboxClick()}"></input>
     <div class="settings-toggle-item__details">
       <h6>${org.name}</h6>
       <p>TODO: Add state message</p>
@@ -43,10 +41,22 @@ function hookTemplate(org: OrgWebHookState) {
   </div>`;
 }
 
+function requestPermissionTemplate() {
+  const readOrgsClick = () => {
+    window.location.href = `/oauth.html?scopes=read:org&final-redirect=${window.location.toString()}`;
+  };
+  const requestPermissionTemplate = html`<p><button on-click="${() => readOrgsClick()}">Enable Org Reading</button></p>`;
+  return requestPermissionTemplate;
+}
+
 async function updateUI() {
-  const state = await getState();
-  const orgTemplate = html`${state.orgs.map(hookTemplate)}`;
-  render(orgTemplate, orgListContainer);
+  try {
+    const state = await getState();
+    const orgTemplate = html`${state.orgs.map(hookTemplate)}`;
+    render(orgTemplate, orgListContainer);
+  } catch (err) {
+    render(requestPermissionTemplate(), orgListContainer);
+  }
 }
 
 function start() {
