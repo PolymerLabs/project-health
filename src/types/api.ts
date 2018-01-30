@@ -36,54 +36,62 @@ export interface Review {
   reviewState: PullRequestReviewState;
 }
 
+/** Not necessarily actionable. */
+
 interface UnknownStatus {
   type: 'UnknownStatus';
 }
-// Not necessarily actionable.
 
 // Viewer has approved
 interface NoActionRequired {
   type: 'NoActionRequired';
 }
+
 // Viewer has approved, but there is new activity
 interface NewActivity {
   type: 'NewActivity';
 }
+
 // Viewer has approval, waiting on status checks
 interface StatusChecksPending {
   type: 'StatusChecksPending';
 }
+
 // Viewer is waiting on a review
 interface WaitingReview {
   type: 'WaitingReview';
   reviewers: string[];
 }
 
-// Actionable - outgoing
+/** Actionable - outgoing */
 
 // Viewer's pull PR requires changes
 interface PendingChanges {
   type: 'PendingChanges';
 }
+
 // Merge required by viewer
 interface PendingMerge {
   type: 'PendingMerge';
 }
+
 // One of the status checks are failing
 interface StatusChecksFailed {
   type: 'StatusChecksFailed';
 }
 
-// Actionable - incoming
+/** Actionable - incoming */
 
 // Review required by viewer
 interface ReviewRequired {
   type: 'ReviewRequired';
 }
+
 // Viewer has reviewed but not approved
 interface ApprovalRequired {
   type: 'ApprovalRequired';
 }
+
 // Viewer approved, author unable to merge
 interface MergeRequired {
   type: 'MergeRequired';
