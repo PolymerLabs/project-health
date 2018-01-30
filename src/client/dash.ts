@@ -62,7 +62,10 @@ function statusToDisplay(pr: api.PullRequest): StatusDisplay {
     case 'StatusChecksPending':
       return {text: 'Status checks pending', actionable: false};
     case 'WaitingReview':
-      return {text: `Waiting on ${pr.status.reviewers.join(', ')}`, actionable: false};
+      return {
+        text: `Waiting on ${pr.status.reviewers.join(', ')}`,
+        actionable: false
+      };
     case 'PendingChanges':
       return {text: 'Waiting on you', actionable: true};
     case 'PendingMerge':
