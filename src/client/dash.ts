@@ -1,5 +1,5 @@
 import {html, render} from '../../node_modules/lit-html/lit-html.js';
-import {DashResponse, IncomingPullRequest, OutgoingPullRequest, PullRequest, PullRequestStatus} from '../types/api';
+import * as api from '../types/api';
 
 type PullRequestEvent = {
   time: number; text: string;
@@ -37,7 +37,8 @@ function timeToString(dateTime: number) {
   return `${(secondsSince).toFixed(0)} ${unit} ago`;
 }
 
-function eventTemplate(event: PullRequestEvent) {
+// TODO: should not be exported once it's used.
+export function eventTemplate(event: PullRequestEvent) {
   return html`
     <time class="pr-event__time" datetime="${
       new Date(event.time).toISOString()}">${timeToString(event.time)}</time>
@@ -50,38 +51,32 @@ function eventTemplate(event: PullRequestEvent) {
     <div class="pr-event__title">${event.text}</div>`;
 }
 
-function outgoingStatusToDisplay(pr: OutgoingPullRequest) {
-  if (pr.status === PullRequestStatus.WaitingReview) {
-    const reviewAuthors = pr.reviews.map((review) => review.author);
-    const reviewers = pr.reviewRequests.concat(reviewAuthors);
-    return {actionable: false, text: `Waiting on ${reviewers.join(', ')}`};
-  }
-  return statusToDisplay(pr);
-}
-
-function statusToDisplay(pr: PullRequest): StatusDisplay {
-  switch (pr.status) {
-    case PullRequestStatus.Unknown:
+function statusToDisplay(pr: api.PullRequest): StatusDisplay {
+  switch (pr.status.type) {
+    case 'UnknownStatus':
       return {text: '', actionable: false};
-    case PullRequestStatus.NoActionRequired:
+    case 'NoActionRequired':
       return {text: 'No action required', actionable: false};
-    case PullRequestStatus.NewActivity:
+    case 'NewActivity':
       return {text: 'New activity', actionable: false};
-    case PullRequestStatus.StatusChecksPending:
+    case 'StatusChecksPending':
       return {text: 'Status checks pending', actionable: false};
-    case PullRequestStatus.WaitingReview:
-      return {text: 'Waiting on reviewers', actionable: false};
-    case PullRequestStatus.PendingChanges:
+    case 'WaitingReview':
+      return {
+        text: `Waiting on ${pr.status.reviewers.join(', ')}`,
+        actionable: false
+      };
+    case 'PendingChanges':
       return {text: 'Waiting on you', actionable: true};
-    case PullRequestStatus.PendingMerge:
+    case 'PendingMerge':
       return {text: 'Ready to merge', actionable: true};
-    case PullRequestStatus.StatusChecksFailed:
+    case 'StatusChecksFailed':
       return {text: 'Status checks failed', actionable: true};
-    case PullRequestStatus.ReviewRequired:
+    case 'ReviewRequired':
       return {text: 'Pending your review', actionable: true};
-    case PullRequestStatus.ApprovalRequired:
+    case 'ApprovalRequired':
       return {text: 'Pending your approval', actionable: true};
-    case PullRequestStatus.MergeRequired:
+    case 'MergeRequired':
       return {text: 'Requires merging', actionable: true};
     default:
       const unknown: never = pr.status;
@@ -89,7 +84,8 @@ function statusToDisplay(pr: PullRequest): StatusDisplay {
   }
 }
 
-function prBaseTemplate(pr: PullRequest, status: StatusDisplay) {
+function prTemplate(pr: api.PullRequest) {
+  const status = statusToDisplay(pr);
   return html`
     <div class="pr-author">
       <div class="pr-author__name">${pr.author}</div>
@@ -114,38 +110,18 @@ function prBaseTemplate(pr: PullRequest, status: StatusDisplay) {
     </a>`;
 }
 
-function outgoingPrTemplate(pr: OutgoingPullRequest) {
-  const events: PullRequestEvent[] = [];
-
-  // TODO: this should be moved to the server.
-  for (const review of pr.reviews) {
-    events.push({
-      time: review.createdAt,
-      text: `${review.author} ${review.reviewState}`,
-    });
-  }
-
-  return html`
-    ${prBaseTemplate(pr, outgoingStatusToDisplay(pr))}
-    ${events.map(eventTemplate)}`;
-}
-
-function incomingPrTemplate(pr: IncomingPullRequest) {
-  return html`${prBaseTemplate(pr, statusToDisplay(pr))}`;
-}
-
 async function start() {
   const res = await fetch('/dash.json', {credentials: 'include'});
-  const json = await res.json() as DashResponse;
+  const json = await res.json() as api.DashResponse;
 
   const tmpl = html`
     <h1>Outgoing pull requests</h1>
     <div class="pr-list">
-      ${json.outgoingPrs.map(outgoingPrTemplate)}
+      ${json.outgoingPrs.map(prTemplate)}
     </div>
     <h1>Incoming pull requests</h1>
     <div class="pr-list">
-      ${json.incomingPrs.map(incomingPrTemplate)}
+      ${json.incomingPrs.map(prTemplate)}
     </div>
   `;
   render(tmpl, (document.querySelector('.dash-container') as Element));
