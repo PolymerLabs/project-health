@@ -33,7 +33,6 @@ function getRouter(github: GitHub): express.Router {
         orgs: orgDetails.data.viewer.organizations.nodes,
       }));
     } catch (err) {
-      // TODO: Handle scenario where scope is missing
       console.error(err);
       response.status(500).send('An unhandled error occured.');
     }
