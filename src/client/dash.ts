@@ -112,7 +112,8 @@ function prTemplate(pr: api.PullRequest) {
 
 async function start() {
   const queryParams = new URLSearchParams(window.location.search);
-  const res = await fetch(`/dash.json?login=${queryParams.get('login')}`, {credentials: 'include'});
+  const res = await fetch(
+      `/dash.json?login=${queryParams.get('login')}`, {credentials: 'include'});
   const json = await res.json() as api.DashResponse;
 
   const tmpl = html`
