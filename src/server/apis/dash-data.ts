@@ -1,7 +1,7 @@
 import * as express from 'express';
 import gql from 'graphql-tag';
 
-import {DashResponse, IncomingPullRequest, OutgoingPullRequest, PullRequest, PullRequestStatus, Review} from '../../types/api';
+import * as api from '../../types/api';
 import {prFieldsFragment, PullRequestReviewState, reviewFieldsFragment, ViewerPullRequestsQuery} from '../../types/gql-types';
 import {GitHub} from '../../utils/github';
 import {getLoginFromRequest} from '../utils/login-from-request';
@@ -30,7 +30,7 @@ export class DashData {
     res.send(JSON.stringify(userData, null, 2));
   }
 
-  async fetchUserData(login: string, token: string): Promise<DashResponse> {
+  async fetchUserData(login: string, token: string): Promise<api.DashResponse> {
     const openPrQuery = 'is:open is:pr archived:false';
 
     const viewerPrsResult = await this.github.query<ViewerPullRequestsQuery>({
@@ -51,12 +51,13 @@ export class DashData {
           continue;
         }
 
-        const outgoingPr: OutgoingPullRequest = {
+        const outgoingPr: api.OutgoingPullRequest = {
           ...convertPrFields(pr),
           reviews: [],
           reviewRequests: [],
-          status: PullRequestStatus.WaitingReview,
+          status: {type: 'WaitingReview', reviewers: []},
         };
+
         if (pr.author && pr.author.__typename === 'User') {
           outgoingPr.author = pr.author.login;
           outgoingPr.avatarUrl = pr.author.avatarUrl;
@@ -73,26 +74,14 @@ export class DashData {
         }
 
         if (pr.reviews && pr.reviews.nodes) {
-          for (const review of pr.reviews.nodes) {
-            if (!review) {
-              continue;
-            }
+          reviewsForOutgoingPrs(pr.reviews.nodes, outgoingPr);
+        }
 
-            if (outgoingPr.status === PullRequestStatus.WaitingReview &&
-                review.state === PullRequestReviewState.APPROVED) {
-              outgoingPr.status = PullRequestStatus.PendingMerge;
-            } else if (
-                review.state === PullRequestReviewState.CHANGES_REQUESTED) {
-              outgoingPr.status = PullRequestStatus.PendingChanges;
-            }
-
-            outgoingPr.reviews.push(convertReviewFields(review));
-          }
-          pr.reviews.nodes.map((review) => {
-            if (!review) {
-              return {};
-            }
-          });
+        if (outgoingPr.status.type === 'WaitingReview') {
+          outgoingPr.status.reviewers = [
+            ...outgoingPr.reviewRequests,
+            ...outgoingPr.reviews.map((review) => review.author),
+          ]
         }
 
         outgoingPrs.push(outgoingPr);
@@ -104,10 +93,10 @@ export class DashData {
           continue;
         }
 
-        const incomingPr: IncomingPullRequest = {
+        const incomingPr: api.IncomingPullRequest = {
           ...convertPrFields(pr),
           myReview: null,
-          status: PullRequestStatus.ReviewRequired,
+          status: {type: 'ReviewRequired'},
         };
 
         incomingPrs.push(incomingPr);
@@ -141,18 +130,18 @@ export class DashData {
         }
 
         let myReview = null;
-        let status = PullRequestStatus.NoActionRequired;
+        let status:api.PullRequestStatus = {type: 'NoActionRequired'};
         if (relevantReview) {
           // Cast because inner type has less strict type for __typename.
           myReview =
               convertReviewFields(relevantReview as reviewFieldsFragment);
 
           if (relevantReview.state !== PullRequestReviewState.APPROVED) {
-            status = PullRequestStatus.ApprovalRequired;
+            status = {type: 'ApprovalRequired'};
           }
         }
 
-        const reviewedPr: IncomingPullRequest = {
+        const reviewedPr: api.IncomingPullRequest = {
           ...convertPrFields(pr),
           myReview,
           status,
@@ -169,18 +158,37 @@ export class DashData {
   }
 }
 
+function reviewsForOutgoingPrs(reviews: Array<reviewFieldsFragment|null>, outgoingPr: api.OutgoingPullRequest) {
+  for (const review of reviews) {
+    if (!review) {
+      continue;
+    }
+
+    if (outgoingPr.status.type === 'WaitingReview' &&
+        review.state === PullRequestReviewState.APPROVED) {
+      outgoingPr.status = {type: 'PendingMerge'};
+    } else if (review.state === PullRequestReviewState.CHANGES_REQUESTED) {
+      outgoingPr.status = {type: 'PendingChanges'};
+    }
+
+    outgoingPr.reviews.push(convertReviewFields(review));
+  }
+
+
+}
+
 /**
  * Converts a pull request GraphQL object to an API object.
  */
-function convertPrFields(fields: prFieldsFragment): PullRequest {
-  const pr: PullRequest = {
+function convertPrFields(fields: prFieldsFragment): api.PullRequest {
+  const pr: api.PullRequest = {
     repository: fields.repository.nameWithOwner,
     title: fields.title,
     createdAt: Date.parse(fields.createdAt),
     url: fields.url,
     avatarUrl: '',
     author: '',
-    status: PullRequestStatus.Unknown,
+    status: {type: 'UnknownStatus'},
   };
 
   if (fields.author && fields.author.__typename === 'User') {
@@ -194,7 +202,7 @@ function convertPrFields(fields: prFieldsFragment): PullRequest {
 /**
  * Converts a review GraphQL object to an API object.
  */
-function convertReviewFields(fields: reviewFieldsFragment): Review {
+function convertReviewFields(fields: reviewFieldsFragment): api.Review {
   const review = {
     author: '',
     createdAt: Date.parse(fields.createdAt),
