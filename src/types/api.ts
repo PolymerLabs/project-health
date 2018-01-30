@@ -123,6 +123,4 @@ export interface NewCommitsEvent {
   deltaText: string;
 }
 
-export interface MentionedEvent {
-  type: 'MentionedEvent';
-}
+export interface MentionedEvent { type: 'MentionedEvent'; }

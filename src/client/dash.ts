@@ -2,8 +2,7 @@ import {html, render} from '../../node_modules/lit-html/lit-html.js';
 import * as api from '../types/api';
 
 type EventDisplay = {
-  time: number|null;
-  text: string;
+  time: number|null; text: string;
 };
 
 type StatusDisplay = {
@@ -42,9 +41,11 @@ function eventDisplay(event: api.PullRequestEvent): EventDisplay {
   switch (event.type) {
     case 'OutgoingReviewEvent':
       const authors = event.reviews.map((review) => review.author);
-      const latest = Math.max(...event.reviews.map((review) => review.createdAt));
+      const latest =
+          Math.max(...event.reviews.map((review) => review.createdAt));
       let states = event.reviews.map((review) => review.reviewState);
-      states = states.filter((value, index, self) => self.indexOf(value) === index);
+      states =
+          states.filter((value, index, self) => self.indexOf(value) === index);
 
       let text = authors.join(', ');
       if (states.length === 1) {
@@ -74,8 +75,9 @@ function eventDisplay(event: api.PullRequestEvent): EventDisplay {
 function eventTemplate(event: api.PullRequestEvent) {
   const display = eventDisplay(event);
 
-  const timeTemplate = (time:number) => html`<time class="pr-event__time" datetime="${
-    new Date(time).toISOString()}">${timeToString(time)}</time>`;
+  const timeTemplate = (time: number) =>
+      html`<time class="pr-event__time" datetime="${
+          new Date(time).toISOString()}">${timeToString(time)}</time>`;
   return html`
     ${display.time ? timeTemplate(display.time) : ''}
 
