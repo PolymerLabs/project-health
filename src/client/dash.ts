@@ -1,8 +1,9 @@
 import {html, render} from '../../node_modules/lit-html/lit-html.js';
 import * as api from '../types/api';
 
-type PullRequestEvent = {
-  time: number; text: string;
+type EventDisplay = {
+  time: number|null;
+  text: string;
 };
 
 type StatusDisplay = {
@@ -37,18 +38,54 @@ function timeToString(dateTime: number) {
   return `${(secondsSince).toFixed(0)} ${unit} ago`;
 }
 
-// TODO: should not be exported once it's used.
-export function eventTemplate(event: PullRequestEvent) {
+function eventDisplay(event: api.PullRequestEvent): EventDisplay {
+  switch (event.type) {
+    case 'OutgoingReviewEvent':
+      const authors = event.reviews.map((review) => review.author);
+      const latest = Math.max(...event.reviews.map((review) => review.createdAt));
+      let states = event.reviews.map((review) => review.reviewState);
+      states = states.filter((value, index, self) => self.indexOf(value) === index);
+
+      let text = authors.join(', ');
+      if (states.length === 1) {
+        if (states[0] === 'APPROVED') {
+          text += ' approved changes';
+        } else if (states[0] === 'CHANGES_REQUESTED') {
+          text += ' requested changes';
+        } else if (states[0] === 'COMMENTED') {
+          text += ' commented';
+        } else {
+          text += ' reviewed changes';
+        }
+      } else {
+        text += ' reviewed changes';
+      }
+      return {text, time: latest};
+    case 'MyReviewEvent':
+    case 'NewCommitsEvent':
+    case 'MentionedEvent':
+      return {text: 'Not implemented yet.', time: null};
+    default:
+      const unknown: never = event;
+      throw new Error(`Unknown PullRequestEvent: ${unknown}`);
+  }
+}
+
+function eventTemplate(event: api.PullRequestEvent) {
+  const display = eventDisplay(event);
+
+  const timeTemplate = (time:number) => html`<time class="pr-event__time" datetime="${
+    new Date(time).toISOString()}">${timeToString(time)}</time>`;
   return html`
-    <time class="pr-event__time" datetime="${
-      new Date(event.time).toISOString()}">${timeToString(event.time)}</time>
+    ${display.time ? timeTemplate(display.time) : ''}
+
     <div class="pr-event__bullet">
       <svg width="40" height="26">
         <line x1="20" x2="20" y1="0" y2="16"/>
         <circle cx="20" cy="20" r="4.5" />
       </svg>
     </div>
-    <div class="pr-event__title">${event.text}</div>`;
+    <div class="pr-event__title">${display.text}</div>`;
 }
 
 function statusToDisplay(pr: api.PullRequest): StatusDisplay {
@@ -72,6 +109,8 @@ function statusToDisplay(pr: api.PullRequest): StatusDisplay {
       return {text: 'Ready to merge', actionable: true};
     case 'StatusChecksFailed':
       return {text: 'Status checks failed', actionable: true};
+    case 'NoReviewers':
+      return {text: 'No reviewers assigned', actionable: true};
     case 'ReviewRequired':
       return {text: 'Pending your review', actionable: true};
     case 'ApprovalRequired':
@@ -107,7 +146,9 @@ function prTemplate(pr: api.PullRequest) {
         <span class="pr-info__repo-name">${pr.repository}</span>
         <span class="pr-info__title">${pr.title}</span>
       </div>
-    </a>`;
+    </a>
+
+    ${pr.events.map(eventTemplate)}`;
 }
 
 async function start() {

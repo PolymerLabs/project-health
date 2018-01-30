@@ -8,11 +8,16 @@ export interface PullRequest {
   createdAt: number;
   avatarUrl: string;
   status: PullRequestStatus;
+  events: PullRequestEvent[];
 }
 
-export type PullRequestStatus = UnknownStatus|NoActionRequired|NewActivity|
-    StatusChecksPending|WaitingReview|PendingChanges|PendingMerge|
-    StatusChecksFailed|ReviewRequired|ApprovalRequired|MergeRequired;
+export type PullRequestStatus =
+    UnknownStatus|NoActionRequired|NewActivity|StatusChecksPending|
+    WaitingReview|PendingChanges|PendingMerge|StatusChecksFailed|ReviewRequired|
+    ApprovalRequired|MergeRequired|NoReviewers;
+
+export type PullRequestEvent =
+    OutgoingReviewEvent|MyReviewEvent|NewCommitsEvent|MentionedEvent;
 
 // TODO: remove this.
 export interface OutgoingPullRequest extends PullRequest {
@@ -80,6 +85,11 @@ interface StatusChecksFailed {
   type: 'StatusChecksFailed';
 }
 
+// No requested reviewers
+interface NoReviewers {
+  type: 'NoReviewers';
+}
+
 /** Actionable - incoming */
 
 // Review required by viewer
@@ -95,4 +105,24 @@ interface ApprovalRequired {
 // Viewer approved, author unable to merge
 interface MergeRequired {
   type: 'MergeRequired';
+}
+
+export interface OutgoingReviewEvent {
+  type: 'OutgoingReviewEvent';
+  reviews: Review[];
+}
+
+export interface MyReviewEvent {
+  type: 'MyReviewEvent';
+  review: Review;
+}
+
+export interface NewCommitsEvent {
+  type: 'NewCommitsEvent';
+  count: number;
+  deltaText: string;
+}
+
+export interface MentionedEvent {
+  type: 'MentionedEvent';
 }
