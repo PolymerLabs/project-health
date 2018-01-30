@@ -37,6 +37,19 @@ function timeToString(dateTime: number) {
   return `${(secondsSince).toFixed(0)} ${unit} ago`;
 }
 
+function reviewStateToString(state: string) {
+  if (state === 'APPROVED') {
+    return 'approved changes';
+  } else if (state === 'CHANGES_REQUESTED') {
+    return 'requested changes';
+  } else if (state === 'COMMENTED') {
+    return 'reviewed with comments';
+  } else if (state === 'DIMUEOS') {
+    return 'dismissed review';
+  }
+  return '';
+}
+
 function eventDisplay(event: api.PullRequestEvent): EventDisplay {
   switch (event.type) {
     case 'OutgoingReviewEvent':
@@ -47,22 +60,18 @@ function eventDisplay(event: api.PullRequestEvent): EventDisplay {
       states =
           states.filter((value, index, self) => self.indexOf(value) === index);
 
-      let text = authors.join(', ');
+      let text = '';
       if (states.length === 1) {
-        if (states[0] === 'APPROVED') {
-          text += ' approved changes';
-        } else if (states[0] === 'CHANGES_REQUESTED') {
-          text += ' requested changes';
-        } else if (states[0] === 'COMMENTED') {
-          text += ' commented';
-        } else {
-          text += ' reviewed changes';
-        }
+        text = `${authors.join(', ')} ${reviewStateToString(states[0])}`;
       } else {
-        text += ' reviewed changes';
+        text += `${authors.join(', ')} reviewed changes`;
       }
       return {text, time: latest};
     case 'MyReviewEvent':
+      return {
+        text: `You ${reviewStateToString(event.review.reviewState)}`,
+        time: event.review.createdAt,
+      };
     case 'NewCommitsEvent':
     case 'MentionedEvent':
       return {text: 'Not implemented yet.', time: null};
