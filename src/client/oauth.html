@@ -4,30 +4,40 @@
 
   (function() {
     const queryParams = new URLSearchParams(window.location.search);
-    const loginCode = queryParams.get('code');
-    const redirectOrigin = queryParams.get('redirect-origin');
-    // This redirect allows testing on localhost or on the remote server
-    if (redirectOrigin) {
-      // Redirect to the same URL, just on the different origin.
-      const redirectOauthURL = new URL(window.location.pathname, redirectOrigin);
-      redirectOauthURL.search = `code=${loginCode}`;
-      window.location = redirectOauthURL.toString();
-      return;
-    }
 
-    if (loginCode) {
+    if (queryParams.has('redirect-origin')) {
+      // This redirect allows testing on localhost or on the remote server
+      const redirectOauthURL = new URL(window.location.pathname, queryParams.get('redirect-origin'));
+
+      // Remove the redirect origin and redirect with remaining search params
+      queryParams.delete('redirect-origin');
+      redirectOauthURL.search = queryParams.toString();
+      window.location = redirectOauthURL.toString();
+    } else if (queryParams.has('code')) {
+      // User just logged in and we have the code from Github
       fetch('/login', {
         method: 'POST',
-        body: loginCode,
+        body: queryParams.get('code'),
         credentials: 'include',
       }).then(() => {
-        window.location.href = '/dash.html';
+        window.location.href =
+          queryParams.get('final-redirect') || '/dash.html';
       });
-    } else if (queryParams.has('error')) {
+    } else if(queryParams.has('error')) {
+      // User logged in but there is an error from Github
       throw new Error(`Error returned by Github: '${queryParams.get('error_description')}'`);
     } else {
-      const scopes = queryParams.get('scopes') || '';
-      window.location = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=${scopes}&redirect_uri=https://project-health-internal.googleplex.com/oauth.html?redirect-origin=${REDIRECT_ORIGIN}`;
+      const properties = {
+        client_id: CLIENT_ID,
+        scope: queryParams.get('scope') || '',
+        redirect_uri: encodeURIComponent(
+          `https://project-health-internal.googleplex.com/oauth.html?redirect-origin=${REDIRECT_ORIGIN}&final-redirect=${queryParams.get('final-redirect')}`
+        ),
+      };
+      const searchValues = Object.keys(properties).map((keyName) => {
+        return `${keyName}=${properties[keyName]}`;
+      });
+      window.location = `https://github.com/login/oauth/authorize?${searchValues.join('&')}`;
     }
   })();
 </script>
