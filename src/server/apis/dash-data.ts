@@ -24,8 +24,8 @@ export class DashData {
       return;
     }
 
-    const userData =
-        await this.fetchUserData(req.query.login || loginDetails.username, loginDetails.token);
+    const userData = await this.fetchUserData(
+        req.query.login || loginDetails.username, loginDetails.token);
     res.header('content-type', 'application/json');
     res.send(JSON.stringify(userData, null, 2));
   }
@@ -38,7 +38,8 @@ export class DashData {
       variables: {
         login,
         reviewRequestsQueryString: `review-requested:${login} ${openPrQuery}`,
-        reviewedQueryString: `reviewed-by:${login} ${openPrQuery}`,
+        reviewedQueryString:
+            `reviewed-by:${login} ${openPrQuery} -author:${login}`,
       },
       fetchPolicy: 'network-only',
       context: {token}
@@ -74,17 +75,23 @@ export class DashData {
         }
 
         if (pr.reviews && pr.reviews.nodes) {
-          reviewsForOutgoingPrs(pr.reviews.nodes, outgoingPr);
+          // Filter out reviews from the viewer.
+          const prReviews = pr.reviews.nodes.filter(
+              (review) =>
+                  review && review.author && review.author.login !== login);
+          reviewsForOutgoingPrs(prReviews, outgoingPr);
         }
 
-        const reviewersCount = outgoingPr.reviewRequests.length + outgoingPr.reviews.length;
-        if (outgoingPr.status.type === 'WaitingReview' && reviewersCount === 0) {
+        const reviewersCount =
+            outgoingPr.reviewRequests.length + outgoingPr.reviews.length;
+        if (outgoingPr.status.type === 'WaitingReview' &&
+            reviewersCount === 0) {
           outgoingPr.status = {type: 'NoReviewers'};
         } else if (outgoingPr.status.type === 'WaitingReview') {
-          outgoingPr.status.reviewers = [
+          outgoingPr.status.reviewers = Array.from(new Set([
             ...outgoingPr.reviewRequests,
             ...outgoingPr.reviews.map((review) => review.author),
-          ]
+          ]));
         }
 
         outgoingPrs.push(outgoingPr);
