@@ -3,7 +3,7 @@ import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
 import {Server} from 'http';
 import * as path from 'path';
-import * as request from 'request-promise-native';
+import fetch from 'node-fetch';
 
 import {GitHub} from '../utils/github';
 
@@ -36,7 +36,7 @@ export class DashServer {
     app.post('/login', bodyParser.text(), this.handleLogin.bind(this));
 
     app.use('/api/push-subscription/', getPushSubRouter(this.github));
-    app.use('/api/webhook/', getWebhookRouter());
+    app.use('/api/webhook/', bodyParser.json(), getWebhookRouter(this.github));
     app.use('/api/settings/', getSettingsRouter(this.github));
 
     this.app = app;
@@ -67,24 +67,30 @@ export class DashServer {
       res.sendStatus(400);
       return;
     }
-    const postResp = await request.post({
-      url: 'https://github.com/login/oauth/access_token',
-      headers: {'Accept': 'application/json'},
-      form: {
+
+    const loginResponse = await fetch(
+      'https://github.com/login/oauth/access_token', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
         'client_id': this.secrets.GITHUB_CLIENT_ID,
         'client_secret': this.secrets.GITHUB_CLIENT_SECRET,
         'code': req.body,
-      },
-      json: true,
+      }),
     });
 
-    if (postResp['error']) {
-      console.log(postResp);
+    const loginResponseBody = await loginResponse.json();
+    if (loginResponseBody['error']) {
+      console.log(loginResponseBody);
       res.sendStatus(500);
       return;
     }
 
-    res.cookie('id', postResp['access_token'], {httpOnly: true});
+    res.cookie('id', loginResponseBody['access_token'], {httpOnly: true});
+    res.cookie('scope', loginResponseBody['scope'], {httpOnly: true});
     res.end();
   }
 }

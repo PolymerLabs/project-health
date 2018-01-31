@@ -14,6 +14,13 @@ function getRouter(github: GitHub): express.Router {
         return;
     }
 
+    const scopes = request.cookies['scope'] ?
+      request.cookies['scope'].split(',') : [];
+    if ((scopes.indexOf('admin:org_hook') === -1 || scopes.indexOf('read:org') === -1)) {
+      response.status(400).send('Missing required scope.');
+      return;
+    }
+
     try {
       // TODO: Run github query to get org web hook state etc
 
@@ -49,6 +56,7 @@ const orgsDetailsQuery = gql`
       organizations(first: 20) {
         nodes {
           name
+          login
           viewerCanAdminister
         }
         totalCount
