@@ -76,8 +76,9 @@ export class DashData {
 
         if (pr.reviews && pr.reviews.nodes) {
           // Filter out reviews from the viewer.
-          const prReviews = pr.reviews.nodes.filter((review) => review && review.author &&
-                                      review.author.login !== login);
+          const prReviews = pr.reviews.nodes.filter(
+              (review) =>
+                  review && review.author && review.author.login !== login);
           reviewsForOutgoingPrs(prReviews, outgoingPr);
         }
 
@@ -87,10 +88,10 @@ export class DashData {
             reviewersCount === 0) {
           outgoingPr.status = {type: 'NoReviewers'};
         } else if (outgoingPr.status.type === 'WaitingReview') {
-          outgoingPr.status.reviewers = [
+          outgoingPr.status.reviewers = unique([
             ...outgoingPr.reviewRequests,
             ...outgoingPr.reviews.map((review) => review.author),
-          ]
+          ]);
         }
 
         outgoingPrs.push(outgoingPr);
@@ -156,6 +157,18 @@ export class DashData {
       incomingPrs,
     };
   }
+}
+
+/**
+ * Given an array of items, returns a unique list of items.
+ */
+function unique<T>(source: T[]): T[] {
+  return source.reduce((previous:T[], current) => {
+    if (!previous.includes(current)) {
+      previous.push(current);
+    }
+    return previous;
+  }, []);
 }
 
 function reviewsForOutgoingPrs(
