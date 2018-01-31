@@ -74,7 +74,8 @@ function eventDisplay(event: api.PullRequestEvent): EventDisplay {
       };
     case 'NewCommitsEvent':
       return {
-        text: `${event.count} new commits +${event.additions} -${event.deletions}`,
+        text: `${event.count} new commits +${event.additions} -${
+            event.deletions}`,
         time: event.latestPushed,
       };
     case 'MentionedEvent':
