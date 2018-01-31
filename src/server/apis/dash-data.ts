@@ -25,7 +25,7 @@ export class DashData {
     }
 
     const userData =
-        await this.fetchUserData(loginDetails.username, loginDetails.token);
+        await this.fetchUserData(req.query.login || loginDetails.username, loginDetails.token);
     res.header('content-type', 'application/json');
     res.send(JSON.stringify(userData, null, 2));
   }
