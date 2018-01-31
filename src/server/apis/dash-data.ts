@@ -24,9 +24,8 @@ export class DashData {
       return;
     }
 
-    const username = req.query.login !== 'null' ? req.query.login : loginDetails.username;
     const userData =
-        await this.fetchUserData(username, loginDetails.token);
+        await this.fetchUserData(req.query.login || loginDetails.username, loginDetails.token);
     res.header('content-type', 'application/json');
     res.send(JSON.stringify(userData, null, 2));
   }
