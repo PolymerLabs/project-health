@@ -4,12 +4,17 @@
   --actionable-color: #ee9709;
   --non-actionable-color: #4a90e2;
   --secondary-text-color: hsl(0, 0%, 40%); /* 5.7 contrast ratio on white */
+  --timeline-color: hsl(0, 0%, 75%);
   --small-text: 12px;
 }
 
 h1 {
   font-size: 24px;
   font-weight: normal;
+}
+
+.pr-list h1 {
+  grid-column: 1 / -1;
 }
 
 .pr-list {
@@ -47,6 +52,7 @@ h1 {
   height: 40px;
   border-radius: 50%;
   position: absolute;
+  background: white;
 }
 
 .pr-status {
@@ -75,7 +81,7 @@ h1 {
 
 .pr-info__repo-name {
   color: var(--secondary-text-color);
-  margin-right: var(--padding);
+  margin-right: calc(var(--padding) / 2);
 }
 
 .actionable {
@@ -99,7 +105,7 @@ h1 {
 
 .pr-event__bullet svg {
   margin-top: -7px;
-  stroke: hsl(0, 0%, 75%);
+  stroke: var(--timeline-color);
   fill: none;
   stroke-width: 3px;
 }
