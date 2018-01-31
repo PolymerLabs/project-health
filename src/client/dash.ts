@@ -37,7 +37,7 @@ function timeToString(dateTime: number) {
   return `${(secondsSince).toFixed(0)} ${unit} ago`;
 }
 
-function reviewStateToString(state: string) {
+function reviewStateToString(state: api.Review['reviewState']) {
   if (state === 'APPROVED') {
     return 'approved changes';
   } else if (state === 'CHANGES_REQUESTED') {
