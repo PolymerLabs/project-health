@@ -97,7 +97,7 @@ export class DashData {
         outgoingPrs.push(outgoingPr);
       }
 
-      // Incoming reviews
+      // Incoming review requests.
       for (const pr of viewerPrsResult.data.reviewRequests.nodes || []) {
         if (!pr || pr.__typename !== 'PullRequest') {
           continue;
@@ -112,6 +112,7 @@ export class DashData {
         incomingPrs.push(incomingPr);
       }
 
+      // Incoming PRs that I've reviewed.
       for (const pr of viewerPrsResult.data.reviewed.nodes || []) {
         if (!pr || pr.__typename !== 'PullRequest') {
           continue;
@@ -126,7 +127,7 @@ export class DashData {
               pr.reviews.nodes as Array<reviewFieldsFragment|null>);
         }
 
-        let myReview = null;
+        let myReview: api.Review|null = null;
         let status: api.PullRequestStatus = {type: 'NoActionRequired'};
         if (relevantReview) {
           // Cast because inner type has less strict type for __typename.
@@ -146,6 +147,42 @@ export class DashData {
 
         if (myReview) {
           reviewedPr.events.push({type: 'MyReviewEvent', review: myReview});
+        }
+
+        // Check if there are new commits to the pull request.
+        if (pr.commits.nodes) {
+          const newCommits = [];
+          let additions = 0;
+          let deletions = 0;
+          let changedFiles = 0;
+          let lastPushedAt = 0;
+          for (const node of pr.commits.nodes) {
+            if (!myReview || !node || !node.commit.pushedDate) {
+              continue;
+            }
+            const pushedAt = Date.parse(node.commit.pushedDate);
+            if (pushedAt <= myReview.createdAt) {
+              continue;
+            }
+            additions += node.commit.additions;
+            deletions += node.commit.deletions;
+            changedFiles += node.commit.changedFiles;
+            if (pushedAt > lastPushedAt) {
+              lastPushedAt = Date.parse(node.commit.pushedDate);
+            }
+            newCommits.push(node);
+          }
+
+          if (newCommits.length) {
+            reviewedPr.events.push({
+              type: 'NewCommitsEvent',
+              count: newCommits.length,
+              additions,
+              deletions,
+              changedFiles,
+              lastPushedAt,
+            });
+          }
         }
 
         incomingPrs.push(reviewedPr);
@@ -302,6 +339,16 @@ query ViewerPullRequests($login: String!, $reviewRequestsQueryString: String!, $
         reviews(author: $login, last: 10) {
           nodes {
             ...reviewFields
+          }
+        }
+        commits(last: 20) {
+          nodes {
+            commit {
+              additions
+              deletions
+              changedFiles
+              pushedDate
+            }
           }
         }
       }

@@ -11,7 +11,7 @@ When GitHub's API changes, the corresponding schema needs to be updated. Run
 the following command to generate the schema from GitHub's introspection API.
 
 ```bash
-$(npm bin)/apollo-codegen introspect-schema https://api.github.com/graphql --output github-schema.json --header "Authorization: bearer <your token>"
+$(npm bin)/apollo-codegen introspect-schema https://api.github.com/graphql --output src/types/github-schema.json --header "Authorization: bearer <your token>"
 ```
 
 ## Running the CLI
@@ -50,7 +50,7 @@ test, write your test then run the following: ``` npm run test:record --
 these snapshotted responses.
 
 ## Running the dashboard
-- Be in the top-level `project-health` directory. 
+- Be in the top-level `project-health` directory.
 - Create a `secrets.json` file with this format (note: do not commit this file):
   ```
   {

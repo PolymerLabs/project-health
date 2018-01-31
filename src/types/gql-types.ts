@@ -317,6 +317,8 @@ export interface PullRequestCommitsQuery {
     } | {
       __typename: "CommitComment",
     } | {
+      __typename: "UserContentEdit",
+    } | {
       __typename: "Reaction",
     } | {
       __typename: "Commit",
@@ -428,6 +430,8 @@ export interface PullRequestCommitsQuery {
       __typename: "ReviewRequestRemovedEvent",
     } | {
       __typename: "ReviewDismissedEvent",
+    } | {
+      __typename: "DeployKey",
     } | {
       __typename: "Language",
     } | {
@@ -851,6 +855,26 @@ export interface ViewerPullRequestsQuery {
             ) | null,
           } | null > | null,
         } | null,
+        // A list of commits present in this pull request's head branch not present in the base branch.
+        commits:  {
+          __typename: string,
+          // A list of nodes.
+          nodes:  Array< {
+            __typename: string,
+            // The Git commit object
+            commit:  {
+              __typename: string,
+              // The number of additions in this commit.
+              additions: number,
+              // The number of deletions in this commit.
+              deletions: number,
+              // The number of changed files in this commit.
+              changedFiles: number,
+              // The datetime when this commit was pushed.
+              pushedDate: string | null,
+            },
+          } | null > | null,
+        },
       } | {
         __typename: "Repository",
       } | {
