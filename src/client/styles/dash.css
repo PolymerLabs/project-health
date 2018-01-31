@@ -64,6 +64,11 @@ h1 {
   color: inherit;
 }
 
+.pr-body:hover .pr-info {
+  text-decoration: underline;
+  text-decoration-color: var(--non-actionable-color);
+}
+
 .pr-info {
   font-weight: bold;
 }
@@ -83,6 +88,7 @@ h1 {
 
 .pr-event__bullet {
   height: 26px;
+  grid-column: 2 / 2;
 }
 
 .pr-event__time {

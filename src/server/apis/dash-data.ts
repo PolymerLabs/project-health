@@ -77,7 +77,10 @@ export class DashData {
           reviewsForOutgoingPrs(pr.reviews.nodes, outgoingPr);
         }
 
-        if (outgoingPr.status.type === 'WaitingReview') {
+        const reviewersCount = outgoingPr.reviewRequests.length + outgoingPr.reviews.length;
+        if (outgoingPr.status.type === 'WaitingReview' && reviewersCount === 0) {
+          outgoingPr.status = {type: 'NoReviewers'};
+        } else if (outgoingPr.status.type === 'WaitingReview') {
           outgoingPr.status.reviewers = [
             ...outgoingPr.reviewRequests,
             ...outgoingPr.reviews.map((review) => review.author),
@@ -110,27 +113,14 @@ export class DashData {
         // Find relevant review.
         let relevantReview = null;
         if (pr.reviews && pr.reviews.nodes) {
-          for (let i = pr.reviews.nodes.length - 1; i >= 0; i--) {
-            const nextReview = pr.reviews.nodes[i];
-            // Pending reviews have not been sent yet.
-            if (!relevantReview && nextReview &&
-                nextReview.state !== PullRequestReviewState.PENDING) {
-              relevantReview = nextReview;
-            } else if (
-                relevantReview &&
-                relevantReview.state === PullRequestReviewState.COMMENTED &&
-                nextReview &&
-                (nextReview.state === PullRequestReviewState.APPROVED ||
-                 nextReview.state ===
-                     PullRequestReviewState.CHANGES_REQUESTED)) {
-              // Use last approved/changes requested if it exists.
-              relevantReview = nextReview;
-            }
-          }
+          // Generated gql-types is missing the proper __type field so a cast is
+          // needed.
+          relevantReview = findMyRelevantReview(
+              pr.reviews.nodes as Array<reviewFieldsFragment|null>);
         }
 
         let myReview = null;
-        let status:api.PullRequestStatus = {type: 'NoActionRequired'};
+        let status: api.PullRequestStatus = {type: 'NoActionRequired'};
         if (relevantReview) {
           // Cast because inner type has less strict type for __typename.
           myReview =
@@ -147,6 +137,10 @@ export class DashData {
           status,
         };
 
+        if (myReview) {
+          reviewedPr.events.push({type: 'MyReviewEvent', review: myReview});
+        }
+
         incomingPrs.push(reviewedPr);
       }
     }
@@ -158,7 +152,9 @@ export class DashData {
   }
 }
 
-function reviewsForOutgoingPrs(reviews: Array<reviewFieldsFragment|null>, outgoingPr: api.OutgoingPullRequest) {
+function reviewsForOutgoingPrs(
+    reviews: Array<reviewFieldsFragment|null>,
+    outgoingPr: api.OutgoingPullRequest) {
   for (const review of reviews) {
     if (!review) {
       continue;
@@ -174,7 +170,49 @@ function reviewsForOutgoingPrs(reviews: Array<reviewFieldsFragment|null>, outgoi
     outgoingPr.reviews.push(convertReviewFields(review));
   }
 
+  const reviewsRequestingChanges = outgoingPr.reviews.filter(
+      (review) =>
+          review.reviewState === PullRequestReviewState.CHANGES_REQUESTED);
+  const reviewsApproved = outgoingPr.reviews.filter(
+      (review) => review.reviewState === PullRequestReviewState.APPROVED);
+  let eventReviews = null;
 
+  if (reviewsRequestingChanges.length) {
+    eventReviews = reviewsRequestingChanges;
+  } else if (reviewsApproved.length) {
+    eventReviews = reviewsApproved;
+  } else if (outgoingPr.reviews.length) {
+    eventReviews = outgoingPr.reviews;
+  }
+
+  if (eventReviews) {
+    outgoingPr.events.push({
+      type: 'OutgoingReviewEvent',
+      reviews: eventReviews,
+    });
+  }
+}
+
+function findMyRelevantReview(reviews: Array<reviewFieldsFragment|null>):
+    reviewFieldsFragment|null {
+  let relevantReview: reviewFieldsFragment|null = null;
+  for (let i = reviews.length - 1; i >= 0; i--) {
+    const nextReview = reviews[i];
+    // Pending reviews have not been sent yet.
+    if (!relevantReview && nextReview &&
+        nextReview.state !== PullRequestReviewState.PENDING) {
+      relevantReview = nextReview;
+    } else if (
+        relevantReview &&
+        relevantReview.state === PullRequestReviewState.COMMENTED &&
+        nextReview &&
+        (nextReview.state === PullRequestReviewState.APPROVED ||
+         nextReview.state === PullRequestReviewState.CHANGES_REQUESTED)) {
+      // Use last approved/changes requested if it exists.
+      relevantReview = nextReview;
+    }
+  }
+  return relevantReview;
 }
 
 /**
@@ -189,6 +227,7 @@ function convertPrFields(fields: prFieldsFragment): api.PullRequest {
     avatarUrl: '',
     author: '',
     status: {type: 'UnknownStatus'},
+    events: [],
   };
 
   if (fields.author && fields.author.__typename === 'User') {
