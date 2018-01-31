@@ -44,7 +44,7 @@ function reviewStateToString(state: string) {
     return 'requested changes';
   } else if (state === 'COMMENTED') {
     return 'reviewed with comments';
-  } else if (state === 'DIMUEOS') {
+  } else if (state === 'DISMISSED') {
     return 'dismissed review';
   }
   return '';
