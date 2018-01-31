@@ -218,7 +218,7 @@ test('project-health1 dashboard', async (t) => {
             additions: 1,
             deletions: 1,
             changedFiles: 1,
-            latestPushed: 1517426401000,
+            lastPushedAt: 1517426401000,
           }
         ],
         myReview: {

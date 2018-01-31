@@ -76,7 +76,7 @@ function eventDisplay(event: api.PullRequestEvent): EventDisplay {
       return {
         text: `${event.count} new commits +${event.additions} -${
             event.deletions}`,
-        time: event.latestPushed,
+        time: event.lastPushedAt,
       };
     case 'MentionedEvent':
       return {text: 'Not implemented yet.', time: null};

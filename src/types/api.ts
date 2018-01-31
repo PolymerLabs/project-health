@@ -123,7 +123,7 @@ export interface NewCommitsEvent {
   additions: number;
   deletions: number;
   changedFiles: number;
-  latestPushed: number;
+  lastPushedAt: number;
 }
 
 export interface MentionedEvent { type: 'MentionedEvent'; }

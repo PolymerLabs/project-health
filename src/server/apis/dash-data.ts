@@ -151,23 +151,28 @@ export class DashData {
 
         // Check if there are new commits to the pull request.
         if (pr.commits.nodes) {
-          const newCommits = pr.commits.nodes.filter(
-              (node) => myReview && node && node.commit.pushedDate &&
-                  Date.parse(node.commit.pushedDate) > myReview.createdAt);
+          const newCommits = [];
           let additions = 0;
           let deletions = 0;
           let changedFiles = 0;
-          let latestPushed = 0;
-          newCommits.forEach((node) => {
-            if (node) {
-              additions += node.commit.additions;
-              deletions += node.commit.deletions;
-              changedFiles += node.commit.changedFiles;
-              if (node.commit.pushedDate && Date.parse(node.commit.pushedDate) > latestPushed) {
-                latestPushed = Date.parse(node.commit.pushedDate);
-              }
+          let lastPushedAt = 0;
+          for (const node of pr.commits.nodes) {
+            if (!myReview || !node || !node.commit.pushedDate) {
+              continue;
             }
-          });
+            const pushedAt = Date.parse(node.commit.pushedDate);
+            if (pushedAt <= myReview.createdAt) {
+              continue;
+            }
+            additions += node.commit.additions;
+            deletions += node.commit.deletions;
+            changedFiles += node.commit.changedFiles;
+            if (pushedAt > lastPushedAt) {
+              lastPushedAt = Date.parse(node.commit.pushedDate);
+            }
+            newCommits.push(node);
+          }
+
           if (newCommits.length) {
             reviewedPr.events.push({
               type: 'NewCommitsEvent',
@@ -175,7 +180,7 @@ export class DashData {
               additions,
               deletions,
               changedFiles,
-              latestPushed,
+              lastPushedAt,
             });
           }
         }
