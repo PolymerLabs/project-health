@@ -2,8 +2,8 @@ import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
 import {Server} from 'http';
-import * as path from 'path';
 import fetch from 'node-fetch';
+import * as path from 'path';
 
 import {GitHub} from '../utils/github';
 
@@ -68,19 +68,19 @@ export class DashServer {
       return;
     }
 
-    const loginResponse = await fetch(
-      'https://github.com/login/oauth/access_token', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        'client_id': this.secrets.GITHUB_CLIENT_ID,
-        'client_secret': this.secrets.GITHUB_CLIENT_SECRET,
-        'code': req.body,
-      }),
-    });
+    const loginResponse =
+        await fetch('https://github.com/login/oauth/access_token', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            'client_id': this.secrets.GITHUB_CLIENT_ID,
+            'client_secret': this.secrets.GITHUB_CLIENT_SECRET,
+            'code': req.body,
+          }),
+        });
 
     const loginResponseBody = await loginResponse.json();
     if (loginResponseBody['error']) {
