@@ -39,6 +39,41 @@ test('project-health1 dashboard', async (t) => {
       'project-health1', t.context.token);
   t.deepEqual(result, {
     outgoingPrs: [
+      // Outgoing PR, review with my own replies.
+      {
+        author: 'project-health1',
+        avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
+        createdAt: 1517359006000,
+        events: [
+          {
+            reviews: [
+              {
+                author: 'project-health2',
+                createdAt: 1517359027000,
+                reviewState: PullRequestReviewState.COMMENTED,
+              }
+            ],
+            type: 'OutgoingReviewEvent',
+          },
+        ],
+        repository: 'project-health1/repo',
+        reviewRequests: [],
+        reviews: [
+          {
+            author: 'project-health2',
+            createdAt: 1517359027000,
+            reviewState: PullRequestReviewState.COMMENTED,
+          },
+        ],
+        status: {
+          reviewers: [
+            'project-health2'
+          ],
+          type: 'WaitingReview',
+        },
+        title: 'Update readme to contain more information',
+        url: 'https://github.com/project-health1/repo/pull/8',
+      },
       // Outgoing PR, no reviewers.
       {
         author: 'project-health1',
