@@ -170,12 +170,10 @@ async function start() {
   const json = await res.json() as api.DashResponse;
 
   const tmpl = html`
-    <h1>Outgoing pull requests</h1>
     <div class="pr-list">
+      <h1>Outgoing pull requests</h1>
       ${json.outgoingPrs.map(prTemplate)}
-    </div>
-    <h1>Incoming pull requests</h1>
-    <div class="pr-list">
+      <h1>Incoming pull requests</h1>
       ${json.incomingPrs.map(prTemplate)}
     </div>
   `;
