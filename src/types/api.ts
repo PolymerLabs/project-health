@@ -120,7 +120,10 @@ export interface MyReviewEvent {
 export interface NewCommitsEvent {
   type: 'NewCommitsEvent';
   count: number;
-  deltaText: string;
+  additions: number;
+  deletions: number;
+  changedFiles: number;
+  latestPushed: number;
 }
 
 export interface MentionedEvent { type: 'MentionedEvent'; }

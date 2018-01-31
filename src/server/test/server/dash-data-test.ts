@@ -198,6 +198,41 @@ test('project-health1 dashboard', async (t) => {
         status: {type: 'ReviewRequired'},
         events: [],
       },
+      // Incoming PR that I reviewed. New commit since.
+      {
+        author: 'project-health2',
+        avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
+        createdAt: 1517426339000,
+        events: [
+          {
+            review: {
+              author: 'project-health1',
+              createdAt: 1517426369000,
+              reviewState: PullRequestReviewState.CHANGES_REQUESTED,
+            },
+            type: 'MyReviewEvent',
+          },
+          {
+            type: 'NewCommitsEvent',
+            count: 1,
+            additions: 1,
+            deletions: 1,
+            changedFiles: 1,
+            latestPushed: 1517426401000,
+          }
+        ],
+        myReview: {
+          author: 'project-health1',
+          createdAt: 1517426369000,
+          reviewState: PullRequestReviewState.CHANGES_REQUESTED,
+        },
+        repository: 'project-health1/repo',
+        status: {
+          type: 'ApprovalRequired',
+        },
+        title: 'Update links in readme',
+        url: 'https://github.com/project-health1/repo/pull/9',
+      },
       // Incoming PR, I requested changes.
       {
         author: 'project-health2',
