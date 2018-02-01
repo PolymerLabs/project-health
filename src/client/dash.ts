@@ -2,7 +2,7 @@ import {html, render} from '../../node_modules/lit-html/lit-html.js';
 import * as api from '../types/api';
 
 type EventDisplay = {
-  time: number|null; text: string;
+  time: number|null; text: string; url: string | null;
 };
 
 type StatusDisplay = {
@@ -66,20 +66,22 @@ function eventDisplay(event: api.PullRequestEvent): EventDisplay {
       } else {
         text += `${authors.join(', ')} reviewed changes`;
       }
-      return {text, time: latest};
+      return {text, time: latest, url: null};
     case 'MyReviewEvent':
       return {
         text: `You ${reviewStateToString(event.review.reviewState)}`,
         time: event.review.createdAt,
+        url: null,
       };
     case 'NewCommitsEvent':
       return {
         text: `${event.count} new commits +${event.additions} -${
             event.deletions}`,
         time: event.lastPushedAt,
+        url: event.url,
       };
     case 'MentionedEvent':
-      return {text: 'Not implemented yet.', time: null};
+      return {text: 'Not implemented yet.', time: null, url: null};
     default:
       const unknown: never = event;
       throw new Error(`Unknown PullRequestEvent: ${unknown}`);
@@ -92,6 +94,10 @@ function eventTemplate(event: api.PullRequestEvent) {
   const timeTemplate = (time: number) =>
       html`<time class="pr-event__time" datetime="${
           new Date(time).toISOString()}">${timeToString(time)}</time>`;
+
+  const linkTemplate = (url: string, text: string) =>
+      html`<a class="pr-event__url" href="${url}" target="_blank">${text}</a>`;
+
   return html`
     ${display.time ? timeTemplate(display.time) : ''}
 
@@ -101,7 +107,9 @@ function eventTemplate(event: api.PullRequestEvent) {
         <circle cx="20" cy="20" r="4.5" />
       </svg>
     </div>
-    <div class="pr-event__title">${display.text}</div>`;
+    <div class="pr-event__title">
+      ${display.url ? linkTemplate(display.url, display.text) : display.text}
+    </div>`;
 }
 
 function statusToDisplay(pr: api.PullRequest): StatusDisplay {

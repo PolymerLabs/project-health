@@ -124,6 +124,7 @@ export interface NewCommitsEvent {
   deletions: number;
   changedFiles: number;
   lastPushedAt: number;
+  url: string;
 }
 
 export interface MentionedEvent { type: 'MentionedEvent'; }

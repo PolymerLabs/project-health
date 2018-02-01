@@ -46,13 +46,11 @@ test('project-health1 dashboard', async (t) => {
         createdAt: 1517359006000,
         events: [
           {
-            reviews: [
-              {
-                author: 'project-health2',
-                createdAt: 1517359027000,
-                reviewState: PullRequestReviewState.COMMENTED,
-              }
-            ],
+            reviews: [{
+              author: 'project-health2',
+              createdAt: 1517359027000,
+              reviewState: PullRequestReviewState.COMMENTED,
+            }],
             type: 'OutgoingReviewEvent',
           },
         ],
@@ -66,9 +64,7 @@ test('project-health1 dashboard', async (t) => {
           },
         ],
         status: {
-          reviewers: [
-            'project-health2'
-          ],
+          reviewers: ['project-health2'],
           type: 'WaitingReview',
         },
         title: 'Update readme to contain more information',
@@ -219,6 +215,8 @@ test('project-health1 dashboard', async (t) => {
             deletions: 1,
             changedFiles: 1,
             lastPushedAt: 1517426401000,
+            url:
+                'https://github.com/project-health1/repo/pull/9/files/4eb760bbbeb1e9b5ee51010050fca4d1f2fe5dbb..bf67264ad3d77fcd9ad43cfcc13c8578fb9f57de',
           }
         ],
         myReview: {
