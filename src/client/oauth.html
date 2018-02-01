@@ -15,7 +15,7 @@
       window.location = redirectOauthURL.toString();
     } else if (queryParams.has('code')) {
       // User just logged in and we have the code from Github
-      fetch('/login', {
+      fetch('/api/login', {
         method: 'POST',
         body: queryParams.get('code'),
         credentials: 'include',
@@ -31,7 +31,7 @@
         client_id: CLIENT_ID,
         scope: queryParams.get('scope') || '',
         redirect_uri: encodeURIComponent(
-          `https://project-health-internal.googleplex.com/oauth.html?redirect-origin=${REDIRECT_ORIGIN}&final-redirect=${queryParams.get('final-redirect')}`
+          `https://project-health-internal.googleplex.com/oauth.html?redirect-origin=${REDIRECT_ORIGIN}&final-redirect=${queryParams.get('final-redirect') || ''}`
         ),
       };
       const searchValues = Object.keys(properties).map((keyName) => {

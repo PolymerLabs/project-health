@@ -2,16 +2,22 @@ import * as express from 'express';
 import gql from 'graphql-tag';
 
 import {GitHub} from '../../utils/github';
-import {getLoginFromRequest} from '../utils/login-from-request';
+import {userModel} from '../models/userModel';
 import {OrgDetailsQuery} from '../../types/gql-types';
 
 function getRouter(github: GitHub): express.Router {
   const settingsRouter = express.Router();
   settingsRouter.post('/orgs.json', async (request: express.Request, response: express.Response) => {
-    const loginDetails = await getLoginFromRequest(github, request);
+    const loginDetails = await userModel.getLoginFromRequest(request);
     if (!loginDetails) {
         response.sendStatus(400);
         return;
+    }
+
+    const scopes = loginDetails.scopes;
+    if ((scopes.indexOf('admin:org_hook') === -1 || scopes.indexOf('read:org') === -1)) {
+      response.status(400).send('Missing required scope.');
+      return;
     }
 
     try {
@@ -49,6 +55,7 @@ const orgsDetailsQuery = gql`
       organizations(first: 20) {
         nodes {
           name
+          login
           viewerCanAdminister
         }
         totalCount

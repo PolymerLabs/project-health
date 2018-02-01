@@ -3,16 +3,16 @@ import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
 import {Server} from 'http';
 import * as path from 'path';
-import * as request from 'request-promise-native';
 
 import {GitHub} from '../utils/github';
 
 import {DashData} from './apis/dash-data';
+import {getRouter as getLoginRouter} from './apis/login';
 import {getRouter as getPushSubRouter} from './apis/push-subscription';
 import {getRouter as getSettingsRouter} from './apis/settings';
 import {getRouter as getWebhookRouter} from './apis/webhook';
 
-type DashSecrets = {
+export type DashSecrets = {
   GITHUB_CLIENT_ID: string; GITHUB_CLIENT_SECRET: string;
 };
 
@@ -33,10 +33,13 @@ export class DashServer {
     app.use(express.static(path.join(__dirname, '../client')));
 
     app.get('/dash.json', new DashData(this.github).getHandler());
-    app.post('/login', bodyParser.text(), this.handleLogin.bind(this));
+    app.use(
+        '/api/login/',
+        bodyParser.text(),
+        getLoginRouter(this.github, this.secrets));
 
-    app.use('/api/push-subscription/', getPushSubRouter(this.github));
-    app.use('/api/webhook/', getWebhookRouter());
+    app.use('/api/push-subscription/', getPushSubRouter());
+    app.use('/api/webhook/', bodyParser.json(), getWebhookRouter(this.github));
     app.use('/api/settings/', getSettingsRouter(this.github));
 
     this.app = app;
@@ -60,31 +63,5 @@ export class DashServer {
     } else {
       server = this.app.listen(port, 'localhost', printStatus);
     }
-  }
-
-  async handleLogin(req: express.Request, res: express.Response) {
-    if (!req.body) {
-      res.sendStatus(400);
-      return;
-    }
-    const postResp = await request.post({
-      url: 'https://github.com/login/oauth/access_token',
-      headers: {'Accept': 'application/json'},
-      form: {
-        'client_id': this.secrets.GITHUB_CLIENT_ID,
-        'client_secret': this.secrets.GITHUB_CLIENT_SECRET,
-        'code': req.body,
-      },
-      json: true,
-    });
-
-    if (postResp['error']) {
-      console.log(postResp);
-      res.sendStatus(500);
-      return;
-    }
-
-    res.cookie('id', postResp['access_token'], {httpOnly: true});
-    res.end();
   }
 }
