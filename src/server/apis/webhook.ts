@@ -54,7 +54,7 @@ function getRouter(github: GitHub): express.Router {
 
     if (request.params.action === 'add') {
       try {
-        const githubResponseBody = await github.post(
+        await github.post(
           `orgs/${request.body.org}/hooks`, 
           loginDetails.token,
           {
@@ -68,10 +68,6 @@ function getRouter(github: GitHub): express.Router {
                 content_type: 'json'
               }
           });
-
-        const webhookId = githubResponseBody.id;
-        console.log(`Must add webhook '${webhookId}' to webhook ` +
-          `model for '${request.body.org}`);
 
         response.sendStatus(200);
       } catch (err) {

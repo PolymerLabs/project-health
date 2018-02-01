@@ -2,7 +2,7 @@ import * as express from 'express';
 import fetch from 'node-fetch';
 
 import {GitHub} from '../../utils/github';
-import {DashSecrets} from '../../types/api';
+import {DashSecrets} from '../dash-server';
 import {userModel} from '../models/userModel';
 
 function getRouter(github: GitHub, secrets: DashSecrets): express.Router {
