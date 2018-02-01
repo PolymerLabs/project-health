@@ -21,6 +21,17 @@ const PUSH_SUBSCRIPTION_2 = {
 };
 const CONTENT_ENCODINGS = ['aes128gcm', 'aesgcm'];
 
+test.beforeEach(() => {
+  const subscriptions = pushSubscriptionModel.getSubscriptionsForUser(USER_LOGIN);
+  if (subscriptions) {
+    const subscriptionKeys =Object.keys(subscriptions);
+    subscriptionKeys.forEach((subKey) => {
+      const subscriptionInfo = subscriptions[subKey];
+      pushSubscriptionModel.removePushSubscription(USER_LOGIN, subscriptionInfo.subscription);
+    });
+  }
+});
+
 test('addPushSubscription should support multiple subscriptions', (t) => {
   pushSubscriptionModel.addPushSubscription(USER_LOGIN, PUSH_SUBSCRIPTION, CONTENT_ENCODINGS);
   pushSubscriptionModel.addPushSubscription(USER_LOGIN, PUSH_SUBSCRIPTION_2, []);
