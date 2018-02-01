@@ -138,8 +138,8 @@ export class GitHub {
   }
 
   async post(path: string, userToken: string, body: {}, parseJSON = true):
-    // tslint:disable-next-line:no-any
-    Promise<any> {
+      // tslint:disable-next-line:no-any
+      Promise<any> {
     const token = userToken || process.env.GITHUB_TOKEN;
     const query = {
       url: this.jsonUrl + '/' + path,
