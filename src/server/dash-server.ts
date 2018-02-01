@@ -4,14 +4,14 @@ import * as express from 'express';
 import {Server} from 'http';
 import * as path from 'path';
 
+import {DashSecrets} from '../types/api';
 import {GitHub} from '../utils/github';
 
 import {DashData} from './apis/dash-data';
-import {DashSecrets} from '../types/api';
+import {getRouter as getLoginRouter} from './apis/login';
 import {getRouter as getPushSubRouter} from './apis/push-subscription';
 import {getRouter as getSettingsRouter} from './apis/settings';
 import {getRouter as getWebhookRouter} from './apis/webhook';
-import {getRouter as getLoginRouter} from './apis/login';
 
 export class DashServer {
   private secrets: DashSecrets;
@@ -30,7 +30,10 @@ export class DashServer {
     app.use(express.static(path.join(__dirname, '../client')));
 
     app.get('/dash.json', new DashData(this.github).getHandler());
-    app.use('/api/login/', bodyParser.text(), getLoginRouter(this.github, this.secrets));
+    app.use(
+        '/api/login/',
+        bodyParser.text(),
+        getLoginRouter(this.github, this.secrets));
 
     app.use('/api/push-subscription/', getPushSubRouter());
     app.use('/api/webhook/', bodyParser.json(), getWebhookRouter(this.github));
