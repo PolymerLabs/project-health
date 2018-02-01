@@ -24,7 +24,7 @@ const CONTENT_ENCODINGS = ['aes128gcm', 'aesgcm'];
 test.beforeEach(() => {
   const subscriptions = pushSubscriptionModel.getSubscriptionsForUser(USER_LOGIN);
   if (subscriptions) {
-    const subscriptionKeys =Object.keys(subscriptions);
+    const subscriptionKeys = Object.keys(subscriptions);
     subscriptionKeys.forEach((subKey) => {
       const subscriptionInfo = subscriptions[subKey];
       pushSubscriptionModel.removePushSubscription(USER_LOGIN, subscriptionInfo.subscription);
