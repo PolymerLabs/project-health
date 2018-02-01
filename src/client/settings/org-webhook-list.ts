@@ -59,7 +59,8 @@ function hookTemplate(org: OrgWebHookState) {
     });
 
     if (!response.ok) {
-      // This the response is not 200, revert the checkbox state.
+      // If the response is not a 2XX response, revert the checkbox state.
+      // to reflect that the hook has not been enabled.
       checkboxElement.checked = !checkboxElement.checked;
     }
 
@@ -68,12 +69,9 @@ function hookTemplate(org: OrgWebHookState) {
 
   let message = `You cannot enable updates for ${org.name}. Request an owner to add the project-health WebHook.`;
   if (org.viewerCanAdminister) {
-    // TODO: Handle scenario where the webhook is added.
+    // TODO: Handle scenario where the webhook is already added.
     message = `Toggle to enable updates for ${org.name}.`;
   }
-
-  // TODO: Test if org has rights and if not, redirect user to:
-  // https://github.com/settings/connections/applications/:client_id ???
 
   return html`
   <div class="settings-toggle-item">

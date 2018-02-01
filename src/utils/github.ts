@@ -136,6 +136,30 @@ export class GitHub {
     }
     return await request.get(query);
   }
+
+  // tslint:disable-next-line:no-any
+  async post(path: string, userToken: string, body: {}, parseJSON = true): Promise<any> {
+    const token = userToken || process.env.GITHUB_TOKEN;
+    const query = {
+      url: this.jsonUrl + '/' + path,
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `token ${token}`,
+        'User-Agent': 'Project Health Bot',
+        'Content-Type': 'application/json',
+      },
+      body,
+      json: true,
+      resolveWithFullResponse: false,
+      simple: true,
+    };
+    if (!parseJSON) {
+      query.json = false;
+      query.resolveWithFullResponse = true;
+      query.simple = false;
+    }
+    return await request.post(query);
+  }
 }
 
 type PageInfo = {

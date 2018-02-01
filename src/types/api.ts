@@ -1,5 +1,9 @@
 import {PullRequestReviewState} from './gql-types';
 
+export type DashSecrets = {
+  GITHUB_CLIENT_ID: string; GITHUB_CLIENT_SECRET: string;
+};
+
 export interface PullRequest {
   repository: string;
   title: string;
