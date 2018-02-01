@@ -8,6 +8,11 @@
   --small-text: 12px;
 }
 
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
 h1 {
   font-size: 24px;
   font-weight: normal;
@@ -66,11 +71,9 @@ h1 {
 
 .pr-body {
   grid-column: 3 / 3;
-  text-decoration: none;
-  color: inherit;
 }
 
-.pr-body:hover .pr-info {
+.pr-body:hover .pr-info, .pr-event__url:hover {
   text-decoration: underline;
   text-decoration-color: var(--non-actionable-color);
 }

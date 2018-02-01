@@ -329,6 +329,10 @@
           "reviews": {
             "nodes": [
               {
+                "commit": {
+                  "oid": "4eb760bbbeb1e9b5ee51010050fca4d1f2fe5dbb",
+                  "__typename": "Commit"
+                },
                 "__typename": "PullRequestReview",
                 "createdAt": "2018-01-31T19:19:29Z",
                 "state": "CHANGES_REQUESTED",
@@ -348,6 +352,7 @@
                   "deletions": 1,
                   "changedFiles": 1,
                   "pushedDate": "2018-01-31T19:18:44Z",
+                  "oid": "4eb760bbbeb1e9b5ee51010050fca4d1f2fe5dbb",
                   "__typename": "Commit"
                 },
                 "__typename": "PullRequestCommit"
@@ -358,6 +363,7 @@
                   "deletions": 1,
                   "changedFiles": 1,
                   "pushedDate": "2018-01-31T19:20:01Z",
+                  "oid": "bf67264ad3d77fcd9ad43cfcc13c8578fb9f57de",
                   "__typename": "Commit"
                 },
                 "__typename": "PullRequestCommit"
@@ -384,6 +390,10 @@
           "reviews": {
             "nodes": [
               {
+                "commit": {
+                  "oid": "9b09af13ea76c068b99dfd81f457e76ca92d0299",
+                  "__typename": "Commit"
+                },
                 "__typename": "PullRequestReview",
                 "createdAt": "2018-01-24T00:18:25Z",
                 "state": "CHANGES_REQUESTED",
@@ -403,6 +413,7 @@
                   "deletions": 1,
                   "changedFiles": 1,
                   "pushedDate": "2018-01-23T23:35:18Z",
+                  "oid": "9b09af13ea76c068b99dfd81f457e76ca92d0299",
                   "__typename": "Commit"
                 },
                 "__typename": "PullRequestCommit"
@@ -431,8 +442,8 @@
     "rateLimit": {
       "cost": 1,
       "limit": 5000,
-      "remaining": 4995,
-      "resetAt": "2018-01-31T20:27:59Z",
+      "remaining": 4999,
+      "resetAt": "2018-02-01T01:55:08Z",
       "nodeCount": 320,
       "__typename": "RateLimit"
     }

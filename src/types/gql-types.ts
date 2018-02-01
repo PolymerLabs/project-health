@@ -853,6 +853,12 @@ export interface ViewerPullRequestsQuery {
                 login: string,
               }
             ) | null,
+            // Identifies the commit associated with this pull request review.
+            commit:  {
+              __typename: string,
+              // The Git object ID
+              oid: string,
+            } | null,
           } | null > | null,
         } | null,
         // A list of commits present in this pull request's head branch not present in the base branch.
@@ -872,6 +878,8 @@ export interface ViewerPullRequestsQuery {
               changedFiles: number,
               // The datetime when this commit was pushed.
               pushedDate: string | null,
+              // The Git object ID
+              oid: string,
             },
           } | null > | null,
         },

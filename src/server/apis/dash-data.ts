@@ -119,12 +119,12 @@ export class DashData {
         }
 
         // Find relevant review.
-        let relevantReview = null;
+        let relevantReview:MyReviewFields|null = null;
         if (pr.reviews && pr.reviews.nodes) {
           // Generated gql-types is missing the proper __type field so a cast is
           // needed.
           relevantReview = findMyRelevantReview(
-              pr.reviews.nodes as Array<reviewFieldsFragment|null>);
+              pr.reviews.nodes as Array<MyReviewFields|null>);
         }
 
         let myReview: api.Review|null = null;
@@ -156,6 +156,7 @@ export class DashData {
           let deletions = 0;
           let changedFiles = 0;
           let lastPushedAt = 0;
+          let lastOid;
           for (const node of pr.commits.nodes) {
             if (!myReview || !node || !node.commit.pushedDate) {
               continue;
@@ -169,11 +170,12 @@ export class DashData {
             changedFiles += node.commit.changedFiles;
             if (pushedAt > lastPushedAt) {
               lastPushedAt = Date.parse(node.commit.pushedDate);
+              lastOid = node.commit.oid;
             }
             newCommits.push(node);
           }
 
-          if (newCommits.length) {
+          if (newCommits.length && relevantReview) {
             reviewedPr.events.push({
               type: 'NewCommitsEvent',
               count: newCommits.length,
@@ -181,6 +183,7 @@ export class DashData {
               deletions,
               changedFiles,
               lastPushedAt,
+              url: `${pr.url}/files/${relevantReview.commit.oid}..${lastOid || ''}`,
             });
           }
         }
@@ -237,9 +240,11 @@ function reviewsForOutgoingPrs(
   }
 }
 
-function findMyRelevantReview(reviews: Array<reviewFieldsFragment|null>):
-    reviewFieldsFragment|null {
-  let relevantReview: reviewFieldsFragment|null = null;
+type MyReviewFields = reviewFieldsFragment & {commit: {oid: string}};
+
+function findMyRelevantReview(reviews: Array<MyReviewFields|null>):
+    MyReviewFields|null {
+  let relevantReview: MyReviewFields|null = null;
   for (let i = reviews.length - 1; i >= 0; i--) {
     const nextReview = reviews[i];
     // Pending reviews have not been sent yet.
@@ -339,6 +344,9 @@ query ViewerPullRequests($login: String!, $reviewRequestsQueryString: String!, $
         reviews(author: $login, last: 10) {
           nodes {
             ...reviewFields
+            commit {
+              oid
+            }
           }
         }
         commits(last: 20) {
@@ -348,6 +356,7 @@ query ViewerPullRequests($login: String!, $reviewRequestsQueryString: String!, $
               deletions
               changedFiles
               pushedDate
+              oid
             }
           }
         }
