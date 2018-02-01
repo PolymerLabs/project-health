@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import * as api from '../../types/api';
 import {prFieldsFragment, PullRequestReviewState, reviewFieldsFragment, ViewerPullRequestsQuery} from '../../types/gql-types';
 import {GitHub} from '../../utils/github';
-import {getLoginFromRequest} from '../utils/login-from-request';
+import {userModel} from '../models/userModel';
 
 export class DashData {
   private github: GitHub;
@@ -18,9 +18,9 @@ export class DashData {
   }
 
   private async handler(req: express.Request, res: express.Response) {
-    const loginDetails = await getLoginFromRequest(this.github, req);
+    const loginDetails = await userModel.getLoginFromRequest(req);
     if (!loginDetails) {
-      res.send(401);
+      res.sendStatus(401);
       return;
     }
 

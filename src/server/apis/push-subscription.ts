@@ -1,13 +1,10 @@
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 
-import {GitHub} from '../../utils/github';
-import {PushSubscriptionModel} from '../models/PushSubscriptionModel';
-import {getLoginFromRequest} from '../utils/login-from-request';
+import {pushSubscriptionModel} from '../models/pushSubscriptionModel';
+import {userModel} from '../models/userModel';
 
-function getRouter(github: GitHub): express.Router {
-  const pushSubscriptions = new PushSubscriptionModel();
-
+function getRouter(): express.Router {
   const pushSubscriptionRouter = express.Router();
   pushSubscriptionRouter.post('/:action', bodyParser.json(), async (request: express.Request, response: express.Response) => {
     try {
@@ -16,19 +13,19 @@ function getRouter(github: GitHub): express.Router {
           return;
       }
 
-      const loginDetails = await getLoginFromRequest(github, request);
+      const loginDetails = await userModel.getLoginFromRequest(request);
       if (!loginDetails) {
           response.sendStatus(400);
           return;
       }
 
       if (request.params.action === 'add') {
-        pushSubscriptions.addPushSubscription(
+        pushSubscriptionModel.addPushSubscription(
           loginDetails.username,
           request.body.subscription,
           request.body.supportedContentEncodings);
       } else if (request.params.action === 'remove') {
-        pushSubscriptions.removePushSubscription(
+        pushSubscriptionModel.removePushSubscription(
           loginDetails.username,
           request.body.subscription);
       } else {

@@ -9,7 +9,7 @@ class PushSubscriptionInfo {
   supportedContentEncodings: string[];
 }
 
-export class PushSubscriptionModel {
+class PushSubscriptionModel {
   private pushSubscriptions:
       {[id: string]: {[endpoint: string]: PushSubscriptionInfo}};
 
@@ -51,3 +51,5 @@ export class PushSubscriptionModel {
     return this.pushSubscriptions[userId];
   }
 }
+
+export const pushSubscriptionModel = new PushSubscriptionModel();

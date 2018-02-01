@@ -1,7 +1,9 @@
 import * as express from 'express';
 import * as webhookEvents from '../webhook-events';
+import {userModel} from '../models/userModel';
+import {GitHub} from '../../utils/github';
 
-function getRouter(): express.Router {
+function getRouter(github: GitHub): express.Router {
   const webhookRouter = express.Router();
   webhookRouter.post('/', async (request: express.Request, response: express.Response) => {
     const eventName = request.headers['x-github-event'];
@@ -36,6 +38,78 @@ function getRouter(): express.Router {
       console.error(err);
       response.status(500).send('An unhandled error occured.');
     }
+  });
+
+  webhookRouter.post('/:action', async (request: express.Request, response: express.Response) => {
+    const loginDetails = await userModel.getLoginFromRequest(request);
+    if (!loginDetails) {
+        response.sendStatus(400);
+        return;
+    }
+
+    if (!request.body.org) {
+      response.status(400).send('No org provided.');
+      return;
+    }
+
+    if (request.params.action === 'add') {
+      try {
+        await github.post(
+          `orgs/${request.body.org}/hooks`, 
+          loginDetails.token,
+          {
+            name: 'web',
+              active: true,
+              events: [
+                '*',
+              ],
+              config: {
+                url: 'https://project-health-internal.googleplex.com/api/webhook',
+                content_type: 'json'
+              }
+          });
+
+        response.sendStatus(200);
+      } catch (err) {
+        if (err.statusCode === 422) {
+          // The webhook already exists
+          response.sendStatus(200);
+          return;
+        }
+
+        console.warn('Unable to create webhook: ', err.message);
+        response.sendStatus(500);
+        return;
+      }
+    } else if (request.params.action === 'remove') {
+      try {
+        // TODO: Retrieve webhook for org login
+        const hookId = -1;
+        const githubResponseBody = await github.post(
+          `/orgs/${request.body.org}/hooks/${hookId}`,
+          loginDetails.token,
+          {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `token ${loginDetails.token}`,
+              'User-Agent': 'project-health',
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        console.log('Successfully removed webhook: ', githubResponseBody);
+
+        response.sendStatus(200);
+      } catch (err) {
+        console.warn('Unable to remove webhook: ', err.message);
+        response.sendStatus(500);
+        return;
+      }
+    }
+
+    response.sendStatus(400);
   });
 
   return webhookRouter;

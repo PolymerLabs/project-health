@@ -922,6 +922,8 @@ export interface OrgDetailsQuery {
         __typename: "Organization",
         // The organization's public profile name.
         name: string | null,
+        // The organization's login name.
+        login: string,
         // Organization is adminable by the viewer.
         viewerCanAdminister: boolean,
       } | null > | null,
