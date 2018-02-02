@@ -1,13 +1,13 @@
-import {applicationServerKey} from './push-details.js';
 import {addSubscriptionToBackend, removeSubscriptionFromBackend} from './push-backend.js';
+import {applicationServerKey} from './push-details.js';
 
 let pushToggle: HTMLInputElement;
 let pushStatus: Element;
 
-class PushComponentState {
+interface PushComponentState {
   isSupported: boolean;
   permissionBlocked: boolean;
-  subscription: PushSubscription | null;
+  subscription: PushSubscription|null;
 }
 
 function getRegistration() {
@@ -22,7 +22,7 @@ async function getState() {
   };
 
   state.isSupported = !(!navigator.serviceWorker || !('PushManager' in window));
-  
+
   // Run async tasks in parallel
   await Promise.all([
     (async () => {
@@ -30,7 +30,8 @@ async function getState() {
       state.subscription = await registration.pushManager.getSubscription();
     })(),
     (async () => {
-      const permissionState = await (navigator as any).permissions.query({name: 'notifications'});
+      const permissionState =
+          await (navigator as any).permissions.query({name: 'notifications'});
       state.permissionBlocked = permissionState.state === 'denied';
     })()
   ]);
@@ -78,7 +79,8 @@ async function updateUI() {
 }
 
 function start() {
-  const toggleElement = <HTMLInputElement> document.querySelector('.push-component__toggle');
+  const toggleElement =
+      <HTMLInputElement>document.querySelector('.push-component__toggle');
   const statusElement = document.querySelector('.push-component__status');
 
   if (!toggleElement) {
