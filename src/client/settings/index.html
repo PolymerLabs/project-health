@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Settings</title>
+  <link href="/styles/base.css" rel="stylesheet" />
+  <style>
+  :root {
+    --padding: 8px;
+  }
+
+  .settings-toggle-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: var(--padding);
+  }
+
+  .settings-toggle-item__toggle {
+    margin-right: var(--padding);
+  }
+
+  .settings-toggle-item__details h6, .settings-toggle-item__details p {
+    margin: 0;
+  }
+  </style>
+</head>
+
+<body>
+  <h1>Settings</h1>
+
+  <section>
+    <h2>Your Notifications</h2>
+    <div class="settings-toggle-item">
+      <input class="settings-toggle-item__toggle push-component__toggle" type="checkbox" disabled></input>
+      <div class="settings-toggle-item__details">
+        <h6>Push Notifications <span class="push-component__status"></span></h6>
+        <p>Push notifications are enabled. Toggle to no longer receive push notifications on this device.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Organization Permissions</h2>
+    <p>Each organization must add a webhook before any push notifications can be
+      received by anyone in the organization. <a target="_blank" href="https://github.com/settings/connections/applications/23b7d82aec29a3a1a2a8">Review Project-Health Permissions</a>
+    </p>
+    <div class="org-webhook-list"></div>
+  </section>
+</body>
+
+<script src="./push-component.js" type="module"></script>
+<script src="./org-webhook-list.js" type="module"></script>
+
+</html>

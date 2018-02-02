@@ -11,7 +11,7 @@ When GitHub's API changes, the corresponding schema needs to be updated. Run
 the following command to generate the schema from GitHub's introspection API.
 
 ```bash
-$(npm bin)/apollo-codegen introspect-schema https://api.github.com/graphql --output github-schema.json --header "Authorization: bearer <your token>"
+$(npm bin)/apollo-codegen introspect-schema https://api.github.com/graphql --output src/types/github-schema.json --header "Authorization: bearer <your token>"
 ```
 
 ## Running the CLI
@@ -24,7 +24,7 @@ export GITHUB_TOKEN=<your token>
 
 After building the project, run the CLI:
 ```bash
-./bin/project-health --metric review-latency --org webcomponents
+./build/cli/project-health.js --metric review-latency --org webcomponents
 ```
 
 Options:
@@ -50,7 +50,7 @@ test, write your test then run the following: ``` npm run test:record --
 these snapshotted responses.
 
 ## Running the dashboard
-- Be in the top-level `project-health` directory. 
+- Be in the top-level `project-health` directory.
 - Create a `secrets.json` file with this format (note: do not commit this file):
   ```
   {
@@ -65,7 +65,7 @@ these snapshotted responses.
 ## Transferring repositories
 This script allows you to move many repositories between organizations. A data file with each repo name per line should be provided via `stdin`. Invoke as follows:
 ```
-./server/bin/transfer --token <github-token> --from OrganizationFrom --to OrganizationTo
+./build/cli/transfer.js --token <github-token> --from OrganizationFrom --to OrganizationTo
 ```
 
 To perform the transfer, repeat with the `--force` parameter.

@@ -1,9 +1,6 @@
 runtime: nodejs8
 threadsafe: true
 
-skip_files:
-- dev-only-gcloud-key.json
-
 handlers:
 - url: /.*
   script: server.js
