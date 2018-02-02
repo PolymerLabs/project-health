@@ -2,6 +2,7 @@ runtime: nodejs8
 threadsafe: true
 
 skip_files:
+- node_modules/
 - github-health-.*\.json
 
 handlers:
