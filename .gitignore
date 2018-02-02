@@ -7,6 +7,6 @@ server/src/gql-types.ts
 server/.nyc_output/
 coverage/
 secrets.json
-project-health-test-358b8bfb05e4.json
+github-health-*.json
 .nyc_output/
 build/

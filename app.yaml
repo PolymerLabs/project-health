@@ -1,6 +1,9 @@
 runtime: nodejs8
 threadsafe: true
 
+skip_files:
+- github-health-.*\.json
+
 handlers:
 - url: /.*
   script: server.js
