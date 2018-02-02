@@ -1,13 +1,8 @@
 import {html} from '../../../node_modules/lit-html/lit-html.js';
 import {render} from '../../../node_modules/lit-html/lib/lit-extended.js';
-let orgListContainer: Element;
+import {OrgWebHookState} from '../../types/api';
 
-type OrgWebHookState = {
-  name: string;
-  login: string;
-  viewerCanAdminister: boolean;
-  hookIsEnabled: boolean;
-};
+let orgListContainer: Element;
 
 type AllOrgsState = {
   orgs: OrgWebHookState[];
@@ -75,7 +70,7 @@ function hookTemplate(org: OrgWebHookState) {
 
   return html`
   <div class="settings-toggle-item">
-    <input class="settings-toggle-item__toggle" type="checkbox" on-click="${checkboxClick}"></input>
+    <input class="settings-toggle-item__toggle" type="checkbox" checked="${org.hookEnabled}" on-click="${checkboxClick}"></input>
     <div class="settings-toggle-item__details">
       <h6>${org.name}</h6>
       <p>${message}</p>

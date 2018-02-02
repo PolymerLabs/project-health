@@ -1,7 +1,7 @@
 'use strict';
 
-const {DashServer} = require('./build/server/dash-server');
-const {GitHub} = require('./build/utils/github');
+const { DashServer } = require('./build/server/dash-server');
+const { GitHub } = require('./build/utils/github');
 const fs = require('fs');
 const path = require('path');
 const secrets = require('./secrets.json');
@@ -17,9 +17,17 @@ for (const file of fs.readdirSync(__dirname)) {
 
 if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
   console.log(
-      'no gcloud credentials file found;',
-      'using application default credentials');
+    'no gcloud credentials file found;',
+    'using application default credentials');
 }
 
 const server = new DashServer(new GitHub(), secrets);
 server.listen();
+
+// Display stack traces for uncaught errors.
+const logError = (err) => {
+  console.error(err);
+  throw err;
+};
+process.on('uncaughtException', logError);
+process.on('unhandledRejection', logError);
