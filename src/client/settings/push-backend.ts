@@ -1,4 +1,4 @@
-class SubscriptionAPIBody {
+interface SubscriptionAPIBody {
   subscription: PushSubscription;
   supportedContentEncodings: string[];
 }

@@ -1,10 +1,10 @@
-class PushSubscription {
+interface PushSubscription {
   endpoint: string;
   expirationTime: number|null;
   keys: {p256dh: string; auth: string;};
 }
 
-class PushSubscriptionInfo {
+interface PushSubscriptionInfo {
   subscription: PushSubscription;
   supportedContentEncodings: string[];
 }
