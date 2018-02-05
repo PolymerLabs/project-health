@@ -13,6 +13,6 @@ handlers:
 
 deploy:
   provider: gae
-  keyfile: github-health-staging-5ed56f9155c0.json
+  keyfile: github-health-staging-5ed56f9155c0-travis.json
   project: github-health-staging
   default: true

@@ -7,7 +7,7 @@ cache:
   - node_modules
 
 before_install:
-- openssl aes-256-cbc -K $encrypted_5059668afa37_key -iv $encrypted_5059668afa37_iv -in github-health-staging-5ed56f9155c0.json.enc -out github-health-staging-5ed56f9155c0.json -d
+- openssl aes-256-cbc -K $encrypted_5059668afa37_key -iv $encrypted_5059668afa37_iv -in github-health-staging-5ed56f9155c0-travis.json.enc -out github-health-staging-5ed56f9155c0-travis.json -d
 
 script:
 - npm run test
