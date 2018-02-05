@@ -1,5 +1,12 @@
 import {PullRequestReviewState} from './gql-types';
 
+export interface OrgWebHookState {
+  name: string|null;
+  login: string;
+  viewerCanAdminister: boolean;
+  hookEnabled: boolean;
+}
+
 export interface PullRequest {
   repository: string;
   title: string;

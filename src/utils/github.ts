@@ -161,6 +161,21 @@ export class GitHub {
     }
     return await request.post(query);
   }
+
+  async delete(path: string, userToken: string): Promise<void> {
+    const token = userToken || process.env.GITHUB_TOKEN;
+    const query = {
+      url: this.jsonUrl + '/' + path,
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `token ${token}`,
+        'User-Agent': 'Project Health Bot',
+        'Content-Type': 'application/json',
+      },
+      resolveWithFullResponse: false,
+    };
+    await request.delete(query);
+  }
 }
 
 type PageInfo = {

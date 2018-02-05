@@ -3,6 +3,8 @@ import * as webhookEvents from '../webhook-events';
 import {userModel} from '../models/userModel';
 import {GitHub} from '../../utils/github';
 
+export const WEBHOOK_URL = 'http://github-health.appspot.com/api/webhook';
+
 function getRouter(github: GitHub): express.Router {
   const webhookRouter = express.Router();
   webhookRouter.post('/', async (request: express.Request, response: express.Response) => {
@@ -64,12 +66,13 @@ function getRouter(github: GitHub): express.Router {
                 '*',
               ],
               config: {
-                url: 'https://project-health-internal.googleplex.com/api/webhook',
+                url: WEBHOOK_URL,
                 content_type: 'json'
               }
           });
 
         response.sendStatus(200);
+        return;
       } catch (err) {
         if (err.statusCode === 422) {
           // The webhook already exists
@@ -83,25 +86,27 @@ function getRouter(github: GitHub): express.Router {
       }
     } else if (request.params.action === 'remove') {
       try {
-        // TODO: Retrieve webhook for org login
-        const hookId = -1;
-        const githubResponseBody = await github.post(
-          `/orgs/${request.body.org}/hooks/${hookId}`,
-          loginDetails.token,
-          {
-            method: 'DELETE',
-            headers: {
-              'Authorization': `token ${loginDetails.token}`,
-              'User-Agent': 'project-health',
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-            },
+        const org = request.body.org;
+        const hooks = await github.get(`orgs/${org}/hooks`, loginDetails.token);
+        let hookId = null;
+        for (const hook of hooks) {
+          if (hook.config.url === WEBHOOK_URL) {
+            hookId = hook.id;
           }
+        }
+
+        if (!hookId) {
+          response.status(400).send('No hook to remove.');
+          return;
+        }
+
+        await github.delete(
+          `orgs/${org}/hooks/${hookId}`,
+          loginDetails.token,
         );
 
-        console.log('Successfully removed webhook: ', githubResponseBody);
-
         response.sendStatus(200);
+        return;
       } catch (err) {
         console.warn('Unable to remove webhook: ', err.message);
         response.sendStatus(500);

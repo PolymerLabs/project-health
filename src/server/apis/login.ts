@@ -37,7 +37,6 @@ function getRouter(github: GitHub, secrets: DashSecrets): express.Router {
     const accessToken = loginResponseBody['access_token'];
     const userScopes = loginResponseBody['scope'] ?
       loginResponseBody['scope'].split(',') : [];
-
     await userModel.addNewUser(github, accessToken, userScopes);
 
     response.cookie('id', accessToken, {httpOnly: true});

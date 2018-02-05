@@ -4,6 +4,8 @@ import gql from 'graphql-tag';
 import {GitHub} from '../../utils/github';
 import {userModel} from '../models/userModel';
 import {OrgDetailsQuery} from '../../types/gql-types';
+import {OrgWebHookState} from '../../types/api';
+import {WEBHOOK_URL} from './webhook';
 
 function getRouter(github: GitHub): express.Router {
   const settingsRouter = express.Router();
@@ -21,8 +23,6 @@ function getRouter(github: GitHub): express.Router {
     }
 
     try {
-      // TODO: Run github query to get org web hook state etc
-
       const orgDetails = await github.query<OrgDetailsQuery>({
         query: orgsDetailsQuery,
         fetchPolicy: 'network-only',
@@ -35,8 +35,42 @@ function getRouter(github: GitHub): express.Router {
       // pagination
       // Switching to GitHub.cursorQuery() would be best option.
 
+      let apiOrgs: OrgWebHookState[] = [];
+      const orgsData = orgDetails.data.viewer.organizations.nodes;
+      if (orgsData) {
+        const orgHookPromises = orgsData.map(async (org) => {
+          if (!org) {
+            return;
+          }
+
+          let hookEnabled = false;
+          if (org.viewerCanAdminister) {
+            const hooks = await github.get(`orgs/${org.login}/hooks`, loginDetails.token);
+
+            for (const hook of hooks) {
+              if (hook.config.url === WEBHOOK_URL) {
+                hookEnabled = true;
+              }
+            }
+          }
+
+          return {
+            login: org.login,
+            name: org.name,
+            viewerCanAdminister: org.viewerCanAdminister,
+            hookEnabled,
+          };
+        });
+
+        (await Promise.all(orgHookPromises)).forEach((data) => {
+          if (data) {
+            apiOrgs.push(data);
+          }
+        });
+      }
+
       response.send(JSON.stringify({
-        orgs: orgDetails.data.viewer.organizations.nodes,
+        orgs: apiOrgs,
       }));
     } catch (err) {
       console.error(err);
