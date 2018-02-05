@@ -12,13 +12,13 @@ function getRouter(): express.Router {
       async (request: express.Request, response: express.Response) => {
         try {
           if (!request.body) {
-            response.sendStatus(400);
+            response.status(400).send('No body.');
             return;
           }
 
           const loginDetails = await userModel.getLoginFromRequest(request);
           if (!loginDetails) {
-            response.sendStatus(400);
+            response.status(400).send('No login details.');
             return;
           }
 

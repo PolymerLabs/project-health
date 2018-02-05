@@ -15,6 +15,8 @@ import {getRouter as getWebhookRouter} from './apis/webhook';
 
 export type DashSecrets = {
   GITHUB_CLIENT_ID: string; GITHUB_CLIENT_SECRET: string;
+  PUBLIC_VAPID_KEY: string;
+  PRIVATE_VAPID_KEY: string;
 };
 
 export class DashServer {
@@ -34,6 +36,7 @@ export class DashServer {
     app.use(cookieParser());
     app.use('/node_modules/lit-html', express.static(litPath));
     app.use(express.static(path.join(__dirname, '../client')));
+    app.use(express.static(path.join(__dirname, '../sw')));
 
     app.get('/dash.json', new DashData(this.github).getHandler());
     app.use(
@@ -42,7 +45,10 @@ export class DashServer {
         getLoginRouter(this.github, this.secrets));
 
     app.use('/api/push-subscription/', getPushSubRouter());
-    app.use('/api/webhook/', bodyParser.json(), getWebhookRouter(this.github));
+    app.use(
+        '/api/webhook/',
+        bodyParser.json(),
+        getWebhookRouter(this.github, this.secrets));
     app.use('/api/settings/', getSettingsRouter(this.github));
 
     app.get('/firestore-test', this.handleFirestoreTest.bind(this));

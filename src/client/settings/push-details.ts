@@ -1,5 +1,6 @@
+// TODO: Inject this value server side
 const PUBLIC_VAPID_KEY =
-    'BOX5Lqb44uosZL4_UtV7XW9dHaBj9ERFbCzlsYZBObMZjIB-yxPIbjI5pTBgIt09iy-Hl57AWpr7lJ6QXaQjy30';
+    'BJIJahSkYD0liSj6vQnq_UiGT9fbFqQpCxv7x7M2sAg55RiGKa5Gs2fSPF9UV-mviBQ1raDve6VofMi1wGagagU';
 
 /**
  * The pushManage.subscribe() method expects an ArrayBuffer and not a string.
