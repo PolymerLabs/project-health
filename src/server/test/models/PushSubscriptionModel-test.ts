@@ -25,9 +25,7 @@ test.beforeEach(() => {
   const subscriptions =
       pushSubscriptionModel.getSubscriptionsForUser(USER_LOGIN);
   if (subscriptions) {
-    const subscriptionKeys = Object.keys(subscriptions);
-    subscriptionKeys.forEach((subKey) => {
-      const subscriptionInfo = subscriptions[subKey];
+    subscriptions.forEach((subscriptionInfo) => {
       pushSubscriptionModel.removePushSubscription(
           USER_LOGIN, subscriptionInfo.subscription);
     });
@@ -68,12 +66,12 @@ test('getSubscriptionsForUser for specific user', (t) => {
 
   const subscriptionsAfterAdd =
       pushSubscriptionModel.getSubscriptionsForUser(USER_LOGIN);
-  t.deepEqual(subscriptionsAfterAdd, {
-    [PUSH_SUBSCRIPTION.endpoint]: {
+  t.deepEqual(subscriptionsAfterAdd, [
+    {
       subscription: PUSH_SUBSCRIPTION,
       supportedContentEncodings: CONTENT_ENCODINGS,
     },
-  });
+  ]);
 });
 
 test('getSubscriptionsForUser during adding and removal', (t) => {
@@ -84,27 +82,27 @@ test('getSubscriptionsForUser during adding and removal', (t) => {
 
   const subscriptionsAfterAdd =
       pushSubscriptionModel.getSubscriptionsForUser(USER_LOGIN);
-  t.deepEqual(subscriptionsAfterAdd, {
-    [PUSH_SUBSCRIPTION.endpoint]: {
+  t.deepEqual(subscriptionsAfterAdd, [
+    {
       subscription: PUSH_SUBSCRIPTION,
       supportedContentEncodings: CONTENT_ENCODINGS,
     },
-    [PUSH_SUBSCRIPTION_2.endpoint]: {
+    {
       subscription: PUSH_SUBSCRIPTION_2,
       supportedContentEncodings: [],
     },
-  });
+  ]);
 
   pushSubscriptionModel.removePushSubscription(USER_LOGIN, PUSH_SUBSCRIPTION_2);
 
   const subscriptionsAfterRemove =
       pushSubscriptionModel.getSubscriptionsForUser(USER_LOGIN);
-  t.deepEqual(subscriptionsAfterRemove, {
-    [PUSH_SUBSCRIPTION.endpoint]: {
+  t.deepEqual(subscriptionsAfterRemove, [
+    {
       subscription: PUSH_SUBSCRIPTION,
       supportedContentEncodings: CONTENT_ENCODINGS,
     },
-  });
+  ]);
 
   pushSubscriptionModel.removePushSubscription(USER_LOGIN, PUSH_SUBSCRIPTION);
 

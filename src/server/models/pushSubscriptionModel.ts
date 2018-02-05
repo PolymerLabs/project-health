@@ -10,45 +10,47 @@ interface PushSubscriptionInfo {
 }
 
 class PushSubscriptionModel {
-  private pushSubscriptions:
-      {[id: string]: {[endpoint: string]: PushSubscriptionInfo}};
+  private pushSubscriptions: {[id: string]: PushSubscriptionInfo[]};
 
   constructor() {
     this.pushSubscriptions = {};
   }
 
   addPushSubscription(
-      userId: string,
+      login: string,
       subscription: PushSubscription,
       supportedContentEncodings: string[]) {
-    if (!this.pushSubscriptions[userId]) {
-      this.pushSubscriptions[userId] = {};
+    if (!this.pushSubscriptions[login]) {
+      this.pushSubscriptions[login] = [];
     }
-    this.pushSubscriptions[userId][subscription.endpoint] = {
+
+    this.pushSubscriptions[login].push({
       subscription,
       supportedContentEncodings,
-    };
+    });
   }
 
-  removePushSubscription(userId: string, subscription: PushSubscription) {
-    if (!this.pushSubscriptions[userId]) {
+  removePushSubscription(login: string, subscription: PushSubscription) {
+    if (!this.pushSubscriptions[login]) {
       return;
     }
 
-    delete this.pushSubscriptions[userId][subscription.endpoint];
+    this.pushSubscriptions[login] =
+        this.pushSubscriptions[login].filter((value) => {
+          return value.subscription.endpoint !== subscription.endpoint;
+        });
   }
 
-  getSubscriptionsForUser(userId: string):
-      {[endpoint: string]: PushSubscriptionInfo}|null {
-    if (!this.pushSubscriptions[userId]) {
+  getSubscriptionsForUser(login: string): PushSubscriptionInfo[]|null {
+    if (!this.pushSubscriptions[login]) {
       return null;
     }
 
-    if (Object.keys(this.pushSubscriptions[userId]).length === 0) {
+    if (Object.keys(this.pushSubscriptions[login]).length === 0) {
       return null;
     }
 
-    return this.pushSubscriptions[userId];
+    return this.pushSubscriptions[login];
   }
 }
 

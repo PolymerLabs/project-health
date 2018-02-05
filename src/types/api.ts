@@ -135,3 +135,8 @@ export interface NewCommitsEvent {
 }
 
 export interface MentionedEvent { type: 'MentionedEvent'; }
+
+export interface NotificationPayload {
+  title: string;
+  body: string;
+}

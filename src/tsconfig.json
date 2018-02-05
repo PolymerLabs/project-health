@@ -12,8 +12,14 @@
       "esnext.asynciterable"
     ]
   },
+  "include": [
+    "**/*.ts",
+    "**/*.d.ts",
+  ],
   "exclude": [
     "client/*",
-    "client/**/*"
+    "client/**/*",
+    "sw/*",
+    "sw/**/*"
   ]
 }

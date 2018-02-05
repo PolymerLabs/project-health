@@ -1,12 +1,13 @@
 import * as express from 'express';
 
 import {GitHub} from '../../utils/github';
+import {DashSecrets} from '../dash-server';
 import {userModel} from '../models/userModel';
 import * as webhookEvents from '../webhook-events';
 
 export const WEBHOOK_URL = 'http://github-health.appspot.com/api/webhook';
 
-function getRouter(github: GitHub): express.Router {
+function getRouter(github: GitHub, secrets: DashSecrets): express.Router {
   const webhookRouter = express.Router();
   webhookRouter.post(
       '/', async (request: express.Request, response: express.Response) => {
@@ -25,13 +26,17 @@ function getRouter(github: GitHub): express.Router {
               response.send();
               return;
             case 'status':
-              await webhookEvents.handleStatus(request, response);
+              await webhookEvents.handleStatus(request.body);
+              response.send();
               return;
             case 'pull_request':
-              await webhookEvents.handlePullRequest(request, response);
+              await webhookEvents.handlePullRequest(request.body);
+              response.send();
               return;
             case 'pull_request_review':
-              await webhookEvents.handlePullRequestReview(request, response);
+              await webhookEvents.handlePullRequestReview(
+                  secrets, request.body);
+              response.send();
               return;
             default:
               console.warn(`Unsupported event type received: ${eventName}`);
@@ -40,7 +45,7 @@ function getRouter(github: GitHub): express.Router {
           }
         } catch (err) {
           console.error(err);
-          response.status(500).send('An unhandled error occured.');
+          response.status(500).send(err.message);
         }
       });
 
