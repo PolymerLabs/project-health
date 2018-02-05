@@ -44,4 +44,12 @@ async function launch() {
   server.listen();
 }
 
+// Display stack traces for uncaught errors.
+function logError(err: Error) {
+  console.error(err);
+  throw err;
+};
+process.on('uncaughtException', logError);
+process.on('unhandledRejection', logError);
+
 launch();
