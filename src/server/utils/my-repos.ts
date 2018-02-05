@@ -17,8 +17,8 @@
 import gql from 'graphql-tag';
 import {promisify} from 'util';
 
-import {GitHub} from '../../utils/github';
 import {MyReposQuery, MyReposQueryVariables} from '../../types/gql-types';
+import {GitHub} from '../../utils/github';
 
 const MAX_STATS_RETRIES = 5;
 

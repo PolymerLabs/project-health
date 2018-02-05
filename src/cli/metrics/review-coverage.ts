@@ -16,11 +16,11 @@
 
 import gql from 'graphql-tag';
 
-import {getOrgRepos, getReviewsForPullRequest} from '../common';
-import {GitHub} from '../../utils/github';
 import {PullRequestCommitsQuery, PullRequestCommitsQueryVariables} from '../../types/gql-types';
 import {RepoCommitsQuery, RepoCommitsQueryVariables} from '../../types/gql-types';
 import {RepoPRsCommitsQuery, RepoPRsCommitsQueryVariables} from '../../types/gql-types';
+import {GitHub} from '../../utils/github';
+import {getOrgRepos, getReviewsForPullRequest} from '../common';
 
 import {MetricResult} from './metric-result';
 

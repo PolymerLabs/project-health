@@ -119,7 +119,7 @@ export class DashData {
         }
 
         // Find relevant review.
-        let relevantReview:MyReviewFields|null = null;
+        let relevantReview: MyReviewFields|null = null;
         if (pr.reviews && pr.reviews.nodes) {
           // Generated gql-types is missing the proper __type field so a cast is
           // needed.
@@ -183,7 +183,8 @@ export class DashData {
               deletions,
               changedFiles,
               lastPushedAt,
-              url: `${pr.url}/files/${relevantReview.commit.oid}..${lastOid || ''}`,
+              url: `${pr.url}/files/${relevantReview.commit.oid}..${
+                  lastOid || ''}`,
             });
           }
         }
@@ -240,7 +241,7 @@ function reviewsForOutgoingPrs(
   }
 }
 
-type MyReviewFields = reviewFieldsFragment & {commit: {oid: string}};
+type MyReviewFields = reviewFieldsFragment&{commit: {oid: string}};
 
 function findMyRelevantReview(reviews: Array<MyReviewFields|null>):
     MyReviewFields|null {

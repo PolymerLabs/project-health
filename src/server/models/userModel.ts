@@ -1,10 +1,10 @@
 import * as express from 'express';
 import gql from 'graphql-tag';
 
-import {GitHub} from '../../utils/github';
 import {ViewerLoginQuery} from '../../types/gql-types';
+import {GitHub} from '../../utils/github';
 
-type LoginDetails = {
+interface LoginDetails {
   username: string;
   token: string;
   scopes: string[];
@@ -18,20 +18,21 @@ class UserModel {
     this.cachedLogins = {};
   }
 
-  async getLoginFromRequest(request: express.Request): Promise<LoginDetails | null> {
+  async getLoginFromRequest(request: express.Request):
+      Promise<LoginDetails|null> {
     if (!request.cookies) {
       return null;
     }
-  
+
     const token = request.cookies['id'];
     if (!token) {
       return null;
     }
-  
+
     if (this.cachedLogins[token]) {
       return this.cachedLogins[token];
     }
-  
+
     return null;
   }
 

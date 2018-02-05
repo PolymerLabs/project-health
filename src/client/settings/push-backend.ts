@@ -3,14 +3,16 @@ interface SubscriptionAPIBody {
   supportedContentEncodings: string[];
 }
 
-async function performAPICall(action: 'add' | 'remove', subscription: PushSubscription) {
+async function performAPICall(
+    action: 'add'|'remove', subscription: PushSubscription) {
   const encodings = (PushManager as {
-    supportedContentEncodings?: string[]}).supportedContentEncodings;
+                      supportedContentEncodings?: string[]
+                    }).supportedContentEncodings;
 
   const bodyContent: SubscriptionAPIBody = {
     subscription,
     supportedContentEncodings: encodings || [],
-  }; 
+  };
 
   await fetch(`/api/push-subscription/${action}`, {
     method: 'POST',
@@ -24,7 +26,7 @@ async function performAPICall(action: 'add' | 'remove', subscription: PushSubscr
 
 async function addSubscriptionToBackend(subscription: PushSubscription) {
   await performAPICall('add', subscription);
-};
+}
 
 async function removeSubscriptionFromBackend(subscription: PushSubscription) {
   await performAPICall('remove', subscription);

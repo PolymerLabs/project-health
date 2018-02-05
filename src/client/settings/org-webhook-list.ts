@@ -1,5 +1,5 @@
-import {html} from '../../../node_modules/lit-html/lit-html.js';
 import {render} from '../../../node_modules/lit-html/lib/lit-extended.js';
+import {html} from '../../../node_modules/lit-html/lit-html.js';
 import {OrgWebHookState} from '../../types/api';
 
 let orgListContainer: Element;
@@ -62,7 +62,8 @@ function hookTemplate(org: OrgWebHookState) {
     checkboxElement.removeAttribute('disabled');
   };
 
-  let message = `You cannot enable updates for ${org.name}. Request an owner to add the project-health WebHook.`;
+  let message = `You cannot enable updates for ${
+      org.name}. Request an owner to add the project-health WebHook.`;
   if (org.viewerCanAdminister) {
     // TODO: Handle scenario where the webhook is already added.
     message = `Toggle to enable updates for ${org.name}.`;
@@ -70,7 +71,8 @@ function hookTemplate(org: OrgWebHookState) {
 
   return html`
   <div class="settings-toggle-item">
-    <input class="settings-toggle-item__toggle" type="checkbox" checked="${org.hookEnabled}" on-click="${checkboxClick}"></input>
+    <input class="settings-toggle-item__toggle" type="checkbox" checked="${
+      org.hookEnabled}" on-click="${checkboxClick}"></input>
     <div class="settings-toggle-item__details">
       <h6>${org.name}</h6>
       <p>${message}</p>
@@ -80,9 +82,13 @@ function hookTemplate(org: OrgWebHookState) {
 
 function requestPermissionTemplate() {
   const readOrgsClick = () => {
-    window.location.href = `/oauth.html?scope=read:org admin:org_hook&final-redirect=${window.location.href}`;
+    window.location.href =
+        `/oauth.html?scope=read:org admin:org_hook&final-redirect=${
+            window.location.href}`;
   };
-  const requestPermissionTemplate = html`<p><button on-click="${() => readOrgsClick()}">Allow Project Health read-only access to your organizations</button></p>`;
+  const requestPermissionTemplate = html`<p><button on-click="${
+      () =>
+          readOrgsClick()}">Allow Project Health read-only access to your organizations</button></p>`;
   return requestPermissionTemplate;
 }
 
