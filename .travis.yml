@@ -14,3 +14,10 @@ script:
 
 after_script:
 - npm run report-coverage
+
+deploy:
+  provider: gae
+  config: build/app.yaml
+  keyfile: github-health-staging-5ed56f9155c0-travis.json
+  project: github-health-staging
+  default: true
