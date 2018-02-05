@@ -48,7 +48,7 @@ async function launch() {
 function logError(err: Error) {
   console.error(err);
   throw err;
-};
+}
 process.on('uncaughtException', logError);
 process.on('unhandledRejection', logError);
 
