@@ -72,6 +72,12 @@ export class DashServer {
 
   async handleFirestoreTest(_req: express.Request, res: express.Response) {
     const colRef = this.firestore.collection('test');
+
+    const doc = colRef.doc('aomarks');
+    await doc.set({
+      random: Math.random(),
+    });
+
     const snapshot = await colRef.get();
     const data = snapshot.docs.map((doc) => doc.data());
     res.header('content-type', 'application/json');
