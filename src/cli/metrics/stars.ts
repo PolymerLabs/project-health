@@ -16,9 +16,9 @@
 
 import gql from 'graphql-tag';
 
-import {getOrgRepos} from '../common';
-import {GitHub} from '../../utils/github';
 import {StarsQuery, StarsQueryVariables} from '../../types/gql-types';
+import {GitHub} from '../../utils/github';
+import {getOrgRepos} from '../common';
 
 import {MetricResult} from './metric-result';
 

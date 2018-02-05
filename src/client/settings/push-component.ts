@@ -31,6 +31,7 @@ async function getState() {
     })(),
     (async () => {
       const permissionState =
+          // tslint:disable-next-line:no-any
           await (navigator as any).permissions.query({name: 'notifications'});
       state.permissionBlocked = permissionState.state === 'denied';
     })()
@@ -80,7 +81,7 @@ async function updateUI() {
 
 function start() {
   const toggleElement =
-      <HTMLInputElement>document.querySelector('.push-component__toggle');
+      document.querySelector('.push-component__toggle') as HTMLInputElement;
   const statusElement = document.querySelector('.push-component__status');
 
   if (!toggleElement) {

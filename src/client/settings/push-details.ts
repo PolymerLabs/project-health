@@ -1,5 +1,5 @@
 const PUBLIC_VAPID_KEY =
-  'BOX5Lqb44uosZL4_UtV7XW9dHaBj9ERFbCzlsYZBObMZjIB-yxPIbjI5pTBgIt09iy-Hl57AWpr7lJ6QXaQjy30';
+    'BOX5Lqb44uosZL4_UtV7XW9dHaBj9ERFbCzlsYZBObMZjIB-yxPIbjI5pTBgIt09iy-Hl57AWpr7lJ6QXaQjy30';
 
 /**
  * The pushManage.subscribe() method expects an ArrayBuffer and not a string.

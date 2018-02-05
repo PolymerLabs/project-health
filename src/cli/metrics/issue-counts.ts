@@ -16,9 +16,9 @@
 
 import gql from 'graphql-tag';
 
-import {getOrgRepos} from '../common';
-import {GitHub} from '../../utils/github';
 import {IssuesQuery, IssuesQueryVariables} from '../../types/gql-types';
+import {GitHub} from '../../utils/github';
+import {getOrgRepos} from '../common';
 
 import {MetricResult} from './metric-result';
 
@@ -124,7 +124,7 @@ export class IssueCountResult implements MetricResult {
   }
 
   rawData() {
-    const heading = `Date\t\tOpened\tClosed\n`;
+    const heading = 'Date\t\tOpened\tClosed\n';
     return heading +
         this.timeSeries()
             .map((point) => {

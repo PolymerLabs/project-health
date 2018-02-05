@@ -16,9 +16,9 @@
 
 import gql from 'graphql-tag';
 
-import {getOrgRepos, getReviewsForPullRequest, PullRequest, Review} from '../common';
-import {GitHub} from '../../utils/github';
 import {PullRequestsQuery, PullRequestsQueryVariables} from '../../types/gql-types';
+import {GitHub} from '../../utils/github';
+import {getOrgRepos, getReviewsForPullRequest, PullRequest, Review} from '../common';
 
 import {MetricResult} from './metric-result';
 

@@ -4,7 +4,7 @@
   "description": "A tool to help Polymer team manage repos.",
   "private": true,
   "scripts": {
-    "generate-gql-types": "apollo-codegen generate \"src/**/*.ts\" --schema \"src/types/github-schema.json\" --target typescript --addTypename --output \"src/types/gql-types.ts\"",
+    "generate-gql-types": "apollo-codegen generate 'src/**/*.ts' --schema 'src/types/github-schema.json' --target typescript --addTypename --output 'src/types/gql-types.ts'",
     "clean": "rm -rf ./build/",
     "build:client": "tsc -p src/client/tsconfig.json --outDir build",
     "build:server": "tsc -p src/tsconfig.json --outDir build",
@@ -12,13 +12,13 @@
     "build:watch": "npm run build && (npm run build:server -- --watch & npm run build:client -- --watch)",
     "deploy:staging": "npm run build && cd build && gcloud app deploy app.yaml --quiet --project github-health-staging",
     "deploy:prod": "npm run build && cd build && gcloud app deploy app.yaml --quiet --project github-health",
-    "lint": "tslint src/*.ts src/**/*.ts -t stylish",
+    "lint": "tslint 'src/**/*.ts' -t stylish",
     "check-coverage": "nyc check-coverage --lines 70 --functions 70",
     "report-coverage": "nyc report --reporter=text-lcov | coveralls",
     "test": "npm run build && RECORD=false npm run test:ava -- --timeout=10sec && npm run check-coverage",
     "test:record": "npm run build && RECORD=true npm run test:ava -- --timeout=1min",
-    "test:ava": "nyc --reporter=text --reporter=html ava build/*/test/**/*-test.js --verbose",
-    "format": "find src/*.ts src/**/*.ts ! -name 'gql-types.ts' | xargs clang-format --style=file -i",
+    "test:ava": "nyc --reporter=text --reporter=html ava 'build/**/*-test.js' --verbose",
+    "format": "find src -name '*.ts' ! -name 'gql-types.ts' | xargs clang-format --style=file -i",
     "precommit": "npm run format"
   },
   "repository": {

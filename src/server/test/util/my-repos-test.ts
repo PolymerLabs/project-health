@@ -1,7 +1,7 @@
 import * as ava from 'ava';
 
-import {getMyRepos} from '../../utils/my-repos';
 import {startTestReplayServer} from '../../../replay-server';
+import {getMyRepos} from '../../utils/my-repos';
 
 /**
  * Assigns the test context object before each test to ensure it is correctly
@@ -21,7 +21,7 @@ function contextualize<T>(getContext: (_: ava.TestContext) => Promise<T>):
 const test = contextualize(async (t) => {
   const {server, client} = await startTestReplayServer(t);
   return {
-    server: server,
+    server,
     client,
   };
 });
