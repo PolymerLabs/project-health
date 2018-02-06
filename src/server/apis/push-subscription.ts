@@ -1,7 +1,7 @@
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 
-import {pushSubscriptionModel} from '../models/pushSubscriptionModel';
+import {getSubscriptionModel} from '../models/pushSubscriptionModel';
 import {userModel} from '../models/userModel';
 
 function getRouter(): express.Router {
@@ -22,6 +22,7 @@ function getRouter(): express.Router {
             return;
           }
 
+          const pushSubscriptionModel = getSubscriptionModel();
           if (request.params.action === 'add') {
             pushSubscriptionModel.addPushSubscription(
                 loginDetails.username,

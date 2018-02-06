@@ -1,3 +1,5 @@
+import {Firestore} from '@google-cloud/firestore';
+
 interface PushSubscription {
   endpoint: string;
   expirationTime: number|null;
@@ -9,49 +11,69 @@ interface PushSubscriptionInfo {
   supportedContentEncodings: string[];
 }
 
+/**
+ * The structure of the data base is:
+ *
+ * - users
+ *   - <users login>
+ *     - subscriptions
+ *       - <b64 endpoint>
+ *         - subscription
+ *         - supportedContentEncodings
+ *
+ * The base64 endpoint is to allow keying against a subscription. It's encoded
+ * since firebase keys cannot contain slashes.
+ */
 class PushSubscriptionModel {
-  private pushSubscriptions: {[id: string]: PushSubscriptionInfo[]};
+  private firestore: Firestore;
 
   constructor() {
-    this.pushSubscriptions = {};
+    this.firestore = new Firestore();
   }
 
-  addPushSubscription(
+  private getSubscriptionCollection(login: string) {
+    return this.firestore.collection('users').doc(login).collection(
+        'subscriptions');
+  }
+
+  private getSubscriptionDoc(login: string, subscription: PushSubscription) {
+    const b64Endpoint = new Buffer(subscription.endpoint).toString('base64');
+    return this.firestore.collection('users')
+        .doc(login)
+        .collection('subscriptions')
+        .doc(b64Endpoint);
+  }
+
+  async addPushSubscription(
       login: string,
       subscription: PushSubscription,
       supportedContentEncodings: string[]) {
-    if (!this.pushSubscriptions[login]) {
-      this.pushSubscriptions[login] = [];
-    }
-
-    this.pushSubscriptions[login].push({
+    const subDoc = this.getSubscriptionDoc(login, subscription);
+    await subDoc.set({
       subscription,
       supportedContentEncodings,
     });
   }
 
-  removePushSubscription(login: string, subscription: PushSubscription) {
-    if (!this.pushSubscriptions[login]) {
-      return;
-    }
-
-    this.pushSubscriptions[login] =
-        this.pushSubscriptions[login].filter((value) => {
-          return value.subscription.endpoint !== subscription.endpoint;
-        });
+  async removePushSubscription(login: string, subscription: PushSubscription) {
+    const subDoc = this.getSubscriptionDoc(login, subscription);
+    await subDoc.delete();
   }
 
-  getSubscriptionsForUser(login: string): PushSubscriptionInfo[]|null {
-    if (!this.pushSubscriptions[login]) {
-      return null;
-    }
-
-    if (Object.keys(this.pushSubscriptions[login]).length === 0) {
-      return null;
-    }
-
-    return this.pushSubscriptions[login];
+  async getSubscriptionsForUser(login: string):
+      Promise<PushSubscriptionInfo[]> {
+    const subCol = this.getSubscriptionCollection(login);
+    const querySnapshot = await subCol.get();
+    return querySnapshot.docs.map((doc) => {
+      return (doc.data() as PushSubscriptionInfo);
+    });
   }
 }
 
-export const pushSubscriptionModel = new PushSubscriptionModel();
+let subscriptionModel: PushSubscriptionModel;
+export function getSubscriptionModel() {
+  if (!subscriptionModel) {
+    subscriptionModel = new PushSubscriptionModel();
+  }
+  return subscriptionModel;
+}
