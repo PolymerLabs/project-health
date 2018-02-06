@@ -10,3 +10,4 @@ secrets.json
 github-health-*.json
 .nyc_output/
 build/
+secrets.tar
