@@ -8,7 +8,7 @@
     "clean": "rm -rf ./build/",
     "build:client": "tsc -p src/client/tsconfig.json --outDir build",
     "build:server": "tsc -p src/tsconfig.json --outDir build",
-    "build:sw": "tsc -p src/sw/tsconfig.json --outDir build/sw",
+    "build:sw": "tsc -p src/sw/tsconfig.json --outDir build",
     "build": "npm run clean && npm run generate-gql-types && npm run build:client && npm run build:sw && npm run build:server && node copy-static-assets.js && cp package.json package-lock.json app.yaml build/ && cp secrets.json build/ | true && cp github-health-*.json build/ | true && npm run lint",
     "build:watch": "npm run build && (npm run build:server -- --watch & npm run build:client -- --watch & npm run build:sw -- --watch)",
     "deploy:staging": "npm run build && cd build && gcloud app deploy app.yaml --quiet --project github-health-staging",
