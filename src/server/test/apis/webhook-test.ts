@@ -14,6 +14,20 @@ const TEST_SECRETS = {
   PRIVATE_VAPID_KEY: 'o1P9aXm-QPZezF_8b7aQabivhv3QqaB0yg5zoFs6-qc',
 };
 
+test.before(() => {
+  // See https://cloud.google.com/docs/authentication/production
+  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    const rootDir = path.join(__dirname, '..', '..', '..');
+    for (const file of fs.readdirSync(rootDir)) {
+      if (file.match(/^github-health-.*\.json$/)) {
+        process.env.GOOGLE_APPLICATION_CREDENTIALS = path.join(rootDir, file);
+        break;
+      }
+    }
+  }
+});
+
+
 test(
     'Webhook pull_request_review: submitted-state-changes_requested.json',
     async (t) => {
