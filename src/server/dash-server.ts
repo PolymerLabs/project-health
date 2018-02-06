@@ -34,6 +34,7 @@ export class DashServer {
     const litPath = path.dirname(require.resolve('lit-html'));
 
     app.use(cookieParser());
+    app.use(this.enforceHTTPS);
     app.use('/node_modules/lit-html', express.static(litPath));
     app.use(express.static(path.join(__dirname, '../client')));
     app.use(express.static(path.join(__dirname, '../sw')));
@@ -74,6 +75,15 @@ export class DashServer {
     } else {
       server = this.app.listen(port, 'localhost', printStatus);
     }
+  }
+
+  enforceHTTPS(req: express.Request, res: express.Response, next: express.NextFunction) {
+    if (!req.secure && process.env.NODE_ENV === 'production') {
+      res.header('Location', `https://${req.headers['host']}${req.url}`);
+      res.sendStatus(301);
+      return;
+    }
+    next();
   }
 
   async handleFirestoreTest(_req: express.Request, res: express.Response) {
