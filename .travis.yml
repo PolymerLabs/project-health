@@ -21,3 +21,4 @@ deploy:
   keyfile: github-health-staging-5ed56f9155c0-travis.json
   project: github-health-staging
   default: true
+  skip_cleanup: true # Required so build/ doesn't get cleaned.
