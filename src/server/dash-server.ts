@@ -31,7 +31,7 @@ export class DashServer {
     this.firestore = new Firestore();
 
     const app = express();
-    const litPath = path.join(__dirname, '../../node_modules/lit-html');
+    const litPath = path.dirname(require.resolve('lit-html'));
 
     app.use(cookieParser());
     app.use(this.enforceHTTPS);

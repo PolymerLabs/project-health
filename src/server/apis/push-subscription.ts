@@ -32,7 +32,8 @@ function getRouter(): express.Router {
             pushSubscriptionModel.removePushSubscription(
                 loginDetails.username, request.body.subscription);
           } else {
-            response.sendStatus(400);
+            response.status(400).send(
+                `Unknown action: ${request.params.action}`);
             return;
           }
 
