@@ -52,7 +52,8 @@ function getRouter(github: GitHub, secrets: DashSecrets): express.Router {
   webhookRouter.post(
       '/:action',
       async (request: express.Request, response: express.Response) => {
-        const loginDetails = await userModel.getLoginFromRequest(request);
+        const loginDetails =
+            await userModel.getLoginFromRequest(github, request);
         if (!loginDetails) {
           response.sendStatus(400);
           return;
