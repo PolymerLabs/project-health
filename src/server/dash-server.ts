@@ -12,6 +12,7 @@ import {getRouter as getLoginRouter} from './apis/login';
 import {getRouter as getPushSubRouter} from './apis/push-subscription';
 import {getRouter as getSettingsRouter} from './apis/settings';
 import {getRouter as getWebhookRouter} from './apis/webhook';
+import {enforceHTTPS} from './utils/enforce-https';
 
 export type DashSecrets = {
   GITHUB_CLIENT_ID: string; GITHUB_CLIENT_SECRET: string;
@@ -32,6 +33,10 @@ export class DashServer {
 
     const app = express();
     const litPath = path.dirname(require.resolve('lit-html'));
+
+    if (process.env.NODE_ENV === 'production') {
+      app.use(enforceHTTPS);
+    }
 
     app.use(cookieParser());
     app.use('/node_modules/lit-html', express.static(litPath));
