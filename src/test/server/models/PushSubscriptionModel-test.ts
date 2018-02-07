@@ -2,7 +2,7 @@ import test from 'ava';
 import * as fse from 'fs-extra';
 import * as path from 'path';
 
-import {getSubscriptionModel} from '../../models/pushSubscriptionModel';
+import {getSubscriptionModel} from '../../../server/models/pushSubscriptionModel';
 
 const USER_LOGIN = 'tests';
 const PUSH_SUBSCRIPTION = {
