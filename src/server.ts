@@ -20,16 +20,16 @@ import * as path from 'path';
 import {DashServer} from './server/dash-server';
 import {GitHub} from './utils/github';
 
-const buildDir = __dirname;
+const projectRoot = path.join(__dirname, '..');
 
 async function launch() {
-  const secrets = await fse.readJSON(path.join(buildDir, 'secrets.json'));
+  const secrets = await fse.readJSON(path.join(projectRoot, 'secrets.json'));
 
   // See https://cloud.google.com/docs/authentication/production
-  for (const file of await fse.readdir(buildDir)) {
+  for (const file of await fse.readdir(projectRoot)) {
     if (file.match(/^github-health-.*\.json$/)) {
       console.log('using gcloud credentials file', file);
-      process.env.GOOGLE_APPLICATION_CREDENTIALS = path.join(buildDir, file);
+      process.env.GOOGLE_APPLICATION_CREDENTIALS = path.join(projectRoot, file);
       break;
     }
   }

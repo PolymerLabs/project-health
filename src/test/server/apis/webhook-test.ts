@@ -17,7 +17,7 @@ const TEST_SECRETS = {
 test.before(() => {
   // See https://cloud.google.com/docs/authentication/production
   if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-    const rootDir = path.join(__dirname, '..', '..', '..');
+    const rootDir = path.join(__dirname, '..', '..', '..', '..');
     for (const file of fs.readdirSync(rootDir)) {
       if (file.match(/^github-health-.*\.json$/)) {
         process.env.GOOGLE_APPLICATION_CREDENTIALS = path.join(rootDir, file);

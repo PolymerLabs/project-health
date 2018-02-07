@@ -26,7 +26,7 @@ const CONTENT_ENCODINGS = ['aes128gcm', 'aesgcm'];
 test.before(() => {
   // See https://cloud.google.com/docs/authentication/production
   if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-    const rootDir = path.join(__dirname, '..', '..', '..');
+    const rootDir = path.join(__dirname, '..', '..', '..', '..');
     for (const file of fse.readdirSync(rootDir)) {
       if (file.match(/^github-health-.*\.json$/)) {
         process.env.GOOGLE_APPLICATION_CREDENTIALS = path.join(rootDir, file);
