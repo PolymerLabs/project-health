@@ -1,5 +1,4 @@
-import {render} from '../../../node_modules/lit-html/lib/lit-extended.js';
-import {html} from '../../../node_modules/lit-html/lit-html.js';
+import {html, render} from '../../../node_modules/lit-html/lib/lit-extended.js';
 import {OrgWebHookState} from '../../types/api';
 
 let orgListContainer: Element;
@@ -71,8 +70,9 @@ function hookTemplate(org: OrgWebHookState) {
 
   return html`
   <div class="settings-toggle-item">
-    <input class="settings-toggle-item__toggle" type="checkbox" checked="${
-      org.hookEnabled}" on-click="${checkboxClick}"></input>
+    <input class="settings-toggle-item__toggle" type="checkbox" disabled?="${
+  !org.viewerCanAdminister}" checked="${org.hookEnabled}" on-click="${
+      checkboxClick}"></input>
     <div class="settings-toggle-item__details">
       <h6>${org.name}</h6>
       <p>${message}</p>
@@ -87,8 +87,7 @@ function requestPermissionTemplate() {
             window.location.href}`;
   };
   const requestPermissionTemplate = html`<p><button on-click="${
-      () =>
-          readOrgsClick()}">Allow Project Health read-only access to your organizations</button></p>`;
+      readOrgsClick}">Allow Project Health read-only access to your organizations</button></p>`;
   return requestPermissionTemplate;
 }
 
