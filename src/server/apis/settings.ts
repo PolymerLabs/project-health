@@ -21,11 +21,8 @@ function getRouter(github: GitHub): express.Router {
         }
 
         const scopes = loginDetails.scopes;
-        if (!scopes) {
-          return;
-        }
-
-        if ((scopes.indexOf('admin:org_hook') === -1 ||
+        if (!scopes ||
+            (scopes.indexOf('admin:org_hook') === -1 ||
              scopes.indexOf('read:org') === -1)) {
           response.status(400).send('Missing required scope.');
           return;
