@@ -493,19 +493,19 @@ fragment statusFields on PullRequest {
 
 fragment mentionedFields on PullRequest {
   id
-  comments(last: 20) {
+  comments(last: 10) {
     nodes {
       createdAt
       bodyText
       url
     }
   }
-  reviews(last: 20) {
+  reviews(last: 10) {
     nodes {
       bodyText
       createdAt
       url
-      comments(last: 20) {
+      comments(last: 10) {
         nodes {
           createdAt
           bodyText
