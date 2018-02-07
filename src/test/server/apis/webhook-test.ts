@@ -2,9 +2,9 @@ import test from 'ava';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import {handlePullRequestReview} from '../../webhook-events';
+import {handlePullRequestReview} from '../../../server/webhook-events';
 
-const hookJsonDir = path.join(__dirname, '..', 'static', 'webhook-data');
+const hookJsonDir = path.join(__dirname, '..', '..', 'static', 'webhook-data');
 
 const TEST_SECRETS = {
   GITHUB_CLIENT_ID: 'ClientID',

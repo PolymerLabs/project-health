@@ -1,8 +1,8 @@
 import * as ava from 'ava';
 
 import {startTestReplayServer} from '../../../replay-server';
+import {DashData} from '../../../server/apis/dash-data';
 import {PullRequestReviewState} from '../../../types/gql-types';
-import {DashData} from '../../apis/dash-data';
 
 /**
  * Assigns the test context object before each test to ensure it is correctly
