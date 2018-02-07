@@ -592,6 +592,7 @@ export interface ViewerPullRequestsQueryVariables {
   login: string,
   reviewRequestsQueryString: string,
   reviewedQueryString: string,
+  mentionsQueryString: string,
 };
 
 export interface ViewerPullRequestsQuery {
@@ -614,6 +615,7 @@ export interface ViewerPullRequestsQuery {
         title: string,
         // The HTTP URL for this pull request.
         url: string,
+        id: string,
         // Identifies the date and time when the object was created.
         createdAt: string,
         // The actor who authored the comment.
@@ -741,6 +743,7 @@ export interface ViewerPullRequestsQuery {
         title: string,
         // The HTTP URL for this pull request.
         url: string,
+        id: string,
         // Identifies the date and time when the object was created.
         createdAt: string,
         // The actor who authored the comment.
@@ -799,6 +802,7 @@ export interface ViewerPullRequestsQuery {
         title: string,
         // The HTTP URL for this pull request.
         url: string,
+        id: string,
         // Identifies the date and time when the object was created.
         createdAt: string,
         // The actor who authored the comment.
@@ -883,6 +887,68 @@ export interface ViewerPullRequestsQuery {
             },
           } | null > | null,
         },
+      } | {
+        __typename: "Repository",
+      } | {
+        __typename: "User",
+      } | {
+        __typename: "Organization",
+      } | {
+        __typename: "MarketplaceListing",
+      }
+    ) | null > | null,
+  },
+  // Perform a search across resources.
+  mentions:  {
+    __typename: "SearchResultItemConnection",
+    // A list of nodes.
+    nodes:  Array<( {
+        __typename: "Issue",
+      } | {
+        __typename: "PullRequest",
+        id: string,
+        // A list of comments associated with the pull request.
+        comments:  {
+          __typename: string,
+          // A list of nodes.
+          nodes:  Array< {
+            __typename: string,
+            // Identifies the date and time when the object was created.
+            createdAt: string,
+            // Identifies the body of the issue rendered to text.
+            bodyText: string,
+            // The HTTP URL for this issue comment
+            url: string,
+          } | null > | null,
+        },
+        // A list of reviews associated with the pull request.
+        reviews:  {
+          __typename: string,
+          // A list of nodes.
+          nodes:  Array< {
+            __typename: string,
+            // The body of this review rendered as plain text.
+            bodyText: string,
+            // Identifies the date and time when the object was created.
+            createdAt: string,
+            // The HTTP URL permalink for this PullRequestReview.
+            url: string,
+            // A list of review comments for the current pull request review.
+            comments:  {
+              __typename: string,
+              // A list of nodes.
+              nodes:  Array< {
+                __typename: string,
+                // Identifies when the comment was created.
+                createdAt: string,
+                // The comment body of this review comment rendered as plain text.
+                bodyText: string,
+                // The HTTP URL permalink for this review comment.
+                url: string,
+              } | null > | null,
+            },
+          } | null > | null,
+        } | null,
       } | {
         __typename: "Repository",
       } | {
@@ -1018,6 +1084,7 @@ export interface prFieldsFragment {
   title: string,
   // The HTTP URL for this pull request.
   url: string,
+  id: string,
   // Identifies the date and time when the object was created.
   createdAt: string,
   // The actor who authored the comment.
@@ -1080,4 +1147,51 @@ export interface statusFieldsFragment {
       },
     } | null > | null,
   },
+};
+
+export interface mentionedFieldsFragment {
+  __typename: "PullRequest",
+  id: string,
+  // A list of comments associated with the pull request.
+  comments:  {
+    __typename: string,
+    // A list of nodes.
+    nodes:  Array< {
+      __typename: string,
+      // Identifies the date and time when the object was created.
+      createdAt: string,
+      // Identifies the body of the issue rendered to text.
+      bodyText: string,
+      // The HTTP URL for this issue comment
+      url: string,
+    } | null > | null,
+  },
+  // A list of reviews associated with the pull request.
+  reviews:  {
+    __typename: string,
+    // A list of nodes.
+    nodes:  Array< {
+      __typename: string,
+      // The body of this review rendered as plain text.
+      bodyText: string,
+      // Identifies the date and time when the object was created.
+      createdAt: string,
+      // The HTTP URL permalink for this PullRequestReview.
+      url: string,
+      // A list of review comments for the current pull request review.
+      comments:  {
+        __typename: string,
+        // A list of nodes.
+        nodes:  Array< {
+          __typename: string,
+          // Identifies when the comment was created.
+          createdAt: string,
+          // The comment body of this review comment rendered as plain text.
+          bodyText: string,
+          // The HTTP URL permalink for this review comment.
+          url: string,
+        } | null > | null,
+      },
+    } | null > | null,
+  } | null,
 };

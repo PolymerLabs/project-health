@@ -182,17 +182,66 @@ test('project-health1 dashboard', async (t) => {
       },
     ],
     incomingPrs: [
-      // Incoming review request.
+      // Incoming PR with old @mention before I reviewed.
       {
         author: 'project-health2',
         avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
-        createdAt: 1516753159000,
-        myReview: null,
+        createdAt: 1518042329000,
+        events: [
+          {
+            review: {
+              author: 'project-health1',
+              createdAt: 1518042373000,
+              reviewState: PullRequestReviewState.COMMENTED,
+            },
+            type: 'MyReviewEvent',
+          },
+        ],
+        myReview: {
+          author: 'project-health1',
+          createdAt: 1518042373000,
+          reviewState: PullRequestReviewState.COMMENTED,
+        },
         repository: 'project-health1/repo',
-        title: 'Add a field for getting the template of an element',
-        url: 'https://github.com/project-health1/repo/pull/4',
-        status: {type: 'ReviewRequired'},
-        events: [],
+        status: {
+          type: 'ApprovalRequired',
+        },
+        title: 'A new pull request',
+        url: 'https://github.com/project-health1/repo/pull/11',
+      },
+      // Incoming PR with new @mention after I reviewed.
+      {
+        author: 'project-health2',
+        avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
+        createdAt: 1518031465000,
+        events: [
+          {
+            review: {
+              author: 'project-health1',
+              createdAt: 1518031560000,
+              reviewState: PullRequestReviewState.APPROVED,
+            },
+            type: 'MyReviewEvent',
+          },
+          {
+            type: 'MentionedEvent',
+            text: '@project-health1 what do you mean?',
+            mentionedAt: 1518031578000,
+            url:
+                'https://github.com/project-health1/repo/pull/10#discussion_r166728166',
+          }
+        ],
+        myReview: {
+          author: 'project-health1',
+          createdAt: 1518031560000,
+          reviewState: PullRequestReviewState.APPROVED,
+        },
+        repository: 'project-health1/repo',
+        status: {
+          type: 'NoActionRequired',
+        },
+        title: 'Questionable changes',
+        url: 'https://github.com/project-health1/repo/pull/10',
       },
       // Incoming PR that I reviewed. New commit since.
       {
@@ -253,6 +302,18 @@ test('project-health1 dashboard', async (t) => {
             reviewState: PullRequestReviewState.CHANGES_REQUESTED,
           }
         }],
+      },
+      // Incoming review request.
+      {
+        author: 'project-health2',
+        avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
+        createdAt: 1516753159000,
+        myReview: null,
+        repository: 'project-health1/repo',
+        title: 'Add a field for getting the template of an element',
+        url: 'https://github.com/project-health1/repo/pull/4',
+        status: {type: 'ReviewRequired'},
+        events: [],
       },
     ]
   });
