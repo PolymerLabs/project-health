@@ -18,6 +18,16 @@ class UserModel {
     this.cachedLogins = {};
   }
 
+  async getLoginDetails(username: string) {
+    for (const token of Object.keys(this.cachedLogins)) {
+      const details = this.cachedLogins[token];
+      if (details.username === username) {
+        return details;
+      }
+    }
+    return null;
+  }
+
   async getLoginFromRequest(request: express.Request):
       Promise<LoginDetails|null> {
     if (!request.cookies) {
