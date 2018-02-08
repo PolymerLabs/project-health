@@ -23,7 +23,7 @@ const test = contextualize(async (t) => {
   const {server, url} = await startTestReplayServer(t);
 
   initGithub(url, url);
-  
+
   return {
     replayServer: server,
   };
