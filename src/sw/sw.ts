@@ -31,8 +31,13 @@ const clickEventHandler = {
 
     // tslint:disable-next-line:no-any
     const notification = ((event.notification as any) as CustomNotification);
-    if (notification.data && notification.data.url) {
-      event.waitUntil(self.clients.openWindow(notification.data.url));
+    const data = notification.data;
+    if (data && data.url) {
+      // There was a URL provided with the notification payload - open it if
+      // the user clicks on the notifications
+      const openWindowPromise = self.clients.openWindow(data.url);
+      // Wait for the window to open for letting the browser kill the service worker
+      event.waitUntil(openWindowPromise);
     }
   }
 };
