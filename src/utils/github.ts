@@ -19,13 +19,11 @@ const schema = require('../types/github-schema.json');
 (Symbol as any).asyncIterator =
     Symbol.asyncIterator || Symbol.for('Symbol.asyncIterator');
 
-export class GitHub {
+class GitHub {
   private apollo: ApolloClient<NormalizedCacheObject>;
   private jsonUrl: string;
 
-  constructor(
-      gqlUrl = 'https://api.github.com/graphql',
-      jsonUrl = 'https://api.github.com') {
+  constructor(gqlUrl: string, jsonUrl: string) {
     // Providing this fragment matcher initialized with the GitHub schema
     // allows the Apollo client to better distinguish polymorphic result types
     // by their "__type" field, which is required for certain queries.
@@ -181,3 +179,18 @@ export class GitHub {
 type PageInfo = {
   hasNextPage: boolean; endCursor: string | null;
 };
+
+let githubSingleton: GitHub|null = null;
+
+export function github(): GitHub {
+  if (!githubSingleton) {
+    throw new Error('Github is not initialised.');
+  }
+  return githubSingleton;
+}
+
+export function initGithub(
+    gqlUrl = 'https://api.github.com/graphql',
+    jsonUrl = 'https://api.github.com') {
+  githubSingleton = new GitHub(gqlUrl, jsonUrl);
+}

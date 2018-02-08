@@ -17,7 +17,7 @@
 import gql from 'graphql-tag';
 
 import {PullRequestsQuery, PullRequestsQueryVariables} from '../../types/gql-types';
-import {GitHub} from '../../utils/github';
+import {github} from '../../utils/github';
 import {getOrgRepos, getReviewsForPullRequest, PullRequest, Review} from '../common';
 
 import {MetricResult} from './metric-result';
@@ -83,20 +83,20 @@ type ReviewLatencyOpts = {
 /**
  * Computes the review latency for a given GitHub organisation.
  */
-export async function getReviewLatency(
-    github: GitHub, opts: ReviewLatencyOpts): Promise<ReviewLatencyResult> {
+export async function getReviewLatency(opts: ReviewLatencyOpts):
+    Promise<ReviewLatencyResult> {
   let repos;
   if (opts.repo) {
     repos = [{owner: opts.org, name: opts.repo}];
   } else {
-    repos = await getOrgRepos(github, opts.org);
+    repos = await getOrgRepos(opts.org);
   }
 
   const fetches = [];
   const reviews: Review[] = [];
 
   for (const {owner, name} of repos) {
-    fetches.push(fetchPullRequestsForId(github, owner, name));
+    fetches.push(fetchPullRequestsForId(owner, name));
   }
   for (const prs of fetches) {
     for (const pr of await prs) {
@@ -145,11 +145,11 @@ const pullRequestsQuery = gql`
  * Fetches all pull requests for the specified repository node.
  */
 async function fetchPullRequestsForId(
-    github: GitHub, owner: string, name: string): Promise<PullRequest[]> {
+    owner: string, name: string): Promise<PullRequest[]> {
   const prs: PullRequest[] = [];
 
   const results =
-      github.cursorQuery<PullRequestsQuery, PullRequestsQueryVariables>(
+      github().cursorQuery<PullRequestsQuery, PullRequestsQueryVariables>(
           pullRequestsQuery,
           {owner, name},
           (data) => data.repository && data.repository.pullRequests);

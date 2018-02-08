@@ -17,7 +17,7 @@
 import gql from 'graphql-tag';
 
 import {IssuesQuery, IssuesQueryVariables} from '../../types/gql-types';
-import {GitHub} from '../../utils/github';
+import {github} from '../../utils/github';
 import {getOrgRepos} from '../common';
 
 import {MetricResult} from './metric-result';
@@ -33,18 +33,18 @@ export type IssueCountOpts = {
  * Provides a time series containing the number of opened and closed issues for
  * each day.
  */
-export async function getIssueCounts(
-    github: GitHub, opts: IssueCountOpts): Promise<IssueCountResult> {
+export async function getIssueCounts(opts: IssueCountOpts):
+    Promise<IssueCountResult> {
   let repos;
   if (opts.repo) {
     repos = [{owner: opts.org, name: opts.repo}];
   } else {
-    repos = await getOrgRepos(github, opts.org);
+    repos = await getOrgRepos(opts.org);
   }
 
   const issues: Issue[] = [];
   for (const {owner, name} of repos) {
-    for (const issue of await getIssues(github, owner, name)) {
+    for (const issue of await getIssues(owner, name)) {
       issues.push(issue);
     }
   }
@@ -143,11 +143,10 @@ type Issue = {
 /**
  * Fetch all of the issues for a given repo.
  */
-async function getIssues(
-    github: GitHub, owner: string, name: string): Promise<Issue[]> {
+async function getIssues(owner: string, name: string): Promise<Issue[]> {
   const issues: Issue[] = [];
 
-  const results = github.cursorQuery<IssuesQuery, IssuesQueryVariables>(
+  const results = github().cursorQuery<IssuesQuery, IssuesQueryVariables>(
       issuesQuery,
       {owner, name},
       (data) => data.repository && data.repository.issues);

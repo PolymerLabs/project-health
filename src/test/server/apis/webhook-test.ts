@@ -2,7 +2,9 @@ import test from 'ava';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import {handlePullRequestReview} from '../../../server/webhook-events';
+import {handlePullRequestReview} from '../../../server/controllers/webhook-events';
+import {initFirestore} from '../../../utils/firestore';
+import {initSecrets} from '../../../utils/secrets';
 
 const hookJsonDir = path.join(__dirname, '..', '..', 'static', 'webhook-data');
 
@@ -15,16 +17,8 @@ const TEST_SECRETS = {
 };
 
 test.before(() => {
-  // See https://cloud.google.com/docs/authentication/production
-  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-    const rootDir = path.join(__dirname, '..', '..', '..', '..');
-    for (const file of fs.readdirSync(rootDir)) {
-      if (file.match(/^github-health-.*\.json$/)) {
-        process.env.GOOGLE_APPLICATION_CREDENTIALS = path.join(rootDir, file);
-        break;
-      }
-    }
-  }
+  initFirestore();
+  initSecrets(TEST_SECRETS);
 });
 
 
@@ -35,7 +29,7 @@ test(
           hookJsonDir,
           'pull_request_review',
           'submitted-state-changes_requested.json'));
-      await handlePullRequestReview(TEST_SECRETS, eventContent);
+      await handlePullRequestReview(eventContent);
 
       // TODO: Find way to assert arguments passed to sendNotification()
 
@@ -46,7 +40,7 @@ test(
     'Webhook pull_request_review: submitted-state-approved.json', async (t) => {
       const eventContent = await fs.readJSON(path.join(
           hookJsonDir, 'pull_request_review', 'submitted-state-approved.json'));
-      await handlePullRequestReview(TEST_SECRETS, eventContent);
+      await handlePullRequestReview(eventContent);
 
       // TODO: Find way to assert arguments passed to sendNotification()
 

@@ -1,5 +1,4 @@
-import {sendNotification} from './controllers/notifications';
-import {DashSecrets} from './dash-server';
+import {sendNotification} from '../controllers/notifications';
 
 type UserHook = {
   login: string;
@@ -31,8 +30,7 @@ export async function handleStatus(_hookBody: string) {
 export async function handlePullRequest(_hookBody: {}) {
 }
 
-export async function handlePullRequestReview(
-    secrets: DashSecrets, hookData: PullRequestReviewHook) {
+export async function handlePullRequestReview(hookData: PullRequestReviewHook) {
   if (hookData.action === 'submitted') {
     const review = hookData.review;
     const repo = hookData.repository;
@@ -59,7 +57,7 @@ export async function handlePullRequestReview(
 
     if (notification) {
       const notificationRecipient = pullReq.user.login;
-      sendNotification(secrets, notificationRecipient, notification);
+      sendNotification(notificationRecipient, notification);
     }
   } else {
     throw new Error(

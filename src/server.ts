@@ -18,29 +18,19 @@ import * as fse from 'fs-extra';
 import * as path from 'path';
 
 import {DashServer} from './server/dash-server';
-import {GitHub} from './utils/github';
+import {initFirestore} from './utils/firestore';
+import {initGithub} from './utils/github';
+import {initSecrets} from './utils/secrets';
 
 const projectRoot = path.join(__dirname, '..');
 
 async function launch() {
   const secrets = await fse.readJSON(path.join(projectRoot, 'secrets.json'));
+  initSecrets(secrets);
+  initGithub();
+  initFirestore();
 
-  // See https://cloud.google.com/docs/authentication/production
-  for (const file of await fse.readdir(projectRoot)) {
-    if (file.match(/^github-health-.*\.json$/)) {
-      console.log('using gcloud credentials file', file);
-      process.env.GOOGLE_APPLICATION_CREDENTIALS = path.join(projectRoot, file);
-      break;
-    }
-  }
-
-  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-    console.log(
-        'no gcloud credentials file found;',
-        'using application default credentials');
-  }
-
-  const server = new DashServer(new GitHub(), secrets);
+  const server = new DashServer();
   server.listen();
 }
 

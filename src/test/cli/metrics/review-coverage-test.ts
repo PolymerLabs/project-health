@@ -2,26 +2,28 @@ import test from 'ava';
 
 import {getReviewCoverage} from '../../../cli/metrics/review-coverage';
 import {startTestReplayServer} from '../../../replay-server';
+import {initGithub} from '../../../utils/github';
 
 test.beforeEach(async (t) => {
-  const {server, client} = await startTestReplayServer(t);
+  const {server, url} = await startTestReplayServer(t);
   t.context.server = server;
-  t.context.client = client;
+
+  initGithub(url, url);
 });
 
 test.afterEach.cb((t) => {
   t.context.server.close(t.end);
 });
 
-test('gen-typescript-declarations review coverage', async (t) => {
+test.serial('gen-typescript-declarations review coverage', async (t) => {
   const result = await getReviewCoverage(
-      t.context.client, {org: 'polymer', repo: 'gen-typescript-declarations'});
+      {org: 'polymer', repo: 'gen-typescript-declarations'});
   t.is(result.numReviewed(), 79);
   t.is(result.commits.length, 82);
 });
 
-test('webcomponents.org review coverage', async (t) => {
-  const result = await getReviewCoverage(t.context.client, {
+test.serial('webcomponents.org review coverage', async (t) => {
+  const result = await getReviewCoverage({
     org: 'webcomponents',
     repo: 'webcomponents.org',
   });

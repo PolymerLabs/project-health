@@ -17,7 +17,6 @@
 import * as commandLineArgs from 'command-line-args';
 import * as ora from 'ora';
 
-import {GitHub} from '../utils/github';
 import {getIssueCounts} from './metrics/issue-counts';
 import {getReviewCoverage} from './metrics/review-coverage';
 import {getReviewLatency} from './metrics/review-latency';
@@ -81,28 +80,25 @@ export async function run(argv: string[]) {
     throw new Error('No GitHub org specified');
   }
 
-  const github = new GitHub();
-
   const metricSpinner = ora(`Gathering '${args.metric}' metric data`).start();
 
   let metricResult;
   const orgInfo = {org: args.org, repo: args.repo};
   switch (args.metric) {
     case 'review-latency':
-      metricResult = await getReviewLatency(github, orgInfo);
+      metricResult = await getReviewLatency(orgInfo);
       break;
     case 'issue-counts':
-      metricResult = await getIssueCounts(github, orgInfo);
+      metricResult = await getIssueCounts(orgInfo);
       break;
     case 'review-coverage':
       const yearAgo = new Date();
       yearAgo.setFullYear(yearAgo.getFullYear() - 1);
       metricResult = await getReviewCoverage(
-          github,
           {org: args.org, repo: args.repo, since: yearAgo.toISOString()});
       break;
     case 'stars':
-      metricResult = await getStars(github, {org: args.org, repo: args.repo});
+      metricResult = await getStars({org: args.org, repo: args.repo});
       break;
     default:
       metricSpinner.fail('Metric not found.');

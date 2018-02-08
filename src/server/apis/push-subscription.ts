@@ -1,11 +1,10 @@
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 
-import {GitHub} from '../../utils/github';
 import {getSubscriptionModel} from '../models/pushSubscriptionModel';
 import {userModel} from '../models/userModel';
 
-function getRouter(github: GitHub): express.Router {
+function getRouter(): express.Router {
   const pushSubscriptionRouter = express.Router();
   pushSubscriptionRouter.post(
       '/:action',
@@ -18,7 +17,7 @@ function getRouter(github: GitHub): express.Router {
           }
 
           const loginDetails =
-              await userModel.getLoginFromRequest(github, request);
+              await userModel.getLoginFromRequest(request);
           if (!loginDetails) {
             response.status(400).send('No login details.');
             return;
