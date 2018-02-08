@@ -1,107 +1,124 @@
 import {addSubscriptionToBackend, removeSubscriptionFromBackend} from './push-backend.js';
-import {applicationServerKey} from './push-details.js';
-
-let pushToggle: HTMLInputElement;
-let pushStatus: Element;
+import {applicationServerKey} from './application-server-key.js';
 
 interface PushComponentState {
   isSupported: boolean;
   permissionBlocked: boolean;
+  savedToBackend: boolean;
   subscription: PushSubscription|null;
 }
 
-function getRegistration() {
-  return navigator.serviceWorker.register('/sw.js');
-}
-
-async function getState() {
-  const state: PushComponentState = {
-    isSupported: false,
-    permissionBlocked: false,
-    subscription: null,
-  };
-
-  state.isSupported = !(!navigator.serviceWorker || !('PushManager' in window));
-
-  // Run async tasks in parallel
-  await Promise.all([
-    (async () => {
-      const registration = await getRegistration();
-      state.subscription = await registration.pushManager.getSubscription();
-    })(),
-    (async () => {
-      const permissionState =
-          // tslint:disable-next-line:no-any
-          await (navigator as any).permissions.query({name: 'notifications'});
-      state.permissionBlocked = permissionState.state === 'denied';
-    })()
-  ]);
-
-  return state;
-}
-
-async function unsubscribeUser(subscription: PushSubscription) {
-  await Promise.all([
-    removeSubscriptionFromBackend(subscription),
-    subscription.unsubscribe(),
-  ]);
-}
-
-async function subscribeUser() {
-  const registration = await getRegistration();
-  const subscription = await registration.pushManager.subscribe({
-    userVisibleOnly: true,
-    applicationServerKey,
-  });
-  await addSubscriptionToBackend(subscription);
-}
-
-async function toggleSubscription() {
-  const state = await getState();
-  if (state.subscription) {
-    await unsubscribeUser(state.subscription);
-  } else {
-    await subscribeUser();
-  }
-}
-
-async function updateUI() {
-  const state = await getState();
-  if (!state.isSupported) {
-    pushStatus.textContent = '[Not Supported]';
-    pushToggle.setAttribute('disabled', 'true');
-  } else if (state.permissionBlocked) {
-    pushStatus.textContent = '[Notification Permission Blocked]';
-    pushToggle.setAttribute('disabled', 'true');
-  } else {
-    pushToggle.removeAttribute('disabled');
-    pushToggle.checked = !!state.subscription;
-  }
-}
-
-function start() {
-  const toggleElement =
+class PushComponent {
+  private pushToggle: HTMLInputElement;
+  private pushStatus: Element;
+  private state: PushComponentState;
+  
+  constructor() {
+    const toggleElement =
       document.querySelector('.push-component__toggle') as HTMLInputElement;
-  const statusElement = document.querySelector('.push-component__status');
+    const statusElement = document.querySelector('.push-component__status');
 
-  if (!toggleElement) {
-    throw new Error('Unable to find toggle element.');
+    if (!toggleElement) {
+      throw new Error('Unable to find toggle element.');
+    }
+    if (!statusElement) {
+      throw new Error('Unable to find status element.');
+    }
+
+    this.pushToggle = toggleElement;
+    this.pushStatus = statusElement;
+    this.state = {
+      isSupported: (navigator.serviceWorker && ('PushManager' in window)),
+      permissionBlocked: false,
+      savedToBackend: false,
+      subscription: null,
+    };
+
+    this.pushToggle.addEventListener('change', async (event) => {
+      event.preventDefault();
+      this.pushToggle.setAttribute('disabled', 'true');
+      
+      if (this.pushToggle.checked) {
+        await this.setupPush();
+      } else {
+        await this.disablePush();
+      }
+    });
   }
-  if (!statusElement) {
-    throw new Error('Unable to find status element.');
+
+  async update() {
+    // Setup state
+    try {
+      await Promise.all([
+        this.updatePermissionState(),
+        this.updateSubscriptionState(),
+      ]);
+  
+      if (!this.state.isSupported) {
+        this.pushStatus.textContent = '[Not Supported]';
+        this.pushToggle.setAttribute('disabled', 'true');
+      } else if (this.state.permissionBlocked) {
+        this.pushStatus.textContent = '[Notification Permission Blocked]';
+        this.pushToggle.setAttribute('disabled', 'true');
+      } else {
+        this.pushToggle.removeAttribute('disabled');
+        this.pushToggle.checked = !!(this.state.subscription && this.state.savedToBackend);
+      }
+
+    } catch (err) {
+      this.pushToggle.setAttribute('disabled', 'true');
+      this.pushStatus.textContent = '[Unable to Setup Notifications]';
+    }
   }
 
-  pushToggle = toggleElement;
-  pushStatus = statusElement;
+  async updatePermissionState() {
+    // tslint:disable-next-line:no-any
+    const permissionState = await (navigator as any).permissions.query({name: 'notifications'});
+    this.state.permissionBlocked = permissionState.state === 'denied';
+  }
 
-  pushToggle.addEventListener('change', async (event) => {
-    event.preventDefault();
-    pushToggle.setAttribute('disabled', 'true');
-    await toggleSubscription();
-    updateUI();
-  });
+  async updateSubscriptionState() {
+    const registration = await this.getRegistration();
+    this.state.subscription = await registration.pushManager.getSubscription();
 
-  updateUI();
+    // Make sure it's saved on the backend
+    this.state.savedToBackend = false;
+    if (this.state.subscription) {
+      await addSubscriptionToBackend(this.state.subscription);
+      this.state.savedToBackend = true;
+    }
+  }
+
+  getRegistration() {
+    return navigator.serviceWorker.register('/sw.js');
+  }
+
+  async setupPush() {
+    const registration = await this.getRegistration();
+    await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey,
+    });
+
+    await this.update();
+  }
+
+  async disablePush() {
+    const registration = await this.getRegistration();
+    const subscription = await registration.pushManager.getSubscription();
+
+    if (!subscription) {
+      return;
+    }
+
+    await Promise.all([
+      subscription.unsubscribe(),
+      removeSubscriptionFromBackend(subscription),
+    ]);
+
+    await this.update();
+  }
 }
 
-start();
+const pushComponent = new PushComponent();
+pushComponent.update();
