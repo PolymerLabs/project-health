@@ -81,7 +81,11 @@ function eventDisplay(event: api.PullRequestEvent): EventDisplay {
         url: event.url,
       };
     case 'MentionedEvent':
-      return {text: 'Not implemented yet.', time: null, url: null};
+      return {
+        text: `You were @mentioned "${event.text}"`,
+        time: event.mentionedAt,
+        url: event.url
+      };
     default:
       const unknown: never = event;
       throw new Error(`Unknown PullRequestEvent: ${unknown}`);

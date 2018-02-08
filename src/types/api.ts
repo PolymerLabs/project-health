@@ -134,7 +134,12 @@ export interface NewCommitsEvent {
   url: string;
 }
 
-export interface MentionedEvent { type: 'MentionedEvent'; }
+export interface MentionedEvent {
+  type: 'MentionedEvent';
+  text: string;
+  mentionedAt: number;
+  url: string;
+}
 
 export interface NotificationPayload {
   title: string;

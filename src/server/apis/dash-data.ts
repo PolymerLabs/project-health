@@ -2,7 +2,7 @@ import * as express from 'express';
 import gql from 'graphql-tag';
 
 import * as api from '../../types/api';
-import {prFieldsFragment, PullRequestReviewState, reviewFieldsFragment, ViewerPullRequestsQuery} from '../../types/gql-types';
+import {mentionedFieldsFragment, prFieldsFragment, PullRequestReviewState, reviewFieldsFragment, ViewerPullRequestsQuery} from '../../types/gql-types';
 import {GitHub} from '../../utils/github';
 import {userModel} from '../models/userModel';
 
@@ -32,14 +32,19 @@ export class DashData {
 
   async fetchUserData(login: string, token: string): Promise<api.DashResponse> {
     const openPrQuery = 'is:open is:pr archived:false';
+    const reviewedQueryString =
+        `reviewed-by:${login} ${openPrQuery} -author:${login}`;
+    const reviewRequestsQueryString =
+        `review-requested:${login} ${openPrQuery}`;
+    const mentionsQueryString = `${reviewedQueryString} mentions:${login}`;
 
     const viewerPrsResult = await this.github.query<ViewerPullRequestsQuery>({
       query: prsQuery,
       variables: {
         login,
-        reviewRequestsQueryString: `review-requested:${login} ${openPrQuery}`,
-        reviewedQueryString:
-            `reviewed-by:${login} ${openPrQuery} -author:${login}`,
+        reviewRequestsQueryString,
+        reviewedQueryString,
+        mentionsQueryString,
       },
       fetchPolicy: 'network-only',
       context: {token}
@@ -97,19 +102,21 @@ export class DashData {
         outgoingPrs.push(outgoingPr);
       }
 
-      // Incoming review requests.
-      for (const pr of viewerPrsResult.data.reviewRequests.nodes || []) {
-        if (!pr || pr.__typename !== 'PullRequest') {
+      // In some cases, GitHub will return a PR both in the review request list
+      // and the reviewed list. This ID set is used to ensure we don't show a PR
+      // twice.
+      const prsShown = [];
+
+      // Build a list of mentions.
+      const mentioned: Map<string, api.MentionedEvent> = new Map();
+      for (const item of viewerPrsResult.data.mentions.nodes || []) {
+        if (!item || item.__typename !== 'PullRequest') {
           continue;
         }
-
-        const incomingPr: api.IncomingPullRequest = {
-          ...convertPrFields(pr),
-          myReview: null,
-          status: {type: 'ReviewRequired'},
-        };
-
-        incomingPrs.push(incomingPr);
+        const mention = getLastMentioned(item, login);
+        if (mention) {
+          mentioned.set(item.id, mention);
+        }
       }
 
       // Incoming PRs that I've reviewed.
@@ -147,6 +154,12 @@ export class DashData {
 
         if (myReview) {
           reviewedPr.events.push({type: 'MyReviewEvent', review: myReview});
+
+          // TODO: this could be in the wrong order with the new commits below.
+          const prMention = mentioned.get(pr.id);
+          if (prMention && prMention.mentionedAt > myReview.createdAt) {
+            reviewedPr.events.push(prMention);
+          }
         }
 
         // Check if there are new commits to the pull request.
@@ -189,7 +202,23 @@ export class DashData {
           }
         }
 
+        prsShown.push(pr.id);
         incomingPrs.push(reviewedPr);
+      }
+
+      // Incoming review requests.
+      for (const pr of viewerPrsResult.data.reviewRequests.nodes || []) {
+        if (!pr || pr.__typename !== 'PullRequest' || prsShown.includes(pr.id)) {
+          continue;
+        }
+
+        const incomingPr: api.IncomingPullRequest = {
+          ...convertPrFields(pr),
+          myReview: null,
+          status: {type: 'ReviewRequired'},
+        };
+
+        incomingPrs.push(incomingPr);
       }
     }
     return {
@@ -305,10 +334,56 @@ function convertReviewFields(fields: reviewFieldsFragment): api.Review {
   return review;
 }
 
+function getLastMentioned(pullRequest: mentionedFieldsFragment, login: string):
+    api.MentionedEvent|null {
+  let latest = null;
+
+  for (const comment of pullRequest.comments.nodes || []) {
+    if (!comment || !comment.bodyText.includes(`@${login}`)) {
+      continue;
+    }
+    if (!latest || comment.createdAt > latest.createdAt) {
+      latest = comment;
+    }
+  }
+
+  if (pullRequest.reviews) {
+    for (const review of pullRequest.reviews.nodes || []) {
+      if (!review) {
+        continue;
+      }
+      if (review.bodyText.includes(`@${login}`) &&
+          (!latest || review.createdAt > latest.createdAt)) {
+        latest = review;
+      }
+
+      for (const comment of review.comments.nodes || []) {
+        if (!comment || !comment.bodyText.includes(`@${login}`)) {
+          continue;
+        }
+        if (!latest || comment.createdAt > latest.createdAt) {
+          latest = comment;
+        }
+      }
+    }
+  }
+
+  if (!latest) {
+    return null;
+  }
+
+  return {
+    type: 'MentionedEvent',
+    text: latest.bodyText,
+    mentionedAt: Date.parse(latest.createdAt),
+    url: latest.url,
+  };
+}
+
 const prsQuery = gql`
-query ViewerPullRequests($login: String!, $reviewRequestsQueryString: String!, $reviewedQueryString: String!) {
+query ViewerPullRequests($login: String!, $reviewRequestsQueryString: String!, $reviewedQueryString: String!, $mentionsQueryString: String!) {
 	user(login: $login) {
-    pullRequests(last: 10, states: [OPEN]) {
+    pullRequests(last: 20, states: [OPEN]) {
       nodes {
         ...prFields
         ...statusFields
@@ -331,14 +406,14 @@ query ViewerPullRequests($login: String!, $reviewRequestsQueryString: String!, $
       }
     }
   }
-  reviewRequests: search(type: ISSUE, query: $reviewRequestsQueryString, last: 10) {
+  reviewRequests: search(type: ISSUE, query: $reviewRequestsQueryString, last: 20) {
     nodes {
       ... on PullRequest {
         ...prFields
       }
     }
   }
-  reviewed: search(type: ISSUE, query: $reviewedQueryString, last: 10) {
+  reviewed: search(type: ISSUE, query: $reviewedQueryString, last: 20) {
     nodes {
       ... on PullRequest {
         ...prFields
@@ -364,6 +439,11 @@ query ViewerPullRequests($login: String!, $reviewRequestsQueryString: String!, $
       }
     }
   }
+  mentions: search(type: ISSUE, query: $mentionsQueryString, last: 20) {
+    nodes {
+      ...mentionedFields
+    }
+  }
   rateLimit {
     cost
     limit
@@ -387,6 +467,7 @@ fragment prFields on PullRequest {
   }
   title
   url
+  id
   createdAt
   author {
     avatarUrl
@@ -407,6 +488,31 @@ fragment statusFields on PullRequest {
             createdAt
           }
           state
+        }
+      }
+    }
+  }
+}
+
+fragment mentionedFields on PullRequest {
+  id
+  comments(last: 10) {
+    nodes {
+      createdAt
+      bodyText
+      url
+    }
+  }
+  reviews(last: 10) {
+    nodes {
+      bodyText
+      createdAt
+      url
+      comments(last: 10) {
+        nodes {
+          createdAt
+          bodyText
+          url
         }
       }
     }
