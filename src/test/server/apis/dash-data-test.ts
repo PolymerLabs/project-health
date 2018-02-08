@@ -57,14 +57,6 @@ test('project-health1 dashboard', async (t) => {
           },
         ],
         repository: 'project-health1/repo',
-        reviewRequests: [],
-        reviews: [
-          {
-            author: 'project-health2',
-            createdAt: 1517359027000,
-            reviewState: PullRequestReviewState.COMMENTED,
-          },
-        ],
         status: {
           reviewers: ['project-health2'],
           type: 'WaitingReview',
@@ -79,8 +71,6 @@ test('project-health1 dashboard', async (t) => {
         createdAt: 1517353063000,
         events: [],
         repository: 'project-health1/repo',
-        reviewRequests: [],
-        reviews: [],
         status: {
           type: 'NoReviewers',
         },
@@ -93,14 +83,6 @@ test('project-health1 dashboard', async (t) => {
         avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
         createdAt: 1517253689000,
         repository: 'project-health1/repo',
-        reviewRequests: [],
-        reviews: [
-          {
-            author: 'project-health2',
-            createdAt: 1517253712000,
-            reviewState: PullRequestReviewState.CHANGES_REQUESTED,
-          },
-        ],
         status: {type: 'PendingChanges'},
         title: 'Adding an oauth page',
         url: 'https://github.com/project-health1/repo/pull/6',
@@ -119,14 +101,6 @@ test('project-health1 dashboard', async (t) => {
         avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
         createdAt: 1517253583000,
         repository: 'project-health1/repo',
-        reviewRequests: [],
-        reviews: [
-          {
-            author: 'project-health2',
-            createdAt: 1517253614000,
-            reviewState: PullRequestReviewState.APPROVED,
-          },
-        ],
         status: {type: 'PendingMerge'},
         title: 'Add lint for TS files',
         url: 'https://github.com/project-health1/repo/pull/5',
@@ -145,14 +119,6 @@ test('project-health1 dashboard', async (t) => {
         avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
         createdAt: 1516324726000,
         repository: 'project-health1/repo',
-        reviewRequests: [],
-        reviews: [
-          {
-            author: 'project-health2',
-            createdAt: 1516324775000,
-            reviewState: PullRequestReviewState.COMMENTED,
-          },
-        ],
         title: 'Update all the things',
         url: 'https://github.com/project-health1/repo/pull/2',
         status: {type: 'WaitingReview', reviewers: ['project-health2']},
@@ -173,10 +139,6 @@ test('project-health1 dashboard', async (t) => {
         avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
         createdAt: 1513370262000,
         repository: 'project-health1/repo',
-        reviewRequests: [
-          'project-health2',
-        ],
-        reviews: [],
         title: 'Update README.md',
         url: 'https://github.com/project-health1/repo/pull/1',
         status: {type: 'WaitingReview', reviewers: ['project-health2']},
@@ -199,11 +161,6 @@ test('project-health1 dashboard', async (t) => {
             type: 'MyReviewEvent',
           },
         ],
-        myReview: {
-          author: 'project-health1',
-          createdAt: 1518042373000,
-          reviewState: PullRequestReviewState.COMMENTED,
-        },
         repository: 'project-health1/repo',
         status: {
           type: 'ApprovalRequired',
@@ -233,11 +190,6 @@ test('project-health1 dashboard', async (t) => {
                 'https://github.com/project-health1/repo/pull/10#discussion_r166728166',
           }
         ],
-        myReview: {
-          author: 'project-health1',
-          createdAt: 1518031560000,
-          reviewState: PullRequestReviewState.APPROVED,
-        },
         repository: 'project-health1/repo',
         status: {
           type: 'NoActionRequired',
@@ -270,11 +222,6 @@ test('project-health1 dashboard', async (t) => {
                 'https://github.com/project-health1/repo/pull/9/files/4eb760bbbeb1e9b5ee51010050fca4d1f2fe5dbb..bf67264ad3d77fcd9ad43cfcc13c8578fb9f57de',
           }
         ],
-        myReview: {
-          author: 'project-health1',
-          createdAt: 1517426369000,
-          reviewState: PullRequestReviewState.CHANGES_REQUESTED,
-        },
         repository: 'project-health1/repo',
         status: {
           type: 'ApprovalRequired',
@@ -287,11 +234,6 @@ test('project-health1 dashboard', async (t) => {
         author: 'project-health2',
         avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
         createdAt: 1516750523000,
-        myReview: {
-          author: 'project-health1',
-          createdAt: 1516753105000,
-          reviewState: PullRequestReviewState.CHANGES_REQUESTED,
-        },
         repository: 'project-health1/repo',
         title: 'A couple minor changes for browserify compatibility',
         url: 'https://github.com/project-health1/repo/pull/3',
@@ -310,7 +252,6 @@ test('project-health1 dashboard', async (t) => {
         author: 'project-health2',
         avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
         createdAt: 1516753159000,
-        myReview: null,
         repository: 'project-health1/repo',
         title: 'Add a field for getting the template of an element',
         url: 'https://github.com/project-health1/repo/pull/4',

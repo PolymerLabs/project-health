@@ -51,10 +51,8 @@ export class DashData {
           continue;
         }
 
-        const outgoingPr: api.OutgoingPullRequest = {
+        const outgoingPr: api.PullRequest = {
           ...convertPrFields(pr),
-          reviews: [],
-          reviewRequests: [],
           status: {type: 'WaitingReview', reviewers: []},
         };
 
@@ -63,33 +61,34 @@ export class DashData {
           outgoingPr.avatarUrl = pr.author.avatarUrl;
         }
 
+        const reviewRequests = [];
         if (pr.reviewRequests) {
           for (const request of pr.reviewRequests.nodes || []) {
             if (!request || !request.requestedReviewer ||
                 request.requestedReviewer.__typename !== 'User') {
               continue;
             }
-            outgoingPr.reviewRequests.push(request.requestedReviewer.login);
+            reviewRequests.push(request.requestedReviewer.login);
           }
         }
 
+        let reviews: api.Review[] = [];
         if (pr.reviews && pr.reviews.nodes) {
           // Filter out reviews from the viewer.
           const prReviews = pr.reviews.nodes.filter(
               (review) =>
                   review && review.author && review.author.login !== login);
-          reviewsForOutgoingPrs(prReviews, outgoingPr);
+          reviews = reviewsForOutgoingPrs(prReviews, outgoingPr);
         }
 
-        const reviewersCount =
-            outgoingPr.reviewRequests.length + outgoingPr.reviews.length;
+        const reviewersCount = reviewRequests.length + reviews.length;
         if (outgoingPr.status.type === 'WaitingReview' &&
             reviewersCount === 0) {
           outgoingPr.status = {type: 'NoReviewers'};
         } else if (outgoingPr.status.type === 'WaitingReview') {
           outgoingPr.status.reviewers = Array.from(new Set([
-            ...outgoingPr.reviewRequests,
-            ...outgoingPr.reviews.map((review) => review.author),
+            ...reviewRequests,
+            ...reviews.map((review) => review.author),
           ]));
         }
 
@@ -140,9 +139,8 @@ export class DashData {
           }
         }
 
-        const reviewedPr: api.IncomingPullRequest = {
+        const reviewedPr: api.PullRequest = {
           ...convertPrFields(pr),
-          myReview,
           status,
         };
 
@@ -207,9 +205,8 @@ export class DashData {
           continue;
         }
 
-        const incomingPr: api.IncomingPullRequest = {
+        const incomingPr: api.PullRequest = {
           ...convertPrFields(pr),
-          myReview: null,
           status: {type: 'ReviewRequired'},
         };
 
@@ -226,7 +223,8 @@ export class DashData {
 
 function reviewsForOutgoingPrs(
     reviews: Array<reviewFieldsFragment|null>,
-    outgoingPr: api.OutgoingPullRequest) {
+    outgoingPr: api.PullRequest): api.Review[] {
+  const result = [];
   for (const review of reviews) {
     if (!review) {
       continue;
@@ -239,13 +237,13 @@ function reviewsForOutgoingPrs(
       outgoingPr.status = {type: 'PendingChanges'};
     }
 
-    outgoingPr.reviews.push(convertReviewFields(review));
+    result.push(convertReviewFields(review));
   }
 
-  const reviewsRequestingChanges = outgoingPr.reviews.filter(
+  const reviewsRequestingChanges = result.filter(
       (review) =>
           review.reviewState === PullRequestReviewState.CHANGES_REQUESTED);
-  const reviewsApproved = outgoingPr.reviews.filter(
+  const reviewsApproved = result.filter(
       (review) => review.reviewState === PullRequestReviewState.APPROVED);
   let eventReviews = null;
 
@@ -253,8 +251,8 @@ function reviewsForOutgoingPrs(
     eventReviews = reviewsRequestingChanges;
   } else if (reviewsApproved.length) {
     eventReviews = reviewsApproved;
-  } else if (outgoingPr.reviews.length) {
-    eventReviews = outgoingPr.reviews;
+  } else if (result.length) {
+    eventReviews = result;
   }
 
   if (eventReviews) {
@@ -263,6 +261,7 @@ function reviewsForOutgoingPrs(
       reviews: eventReviews,
     });
   }
+  return result;
 }
 
 type MyReviewFields = reviewFieldsFragment&{commit: {oid: string}};
