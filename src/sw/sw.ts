@@ -22,7 +22,7 @@ const pushEventHandler = {
 self.addEventListener('push', pushEventHandler);
 
 type CustomNotification = {
-  data: NotificationURLData | void;
+  data: NotificationURLData|void;
 };
 
 const clickEventHandler = {

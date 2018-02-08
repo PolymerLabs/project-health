@@ -1,8 +1,9 @@
 import gql from 'graphql-tag';
-import {sendNotification} from '../controllers/notifications';
-import { userModel } from '../models/userModel';
+
 import {StatusToPRQuery} from '../../types/gql-types';
 import {github} from '../../utils/github';
+import {sendNotification} from '../controllers/notifications';
+import {userModel} from '../models/userModel';
 
 type User = {
   login: string;
@@ -13,8 +14,7 @@ type ReviewHook = {
 };
 
 type PullRequestHook = {
-  title: string; user: User;
-  url: string;
+  title: string; user: User; url: string;
 };
 
 type RepositoryHook = {
@@ -27,9 +27,8 @@ type PullRequestReviewHook = {
 };
 
 type StatusHook = {
-  sha: string;
-  name: string;
-  state: 'error'|'failure'|'pending'|'success'; description: string;
+  sha: string; name: string; state: 'error' | 'failure' | 'pending' | 'success';
+  description: string;
   repository: RepositoryHook;
   commit: {author: User;}
 };
@@ -84,7 +83,7 @@ export async function handleStatus(hookData: StatusHook) {
     if (!commitNode) {
       continue;
     }
-    
+
     const commit = commitNode.commit;
     if (commit.oid === hookData.sha) {
       sendNotification(prData.author.login, {

@@ -50,8 +50,7 @@ function getRouter(): express.Router {
   webhookRouter.post(
       '/:action',
       async (request: express.Request, response: express.Response) => {
-        const loginDetails =
-            await userModel.getLoginFromRequest(request);
+        const loginDetails = await userModel.getLoginFromRequest(request);
         if (!loginDetails) {
           response.sendStatus(400);
           return;

@@ -47,44 +47,32 @@ test(
       t.pass();
     });
 
-    test(
-        'Webhook status: error-travis.json',
-        async (t) => {
-          const eventContent = await fs.readJSON(path.join(
-              hookJsonDir,
-              'status',
-              'error-travis.json'));
-          await handleStatus(eventContent);
-    
-          // TODO: Find way to assert arguments passed to sendNotification()
-    
-          t.pass();
-        });
+test('Webhook status: error-travis.json', async (t) => {
+  const eventContent =
+      await fs.readJSON(path.join(hookJsonDir, 'status', 'error-travis.json'));
+  await handleStatus(eventContent);
 
-    test(
-        'Webhook status: error-travis.json',
-        async (t) => {
-            const eventContent = await fs.readJSON(path.join(
-                hookJsonDir,
-                'status',
-                'pending-travis.json'));
-            await handleStatus(eventContent);
-    
-            // TODO: Find way to assert arguments passed to sendNotification()
-    
-            t.pass();
-        });
+  // TODO: Find way to assert arguments passed to sendNotification()
 
-    test(
-      'Webhook status: error-travis.json',
-      async (t) => {
-          const eventContent = await fs.readJSON(path.join(
-              hookJsonDir,
-              'status',
-              'success-travis.json'));
-          await handleStatus(eventContent);
-  
-          // TODO: Find way to assert arguments passed to sendNotification()
-  
-          t.pass();
-      });
+  t.pass();
+});
+
+test('Webhook status: error-travis.json', async (t) => {
+  const eventContent = await fs.readJSON(
+      path.join(hookJsonDir, 'status', 'pending-travis.json'));
+  await handleStatus(eventContent);
+
+  // TODO: Find way to assert arguments passed to sendNotification()
+
+  t.pass();
+});
+
+test('Webhook status: error-travis.json', async (t) => {
+  const eventContent = await fs.readJSON(
+      path.join(hookJsonDir, 'status', 'success-travis.json'));
+  await handleStatus(eventContent);
+
+  // TODO: Find way to assert arguments passed to sendNotification()
+
+  t.pass();
+});

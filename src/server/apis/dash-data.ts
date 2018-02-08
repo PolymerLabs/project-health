@@ -202,7 +202,8 @@ export class DashData {
 
       // Incoming review requests.
       for (const pr of viewerPrsResult.data.reviewRequests.nodes || []) {
-        if (!pr || pr.__typename !== 'PullRequest' || prsShown.includes(pr.id)) {
+        if (!pr || pr.__typename !== 'PullRequest' ||
+            prsShown.includes(pr.id)) {
           continue;
         }
 

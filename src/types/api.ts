@@ -147,6 +147,4 @@ export interface NotificationPayload {
   data: NotificationURLData|void;
 }
 
-export interface NotificationURLData {
-  url: string;
-}
+export interface NotificationURLData { url: string; }
