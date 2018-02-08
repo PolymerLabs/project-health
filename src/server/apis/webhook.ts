@@ -1,13 +1,12 @@
 import * as express from 'express';
 
-import {GitHub} from '../../utils/github';
-import {DashSecrets} from '../dash-server';
+import {github} from '../../utils/github';
+import * as webhookEvents from '../controllers/webhook-events';
 import {userModel} from '../models/userModel';
-import * as webhookEvents from '../webhook-events';
 
 export const WEBHOOK_URL = 'http://github-health.appspot.com/api/webhook';
 
-function getRouter(github: GitHub, secrets: DashSecrets): express.Router {
+function getRouter(): express.Router {
   const webhookRouter = express.Router();
   webhookRouter.post(
       '/', async (request: express.Request, response: express.Response) => {
@@ -34,8 +33,7 @@ function getRouter(github: GitHub, secrets: DashSecrets): express.Router {
               response.send();
               return;
             case 'pull_request_review':
-              await webhookEvents.handlePullRequestReview(
-                  secrets, request.body);
+              await webhookEvents.handlePullRequestReview(request.body);
               response.send();
               return;
             default:
@@ -53,7 +51,7 @@ function getRouter(github: GitHub, secrets: DashSecrets): express.Router {
       '/:action',
       async (request: express.Request, response: express.Response) => {
         const loginDetails =
-            await userModel.getLoginFromRequest(github, request);
+            await userModel.getLoginFromRequest(request);
         if (!loginDetails) {
           response.sendStatus(400);
           return;
@@ -66,7 +64,7 @@ function getRouter(github: GitHub, secrets: DashSecrets): express.Router {
 
         if (request.params.action === 'add') {
           try {
-            await github.post(
+            await github().post(
                 `orgs/${request.body.org}/hooks`, loginDetails.token, {
                   name: 'web',
                   active: true,
@@ -93,7 +91,7 @@ function getRouter(github: GitHub, secrets: DashSecrets): express.Router {
           try {
             const org = request.body.org;
             const hooks =
-                await github.get(`orgs/${org}/hooks`, loginDetails.token);
+                await github().get(`orgs/${org}/hooks`, loginDetails.token);
             let hookId = null;
             for (const hook of hooks) {
               if (hook.config.url === WEBHOOK_URL) {
@@ -106,7 +104,7 @@ function getRouter(github: GitHub, secrets: DashSecrets): express.Router {
               return;
             }
 
-            await github.delete(
+            await github().delete(
                 `orgs/${org}/hooks/${hookId}`,
                 loginDetails.token,
             );

@@ -3,18 +3,18 @@ import gql from 'graphql-tag';
 
 import {OrgWebHookState} from '../../types/api';
 import {OrgDetailsQuery} from '../../types/gql-types';
-import {GitHub} from '../../utils/github';
+import {github} from '../../utils/github';
 import {userModel} from '../models/userModel';
 
 import {WEBHOOK_URL} from './webhook';
 
-function getRouter(github: GitHub): express.Router {
+function getRouter(): express.Router {
   const settingsRouter = express.Router();
   settingsRouter.post(
       '/orgs.json',
       async (request: express.Request, response: express.Response) => {
         const loginDetails =
-            await userModel.getLoginFromRequest(github, request);
+            await userModel.getLoginFromRequest(request);
         if (!loginDetails) {
           response.sendStatus(400);
           return;
@@ -29,7 +29,7 @@ function getRouter(github: GitHub): express.Router {
         }
 
         try {
-          const orgDetails = await github.query<OrgDetailsQuery>({
+          const orgDetails = await github().query<OrgDetailsQuery>({
             query: orgsDetailsQuery,
             fetchPolicy: 'network-only',
             context: {
@@ -51,7 +51,7 @@ function getRouter(github: GitHub): express.Router {
 
               let hookEnabled = false;
               if (org.viewerCanAdminister) {
-                const hooks = await github.get(
+                const hooks = await github().get(
                     `orgs/${org.login}/hooks`, loginDetails.token);
 
                 for (const hook of hooks) {

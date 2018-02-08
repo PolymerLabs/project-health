@@ -1,8 +1,7 @@
 import test from 'ava';
-import * as fse from 'fs-extra';
-import * as path from 'path';
 
 import {getSubscriptionModel} from '../../../server/models/pushSubscriptionModel';
+import {initFirestore} from '../../../utils/firestore';
 
 const USER_LOGIN = 'tests';
 const PUSH_SUBSCRIPTION = {
@@ -24,16 +23,7 @@ const PUSH_SUBSCRIPTION_2 = {
 const CONTENT_ENCODINGS = ['aes128gcm', 'aesgcm'];
 
 test.before(() => {
-  // See https://cloud.google.com/docs/authentication/production
-  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-    const rootDir = path.join(__dirname, '..', '..', '..', '..');
-    for (const file of fse.readdirSync(rootDir)) {
-      if (file.match(/^github-health-.*\.json$/)) {
-        process.env.GOOGLE_APPLICATION_CREDENTIALS = path.join(rootDir, file);
-        break;
-      }
-    }
-  }
+  initFirestore();
 });
 
 test.beforeEach(async () => {

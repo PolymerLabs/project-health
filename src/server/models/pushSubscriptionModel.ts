@@ -1,4 +1,4 @@
-import {Firestore} from '@google-cloud/firestore';
+import {firestore} from '../../utils/firestore';
 
 interface PushSubscription {
   endpoint: string;
@@ -25,20 +25,15 @@ interface PushSubscriptionInfo {
  * since firebase keys cannot contain slashes.
  */
 class PushSubscriptionModel {
-  private firestore: Firestore;
-
-  constructor() {
-    this.firestore = new Firestore();
-  }
-
   private getSubscriptionCollection(login: string) {
-    return this.firestore.collection('users').doc(login).collection(
+    return firestore().collection('users').doc(login).collection(
         'subscriptions');
   }
 
   private getSubscriptionDoc(login: string, subscription: PushSubscription) {
     const b64Endpoint = new Buffer(subscription.endpoint).toString('base64');
-    return this.firestore.collection('users')
+    return firestore()
+        .collection('users')
         .doc(login)
         .collection('subscriptions')
         .doc(b64Endpoint);

@@ -3,6 +3,7 @@ import * as ava from 'ava';
 import {startTestReplayServer} from '../../../replay-server';
 import {DashData} from '../../../server/apis/dash-data';
 import {PullRequestReviewState} from '../../../types/gql-types';
+import {initGithub} from '../../../utils/github';
 
 /**
  * Assigns the test context object before each test to ensure it is correctly
@@ -20,11 +21,12 @@ function contextualize<T>(getContext: (_: ava.TestContext) => Promise<T>):
  * Generates the test context object before each test.
  */
 const test = contextualize(async (t) => {
-  const {server, client} = await startTestReplayServer(t);
+  const {server, url} = await startTestReplayServer(t);
+  initGithub(url, url);
+  
   return {
     replayServer: server,
-    client,
-    dashData: new DashData(client),
+    dashData: new DashData(),
     // This token must be set in the environment during recording.
     token: process.env.GITHUB_TOKEN || '',
   };

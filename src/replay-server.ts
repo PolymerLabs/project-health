@@ -5,8 +5,6 @@ import * as http from 'http';
 import * as path from 'path';
 import * as request from 'request';
 
-import {GitHub} from './utils/github';
-
 const replayRoot = path.join(__dirname, '..', 'replays');
 const githubApiUrl = 'https://api.github.com/graphql';
 const githubJsonUrl = 'https://api.github.com';
@@ -26,7 +24,7 @@ let recordingLogged = false;
  * read back from those files.
  */
 export async function startTestReplayServer(t: ava.TestContext):
-    Promise<{server: http.Server, client: GitHub}> {
+    Promise<{server: http.Server, url: string}> {
   const record = process.env.RECORD === 'true';
 
   // Kind of weirdly, t.title will include the name of the current function
@@ -137,13 +135,13 @@ export async function startTestReplayServer(t: ava.TestContext):
     }
   }
 
-  return new Promise<{server: http.Server, client: GitHub}>((resolve) => {
+  return new Promise<{server: http.Server, url: string}>((resolve) => {
     const server = http.createServer(router);
     server.listen(/* random */ 0, '127.0.0.1', () => {
       const {address, port} = server.address();
       const url = `http://${address}:${port}`;
-      const client = new GitHub(url, url);
-      resolve({server, client});
+
+      resolve({server, url});
     });
   });
 }

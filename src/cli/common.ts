@@ -17,16 +17,16 @@
 import gql from 'graphql-tag';
 
 import {OrgReposQuery, OrgReposQueryVariables} from '../types/gql-types';
-import {GitHub} from '../utils/github';
+import {github} from '../utils/github';
 
 /**
  * Fetch the repos under the given GitHub organization.
  */
-export async function getOrgRepos(github: GitHub, orgName: string):
+export async function getOrgRepos(orgName: string):
     Promise<Array<{owner: string, name: string}>> {
   const ids = [];
 
-  const results = github.cursorQuery<OrgReposQuery, OrgReposQueryVariables>(
+  const results = github().cursorQuery<OrgReposQuery, OrgReposQueryVariables>(
       orgReposQuery,
       {login: orgName},
       (data) => data.organization && data.organization.repositories);

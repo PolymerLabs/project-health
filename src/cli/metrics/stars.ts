@@ -17,7 +17,7 @@
 import gql from 'graphql-tag';
 
 import {StarsQuery, StarsQueryVariables} from '../../types/gql-types';
-import {GitHub} from '../../utils/github';
+import {github} from '../../utils/github';
 import {getOrgRepos} from '../common';
 
 import {MetricResult} from './metric-result';
@@ -51,19 +51,18 @@ type Star = {
 /**
  * Get all the stars for specified org/repo.
  */
-export async function getStars(
-    github: GitHub, opts: StarsOpts): Promise<StarsResult> {
+export async function getStars(opts: StarsOpts): Promise<StarsResult> {
   let repos;
   if (opts.repo) {
     repos = [{owner: opts.org, name: opts.repo}];
   } else {
-    repos = await getOrgRepos(github, opts.org);
+    repos = await getOrgRepos(opts.org);
   }
 
   const fetches = [];
 
   for (const {owner, name} of repos) {
-    fetches.push(fetchStarsForRepo(github, owner, name));
+    fetches.push(fetchStarsForRepo(owner, name));
   }
 
   const allStars = [];
@@ -93,11 +92,10 @@ const starsQuery = gql`
 /**
  * Fetches all starring events for a repo.
  */
-async function fetchStarsForRepo(
-    github: GitHub, owner: string, name: string): Promise<Star[]> {
+async function fetchStarsForRepo(owner: string, name: string): Promise<Star[]> {
   const stars: Star[] = [];
 
-  const results = github.cursorQuery<StarsQuery, StarsQueryVariables>(
+  const results = github().cursorQuery<StarsQuery, StarsQueryVariables>(
       starsQuery,
       {owner, name},
       (data) => data.repository && data.repository.stargazers);

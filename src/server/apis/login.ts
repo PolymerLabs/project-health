@@ -1,11 +1,10 @@
 import * as express from 'express';
 import fetch from 'node-fetch';
 
-import {GitHub} from '../../utils/github';
-import {DashSecrets} from '../dash-server';
+import {secrets} from '../../utils/secrets';
 import {userModel} from '../models/userModel';
 
-function getRouter(github: GitHub, secrets: DashSecrets): express.Router {
+function getRouter(): express.Router {
   const loginRouter = express.Router();
   loginRouter.post(
       '/', async (request: express.Request, response: express.Response) => {
@@ -22,8 +21,8 @@ function getRouter(github: GitHub, secrets: DashSecrets): express.Router {
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                'client_id': secrets.GITHUB_CLIENT_ID,
-                'client_secret': secrets.GITHUB_CLIENT_SECRET,
+                'client_id': secrets().GITHUB_CLIENT_ID,
+                'client_secret': secrets().GITHUB_CLIENT_SECRET,
                 'code': request.body,
               }),
             });
@@ -39,7 +38,7 @@ function getRouter(github: GitHub, secrets: DashSecrets): express.Router {
         const userScopes = loginResponseBody['scope'] ?
             loginResponseBody['scope'].split(',') :
             [];
-        await userModel.addNewUser(github, accessToken, userScopes);
+        await userModel.addNewUser(accessToken, userScopes);
 
         response.cookie('id', accessToken, {httpOnly: true});
         response.end();

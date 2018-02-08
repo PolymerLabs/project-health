@@ -2,6 +2,7 @@ import * as ava from 'ava';
 
 import {startTestReplayServer} from '../../../replay-server';
 import {getMyRepos} from '../../../server/utils/my-repos';
+import {initGithub} from '../../../utils/github';
 
 /**
  * Assigns the test context object before each test to ensure it is correctly
@@ -19,26 +20,21 @@ function contextualize<T>(getContext: (_: ava.TestContext) => Promise<T>):
  * Generates the test context object before each test.
  */
 const test = contextualize(async (t) => {
-  const {server, client} = await startTestReplayServer(t);
+  const {server, url} = await startTestReplayServer(t);
+
+  initGithub(url, url);
+  
   return {
-    server,
-    client,
+    replayServer: server,
   };
 });
 
-
-test.beforeEach(async (t) => {
-  const {server, client} = await startTestReplayServer(t);
-  t.context.server = server;
-  t.context.client = client;
-});
-
 test.afterEach.cb((t) => {
-  t.context.server.close(t.end);
+  t.context.replayServer.close(t.end);
 });
 
-test('top contributed repos for samuelli', async (t) => {
-  const result = await getMyRepos(t.context.client, 'samuelli', '');
+test.serial('top contributed repos for samuelli', async (t) => {
+  const result = await getMyRepos('samuelli', '');
   t.deepEqual(result, [
     'webcomponents/webcomponents.org',
     'GoogleChrome/rendertron',

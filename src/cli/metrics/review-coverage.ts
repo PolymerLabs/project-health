@@ -19,7 +19,7 @@ import gql from 'graphql-tag';
 import {PullRequestCommitsQuery, PullRequestCommitsQueryVariables} from '../../types/gql-types';
 import {RepoCommitsQuery, RepoCommitsQueryVariables} from '../../types/gql-types';
 import {RepoPRsCommitsQuery, RepoPRsCommitsQueryVariables} from '../../types/gql-types';
-import {GitHub} from '../../utils/github';
+import {github} from '../../utils/github';
 import {getOrgRepos, getReviewsForPullRequest} from '../common';
 
 import {MetricResult} from './metric-result';
@@ -72,26 +72,25 @@ type ReviewedCommit = Commit&{
 /**
  * Computes how much of an org/repository is reviewed.
  */
-export async function getReviewCoverage(
-    github: GitHub, opts: ReviewCoverageOpts): Promise<ReviewCoverageResult> {
+export async function getReviewCoverage(opts: ReviewCoverageOpts):
+    Promise<ReviewCoverageResult> {
   let repos;
   if (opts.repo) {
     repos = [{owner: opts.org, name: opts.repo}];
   } else {
-    repos = await getOrgRepos(github, opts.org);
+    repos = await getOrgRepos(opts.org);
   }
 
   const commits = [];
   const reviewedCommits: Set<string> = new Set();
   for (const {owner, name} of repos) {
     // Fetched all reviewed commits.
-    for (const commit of await getPRCommitsForRepo(github, owner, name)) {
+    for (const commit of await getPRCommitsForRepo(owner, name)) {
       reviewedCommits.add(commit.oid);
     }
 
     // Get all commits on the master branch.
-    for (const commit of await getMasterCommits(
-             github, owner, name, opts.since)) {
+    for (const commit of await getMasterCommits(owner, name, opts.since)) {
       commits.push(
           Object.assign({reviewed: reviewedCommits.has(commit.oid)}, commit));
     }
@@ -105,8 +104,7 @@ export async function getReviewCoverage(
  * year.
  */
 async function getMasterCommits(
-    github: GitHub, owner: string, name: string, since?: string):
-    Promise<Commit[]> {
+    owner: string, name: string, since?: string): Promise<Commit[]> {
   const getPageInfo = (data: RepoCommitsQuery) => {
     if (!data.repository || !data.repository.defaultBranchRef ||
         data.repository.defaultBranchRef.target.__typename !== 'Commit') {
@@ -115,7 +113,7 @@ async function getMasterCommits(
     return data.repository.defaultBranchRef.target.history;
   };
   const results =
-      github.cursorQuery<RepoCommitsQuery, RepoCommitsQueryVariables>(
+      github().cursorQuery<RepoCommitsQuery, RepoCommitsQueryVariables>(
           repoCommitsQuery, {owner, name, since}, getPageInfo);
 
   const commits = [];
@@ -141,9 +139,9 @@ async function getMasterCommits(
  * Gets all the commits from reviewed pull requests in a repo.
  */
 async function getPRCommitsForRepo(
-    github: GitHub, owner: string, name: string): Promise<Commit[]> {
+    owner: string, name: string): Promise<Commit[]> {
   const results =
-      github.cursorQuery<RepoPRsCommitsQuery, RepoPRsCommitsQueryVariables>(
+      github().cursorQuery<RepoPRsCommitsQuery, RepoPRsCommitsQueryVariables>(
           repoPRsCommitsQuery,
           {owner, name},
           (data) => data.repository && data.repository.pullRequests);
@@ -173,7 +171,7 @@ async function getPRCommitsForRepo(
       // More than one page of commits, we need to fetch all the commits
       // separately.
       if (pr.commits.pageInfo.hasNextPage) {
-        oids.push(...await getFullCommitsForPR(github, pr.id));
+        oids.push(...await getFullCommitsForPR(pr.id));
       }
     }
   }
@@ -185,17 +183,18 @@ async function getPRCommitsForRepo(
  * Fetches all associated commits for a given pull request specified by id. Does
  * not include the merge commit.
  */
-async function getFullCommitsForPR(
-    github: GitHub, id: string): Promise<Commit[]> {
-  const results = github.cursorQuery<
-      PullRequestCommitsQuery,
-      PullRequestCommitsQueryVariables>(
-      pullRequestCommitsQuery, {id}, (data) => {
-        if (!data.node || data.node.__typename !== 'PullRequest') {
-          return null;
-        }
-        return data.node.commits;
-      });
+async function getFullCommitsForPR(id: string): Promise<Commit[]> {
+  const results =
+      github()
+          .cursorQuery<
+              PullRequestCommitsQuery,
+              PullRequestCommitsQueryVariables>(
+              pullRequestCommitsQuery, {id}, (data) => {
+                if (!data.node || data.node.__typename !== 'PullRequest') {
+                  return null;
+                }
+                return data.node.commits;
+              });
   const commits = [];
   for await (const data of results) {
     if (!data.node || data.node.__typename !== 'PullRequest') {

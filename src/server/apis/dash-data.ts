@@ -3,22 +3,16 @@ import gql from 'graphql-tag';
 
 import * as api from '../../types/api';
 import {mentionedFieldsFragment, prFieldsFragment, PullRequestReviewState, reviewFieldsFragment, ViewerPullRequestsQuery} from '../../types/gql-types';
-import {GitHub} from '../../utils/github';
+import {github} from '../../utils/github';
 import {userModel} from '../models/userModel';
 
 export class DashData {
-  private github: GitHub;
-
-  constructor(github: GitHub) {
-    this.github = github;
-  }
-
   getHandler() {
     return this.handler.bind(this);
   }
 
   private async handler(req: express.Request, res: express.Response) {
-    const loginDetails = await userModel.getLoginFromRequest(this.github, req);
+    const loginDetails = await userModel.getLoginFromRequest(req);
     if (!loginDetails) {
       res.sendStatus(401);
       return;
@@ -38,7 +32,7 @@ export class DashData {
         `review-requested:${login} ${openPrQuery}`;
     const mentionsQueryString = `${reviewedQueryString} mentions:${login}`;
 
-    const viewerPrsResult = await this.github.query<ViewerPullRequestsQuery>({
+    const viewerPrsResult = await github().query<ViewerPullRequestsQuery>({
       query: prsQuery,
       variables: {
         login,

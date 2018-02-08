@@ -2,7 +2,7 @@ import * as express from 'express';
 import gql from 'graphql-tag';
 
 import {ViewerLoginQuery} from '../../types/gql-types';
-import {GitHub} from '../../utils/github';
+import {github} from '../../utils/github';
 
 interface LoginDetails {
   username: string;
@@ -18,7 +18,7 @@ class UserModel {
     this.cachedLogins = {};
   }
 
-  async getLoginFromRequest(github: GitHub, request: express.Request):
+  async getLoginFromRequest(request: express.Request):
       Promise<LoginDetails|null> {
     if (!request.cookies) {
       return null;
@@ -34,15 +34,15 @@ class UserModel {
     }
 
     try {
-      return await this.addNewUser(github, token, null);
+      return await this.addNewUser(token, null);
     } catch (err) {
       // If adding the user errors, then the token is no longer valid.
       return null;
     }
   }
 
-  async addNewUser(github: GitHub, token: string, scopes: string[]|null) {
-    const loginResult = await github.query<ViewerLoginQuery>({
+  async addNewUser(token: string, scopes: string[]|null) {
+    const loginResult = await github().query<ViewerLoginQuery>({
       query: viewerLoginQuery,
       fetchPolicy: 'network-only',
       context: {token},
