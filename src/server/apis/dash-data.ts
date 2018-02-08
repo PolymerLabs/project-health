@@ -18,7 +18,7 @@ export class DashData {
   }
 
   private async handler(req: express.Request, res: express.Response) {
-    const loginDetails = await userModel.getLoginFromRequest(req);
+    const loginDetails = await userModel.getLoginFromRequest(this.github, req);
     if (!loginDetails) {
       res.sendStatus(401);
       return;

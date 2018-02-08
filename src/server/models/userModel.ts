@@ -7,7 +7,7 @@ import {GitHub} from '../../utils/github';
 interface LoginDetails {
   username: string;
   token: string;
-  scopes: string[];
+  scopes: string[]|null;
 }
 
 class UserModel {
@@ -18,7 +18,7 @@ class UserModel {
     this.cachedLogins = {};
   }
 
-  async getLoginFromRequest(request: express.Request):
+  async getLoginFromRequest(github: GitHub, request: express.Request):
       Promise<LoginDetails|null> {
     if (!request.cookies) {
       return null;
@@ -33,10 +33,15 @@ class UserModel {
       return this.cachedLogins[token];
     }
 
-    return null;
+    try {
+      return await this.addNewUser(github, token, null);
+    } catch (err) {
+      // If adding the user errors, then the token is no longer valid.
+      return null;
+    }
   }
 
-  async addNewUser(github: GitHub, token: string, scopes: string[]) {
+  async addNewUser(github: GitHub, token: string, scopes: string[]|null) {
     const loginResult = await github.query<ViewerLoginQuery>({
       query: viewerLoginQuery,
       fetchPolicy: 'network-only',

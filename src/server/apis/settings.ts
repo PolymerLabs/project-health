@@ -13,14 +13,16 @@ function getRouter(github: GitHub): express.Router {
   settingsRouter.post(
       '/orgs.json',
       async (request: express.Request, response: express.Response) => {
-        const loginDetails = await userModel.getLoginFromRequest(request);
+        const loginDetails =
+            await userModel.getLoginFromRequest(github, request);
         if (!loginDetails) {
           response.sendStatus(400);
           return;
         }
 
         const scopes = loginDetails.scopes;
-        if ((scopes.indexOf('admin:org_hook') === -1 ||
+        if (!scopes ||
+            (scopes.indexOf('admin:org_hook') === -1 ||
              scopes.indexOf('read:org') === -1)) {
           response.status(400).send('Missing required scope.');
           return;

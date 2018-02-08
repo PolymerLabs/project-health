@@ -49,7 +49,7 @@ export class DashServer {
         bodyParser.text(),
         getLoginRouter(this.github, this.secrets));
 
-    app.use('/api/push-subscription/', getPushSubRouter());
+    app.use('/api/push-subscription/', getPushSubRouter(this.github));
     app.use(
         '/api/webhook/',
         bodyParser.json(),
