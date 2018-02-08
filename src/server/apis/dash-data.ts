@@ -34,14 +34,17 @@ export class DashData {
     const openPrQuery = 'is:open is:pr archived:false';
     const reviewedQueryString =
         `reviewed-by:${login} ${openPrQuery} -author:${login}`;
+    const reviewRequestsQueryString =
+        `review-requested:${login} ${openPrQuery}`;
+    const mentionsQueryString = `${reviewedQueryString} mentions:${login}`;
 
     const viewerPrsResult = await this.github.query<ViewerPullRequestsQuery>({
       query: prsQuery,
       variables: {
         login,
-        reviewRequestsQueryString: `review-requested:${login} ${openPrQuery}`,
+        reviewRequestsQueryString,
         reviewedQueryString,
-        mentionsQueryString: `${reviewedQueryString} mentions:${login}`,
+        mentionsQueryString,
       },
       fetchPolicy: 'network-only',
       context: {token}
@@ -102,7 +105,7 @@ export class DashData {
       // In some cases, GitHub will return a PR both in the review request list
       // and the reviewed list. This ID set is used to ensure we don't show a PR
       // twice.
-      const prIds = [];
+      const prsShown = [];
 
       // Build a list of mentions.
       const mentioned: Map<string, api.MentionedEvent> = new Map();
@@ -199,13 +202,13 @@ export class DashData {
           }
         }
 
-        prIds.push(pr.id);
+        prsShown.push(pr.id);
         incomingPrs.push(reviewedPr);
       }
 
       // Incoming review requests.
       for (const pr of viewerPrsResult.data.reviewRequests.nodes || []) {
-        if (!pr || pr.__typename !== 'PullRequest' || prIds.includes(pr.id)) {
+        if (!pr || pr.__typename !== 'PullRequest' || prsShown.includes(pr.id)) {
           continue;
         }
 
