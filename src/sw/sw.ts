@@ -1,7 +1,7 @@
 import {} from '.';
 declare var self: ServiceWorkerGlobalScope;
 
-import {NotificationPayload} from '../types/api';
+import {NotificationPayload, NotificationURLData} from '../types/api';
 
 // This is an "EventListener"
 const pushEventHandler = {
@@ -18,4 +18,23 @@ const pushEventHandler = {
         ));
   }
 };
+
 self.addEventListener('push', pushEventHandler);
+
+type CustomNotification = {
+  data: NotificationURLData | void;
+};
+
+const clickEventHandler = {
+  handleEvent: (event: NotificationEvent) => {
+    event.notification.close();
+
+    // tslint:disable-next-line:no-any
+    const notification = ((event.notification as any) as CustomNotification);
+    if (notification.data && notification.data.url) {
+      event.waitUntil(self.clients.openWindow(notification.data.url));
+    }
+  }
+};
+
+self.addEventListener('notificationclick', clickEventHandler);
