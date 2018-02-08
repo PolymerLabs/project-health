@@ -23,7 +23,7 @@ function contextualize<T>(getContext: (_: ava.TestContext) => Promise<T>):
 const test = contextualize(async (t) => {
   const {server, url} = await startTestReplayServer(t);
   initGithub(url, url);
-  
+
   return {
     replayServer: server,
     dashData: new DashData(),
