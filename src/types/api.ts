@@ -144,4 +144,5 @@ export interface MentionedEvent {
 export interface NotificationPayload {
   title: string;
   body: string;
+  data: object|void;
 }

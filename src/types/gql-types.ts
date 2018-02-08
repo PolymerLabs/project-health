@@ -999,6 +999,67 @@ export interface OrgDetailsQuery {
   },
 };
 
+export interface StatusToPRQueryVariables {
+  query: string,
+};
+
+export interface StatusToPRQuery {
+  // Perform a search across resources.
+  pullRequests:  {
+    __typename: "SearchResultItemConnection",
+    // A list of nodes.
+    nodes:  Array<( {
+        __typename: "Issue",
+      } | {
+        __typename: "PullRequest",
+        // Identifies the pull request number.
+        number: number,
+        // Identifies the pull request title.
+        title: string,
+        // The HTTP URL for this pull request.
+        url: string,
+        // The actor who authored the comment.
+        author: ( {
+            __typename: "Organization",
+            // The username of the actor.
+            login: string,
+          } | {
+            __typename: "User",
+            // The username of the actor.
+            login: string,
+          } | {
+            __typename: "Bot",
+            // The username of the actor.
+            login: string,
+          }
+        ) | null,
+        // A list of commits present in this pull request's head branch not present in the base branch.
+        commits:  {
+          __typename: string,
+          // A list of nodes.
+          nodes:  Array< {
+            __typename: string,
+            // The Git commit object
+            commit:  {
+              __typename: string,
+              // The Git object ID
+              oid: string,
+            },
+          } | null > | null,
+        },
+      } | {
+        __typename: "Repository",
+      } | {
+        __typename: "User",
+      } | {
+        __typename: "Organization",
+      } | {
+        __typename: "MarketplaceListing",
+      }
+    ) | null > | null,
+  },
+};
+
 export interface ViewerLoginQuery {
   // The currently authenticated user.
   viewer:  {
