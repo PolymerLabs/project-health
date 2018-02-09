@@ -133,6 +133,8 @@ export interface MentionedEvent {
 export interface NotificationPayload {
   title: string;
   body: string;
+  requireInteraction: boolean;
+  icon: string;
   data: NotificationURLData|void;
 }
 
