@@ -26,20 +26,9 @@ export type PullRequestStatus =
 export type PullRequestEvent =
     OutgoingReviewEvent|MyReviewEvent|NewCommitsEvent|MentionedEvent;
 
-// TODO: remove this.
-export interface OutgoingPullRequest extends PullRequest {
-  reviews: Review[];
-  reviewRequests: string[];
-}
-
-// TODO: remove this.
-export interface IncomingPullRequest extends PullRequest {
-  myReview: Review|null;
-}
-
 export interface DashResponse {
-  outgoingPrs: OutgoingPullRequest[];
-  incomingPrs: IncomingPullRequest[];
+  outgoingPrs: PullRequest[];
+  incomingPrs: PullRequest[];
 }
 
 export interface Review {
