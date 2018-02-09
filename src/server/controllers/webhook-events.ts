@@ -14,7 +14,7 @@ type ReviewHook = {
 };
 
 type PullRequestHook = {
-  title: string; user: User; url: string;
+  title: string; user: User; html_url: string;
 };
 
 type RepositoryHook = {
@@ -89,6 +89,8 @@ export async function handleStatus(hookData: StatusHook) {
       sendNotification(prData.author.login, {
         title: hookData.description,
         body: `[${repo.name}] ${prData.title}`,
+        requireInteraction: false,
+        icon: '/assets/notification-images/icon-192x192.png',
         data: {
           url: prData.url,
         }
@@ -108,42 +110,31 @@ export async function handlePullRequestReview(hookData: PullRequestReviewHook) {
     const repo = hookData.repository;
     const pullReq = hookData.pull_request;
 
-    let notification = null;
+    let notificationTitle = null;
 
     if (review.state === 'approved') {
-      notification = {
-        title: `${review.user.login} approved your PR`,
-        body: `[${repo.name}] ${pullReq.title}`,
-        data: {
-          url: pullReq.url,
-        },
-      };
+      notificationTitle = `${review.user.login} approved your PR`;
     } else if (review.state === 'changes_requested') {
-      notification = {
-        title: `${review.user.login} requested changes`,
-        body: `[${repo.name}] ${pullReq.title}`,
-        data: {
-          url: pullReq.url,
-        },
-      };
+      notificationTitle =  `${review.user.login} requested changes`;
     } else if (review.state === 'commented') {
       if (review.user.login === pullReq.user.login) {
         // If the PR author is the commenter, do nothing;
         return;
       }
 
-      notification = {
-        title: `${review.user.login} commented on your PR`,
-        body: `[${repo.name}] ${pullReq.title}`,
-        data: {
-          url: pullReq.url,
-        },
-      };
+      notificationTitle = `${review.user.login} commented on your PR`;
     }
-
-    if (notification) {
-      const notificationRecipient = pullReq.user.login;
-      sendNotification(notificationRecipient, notification);
+    
+    if (notificationTitle) {
+      sendNotification(pullReq.user.login, {
+        title: notificationTitle,
+        body: `[${repo.name}] ${pullReq.title}`,
+        requireInteraction: true,
+        icon: '/assets/notification-images/icon-192x192.png',
+        data: {
+          url: pullReq.html_url,
+        },
+      });
     }
   } else {
     throw new Error(
