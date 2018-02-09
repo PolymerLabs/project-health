@@ -14,7 +14,7 @@ async function performAPICall(
     supportedContentEncodings: encodings || [],
   };
 
-  await fetch(`/api/push-subscription/${action}`, {
+  const response = await fetch(`/api/push-subscription/${action}`, {
     method: 'POST',
     credentials: 'include',
     headers: {
@@ -22,6 +22,9 @@ async function performAPICall(
     },
     body: JSON.stringify(bodyContent),
   });
+  if (!response.ok) {
+    throw new Error('Server responded with a non-200 response code.');
+  }
 }
 
 async function addSubscriptionToBackend(subscription: PushSubscription) {
