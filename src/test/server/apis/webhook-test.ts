@@ -5,6 +5,8 @@ import * as path from 'path';
 import {handlePullRequestReview, handleStatus} from '../../../server/controllers/webhook-events';
 import {initFirestore} from '../../../utils/firestore';
 import {initSecrets} from '../../../utils/secrets';
+import {initGithub} from '../../../utils/github';
+import {startTestReplayServer} from '../../../replay-server';
 
 const hookJsonDir = path.join(__dirname, '..', '..', 'static', 'webhook-data');
 
@@ -21,33 +23,40 @@ test.before(() => {
   initSecrets(TEST_SECRETS);
 });
 
+test.beforeEach(async (t) => {
+  const {server, url} = await startTestReplayServer(t);
+  t.context.server = server;
+  initGithub(url, url);
+});
 
-test(
-    'Webhook pull_request_review: submitted-state-changes_requested.json',
-    async (t) => {
-      const eventContent = await fs.readJSON(path.join(
-          hookJsonDir,
-          'pull_request_review',
-          'submitted-state-changes_requested.json'));
-      await handlePullRequestReview(eventContent);
+test.afterEach.cb((t) => {
+  t.context.server.close(t.end);
+});
 
-      // TODO: Find way to assert arguments passed to sendNotification()
+test('Webhook pull_request_review: submitted-state-changes_requested.json', async (t) => {
+  const eventContent = await fs.readJSON(path.join(
+      hookJsonDir,
+      'pull_request_review',
+      'submitted-state-changes_requested.json'));
+  await handlePullRequestReview(eventContent);
 
-      t.pass();
-    });
+  // TODO: Find way to assert arguments passed to sendNotification()
 
-test(
-    'Webhook pull_request_review: submitted-state-approved.json', async (t) => {
-      const eventContent = await fs.readJSON(path.join(
-          hookJsonDir, 'pull_request_review', 'submitted-state-approved.json'));
-      await handlePullRequestReview(eventContent);
+  t.pass();
+});
 
-      // TODO: Find way to assert arguments passed to sendNotification()
+test('Webhook pull_request_review: submitted-state-approved.json', async (t) => {
+  const eventContent = await fs.readJSON(path.join(
+      hookJsonDir, 'pull_request_review', 'submitted-state-approved.json'));
+  await handlePullRequestReview(eventContent);
 
-      t.pass();
-    });
+  // TODO: Find way to assert arguments passed to sendNotification()
 
-test('Webhook status: error-travis.json', async (t) => {
+  t.pass();
+});
+
+// This is serial to ensure that the Github replay server is used before it's closed.
+test.serial('Webhook status: error-travis.json', async (t) => {
   const eventContent =
       await fs.readJSON(path.join(hookJsonDir, 'status', 'error-travis.json'));
   await handleStatus(eventContent);
@@ -57,7 +66,7 @@ test('Webhook status: error-travis.json', async (t) => {
   t.pass();
 });
 
-test('Webhook status: error-travis.json', async (t) => {
+test('Webhook status: pending-travis.json', async (t) => {
   const eventContent = await fs.readJSON(
       path.join(hookJsonDir, 'status', 'pending-travis.json'));
   await handleStatus(eventContent);
@@ -67,7 +76,7 @@ test('Webhook status: error-travis.json', async (t) => {
   t.pass();
 });
 
-test('Webhook status: error-travis.json', async (t) => {
+test('Webhook status: success-travis.json', async (t) => {
   const eventContent = await fs.readJSON(
       path.join(hookJsonDir, 'status', 'success-travis.json'));
   await handleStatus(eventContent);

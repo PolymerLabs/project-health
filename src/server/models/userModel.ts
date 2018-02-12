@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 
 import {ViewerLoginQuery} from '../../types/gql-types';
 import {github} from '../../utils/github';
+import {firestore} from '../../utils/firestore';
 
 interface LoginDetails {
   username: string;
@@ -11,21 +12,21 @@ interface LoginDetails {
 }
 
 class UserModel {
-  private cachedLogins: {[id: string]: LoginDetails};
+  async getLoginDetails(login: string): Promise<LoginDetails|null> {
+    const tokensCollection = await firestore()
+        .collection('tokens');
 
-  constructor() {
-    // TODO: Move this to Firestore instead of in memory.
-    this.cachedLogins = {};
-  }
-
-  async getLoginDetails(username: string) {
-    for (const token of Object.keys(this.cachedLogins)) {
-      const details = this.cachedLogins[token];
-      if (details.username === username) {
-        return details;
-      }
+    const query = await tokensCollection.where('username', '==', login).get();
+    if (query.empty) {
+      return null;
     }
-    return null;
+    
+    const loginDetails = query.docs[0].data();
+    if (!loginDetails) {
+      return null;
+    }
+    
+    return (loginDetails as LoginDetails);
   }
 
   async getLoginFromRequest(request: express.Request):
@@ -39,8 +40,14 @@ class UserModel {
       return null;
     }
 
-    if (this.cachedLogins[token]) {
-      return this.cachedLogins[token];
+    const tokenDoc = await firestore()
+        .collection('tokens').doc(token).get();
+
+    if (tokenDoc.exists) {
+      const data = tokenDoc.data();
+      if (data) {
+        return (data as LoginDetails);
+      }
     }
 
     try {
@@ -58,13 +65,17 @@ class UserModel {
       context: {token},
     });
 
+    const userTokenDoc = await firestore()
+        .collection('tokens')
+        .doc(token);
+
     const details = {
       username: loginResult.data.viewer.login,
-      token,
       scopes,
+      token,
     };
-
-    this.cachedLogins[token] = details;
+    
+    await userTokenDoc.set(details);
 
     return details;
   }
