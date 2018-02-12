@@ -166,7 +166,7 @@ function prTemplate(pr: api.PullRequest) {
     </div>
 
     <a class="pr-body" href="${pr.url}" target="_blank">
-      <div class="pr-status">
+      <div class="small-heading pr-status">
         <span class="pr-status__msg ${status.actionable ? 'actionable' : ''}">${
       status.text}</span>
       </div>
@@ -188,9 +188,9 @@ async function start() {
 
   const tmpl = html`
     <div class="pr-list">
-      <h1>Outgoing pull requests</h1>
+      <h2>Outgoing pull requests</h2>
       ${json.outgoingPrs.map(prTemplate)}
-      <h1>Incoming pull requests</h1>
+      <h2>Incoming pull requests</h2>
       ${json.incomingPrs.map(prTemplate)}
     </div>
   `;
