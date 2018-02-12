@@ -13,16 +13,27 @@ type ReviewHook = {
   state: 'approved'|'changes_requested'|'commented', user: User;
 };
 
-type PullRequestHook = {
+type PullRequest = {
   title: string; user: User; html_url: string;
+  requested_reviewers: Reviewer[];
 };
 
 type RepositoryHook = {
   name: string;
 };
 
+type Reviewer = {
+  login: string;
+};
+
+type PullRequestHook = {
+  action: string;
+  pull_request: PullRequest;
+  repository: RepositoryHook;
+};
+
 type PullRequestReviewHook = {
-  action: string; review: ReviewHook; pull_request: PullRequestHook;
+  action: string; review: ReviewHook; pull_request: PullRequest;
   repository: RepositoryHook;
 };
 
@@ -86,7 +97,7 @@ export async function handleStatus(hookData: StatusHook) {
 
     const commit = commitNode.commit;
     if (commit.oid === hookData.sha) {
-      sendNotification(prData.author.login, {
+      await sendNotification(prData.author.login, {
         title: hookData.description,
         body: `[${repo.name}] ${prData.title}`,
         requireInteraction: false,
@@ -101,7 +112,27 @@ export async function handleStatus(hookData: StatusHook) {
 
 // Triggered when a pull request is assigned, unassigned, labeled, unlabeled,
 // opened, edited, closed, reopened, or synchronized
-export async function handlePullRequest(_hookBody: {}) {
+export async function handlePullRequest(hookBody: PullRequestHook) {
+  if (hookBody.action !== 'review_requested') {
+    return;
+  }
+
+  const pullRequest = hookBody.pull_request;
+  const repo = hookBody.repository;
+  const user = pullRequest.user;
+  const reviewers = pullRequest.requested_reviewers;
+  const notification = {
+    title: `${user.login} requested a review`,
+    body: `[${repo.name}] ${pullRequest.title}`,
+    requireInteraction: true,
+    icon: '/assets/notification-images/icon-192x192.png',
+    data: {
+      url: pullRequest.html_url,
+    }
+  };
+  for (const reviewer of reviewers) {
+    await sendNotification(reviewer.login, notification);
+  }
 }
 
 export async function handlePullRequestReview(hookData: PullRequestReviewHook) {

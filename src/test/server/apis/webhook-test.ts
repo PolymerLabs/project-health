@@ -76,3 +76,23 @@ test('Webhook status: error-travis.json', async (t) => {
 
   t.pass();
 });
+
+test('Webhook pull_request: review_requested.json', async (t) => {
+  const eventContent = await fs.readJSON(
+      path.join(hookJsonDir, 'pull_request', 'review_requested.json'));
+  await handleStatus(eventContent);
+
+  // TODO: Find way to assert arguments passed to sendNotification()
+
+  t.pass();
+});
+
+test('Webhook pull_request: edited-open.json', async (t) => {
+  const eventContent = await fs.readJSON(
+      path.join(hookJsonDir, 'pull_request', 'edited-open.json'));
+  await handleStatus(eventContent);
+
+  // TODO: Find way to assert arguments passed to sendNotification()
+
+  t.pass();
+});
