@@ -17,30 +17,31 @@ function getRouter(): express.Router {
         }
 
         try {
+          let handled = false;
+
           // List of these events available here:
           // https://developer.github.com/webhooks/
           switch (eventName) {
             case 'ping':
               // Ping event is sent by Github whenever a new webhook is setup
-              response.send();
-              return;
+              handled = true;
+              break;
             case 'status':
-              await webhookEvents.handleStatus(request.body);
-              response.send();
-              return;
+              handled = await webhookEvents.handleStatus(request.body);
+              break;
             case 'pull_request':
-              await webhookEvents.handlePullRequest(request.body);
-              response.send();
-              return;
+              handled = await webhookEvents.handlePullRequest(request.body);
+              break;
             case 'pull_request_review':
-              await webhookEvents.handlePullRequestReview(request.body);
-              response.send();
-              return;
+              handled = await webhookEvents.handlePullRequestReview(request.body);
+              break;
             default:
               console.warn(`Unsupported event type received: ${eventName}`);
-              response.status(202).send('Unsupported event type.');
-              return;
+              handled = false;
+              break;
           }
+
+          response.status(handled ? 200 : 202).send();
         } catch (err) {
           console.error(err);
           response.status(500).send(err.message);
