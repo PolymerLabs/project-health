@@ -70,11 +70,16 @@ function hookTemplate(org: OrgWebHookState) {
 
   return html`
   <div class="settings-toggle-item">
-    <input class="settings-toggle-item__toggle" type="checkbox" disabled?="${
+    <div class="mdc-switch settings-toggle-item__toggle">
+      <input class="mdc-switch__native-control" type="checkbox" disabled?="${
   !org.viewerCanAdminister}" checked="${org.hookEnabled}" on-click="${
       checkboxClick}"></input>
+      <div class="mdc-switch__background">
+        <div class="mdc-switch__knob"></div>
+      </div>
+    </div>
     <div class="settings-toggle-item__details">
-      <h6>${org.name}</h6>
+      <div class="small-heading">${org.name}</div>
       <p>${message}</p>
     </div>
   </div>`;

@@ -5,49 +5,39 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Settings</title>
   <link href="/styles/base.css" rel="stylesheet" />
-  <style>
-  :root {
-    --padding: 8px;
-  }
-
-  .settings-toggle-item {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: var(--padding);
-  }
-
-  .settings-toggle-item__toggle {
-    margin-right: var(--padding);
-  }
-
-  .settings-toggle-item__details h6, .settings-toggle-item__details p {
-    margin: 0;
-  }
-  </style>
+  <link href="/styles/settings.css" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="/assets/favicon-32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="/assets/favicon-16x16.png" sizes="16x16">
 </head>
 
 <body>
-  <h1>Settings</h1>
+  <div class="settings-container">
+    <h1>Settings</h1>
 
-  <section>
-    <h2>Your Notifications</h2>
-    <div class="settings-toggle-item">
-      <input class="settings-toggle-item__toggle push-component__toggle" type="checkbox" disabled></input>
-      <div class="settings-toggle-item__details">
-        <h6>Push Notifications <span class="push-component__status"></span></h6>
-        <p>Push notifications are enabled. Toggle to no longer receive push notifications on this device.</p>
+    <section>
+      <h2>Your Notifications</h2>
+      <div class="settings-toggle-item">
+        <div class="mdc-switch settings-toggle-item__toggle">
+          <input class="js-push-component__toggle mdc-switch__native-control" type="checkbox" disabled></input>
+          <div class="mdc-switch__background">
+            <div class="mdc-switch__knob"></div>
+          </div>
+        </div>
+        <div class="settings-toggle-item__details">
+          <div class="small-heading">Push Notifications <span class="push-component__status"></span></div>
+          <p>Push notifications are enabled. Toggle to no longer receive push notifications on this device.</p>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section>
-    <h2>Organization Permissions</h2>
-    <p>Each organization must add a webhook before any push notifications can be
-      received by anyone in the organization. <a target="_blank" href="https://github.com/settings/connections/applications/23b7d82aec29a3a1a2a8">Review Project-Health Permissions</a>
-    </p>
-    <div class="org-webhook-list"></div>
-  </section>
+    <section>
+      <h2>Organization Permissions</h2>
+      <p>Each organization must add a webhook before any push notifications can be
+        received by anyone in the organization. <a target="_blank" href="https://github.com/settings/connections/applications/23b7d82aec29a3a1a2a8">Review Project-Health Permissions</a>
+      </p>
+      <div class="org-webhook-list"></div>
+    </section>
+  </div>
 </body>
 
 <script src="./push-component.js" type="module"></script>

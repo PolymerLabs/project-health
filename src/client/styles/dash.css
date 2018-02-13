@@ -1,21 +1,9 @@
-:root {
-  --padding: 12px;
-
-  --actionable-color: #ee9709;
-  --non-actionable-color: #4a90e2;
-  --secondary-text-color: hsl(0, 0%, 40%); /* 5.7 contrast ratio on white */
-  --timeline-color: hsl(0, 0%, 75%);
-  --small-text: 12px;
-}
+@import "./variables/dimens.css";
+@import "./variables/colors.css";
 
 a {
   text-decoration: none;
   color: inherit;
-}
-
-h1 {
-  font-size: 24px;
-  font-weight: normal;
 }
 
 .pr-list h1 {
@@ -23,7 +11,7 @@ h1 {
 }
 
 .pr-list {
-  max-width: 1024px;
+  max-width: var(--max-desktop-width);
   margin: 0 auto;
 
   display: grid;
@@ -64,8 +52,6 @@ h1 {
   display: flex;
   flex-direction: row;
   align-items: center;
-  font-weight: bold;
-  line-height: 24px;
   color: var(--non-actionable-color);
 }
 
