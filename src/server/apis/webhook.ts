@@ -4,7 +4,24 @@ import {github} from '../../utils/github';
 import * as webhookEvents from '../controllers/webhook-events';
 import {userModel} from '../models/userModel';
 
-export const WEBHOOK_URL = 'http://github-health.appspot.com/api/webhook';
+const PROD_ORIGIN = 'https://github-health.appspot.com';
+const STAGING_ORIGIN = 'https://github-health-staging.appspot.com';
+const HOOK_PATH = '/api/webhook';
+
+export function getHookUrl(request: express.Request) {
+  let host = request.get('host');
+  if (!host) {
+    // If we have no host URL, use prod
+    host = PROD_ORIGIN;
+  }
+
+  if (host.indexOf('localhost') !== -1) {
+    // If we are testing on localhost, use staging.
+    host = STAGING_ORIGIN;
+  }
+
+  return host + HOOK_PATH;
+}
 
 function getRouter(): express.Router {
   const webhookRouter = express.Router();
@@ -62,6 +79,8 @@ function getRouter(): express.Router {
           return;
         }
 
+        const hookUrl = getHookUrl(request);
+
         if (request.params.action === 'add') {
           try {
             await github().post(
@@ -71,7 +90,7 @@ function getRouter(): express.Router {
                   events: [
                     '*',
                   ],
-                  config: {url: WEBHOOK_URL, content_type: 'json'}
+                  config: {url: hookUrl, content_type: 'json'}
                 });
 
             response.sendStatus(200);
@@ -94,7 +113,7 @@ function getRouter(): express.Router {
                 `orgs/${org}/hooks`, loginDetails.githubToken);
             let hookId = null;
             for (const hook of hooks) {
-              if (hook.config.url === WEBHOOK_URL) {
+              if (hook.config.url === hookUrl) {
                 hookId = hook.id;
               }
             }

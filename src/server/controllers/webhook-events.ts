@@ -10,7 +10,7 @@ type User = {
 };
 
 type ReviewHook = {
-  state: 'approved'|'changes_requested'|'commented', user: User;
+  state: string, user: User;
 };
 
 type PullRequest = {
@@ -74,6 +74,7 @@ export async function handleStatus(hookData: StatusHook): Promise<boolean> {
     return false;
   }
 
+  let sentNotifications = false;
   for (const prData of statusPR.data.pullRequests.nodes) {
     if (!prData || prData.__typename !== 'PullRequest') {
       continue;
@@ -97,6 +98,7 @@ export async function handleStatus(hookData: StatusHook): Promise<boolean> {
 
     const commit = commitNode.commit;
     if (commit.oid === hookData.sha) {
+      sentNotifications = true;
       await sendNotification(prData.author.login, {
         title: hookData.description,
         body: `[${repo.name}] ${prData.title}`,
@@ -109,7 +111,7 @@ export async function handleStatus(hookData: StatusHook): Promise<boolean> {
     }
   }
 
-  return true;
+  return sentNotifications;
 }
 
 // Triggered when a pull request is assigned, unassigned, labeled, unlabeled,
@@ -164,17 +166,19 @@ export async function handlePullRequestReview(hookData: PullRequestReviewHook): 
     notificationTitle = `${review.user.login} commented on your PR`;
   }
   
-  if (notificationTitle) {
-    await sendNotification(pullReq.user.login, {
-      title: notificationTitle,
-      body: `[${repo.name}] ${pullReq.title}`,
-      requireInteraction: true,
-      icon: '/assets/notification-images/icon-192x192.png',
-      data: {
-        url: pullReq.html_url,
-      },
-    });
+  if (!notificationTitle) {
+    return false;
   }
+
+  await sendNotification(pullReq.user.login, {
+    title: notificationTitle,
+    body: `[${repo.name}] ${pullReq.title}`,
+    requireInteraction: true,
+    icon: '/assets/notification-images/icon-192x192.png',
+    data: {
+      url: pullReq.html_url,
+    },
+  });
 
   return true;
 }

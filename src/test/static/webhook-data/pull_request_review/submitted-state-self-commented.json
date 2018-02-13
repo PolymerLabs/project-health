@@ -1,98 +1,138 @@
 {
   "action": "submitted",
   "review": {
-    "id": 93547988,
+    "id": 96330745,
     "user": {
-      "login": "aomarks",
-      "id": 48894,
-      "avatar_url": "https://avatars0.githubusercontent.com/u/48894?v=4",
+      "login": "gauntface",
+      "id": 139760,
+      "avatar_url": "https://avatars0.githubusercontent.com/u/139760?v=4",
       "gravatar_id": "",
-      "url": "https://api.github.com/users/aomarks",
-      "html_url": "https://github.com/aomarks",
-      "followers_url": "https://api.github.com/users/aomarks/followers",
-      "following_url": "https://api.github.com/users/aomarks/following{/other_user}",
-      "gists_url": "https://api.github.com/users/aomarks/gists{/gist_id}",
-      "starred_url": "https://api.github.com/users/aomarks/starred{/owner}{/repo}",
-      "subscriptions_url": "https://api.github.com/users/aomarks/subscriptions",
-      "organizations_url": "https://api.github.com/users/aomarks/orgs",
-      "repos_url": "https://api.github.com/users/aomarks/repos",
-      "events_url": "https://api.github.com/users/aomarks/events{/privacy}",
-      "received_events_url": "https://api.github.com/users/aomarks/received_events",
+      "url": "https://api.github.com/users/gauntface",
+      "html_url": "https://github.com/gauntface",
+      "followers_url": "https://api.github.com/users/gauntface/followers",
+      "following_url": "https://api.github.com/users/gauntface/following{/other_user}",
+      "gists_url": "https://api.github.com/users/gauntface/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/gauntface/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/gauntface/subscriptions",
+      "organizations_url": "https://api.github.com/users/gauntface/orgs",
+      "repos_url": "https://api.github.com/users/gauntface/repos",
+      "events_url": "https://api.github.com/users/gauntface/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/gauntface/received_events",
       "type": "User",
       "site_admin": false
     },
     "body": null,
-    "commit_id": "94d976873cc3bd367a0436556fadd6f40e08dd1f",
-    "submitted_at": "2018-02-02T08:32:59Z",
+    "commit_id": "72a0646e2fe7dc69964e7cf3b79c9eb6302a11c7",
+    "submitted_at": "2018-02-13T22:49:06Z",
     "state": "commented",
-    "html_url": "https://github.com/PolymerLabs/project-health/pull/65#pullrequestreview-93547988",
-    "pull_request_url": "https://api.github.com/repos/PolymerLabs/project-health/pulls/65",
+    "html_url": "https://github.com/PolymerLabs/project-health/pull/153#pullrequestreview-96330745",
+    "pull_request_url": "https://api.github.com/repos/PolymerLabs/project-health/pulls/153",
     "author_association": "COLLABORATOR",
     "_links": {
       "html": {
-        "href": "https://github.com/PolymerLabs/project-health/pull/65#pullrequestreview-93547988"
+        "href": "https://github.com/PolymerLabs/project-health/pull/153#pullrequestreview-96330745"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/PolymerLabs/project-health/pulls/65"
+        "href": "https://api.github.com/repos/PolymerLabs/project-health/pulls/153"
       }
     }
   },
   "pull_request": {
-    "url": "https://api.github.com/repos/PolymerLabs/project-health/pulls/65",
-    "id": 164428607,
-    "html_url": "https://github.com/PolymerLabs/project-health/pull/65",
-    "diff_url": "https://github.com/PolymerLabs/project-health/pull/65.diff",
-    "patch_url": "https://github.com/PolymerLabs/project-health/pull/65.patch",
-    "issue_url": "https://api.github.com/repos/PolymerLabs/project-health/issues/65",
-    "number": 65,
+    "url": "https://api.github.com/repos/PolymerLabs/project-health/pulls/153",
+    "id": 168945956,
+    "html_url": "https://github.com/PolymerLabs/project-health/pull/153",
+    "diff_url": "https://github.com/PolymerLabs/project-health/pull/153.diff",
+    "patch_url": "https://github.com/PolymerLabs/project-health/pull/153.patch",
+    "issue_url": "https://api.github.com/repos/PolymerLabs/project-health/issues/153",
+    "number": 153,
     "state": "open",
     "locked": false,
-    "title": "Demonstrate end-to-end firestore integration.",
+    "title": "Non module support",
     "user": {
       "login": "gauntface",
-      "id": 48894,
-      "avatar_url": "https://avatars0.githubusercontent.com/u/48894?v=4",
+      "id": 139760,
+      "avatar_url": "https://avatars0.githubusercontent.com/u/139760?v=4",
       "gravatar_id": "",
-      "url": "https://api.github.com/users/aomarks",
-      "html_url": "https://github.com/aomarks",
-      "followers_url": "https://api.github.com/users/aomarks/followers",
-      "following_url": "https://api.github.com/users/aomarks/following{/other_user}",
-      "gists_url": "https://api.github.com/users/aomarks/gists{/gist_id}",
-      "starred_url": "https://api.github.com/users/aomarks/starred{/owner}{/repo}",
-      "subscriptions_url": "https://api.github.com/users/aomarks/subscriptions",
-      "organizations_url": "https://api.github.com/users/aomarks/orgs",
-      "repos_url": "https://api.github.com/users/aomarks/repos",
-      "events_url": "https://api.github.com/users/aomarks/events{/privacy}",
-      "received_events_url": "https://api.github.com/users/aomarks/received_events",
+      "url": "https://api.github.com/users/gauntface",
+      "html_url": "https://github.com/gauntface",
+      "followers_url": "https://api.github.com/users/gauntface/followers",
+      "following_url": "https://api.github.com/users/gauntface/following{/other_user}",
+      "gists_url": "https://api.github.com/users/gauntface/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/gauntface/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/gauntface/subscriptions",
+      "organizations_url": "https://api.github.com/users/gauntface/orgs",
+      "repos_url": "https://api.github.com/users/gauntface/repos",
+      "events_url": "https://api.github.com/users/gauntface/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/gauntface/received_events",
       "type": "User",
       "site_admin": false
     },
-    "body": "This adds a `/test-firestore` endpoint that shows all of the documents in the `test` collection in our firestore instance.\r\n\r\nRunning the server locally now requires a `dev-only-gcloud-key.json` Google Cloud credentials file. When deployed to App Engine, this file is not needed because it will use Application Default Credentials.\r\n\r\nThis required adding a step that re-compiles the grpc native extension to target the GAE architecture.",
-    "created_at": "2018-01-22T22:02:20Z",
-    "updated_at": "2018-02-02T08:32:59Z",
+    "body": "This PR changes how Typescript is built for the client.\r\n\r\nInstead of using just the typescript compiler, this runs the client typescript files through rollup with a typescript plugin to handle transpilation of TS to ES2015.\r\n\r\n- This will build all files in `src/client/`. Rollup is generally designed to have \"entry\" points which we can use in the future if we want, but for now, this seems like most flexible - just build everything as an entry point.\r\n- Also fix the breaking change I made to the dashbaord.",
+    "created_at": "2018-02-13T20:19:52Z",
+    "updated_at": "2018-02-13T22:49:06Z",
     "closed_at": null,
     "merged_at": null,
-    "merge_commit_sha": "9e2467d866278a6cacf7f08dffa8382de4b3c12f",
+    "merge_commit_sha": "09d233e7c14de5ff4c9146c94bce20dd5872c2fb",
     "assignee": null,
     "assignees": [
 
     ],
     "requested_reviewers": [
-
+      {
+        "login": "aomarks",
+        "id": 48894,
+        "avatar_url": "https://avatars0.githubusercontent.com/u/48894?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/aomarks",
+        "html_url": "https://github.com/aomarks",
+        "followers_url": "https://api.github.com/users/aomarks/followers",
+        "following_url": "https://api.github.com/users/aomarks/following{/other_user}",
+        "gists_url": "https://api.github.com/users/aomarks/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/aomarks/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/aomarks/subscriptions",
+        "organizations_url": "https://api.github.com/users/aomarks/orgs",
+        "repos_url": "https://api.github.com/users/aomarks/repos",
+        "events_url": "https://api.github.com/users/aomarks/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/aomarks/received_events",
+        "type": "User",
+        "site_admin": false
+      },
+      {
+        "login": "samuelli",
+        "id": 787668,
+        "avatar_url": "https://avatars1.githubusercontent.com/u/787668?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/samuelli",
+        "html_url": "https://github.com/samuelli",
+        "followers_url": "https://api.github.com/users/samuelli/followers",
+        "following_url": "https://api.github.com/users/samuelli/following{/other_user}",
+        "gists_url": "https://api.github.com/users/samuelli/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/samuelli/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/samuelli/subscriptions",
+        "organizations_url": "https://api.github.com/users/samuelli/orgs",
+        "repos_url": "https://api.github.com/users/samuelli/repos",
+        "events_url": "https://api.github.com/users/samuelli/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/samuelli/received_events",
+        "type": "User",
+        "site_admin": false
+      }
     ],
     "requested_teams": [
 
     ],
+    "labels": [
+
+    ],
     "milestone": null,
-    "commits_url": "https://api.github.com/repos/PolymerLabs/project-health/pulls/65/commits",
-    "review_comments_url": "https://api.github.com/repos/PolymerLabs/project-health/pulls/65/comments",
+    "commits_url": "https://api.github.com/repos/PolymerLabs/project-health/pulls/153/commits",
+    "review_comments_url": "https://api.github.com/repos/PolymerLabs/project-health/pulls/153/comments",
     "review_comment_url": "https://api.github.com/repos/PolymerLabs/project-health/pulls/comments{/number}",
-    "comments_url": "https://api.github.com/repos/PolymerLabs/project-health/issues/65/comments",
-    "statuses_url": "https://api.github.com/repos/PolymerLabs/project-health/statuses/22bd4f9803bce1b16ac216339f8517580ce4bf56",
+    "comments_url": "https://api.github.com/repos/PolymerLabs/project-health/issues/153/comments",
+    "statuses_url": "https://api.github.com/repos/PolymerLabs/project-health/statuses/72a0646e2fe7dc69964e7cf3b79c9eb6302a11c7",
     "head": {
-      "label": "PolymerLabs:firestore",
-      "ref": "firestore",
-      "sha": "22bd4f9803bce1b16ac216339f8517580ce4bf56",
+      "label": "PolymerLabs:non-module",
+      "ref": "non-module",
+      "sha": "72a0646e2fe7dc69964e7cf3b79c9eb6302a11c7",
       "user": {
         "login": "PolymerLabs",
         "id": 5912903,
@@ -178,13 +218,13 @@
         "deployments_url": "https://api.github.com/repos/PolymerLabs/project-health/deployments",
         "created_at": "2017-10-28T01:16:52Z",
         "updated_at": "2018-01-14T16:48:23Z",
-        "pushed_at": "2018-02-02T08:29:36Z",
+        "pushed_at": "2018-02-13T20:22:10Z",
         "git_url": "git://github.com/PolymerLabs/project-health.git",
         "ssh_url": "git@github.com:PolymerLabs/project-health.git",
         "clone_url": "https://github.com/PolymerLabs/project-health.git",
         "svn_url": "https://github.com/PolymerLabs/project-health",
         "homepage": null,
-        "size": 1126,
+        "size": 1384,
         "stargazers_count": 2,
         "watchers_count": 2,
         "language": "TypeScript",
@@ -196,7 +236,7 @@
         "forks_count": 1,
         "mirror_url": null,
         "archived": false,
-        "open_issues_count": 24,
+        "open_issues_count": 22,
         "license": {
           "key": "apache-2.0",
           "name": "Apache License 2.0",
@@ -204,7 +244,7 @@
           "url": "https://api.github.com/licenses/apache-2.0"
         },
         "forks": 1,
-        "open_issues": 24,
+        "open_issues": 22,
         "watchers": 2,
         "default_branch": "master"
       }
@@ -212,7 +252,7 @@
     "base": {
       "label": "PolymerLabs:master",
       "ref": "master",
-      "sha": "e0f489a7c97920a963575a37c5a821bcfc918732",
+      "sha": "a9b613f4217e99d47350806edf57df0c5e27cd11",
       "user": {
         "login": "PolymerLabs",
         "id": 5912903,
@@ -298,13 +338,13 @@
         "deployments_url": "https://api.github.com/repos/PolymerLabs/project-health/deployments",
         "created_at": "2017-10-28T01:16:52Z",
         "updated_at": "2018-01-14T16:48:23Z",
-        "pushed_at": "2018-02-02T08:29:36Z",
+        "pushed_at": "2018-02-13T20:22:10Z",
         "git_url": "git://github.com/PolymerLabs/project-health.git",
         "ssh_url": "git@github.com:PolymerLabs/project-health.git",
         "clone_url": "https://github.com/PolymerLabs/project-health.git",
         "svn_url": "https://github.com/PolymerLabs/project-health",
         "homepage": null,
-        "size": 1126,
+        "size": 1384,
         "stargazers_count": 2,
         "watchers_count": 2,
         "language": "TypeScript",
@@ -316,7 +356,7 @@
         "forks_count": 1,
         "mirror_url": null,
         "archived": false,
-        "open_issues_count": 24,
+        "open_issues_count": 22,
         "license": {
           "key": "apache-2.0",
           "name": "Apache License 2.0",
@@ -324,35 +364,35 @@
           "url": "https://api.github.com/licenses/apache-2.0"
         },
         "forks": 1,
-        "open_issues": 24,
+        "open_issues": 22,
         "watchers": 2,
         "default_branch": "master"
       }
     },
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/PolymerLabs/project-health/pulls/65"
+        "href": "https://api.github.com/repos/PolymerLabs/project-health/pulls/153"
       },
       "html": {
-        "href": "https://github.com/PolymerLabs/project-health/pull/65"
+        "href": "https://github.com/PolymerLabs/project-health/pull/153"
       },
       "issue": {
-        "href": "https://api.github.com/repos/PolymerLabs/project-health/issues/65"
+        "href": "https://api.github.com/repos/PolymerLabs/project-health/issues/153"
       },
       "comments": {
-        "href": "https://api.github.com/repos/PolymerLabs/project-health/issues/65/comments"
+        "href": "https://api.github.com/repos/PolymerLabs/project-health/issues/153/comments"
       },
       "review_comments": {
-        "href": "https://api.github.com/repos/PolymerLabs/project-health/pulls/65/comments"
+        "href": "https://api.github.com/repos/PolymerLabs/project-health/pulls/153/comments"
       },
       "review_comment": {
         "href": "https://api.github.com/repos/PolymerLabs/project-health/pulls/comments{/number}"
       },
       "commits": {
-        "href": "https://api.github.com/repos/PolymerLabs/project-health/pulls/65/commits"
+        "href": "https://api.github.com/repos/PolymerLabs/project-health/pulls/153/commits"
       },
       "statuses": {
-        "href": "https://api.github.com/repos/PolymerLabs/project-health/statuses/22bd4f9803bce1b16ac216339f8517580ce4bf56"
+        "href": "https://api.github.com/repos/PolymerLabs/project-health/statuses/72a0646e2fe7dc69964e7cf3b79c9eb6302a11c7"
       }
     },
     "author_association": "COLLABORATOR"
@@ -423,13 +463,13 @@
     "deployments_url": "https://api.github.com/repos/PolymerLabs/project-health/deployments",
     "created_at": "2017-10-28T01:16:52Z",
     "updated_at": "2018-01-14T16:48:23Z",
-    "pushed_at": "2018-02-02T08:29:36Z",
+    "pushed_at": "2018-02-13T20:22:10Z",
     "git_url": "git://github.com/PolymerLabs/project-health.git",
     "ssh_url": "git@github.com:PolymerLabs/project-health.git",
     "clone_url": "https://github.com/PolymerLabs/project-health.git",
     "svn_url": "https://github.com/PolymerLabs/project-health",
     "homepage": null,
-    "size": 1126,
+    "size": 1384,
     "stargazers_count": 2,
     "watchers_count": 2,
     "language": "TypeScript",
@@ -441,7 +481,7 @@
     "forks_count": 1,
     "mirror_url": null,
     "archived": false,
-    "open_issues_count": 24,
+    "open_issues_count": 22,
     "license": {
       "key": "apache-2.0",
       "name": "Apache License 2.0",
@@ -449,7 +489,7 @@
       "url": "https://api.github.com/licenses/apache-2.0"
     },
     "forks": 1,
-    "open_issues": 24,
+    "open_issues": 22,
     "watchers": 2,
     "default_branch": "master"
   },
@@ -467,21 +507,21 @@
     "description": "Experimental Polymer elements and tools"
   },
   "sender": {
-    "login": "aomarks",
-    "id": 48894,
-    "avatar_url": "https://avatars0.githubusercontent.com/u/48894?v=4",
+    "login": "gauntface",
+    "id": 139760,
+    "avatar_url": "https://avatars0.githubusercontent.com/u/139760?v=4",
     "gravatar_id": "",
-    "url": "https://api.github.com/users/aomarks",
-    "html_url": "https://github.com/aomarks",
-    "followers_url": "https://api.github.com/users/aomarks/followers",
-    "following_url": "https://api.github.com/users/aomarks/following{/other_user}",
-    "gists_url": "https://api.github.com/users/aomarks/gists{/gist_id}",
-    "starred_url": "https://api.github.com/users/aomarks/starred{/owner}{/repo}",
-    "subscriptions_url": "https://api.github.com/users/aomarks/subscriptions",
-    "organizations_url": "https://api.github.com/users/aomarks/orgs",
-    "repos_url": "https://api.github.com/users/aomarks/repos",
-    "events_url": "https://api.github.com/users/aomarks/events{/privacy}",
-    "received_events_url": "https://api.github.com/users/aomarks/received_events",
+    "url": "https://api.github.com/users/gauntface",
+    "html_url": "https://github.com/gauntface",
+    "followers_url": "https://api.github.com/users/gauntface/followers",
+    "following_url": "https://api.github.com/users/gauntface/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gauntface/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gauntface/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gauntface/subscriptions",
+    "organizations_url": "https://api.github.com/users/gauntface/orgs",
+    "repos_url": "https://api.github.com/users/gauntface/repos",
+    "events_url": "https://api.github.com/users/gauntface/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gauntface/received_events",
     "type": "User",
     "site_admin": false
   }
