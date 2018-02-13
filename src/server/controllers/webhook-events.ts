@@ -67,7 +67,7 @@ export async function handleStatus(hookData: StatusHook): Promise<boolean> {
     },
     fetchPolicy: 'network-only',
     // We use the commit author's token for this request
-    context: {token: loginDetails.token}
+    context: {token: loginDetails.githubToken}
   });
 
   if (!statusPR.data.pullRequests || !statusPR.data.pullRequests.nodes) {

@@ -19,7 +19,7 @@ export class DashData {
     }
 
     const userData = await this.fetchUserData(
-        req.query.login || loginDetails.username, loginDetails.token);
+        req.query.login || loginDetails.username, loginDetails.githubToken);
     res.header('content-type', 'application/json');
     res.send(JSON.stringify(userData, null, 2));
   }

@@ -16,7 +16,20 @@ export const sendNotification =
       secrets().PRIVATE_VAPID_KEY,
   );
 
+  if (process.env.NODE_ENV === 'test') {
+    return;
+  }
+
   return Promise.all(userSubscriptionDetails.map((subDetails) => {
-    webpush.sendNotification(subDetails.subscription, JSON.stringify(data));
+    return webpush.sendNotification(subDetails.subscription, JSON.stringify(data))
+        .catch(async (err) => {
+            // 410 and 404 response from the Web Push module means
+            // the subscription is no longer usable.
+            if (err.statusCode === 410 || err.statusCode === 404) {
+            await pushSubscriptionModel.removePushSubscription(recipient, subDetails.subscription);
+            } else {
+                console.error('Failed to send notification: ', err);
+            }
+        });
   }));
 };

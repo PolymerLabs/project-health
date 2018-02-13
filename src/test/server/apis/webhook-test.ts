@@ -2,8 +2,10 @@ import test from 'ava';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
+import {startTestReplayServer} from '../../../replay-server';
 import {handlePullRequestReview, handleStatus} from '../../../server/controllers/webhook-events';
 import {initFirestore} from '../../../utils/firestore';
+import {initGithub} from '../../../utils/github';
 import {initSecrets} from '../../../utils/secrets';
 
 const hookJsonDir = path.join(__dirname, '..', '..', 'static', 'webhook-data');
@@ -21,6 +23,15 @@ test.before(() => {
   initSecrets(TEST_SECRETS);
 });
 
+test.beforeEach(async (t) => {
+  const {server, url} = await startTestReplayServer(t);
+  t.context.server = server;
+  initGithub(url, url);
+});
+
+test.afterEach.cb((t) => {
+  t.context.server.close(t.end);
+});
 
 test(
     'Webhook pull_request_review: submitted-state-changes_requested.json',
@@ -47,7 +58,9 @@ test(
       t.pass();
     });
 
-test('Webhook status: error-travis.json', async (t) => {
+// This is serial to ensure that the Github replay server is used before it's
+// closed.
+test.serial('Webhook status: error-travis.json', async (t) => {
   const eventContent =
       await fs.readJSON(path.join(hookJsonDir, 'status', 'error-travis.json'));
   await handleStatus(eventContent);
@@ -57,7 +70,7 @@ test('Webhook status: error-travis.json', async (t) => {
   t.pass();
 });
 
-test('Webhook status: error-travis.json', async (t) => {
+test('Webhook status: pending-travis.json', async (t) => {
   const eventContent = await fs.readJSON(
       path.join(hookJsonDir, 'status', 'pending-travis.json'));
   await handleStatus(eventContent);
@@ -67,7 +80,7 @@ test('Webhook status: error-travis.json', async (t) => {
   t.pass();
 });
 
-test('Webhook status: error-travis.json', async (t) => {
+test('Webhook status: success-travis.json', async (t) => {
   const eventContent = await fs.readJSON(
       path.join(hookJsonDir, 'status', 'success-travis.json'));
   await handleStatus(eventContent);

@@ -65,7 +65,7 @@ function getRouter(): express.Router {
         if (request.params.action === 'add') {
           try {
             await github().post(
-                `orgs/${request.body.org}/hooks`, loginDetails.token, {
+                `orgs/${request.body.org}/hooks`, loginDetails.githubToken, {
                   name: 'web',
                   active: true,
                   events: [
@@ -90,8 +90,8 @@ function getRouter(): express.Router {
         } else if (request.params.action === 'remove') {
           try {
             const org = request.body.org;
-            const hooks =
-                await github().get(`orgs/${org}/hooks`, loginDetails.token);
+            const hooks = await github().get(
+                `orgs/${org}/hooks`, loginDetails.githubToken);
             let hookId = null;
             for (const hook of hooks) {
               if (hook.config.url === WEBHOOK_URL) {
@@ -106,7 +106,7 @@ function getRouter(): express.Router {
 
             await github().delete(
                 `orgs/${org}/hooks/${hookId}`,
-                loginDetails.token,
+                loginDetails.githubToken,
             );
 
             response.sendStatus(200);
