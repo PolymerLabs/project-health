@@ -45,9 +45,9 @@ type StatusHook = {
 };
 
 // Triggered when the status of a Git commit changes.
-export async function handleStatus(hookData: StatusHook) {
+export async function handleStatus(hookData: StatusHook): Promise<boolean> {
   if (hookData.state !== 'error' && hookData.state !== 'failure') {
-    return;
+    return false;
   }
 
   // There was an error that should be reported to the PR Owner
@@ -56,7 +56,7 @@ export async function handleStatus(hookData: StatusHook) {
   if (!loginDetails) {
     // Commit author isn't logged in so not token to figure out
     // appropriate PR's affect by this commit status
-    return;
+    return false;
   }
 
   const repo = hookData.repository;
@@ -71,7 +71,7 @@ export async function handleStatus(hookData: StatusHook) {
   });
 
   if (!statusPR.data.pullRequests || !statusPR.data.pullRequests.nodes) {
-    return;
+    return false;
   }
 
   for (const prData of statusPR.data.pullRequests.nodes) {
@@ -108,13 +108,15 @@ export async function handleStatus(hookData: StatusHook) {
       });
     }
   }
+
+  return true;
 }
 
 // Triggered when a pull request is assigned, unassigned, labeled, unlabeled,
 // opened, edited, closed, reopened, or synchronized
-export async function handlePullRequest(hookBody: PullRequestHook) {
+export async function handlePullRequest(hookBody: PullRequestHook): Promise<boolean> {
   if (hookBody.action !== 'review_requested') {
-    return;
+    return false;
   }
 
   const pullRequest = hookBody.pull_request;
@@ -130,47 +132,51 @@ export async function handlePullRequest(hookBody: PullRequestHook) {
       url: pullRequest.html_url,
     }
   };
+  
   for (const reviewer of reviewers) {
     await sendNotification(reviewer.login, notification);
   }
+
+  return true;
 }
 
-export async function handlePullRequestReview(hookData: PullRequestReviewHook) {
-  if (hookData.action === 'submitted') {
-    const review = hookData.review;
-    const repo = hookData.repository;
-    const pullReq = hookData.pull_request;
-
-    let notificationTitle = null;
-
-    if (review.state === 'approved') {
-      notificationTitle = `${review.user.login} approved your PR`;
-    } else if (review.state === 'changes_requested') {
-      notificationTitle =  `${review.user.login} requested changes`;
-    } else if (review.state === 'commented') {
-      if (review.user.login === pullReq.user.login) {
-        // If the PR author is the commenter, do nothing;
-        return;
-      }
-
-      notificationTitle = `${review.user.login} commented on your PR`;
-    }
-    
-    if (notificationTitle) {
-      sendNotification(pullReq.user.login, {
-        title: notificationTitle,
-        body: `[${repo.name}] ${pullReq.title}`,
-        requireInteraction: true,
-        icon: '/assets/notification-images/icon-192x192.png',
-        data: {
-          url: pullReq.html_url,
-        },
-      });
-    }
-  } else {
-    throw new Error(
-        `Unexpected Pull Request Review Action: ${hookData.action}`);
+export async function handlePullRequestReview(hookData: PullRequestReviewHook): Promise<boolean> {
+  if (hookData.action !== 'submitted') {
+    return false;
   }
+
+  const review = hookData.review;
+  const repo = hookData.repository;
+  const pullReq = hookData.pull_request;
+
+  let notificationTitle = null;
+
+  if (review.state === 'approved') {
+    notificationTitle = `${review.user.login} approved your PR`;
+  } else if (review.state === 'changes_requested') {
+    notificationTitle =  `${review.user.login} requested changes`;
+  } else if (review.state === 'commented') {
+    if (review.user.login === pullReq.user.login) {
+      // If the PR author is the commenter, do nothing;
+      return false;
+    }
+
+    notificationTitle = `${review.user.login} commented on your PR`;
+  }
+  
+  if (notificationTitle) {
+    await sendNotification(pullReq.user.login, {
+      title: notificationTitle,
+      body: `[${repo.name}] ${pullReq.title}`,
+      requireInteraction: true,
+      icon: '/assets/notification-images/icon-192x192.png',
+      data: {
+        url: pullReq.html_url,
+      },
+    });
+  }
+
+  return true;
 }
 
 const statusToPR = gql`
