@@ -32,7 +32,7 @@ function getRouter(): express.Router {
             query: orgsDetailsQuery,
             fetchPolicy: 'network-only',
             context: {
-              token: loginDetails.token,
+              token: loginDetails.githubToken,
             }
           });
 
@@ -51,7 +51,7 @@ function getRouter(): express.Router {
               let hookEnabled = false;
               if (org.viewerCanAdminister) {
                 const hooks = await github().get(
-                    `orgs/${org.login}/hooks`, loginDetails.token);
+                    `orgs/${org.login}/hooks`, loginDetails.githubToken);
 
                 for (const hook of hooks) {
                   if (hook.config.url === WEBHOOK_URL) {

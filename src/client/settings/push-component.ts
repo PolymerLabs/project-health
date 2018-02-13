@@ -1,5 +1,5 @@
-import {addSubscriptionToBackend, removeSubscriptionFromBackend} from './push-backend.js';
 import {applicationServerKey} from './application-server-key.js';
+import {addSubscriptionToBackend, removeSubscriptionFromBackend} from './push-backend.js';
 
 interface PushComponentState {
   isSupported: boolean;
@@ -12,7 +12,7 @@ class PushComponent {
   private pushToggle: HTMLInputElement;
   private pushStatus: Element;
   private state: PushComponentState;
-  
+
   constructor() {
     const toggleElement =
       document.querySelector('.js-push-component__toggle') as HTMLInputElement;
@@ -37,7 +37,7 @@ class PushComponent {
     this.pushToggle.addEventListener('change', async (event) => {
       event.preventDefault();
       this.pushToggle.setAttribute('disabled', 'true');
-      
+
       if (this.pushToggle.checked) {
         await this.setupPush();
       } else {
@@ -53,7 +53,7 @@ class PushComponent {
         this.updatePermissionState(),
         this.updateSubscriptionState(),
       ]);
-  
+
       if (!this.state.isSupported) {
         this.pushStatus.textContent = '[Not Supported]';
         this.pushToggle.setAttribute('disabled', 'true');
@@ -62,7 +62,8 @@ class PushComponent {
         this.pushToggle.setAttribute('disabled', 'true');
       } else {
         this.pushToggle.removeAttribute('disabled');
-        this.pushToggle.checked = !!(this.state.subscription && this.state.savedToBackend);
+        this.pushToggle.checked =
+            !!(this.state.subscription && this.state.savedToBackend);
       }
 
     } catch (err) {
@@ -72,8 +73,9 @@ class PushComponent {
   }
 
   async updatePermissionState() {
-    // tslint:disable-next-line:no-any
-    const permissionState = await (navigator as any).permissions.query({name: 'notifications'});
+    const permissionState =
+        // tslint:disable-next-line:no-any
+        await (navigator as any).permissions.query({name: 'notifications'});
     this.state.permissionBlocked = permissionState.state === 'denied';
   }
 

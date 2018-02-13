@@ -36,7 +36,8 @@ const clickEventHandler = {
       // There was a URL provided with the notification payload - open it if
       // the user clicks on the notifications
       const openWindowPromise = self.clients.openWindow(data.url);
-      // Wait for the window to open for letting the browser kill the service worker
+      // Wait for the window to open for letting the browser kill the service
+      // worker
       event.waitUntil(openWindowPromise);
     }
   }

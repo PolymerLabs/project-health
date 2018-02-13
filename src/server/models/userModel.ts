@@ -2,31 +2,42 @@ import * as express from 'express';
 import gql from 'graphql-tag';
 
 import {ViewerLoginQuery} from '../../types/gql-types';
-import {github} from '../../utils/github';
 import {firestore} from '../../utils/firestore';
+import {github} from '../../utils/github';
+
+const TOKEN_COLLECTION_NAME = 'githubTokens';
 
 interface LoginDetails {
   username: string;
-  token: string;
+  githubToken: string;
   scopes: string[]|null;
 }
 
+/**
+ * The structure of the data base is:
+ *
+ * - githubTokens
+ *   - <GitHub Token>
+ *     - username
+ *     - githubToken
+ *     - scopes
+ */
 class UserModel {
   async getLoginDetails(login: string): Promise<LoginDetails|null> {
-    const tokensCollection = await firestore()
-        .collection('tokens');
+    const tokensCollection =
+        await firestore().collection(TOKEN_COLLECTION_NAME);
 
     const query = await tokensCollection.where('username', '==', login).get();
     if (query.empty) {
       return null;
     }
-    
+
     const loginDetails = query.docs[0].data();
     if (!loginDetails) {
       return null;
     }
-    
-    return (loginDetails as LoginDetails);
+
+    return loginDetails as LoginDetails;
   }
 
   async getLoginFromRequest(request: express.Request):
@@ -40,13 +51,13 @@ class UserModel {
       return null;
     }
 
-    const tokenDoc = await firestore()
-        .collection('tokens').doc(token).get();
+    const tokenDoc =
+        await firestore().collection(TOKEN_COLLECTION_NAME).doc(token).get();
 
     if (tokenDoc.exists) {
       const data = tokenDoc.data();
       if (data) {
-        return (data as LoginDetails);
+        return data as LoginDetails;
       }
     }
 
@@ -65,16 +76,15 @@ class UserModel {
       context: {token},
     });
 
-    const userTokenDoc = await firestore()
-        .collection('tokens')
-        .doc(token);
+    const userTokenDoc =
+        await firestore().collection(TOKEN_COLLECTION_NAME).doc(token);
 
     const details = {
       username: loginResult.data.viewer.login,
       scopes,
-      token,
+      githubToken: token,
     };
-    
+
     await userTokenDoc.set(details);
 
     return details;
