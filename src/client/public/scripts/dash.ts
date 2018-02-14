@@ -181,7 +181,7 @@ function prTemplate(pr: api.PullRequest) {
 
 async function start() {
   const queryParams = new URLSearchParams(window.location.search);
-  // This allows your to see another users dashboard.
+  // This allows you to see another users dashboard.
   const loginParams =
       queryParams.get('login') ? `?login=${queryParams.get('login')}` : '';
   const res = await fetch(`/api/dash.json${loginParams}`, {credentials: 'include'});

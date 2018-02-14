@@ -34,12 +34,13 @@ function getRouter(): express.Router {
           return;
         }
 
-        try {
+        
           const accessToken = loginResponseBody['access_token'];
           const userScopes = loginResponseBody['scope'] ?
               loginResponseBody['scope'].split(',') :
               [];
-              
+        
+        try {
           await userModel.addNewUser(accessToken, userScopes);
 
           response.cookie('id', accessToken, {httpOnly: true});
