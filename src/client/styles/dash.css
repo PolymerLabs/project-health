@@ -98,3 +98,11 @@ a {
   fill: none;
   stroke-width: 3px;
 }
+
+.pr-event__url {
+  max-width: 600px;
+  display: inline-block;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
