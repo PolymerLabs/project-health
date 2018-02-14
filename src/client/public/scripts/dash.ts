@@ -1,5 +1,5 @@
-import {html, render} from '../../node_modules/lit-html/lit-html.js';
-import * as api from '../types/api';
+import {html, render} from '../../../../node_modules/lit-html/lit-html.js';
+import * as api from '../../../types/api';
 
 type EventDisplay = {
   time: number|null; text: string; url: string | null;
@@ -181,9 +181,10 @@ function prTemplate(pr: api.PullRequest) {
 
 async function start() {
   const queryParams = new URLSearchParams(window.location.search);
+  // This allows you to see another users dashboard.
   const loginParams =
       queryParams.get('login') ? `?login=${queryParams.get('login')}` : '';
-  const res = await fetch(`/dash.json${loginParams}`, {credentials: 'include'});
+  const res = await fetch(`/api/dash.json${loginParams}`, {credentials: 'include'});
   const json = await res.json() as api.DashResponse;
 
   const tmpl = html`

@@ -1,6 +1,6 @@
 @import "./variables/colors.css";
 @import "./variables/dimens.css";
-@import "../../../node_modules/@material/switch/dist/mdc.switch.min.css";
+@import "../../../../node_modules/@material/switch/dist/mdc.switch.min.css";
 
 .settings-container {
   max-width: var(--max-desktop-width);

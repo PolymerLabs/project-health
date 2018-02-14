@@ -103,7 +103,7 @@ export async function handleStatus(hookData: StatusHook): Promise<boolean> {
         title: hookData.description,
         body: `[${repo.name}] ${prData.title}`,
         requireInteraction: false,
-        icon: '/assets/notification-images/icon-192x192.png',
+        icon: '/images/notification-images/icon-192x192.png',
         data: {
           url: prData.url,
         }
@@ -129,7 +129,7 @@ export async function handlePullRequest(hookBody: PullRequestHook): Promise<bool
     title: `${user.login} requested a review`,
     body: `[${repo.name}] ${pullRequest.title}`,
     requireInteraction: true,
-    icon: '/assets/notification-images/icon-192x192.png',
+    icon: '/images/notification-images/icon-192x192.png',
     data: {
       url: pullRequest.html_url,
     }
@@ -174,7 +174,7 @@ export async function handlePullRequestReview(hookData: PullRequestReviewHook): 
     title: notificationTitle,
     body: `[${repo.name}] ${pullReq.title}`,
     requireInteraction: true,
-    icon: '/assets/notification-images/icon-192x192.png',
+    icon: '/images/notification-images/icon-192x192.png',
     data: {
       url: pullReq.html_url,
     },

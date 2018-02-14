@@ -11,6 +11,7 @@
 
       // Remove the redirect origin and redirect with remaining search params
       queryParams.delete('redirect-origin');
+
       redirectOauthURL.search = queryParams.toString();
       window.location = redirectOauthURL.toString();
     } else if (queryParams.has('code')) {
@@ -21,7 +22,7 @@
         credentials: 'include',
       }).then(() => {
         window.location.href =
-          queryParams.get('final-redirect') || '/dash.html';
+          queryParams.get('final-redirect') || '/dash';
       });
     } else if(queryParams.has('error')) {
       // User logged in but there is an error from Github
