@@ -9,7 +9,7 @@ function getRouter(): express.Router {
   loginRouter.post(
       '/', async (request: express.Request, response: express.Response) => {
         if (!request.body) {
-          response.sendStatus(400);
+          response.status(400).send('No body');
           return;
         }
 
@@ -29,19 +29,25 @@ function getRouter(): express.Router {
 
         const loginResponseBody = await loginResponse.json();
         if (loginResponseBody['error']) {
-          console.log(loginResponseBody);
-          response.sendStatus(500);
+          console.log('Unable to authenticate user with GitHub: ', loginResponseBody);
+          response.status(500).send('Unable to authenticate');
           return;
         }
 
-        const accessToken = loginResponseBody['access_token'];
-        const userScopes = loginResponseBody['scope'] ?
-            loginResponseBody['scope'].split(',') :
-            [];
-        await userModel.addNewUser(accessToken, userScopes);
+        try {
+          const accessToken = loginResponseBody['access_token'];
+          const userScopes = loginResponseBody['scope'] ?
+              loginResponseBody['scope'].split(',') :
+              [];
+              
+          await userModel.addNewUser(accessToken, userScopes);
 
-        response.cookie('id', accessToken, {httpOnly: true});
-        response.end();
+          response.cookie('id', accessToken, {httpOnly: true});
+          response.end();
+        } catch (err) {
+          console.error('Unable to login user with cookie: ', err);
+          response.status(500).send('Unexpected login error.');
+        }
       });
   return loginRouter;
 }

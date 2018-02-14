@@ -1,5 +1,5 @@
-import {html, render} from '../../../node_modules/lit-html/lib/lit-extended.js';
-import {OrgWebHookState} from '../../types/api';
+import {html, render} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
+import {OrgWebHookState} from '../../../../types/api';
 
 let orgListContainer: Element;
 
@@ -12,7 +12,6 @@ async function getState() {
     orgs: [],
   };
 
-  // TODO: Get All Orgs
   const response = await fetch('/api/settings/orgs.json', {
     credentials: 'include',
     method: 'POST',

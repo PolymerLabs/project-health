@@ -11,6 +11,7 @@ import {getRouter as getPushSubRouter} from './apis/push-subscription';
 import {getRouter as getSettingsRouter} from './apis/settings';
 import {getRouter as getWebhookRouter} from './apis/webhook';
 import {enforceHTTPS} from './utils/enforce-https';
+import {requireLogin} from './utils/require-login';
 
 export class DashServer {
   private app: express.Express;
@@ -25,12 +26,17 @@ export class DashServer {
 
     app.use(cookieParser());
     app.use('/node_modules/lit-html', express.static(litPath));
-    app.use(express.static(path.join(__dirname, '../client')));
-    app.use(express.static(path.join(__dirname, '../sw')));
-
-    app.get('/dash.json', new DashData().getHandler());
+    app.use(express.static(path.join(__dirname, '..', 'client', 'public'), {
+      extensions: ['html']
+    }));
+    app.use(express.static(path.join(__dirname, '..', 'sw')));
     app.use('/api/login/', bodyParser.text(), getLoginRouter());
 
+    app.use(requireLogin);
+    app.use(express.static(path.join(__dirname, '..', 'client', 'require-login'), {
+      extensions: ['html']
+    }));
+    app.get('/api/dash.json', new DashData().getHandler());
     app.use('/api/push-subscription/', getPushSubRouter());
     app.use('/api/webhook/', bodyParser.json(), getWebhookRouter());
     app.use('/api/settings/', getSettingsRouter());

@@ -57,7 +57,7 @@ test.serial(
           title: 'gauntface requested changes',
           body: '[project-health] Add favicon',
           requireInteraction: true,
-          icon: '/assets/notification-images/icon-192x192.png',
+          icon: '/images/notification-images/icon-192x192.png',
           data: {
             url: 'https://github.com/PolymerLabs/project-health/pull/112'
           }
@@ -81,7 +81,7 @@ test.serial(
           title: 'gauntface approved your PR',
           body: '[project-health] Add favicon',
           requireInteraction: true,
-          icon: '/assets/notification-images/icon-192x192.png',
+          icon: '/images/notification-images/icon-192x192.png',
           data: {
             url: 'https://github.com/PolymerLabs/project-health/pull/112'
           }
@@ -105,7 +105,7 @@ test.serial(
         title: 'aomarks commented on your PR',
         body: '[project-health] Demonstrate end-to-end firestore integration.',
         requireInteraction: true,
-        icon: '/assets/notification-images/icon-192x192.png',
+        icon: '/images/notification-images/icon-192x192.png',
         data: {
           url: 'https://github.com/PolymerLabs/project-health/pull/65'
         }
@@ -486,7 +486,7 @@ test.serial('Webhook status: error-travis.json with user token and required info
       title: 'The Travis CI build could not complete due to an error',
       body: '[project-health] Injected title',
       requireInteraction: false,
-      icon: '/assets/notification-images/icon-192x192.png',
+      icon: '/images/notification-images/icon-192x192.png',
       data: {
         url: 'https://example.com/pr/123'
       }
@@ -527,7 +527,7 @@ test.serial('Webhook pull_request: review_requested.json', async (t) => {
       title: 'gauntface requested a review',
       body: '[project-health] Add icon to notification and correcting URL link',
       requireInteraction: true,
-      icon: '/assets/notification-images/icon-192x192.png',
+      icon: '/images/notification-images/icon-192x192.png',
       data: {
         url: 'https://github.com/PolymerLabs/project-health/pull/146'
       }
