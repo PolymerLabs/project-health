@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ES2015",
-    "module": "ES6",
+    "target": "es2015",
+    "module": "es2015",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
