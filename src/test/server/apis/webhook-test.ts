@@ -214,9 +214,7 @@ test.serial('Webhook status: error-travis.json with user token, no PRs', async (
         t.deepEqual(context.token, 'inject-fake-token');
 
         return {
-          data: {
-
-          }
+          data: {}
         };
       });
 
