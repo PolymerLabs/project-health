@@ -21,7 +21,12 @@ export const sendNotification =
   }
 
   return Promise.all(userSubscriptionDetails.map((subDetails) => {
-    return webpush.sendNotification(subDetails.subscription, JSON.stringify(data))
+    const options = {
+        // TTL in seconds (1 Day). After which, notification will not
+        // be delivered.
+        TTL: 24 * 60 * 60,
+    };
+    return webpush.sendNotification(subDetails.subscription, JSON.stringify(data), options)
         .catch(async (err) => {
             // 410 and 404 response from the Web Push module means
             // the subscription is no longer usable.

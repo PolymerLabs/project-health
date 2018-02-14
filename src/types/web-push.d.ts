@@ -6,5 +6,5 @@ declare module 'web-push' {
       ): void;
 
   export function sendNotification(
-      subscription: object, payload: string): Promise<void>;
+      subscription: object, payload: string, options: object): Promise<void>;
 }
