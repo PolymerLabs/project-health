@@ -6,7 +6,7 @@ import {OrgDetailsQuery} from '../../types/gql-types';
 import {github} from '../../utils/github';
 import {userModel} from '../models/userModel';
 
-import {WEBHOOK_URL} from './webhook';
+import {getHookUrl} from './webhook';
 
 function getRouter(): express.Router {
   const settingsRouter = express.Router();
@@ -52,9 +52,10 @@ function getRouter(): express.Router {
               if (org.viewerCanAdminister) {
                 const hooks = await github().get(
                     `orgs/${org.login}/hooks`, loginDetails.githubToken);
-
+                
+                const hookUrl = getHookUrl(request);
                 for (const hook of hooks) {
-                  if (hook.config.url === WEBHOOK_URL) {
+                  if (hook.config.url === hookUrl) {
                     hookEnabled = true;
                   }
                 }
