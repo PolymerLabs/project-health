@@ -144,14 +144,16 @@ export class DashData {
           status,
         };
 
+        const prMention = mentioned.get(pr.id);
         if (myReview) {
           reviewedPr.events.push({type: 'MyReviewEvent', review: myReview});
 
           // TODO: this could be in the wrong order with the new commits below.
-          const prMention = mentioned.get(pr.id);
           if (prMention && prMention.mentionedAt > myReview.createdAt) {
             reviewedPr.events.push(prMention);
           }
+        } else if (prMention) {
+          reviewedPr.events.push(prMention);
         }
 
         // Check if there are new commits to the pull request.
