@@ -24,6 +24,10 @@ const processScript = (scriptPath, relativePath, tsConfigPath, destDir) => {
       name: path.basename(scriptPath),
     },
     plugins: [
+      // The plugin can only read tsconfig from the cwd so instead,
+      // we read in the file and set the compiler options directly
+      // in the plugin options (hence the `...tsconfig.compilerOptions`)
+      // Then `tsconfig: false` disables any tsconfig.json file reading
       typescriptPlugin({
         ...tsconfig.compilerOptions,
         tsconfig: false,
