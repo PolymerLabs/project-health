@@ -14,7 +14,7 @@ type ReviewHook = {
 };
 
 type PullRequest = {
-  title: string; user: User; html_url: string;;
+  title: string; user: User; html_url: string;
 };
 
 type RepositoryHook = {
@@ -27,7 +27,7 @@ type Reviewer = {
 
 type PullRequestHook = {
   action: string; pull_request: PullRequest; repository: RepositoryHook;
-  requested_reviewer: Reviewer
+  requested_reviewer: Reviewer;
 };
 
 type PullRequestReviewHook = {
