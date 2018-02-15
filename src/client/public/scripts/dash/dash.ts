@@ -1,5 +1,12 @@
-import {html, render} from '../../../../node_modules/lit-html/lit-html.js';
-import * as api from '../../../types/api';
+import {html, render} from '../../../../../node_modules/lit-html/lit-html.js';
+import * as api from '../../../../types/api';
+import { PullRequest } from '../../../../types/api';
+
+// Poll every 30 Minutes
+const POLLING_INTERVAL = 30 * 60 * 1000;
+
+let workLock = false;
+let lastResponse: api.DashResponse;
 
 type EventDisplay = {
   time: number|null; text: string; url: string | null;
@@ -8,6 +15,19 @@ type EventDisplay = {
 type StatusDisplay = {
   actionable: boolean; text: string;
 };
+
+const dashTmpl = (data: api.DashResponse) => html`
+<div class="pr-list">
+  <h2>Outgoing pull requests</h2>
+  ${data.outgoingPrs.map(prTemplate)}
+  <h2>Incoming pull requests</h2>
+  ${data.incomingPrs.map(prTemplate)}
+</div>
+`;
+
+function renderDash(data: api.DashResponse) {
+  render(dashTmpl(data), (document.querySelector('.dash-container') as Element));
+}
 
 function timeToString(dateTime: number) {
   let secondsSince = (Date.now() - dateTime) / 1000;
@@ -179,23 +199,113 @@ function prTemplate(pr: api.PullRequest) {
     ${pr.events.map(eventTemplate)}`;
 }
 
-async function start() {
+function hasNewActions(newData: api.DashResponse, oldData: api.DashResponse) {
+  if (!oldData) {
+    return false;
+  }
+
+  const newActions = (newList: PullRequest[], oldList: PullRequest[]) => {
+    const oldActionablePRs: {[prUrl: string]: PullRequest} = {};
+    oldList.forEach((pr: PullRequest) => {
+      const {actionable} = statusToDisplay(pr);
+      if (!actionable) {
+        return;
+      }
+
+      oldActionablePRs[pr.url] = pr;
+    });
+
+    for (const newPr of newList) {
+      const {actionable} = statusToDisplay(newPr);
+      if (!actionable) {
+        continue;
+      }
+
+      const oldPr = oldActionablePRs[newPr.url];
+      if (!oldPr) {
+        // New list has an actionable PR that didn't exist before
+        return true;
+      }
+
+      if (JSON.stringify(newPr) !== JSON.stringify(oldPr)) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  // Outgoing PR's are likely to be less than incoming, so check that first
+  return newActions(newData.outgoingPrs, oldData.outgoingPrs) ||
+    newActions(newData.incomingPrs, oldData.incomingPrs);
+}
+
+async function getDashData() {
   const queryParams = new URLSearchParams(window.location.search);
+
   // This allows you to see another users dashboard.
   const loginParams =
       queryParams.get('login') ? `?login=${queryParams.get('login')}` : '';
   const res = await fetch(`/api/dash.json${loginParams}`, {credentials: 'include'});
-  const json = await res.json() as api.DashResponse;
+  const newData = await res.json() as api.DashResponse;
+  const results = {
+    data: newData,
+    newActions: hasNewActions(newData, lastResponse),
+  };
+  
+  lastResponse = newData;
 
-  const tmpl = html`
-    <div class="pr-list">
-      <h2>Outgoing pull requests</h2>
-      ${json.outgoingPrs.map(prTemplate)}
-      <h2>Incoming pull requests</h2>
-      ${json.incomingPrs.map(prTemplate)}
-    </div>
-  `;
-  render(tmpl, (document.querySelector('.dash-container') as Element));
+  return results;
+}
+
+function changeFavIcon(hasAction: boolean) {
+  const iconElements = (document.querySelectorAll('link[rel=icon]') as NodeListOf<HTMLLinkElement>);
+    for(let i = 0; i < iconElements.length; i++) {
+      const iconElement = iconElements.item(i);
+      const size = iconElement.href.indexOf('32x32') === -1 ? 16 : 32;
+      const actionString = hasAction ? 'action-' : '';
+      iconElement.href = `/images/favicon-${actionString}${size}x${size}.png`;
+    }
+}
+
+async function performPollAction() {
+  const {data, newActions} = await getDashData();
+  renderDash(data);
+
+  if (newActions && document.hasFocus() === false) {
+    changeFavIcon(true);
+  }
+}
+
+function startPolling() {
+  setInterval(async () => {
+    // If workLock is true, it means we are still working
+    // from the previous interval, so return;
+    if (workLock) {
+      return;
+    }
+  
+    workLock = true;
+  
+    try {
+      await performPollAction();
+    } catch (err) {
+      console.log('Unable to perform poll update: ', err);
+    }
+  
+    workLock = false;
+  }, POLLING_INTERVAL);
+}
+
+async function start() {
+  const {data} = await getDashData();
+  renderDash(data);
+  startPolling();
 }
 
 start();
+
+window.addEventListener('focus', () => {
+  // This will reset the favicon when the user revisits the page
+  changeFavIcon(false);
+});
