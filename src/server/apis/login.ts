@@ -29,17 +29,18 @@ function getRouter(): express.Router {
 
         const loginResponseBody = await loginResponse.json();
         if (loginResponseBody['error']) {
-          console.log('Unable to authenticate user with GitHub: ', loginResponseBody);
+          console.log(
+              'Unable to authenticate user with GitHub: ', loginResponseBody);
           response.status(500).send('Unable to authenticate');
           return;
         }
 
-        
-          const accessToken = loginResponseBody['access_token'];
-          const userScopes = loginResponseBody['scope'] ?
-              loginResponseBody['scope'].split(',') :
-              [];
-        
+
+        const accessToken = loginResponseBody['access_token'];
+        const userScopes = loginResponseBody['scope'] ?
+            loginResponseBody['scope'].split(',') :
+            [];
+
         try {
           await userModel.addNewUser(accessToken, userScopes);
 

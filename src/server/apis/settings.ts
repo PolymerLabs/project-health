@@ -52,7 +52,7 @@ function getRouter(): express.Router {
               if (org.viewerCanAdminister) {
                 const hooks = await github().get(
                     `orgs/${org.login}/hooks`, loginDetails.githubToken);
-                
+
                 const hookUrl = getHookUrl(request);
                 for (const hook of hooks) {
                   if (hook.config.url === hookUrl) {

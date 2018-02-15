@@ -4,12 +4,12 @@ import * as path from 'path';
 import * as sinon from 'sinon';
 
 import {startTestReplayServer} from '../../../replay-server';
-import {handlePullRequestReview, handleStatus, handlePullRequest} from '../../../server/controllers/webhook-events';
-import {initFirestore} from '../../../utils/firestore';
-import {initGithub, github} from '../../../utils/github';
-import {initSecrets} from '../../../utils/secrets';
 import * as notificationController from '../../../server/controllers/notifications';
+import {handlePullRequest, handlePullRequestReview, handleStatus} from '../../../server/controllers/webhook-events';
 import {userModel} from '../../../server/models/userModel';
+import {initFirestore} from '../../../utils/firestore';
+import {github, initGithub} from '../../../utils/github';
+import {initSecrets} from '../../../utils/secrets';
 
 const hookJsonDir = path.join(__dirname, '..', '..', 'static', 'webhook-data');
 
@@ -41,7 +41,8 @@ test.afterEach.always.cb((t) => {
 test.serial(
     'Webhook pull_request_review: submitted-state-changes_requested.json',
     async (t) => {
-      const sendStub = t.context.sandbox.stub(notificationController, 'sendNotification');
+      const sendStub =
+          t.context.sandbox.stub(notificationController, 'sendNotification');
 
       const eventContent = await fs.readJSON(path.join(
           hookJsonDir,
@@ -67,7 +68,8 @@ test.serial(
 
 test.serial(
     'Webhook pull_request_review: submitted-state-approved.json', async (t) => {
-      const sendStub = t.context.sandbox.stub(notificationController, 'sendNotification');
+      const sendStub =
+          t.context.sandbox.stub(notificationController, 'sendNotification');
 
       const eventContent = await fs.readJSON(path.join(
           hookJsonDir, 'pull_request_review', 'submitted-state-approved.json'));
@@ -90,412 +92,413 @@ test.serial(
     });
 
 test.serial(
-  'Webhook pull_request_review: submitted-state-commented.json', async (t) => {
-    const sendStub = t.context.sandbox.stub(notificationController, 'sendNotification');
+    'Webhook pull_request_review: submitted-state-commented.json',
+    async (t) => {
+      const sendStub =
+          t.context.sandbox.stub(notificationController, 'sendNotification');
 
-    const eventContent = await fs.readJSON(path.join(
-        hookJsonDir, 'pull_request_review', 'submitted-state-commented.json'));
-    const handled = await handlePullRequestReview(eventContent);
-    t.deepEqual(handled, true);
+      const eventContent = await fs.readJSON(path.join(
+          hookJsonDir,
+          'pull_request_review',
+          'submitted-state-commented.json'));
+      const handled = await handlePullRequestReview(eventContent);
+      t.deepEqual(handled, true);
 
-    t.deepEqual(sendStub.callCount, 1);
-    t.deepEqual(sendStub.args[0], [
-      'gauntface',
-      {
-        title: 'aomarks commented on your PR',
-        body: '[project-health] Demonstrate end-to-end firestore integration.',
-        requireInteraction: true,
-        icon: '/images/notification-images/icon-192x192.png',
-        data: {
-          url: 'https://github.com/PolymerLabs/project-health/pull/65'
+      t.deepEqual(sendStub.callCount, 1);
+      t.deepEqual(sendStub.args[0], [
+        'gauntface',
+        {
+          title: 'aomarks commented on your PR',
+          body:
+              '[project-health] Demonstrate end-to-end firestore integration.',
+          requireInteraction: true,
+          icon: '/images/notification-images/icon-192x192.png',
+          data:
+              {url: 'https://github.com/PolymerLabs/project-health/pull/65'}
         }
-      }
-    ]);
-  });
-
-test.serial(
-  'Webhook pull_request_review: submitted-state-self-commented.json', async (t) => {
-    const sendStub = t.context.sandbox.stub(notificationController, 'sendNotification');
-
-    const eventContent = await fs.readJSON(path.join(
-        hookJsonDir, 'pull_request_review', 'submitted-state-self-commented.json'));
-    const handled = await handlePullRequestReview(eventContent);
-    t.deepEqual(handled, false);
-
-    t.deepEqual(sendStub.callCount, 0);
-  });
-
-test.serial('Webhook status: error-travis.json where CL author has no token', async (t) => {
-  const sendStub = t.context.sandbox.stub(notificationController, 'sendNotification');
-  
-  t.context.sandbox.stub(userModel, 'getLoginDetails')
-  .callsFake(() => {
-    // Return no details to act as no token
-    return null;
-  });
-
-  const eventContent =
-      await fs.readJSON(path.join(hookJsonDir, 'status', 'error-travis.json'));
-  const handled = await handleStatus(eventContent);
-  t.deepEqual(handled, false);
-  t.deepEqual(sendStub.callCount, 0);
-});
-
-test.serial(
-  'Webhook pull_request_review: unknown action', async (t) => {
-    const sendStub = t.context.sandbox.stub(notificationController, 'sendNotification');
-
-    const handled = await handlePullRequestReview({
-      action: 'unknown',
-      review: {
-        state: 'approved',
-        user: {
-          login: 'login',
-        },
-      },
-      pull_request: {
-        title: '',
-        user: {
-          login: '',
-        },
-        html_url: '',
-        requested_reviewers: [],
-      },
-      repository: {
-        name: '',
-      },
+      ]);
     });
-    t.deepEqual(handled, false);
-    t.deepEqual(sendStub.callCount, 0);
-  });
 
 test.serial(
-  'Webhook pull_request_review: unknown review state', async (t) => {
-    const sendStub = t.context.sandbox.stub(notificationController, 'sendNotification');
+    'Webhook pull_request_review: submitted-state-self-commented.json',
+    async (t) => {
+      const sendStub =
+          t.context.sandbox.stub(notificationController, 'sendNotification');
 
-    const handled = await handlePullRequestReview({
-      action: 'submitted',
-      review: {
-        state: 'unknown',
-        user: {
-          login: 'login',
-        },
-      },
-      pull_request: {
-        title: '',
-        user: {
-          login: '',
-        },
-        html_url: '',
-        requested_reviewers: [],
-      },
-      repository: {
-        name: '',
-      },
+      const eventContent = await fs.readJSON(path.join(
+          hookJsonDir,
+          'pull_request_review',
+          'submitted-state-self-commented.json'));
+      const handled = await handlePullRequestReview(eventContent);
+      t.deepEqual(handled, false);
+
+      t.deepEqual(sendStub.callCount, 0);
     });
-    t.deepEqual(handled, false);
-    t.deepEqual(sendStub.callCount, 0);
+
+test.serial(
+    'Webhook status: error-travis.json where CL author has no token',
+    async (t) => {
+      const sendStub =
+          t.context.sandbox.stub(notificationController, 'sendNotification');
+
+      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+        // Return no details to act as no token
+        return null;
+      });
+
+      const eventContent = await fs.readJSON(
+          path.join(hookJsonDir, 'status', 'error-travis.json'));
+      const handled = await handleStatus(eventContent);
+      t.deepEqual(handled, false);
+      t.deepEqual(sendStub.callCount, 0);
+    });
+
+test.serial('Webhook pull_request_review: unknown action', async (t) => {
+  const sendStub =
+      t.context.sandbox.stub(notificationController, 'sendNotification');
+
+  const handled = await handlePullRequestReview({
+    action: 'unknown',
+    review: {
+      state: 'approved',
+      user: {
+        login: 'login',
+      },
+    },
+    pull_request: {
+      title: '',
+      user: {
+        login: '',
+      },
+      html_url: '',
+      requested_reviewers: [],
+    },
+    repository: {
+      name: '',
+    },
   });
-
-test.serial('Webhook status: error-travis.json with user token, no PRs', async (t) => {
-  const sendStub = t.context.sandbox.stub(notificationController, 'sendNotification');
-  t.context.sandbox.stub(userModel, 'getLoginDetails')
-      .callsFake((username: string) => {
-        // Return some fake details to ensure 
-        return {
-          githubToken: 'inject-fake-token',
-          username,
-          scopes: null,
-        };
-      });
-  const githubInstance = github();
-  t.context.sandbox.stub(githubInstance, 'query')
-      .callsFake(({context}: {context: {token: string}}) => {
-        t.deepEqual(context.token, 'inject-fake-token');
-
-        return {
-          data: {}
-        };
-      });
-
-  const eventContent =
-      await fs.readJSON(path.join(hookJsonDir, 'status', 'error-travis.json'));
-  const handled = await handleStatus(eventContent);
   t.deepEqual(handled, false);
   t.deepEqual(sendStub.callCount, 0);
 });
 
-test.serial('Webhook status: error-travis.json with user token, no author', async (t) => {
-  const sendStub = t.context.sandbox.stub(notificationController, 'sendNotification');
-  t.context.sandbox.stub(userModel, 'getLoginDetails')
-      .callsFake((username: string) => {
-        // Return some fake details to ensure 
-        return {
-          githubToken: 'inject-fake-token',
-          username,
-          scopes: null,
-        };
-      });
-  const githubInstance = github();
-  t.context.sandbox.stub(githubInstance, 'query')
-      .callsFake(({context}: {context: {token: string}}) => {
-        t.deepEqual(context.token, 'inject-fake-token');
+test.serial('Webhook pull_request_review: unknown review state', async (t) => {
+  const sendStub =
+      t.context.sandbox.stub(notificationController, 'sendNotification');
 
-        return {
-          data: {
-            pullRequests: {
-              nodes: [
-                {
-                  __typename: 'PullRequest',
+  const handled = await handlePullRequestReview({
+    action: 'submitted',
+    review: {
+      state: 'unknown',
+      user: {
+        login: 'login',
+      },
+    },
+    pull_request: {
+      title: '',
+      user: {
+        login: '',
+      },
+      html_url: '',
+      requested_reviewers: [],
+    },
+    repository: {
+      name: '',
+    },
+  });
+  t.deepEqual(handled, false);
+  t.deepEqual(sendStub.callCount, 0);
+});
+
+test.serial(
+    'Webhook status: error-travis.json with user token, no PRs', async (t) => {
+      const sendStub =
+          t.context.sandbox.stub(notificationController, 'sendNotification');
+      t.context.sandbox.stub(userModel, 'getLoginDetails')
+          .callsFake((username: string) => {
+            // Return some fake details to ensure
+            return {
+              githubToken: 'inject-fake-token',
+              username,
+              scopes: null,
+            };
+          });
+      const githubInstance = github();
+      t.context.sandbox.stub(githubInstance, 'query')
+          .callsFake(({context}: {context: {token: string}}) => {
+            t.deepEqual(context.token, 'inject-fake-token');
+
+            return {data: {}};
+          });
+
+      const eventContent = await fs.readJSON(
+          path.join(hookJsonDir, 'status', 'error-travis.json'));
+      const handled = await handleStatus(eventContent);
+      t.deepEqual(handled, false);
+      t.deepEqual(sendStub.callCount, 0);
+    });
+
+test.serial(
+    'Webhook status: error-travis.json with user token, no author',
+    async (t) => {
+      const sendStub =
+          t.context.sandbox.stub(notificationController, 'sendNotification');
+      t.context.sandbox.stub(userModel, 'getLoginDetails')
+          .callsFake((username: string) => {
+            // Return some fake details to ensure
+            return {
+              githubToken: 'inject-fake-token',
+              username,
+              scopes: null,
+            };
+          });
+      const githubInstance = github();
+      t.context.sandbox.stub(githubInstance, 'query')
+          .callsFake(({context}: {context: {token: string}}) => {
+            t.deepEqual(context.token, 'inject-fake-token');
+
+            return {
+              data: {
+                pullRequests: {
+                  nodes: [{
+                    __typename: 'PullRequest',
+                  }]
                 }
-              ]
-            }
-          }
-        };
-      });
+              }
+            };
+          });
 
-  const eventContent =
-      await fs.readJSON(path.join(hookJsonDir, 'status', 'error-travis.json'));
-  const handled = await handleStatus(eventContent);
-  t.deepEqual(handled, false);
-  t.deepEqual(sendStub.callCount, 0);
-});
+      const eventContent = await fs.readJSON(
+          path.join(hookJsonDir, 'status', 'error-travis.json'));
+      const handled = await handleStatus(eventContent);
+      t.deepEqual(handled, false);
+      t.deepEqual(sendStub.callCount, 0);
+    });
 
-test.serial('Webhook status: error-travis.json with user token, unknown type response', async (t) => {
-  const sendStub = t.context.sandbox.stub(notificationController, 'sendNotification');
-  t.context.sandbox.stub(userModel, 'getLoginDetails')
-      .callsFake((username: string) => {
-        // Return some fake details to ensure 
-        return {
-          githubToken: 'inject-fake-token',
-          username,
-          scopes: null,
-        };
-      });
-  const githubInstance = github();
-  t.context.sandbox.stub(githubInstance, 'query')
-      .callsFake(({context}: {context: {token: string}}) => {
-        t.deepEqual(context.token, 'inject-fake-token');
+test.serial(
+    'Webhook status: error-travis.json with user token, unknown type response',
+    async (t) => {
+      const sendStub =
+          t.context.sandbox.stub(notificationController, 'sendNotification');
+      t.context.sandbox.stub(userModel, 'getLoginDetails')
+          .callsFake((username: string) => {
+            // Return some fake details to ensure
+            return {
+              githubToken: 'inject-fake-token',
+              username,
+              scopes: null,
+            };
+          });
+      const githubInstance = github();
+      t.context.sandbox.stub(githubInstance, 'query')
+          .callsFake(({context}: {context: {token: string}}) => {
+            t.deepEqual(context.token, 'inject-fake-token');
 
-        return {
-          data: {
-            pullRequests: {
-              nodes: [
-                {
-                  __typename: 'Other',
+            return {
+              data: {
+                pullRequests: {
+                  nodes: [{
+                    __typename: 'Other',
+                  }]
                 }
-              ]
-            }
-          }
-        };
-      });
+              }
+            };
+          });
 
-  const eventContent =
-      await fs.readJSON(path.join(hookJsonDir, 'status', 'error-travis.json'));
-  const handled = await handleStatus(eventContent);
-  t.deepEqual(handled, false);
-  t.deepEqual(sendStub.callCount, 0);
-});
+      const eventContent = await fs.readJSON(
+          path.join(hookJsonDir, 'status', 'error-travis.json'));
+      const handled = await handleStatus(eventContent);
+      t.deepEqual(handled, false);
+      t.deepEqual(sendStub.callCount, 0);
+    });
 
-test.serial('Webhook status: error-travis.json with user token, no commits', async (t) => {
-  const sendStub = t.context.sandbox.stub(notificationController, 'sendNotification');
-  t.context.sandbox.stub(userModel, 'getLoginDetails')
-      .callsFake((username: string) => {
-        // Return some fake details to ensure 
-        return {
-          githubToken: 'inject-fake-token',
-          username,
-          scopes: null,
-        };
-      });
-  const githubInstance = github();
-  t.context.sandbox.stub(githubInstance, 'query')
-      .callsFake(({context}: {context: {token: string}}) => {
-        t.deepEqual(context.token, 'inject-fake-token');
+test.serial(
+    'Webhook status: error-travis.json with user token, no commits',
+    async (t) => {
+      const sendStub =
+          t.context.sandbox.stub(notificationController, 'sendNotification');
+      t.context.sandbox.stub(userModel, 'getLoginDetails')
+          .callsFake((username: string) => {
+            // Return some fake details to ensure
+            return {
+              githubToken: 'inject-fake-token',
+              username,
+              scopes: null,
+            };
+          });
+      const githubInstance = github();
+      t.context.sandbox.stub(githubInstance, 'query')
+          .callsFake(({context}: {context: {token: string}}) => {
+            t.deepEqual(context.token, 'inject-fake-token');
 
-        return {
-          data: {
-            pullRequests: {
-              nodes: [
-                {
-                  __typename: 'PullRequest',
-                  author: {
-                    login: 'injected-pr-author'
-                  },
-                  commits: {}
+            return {
+              data: {
+                pullRequests: {
+                  nodes: [{
+                    __typename: 'PullRequest',
+                    author: {login: 'injected-pr-author'},
+                    commits: {}
+                  }]
                 }
-              ]
-            }
-          }
-        };
-      });
+              }
+            };
+          });
 
-  const eventContent =
-      await fs.readJSON(path.join(hookJsonDir, 'status', 'error-travis.json'));
-  const handled = await handleStatus(eventContent);
-  t.deepEqual(handled, false);
-  t.deepEqual(sendStub.callCount, 0);
-});
+      const eventContent = await fs.readJSON(
+          path.join(hookJsonDir, 'status', 'error-travis.json'));
+      const handled = await handleStatus(eventContent);
+      t.deepEqual(handled, false);
+      t.deepEqual(sendStub.callCount, 0);
+    });
 
-test.serial('Webhook status: error-travis.json with user token, null commit', async (t) => {
-  const eventContent =
-      await fs.readJSON(path.join(hookJsonDir, 'status', 'error-travis.json'));
+test.serial(
+    'Webhook status: error-travis.json with user token, null commit',
+    async (t) => {
+      const eventContent = await fs.readJSON(
+          path.join(hookJsonDir, 'status', 'error-travis.json'));
 
-  const sendStub = t.context.sandbox.stub(notificationController, 'sendNotification');
-  t.context.sandbox.stub(userModel, 'getLoginDetails')
-      .callsFake((username: string) => {
-        // Return some fake details to ensure 
-        return {
-          githubToken: 'inject-fake-token',
-          username,
-          scopes: null,
-        };
-      });
-  const githubInstance = github();
-  t.context.sandbox.stub(githubInstance, 'query')
-      .callsFake(({context}: {context: {token: string}}) => {
-        t.deepEqual(context.token, 'inject-fake-token');
+      const sendStub =
+          t.context.sandbox.stub(notificationController, 'sendNotification');
+      t.context.sandbox.stub(userModel, 'getLoginDetails')
+          .callsFake((username: string) => {
+            // Return some fake details to ensure
+            return {
+              githubToken: 'inject-fake-token',
+              username,
+              scopes: null,
+            };
+          });
+      const githubInstance = github();
+      t.context.sandbox.stub(githubInstance, 'query')
+          .callsFake(({context}: {context: {token: string}}) => {
+            t.deepEqual(context.token, 'inject-fake-token');
 
-        return {
-          data: {
-            pullRequests: {
-              nodes: [
-                {
-                  __typename: 'PullRequest',
-                  author: {
-                    login: 'injected-pr-author'
-                  },
-                  commits: {
-                    nodes: [
-                      null
-                    ],
-                  }
+            return {
+              data: {
+                pullRequests: {
+                  nodes: [{
+                    __typename: 'PullRequest',
+                    author: {login: 'injected-pr-author'},
+                    commits: {
+                      nodes: [null],
+                    }
+                  }]
                 }
-              ]
-            }
-          }
-        };
-      });
+              }
+            };
+          });
 
-  const handled = await handleStatus(eventContent);
-  t.deepEqual(handled, false);
-  t.deepEqual(sendStub.callCount, 0);
-});
+      const handled = await handleStatus(eventContent);
+      t.deepEqual(handled, false);
+      t.deepEqual(sendStub.callCount, 0);
+    });
 
-test.serial('Webhook status: error-travis.json with user token, incorrect commit', async (t) => {
-  const eventContent =
-      await fs.readJSON(path.join(hookJsonDir, 'status', 'error-travis.json'));
+test.serial(
+    'Webhook status: error-travis.json with user token, incorrect commit',
+    async (t) => {
+      const eventContent = await fs.readJSON(
+          path.join(hookJsonDir, 'status', 'error-travis.json'));
 
-  const sendStub = t.context.sandbox.stub(notificationController, 'sendNotification');
-  t.context.sandbox.stub(userModel, 'getLoginDetails')
-      .callsFake((username: string) => {
-        // Return some fake details to ensure 
-        return {
-          githubToken: 'inject-fake-token',
-          username,
-          scopes: null,
-        };
-      });
-  const githubInstance = github();
-  t.context.sandbox.stub(githubInstance, 'query')
-      .callsFake(({context}: {context: {token: string}}) => {
-        t.deepEqual(context.token, 'inject-fake-token');
+      const sendStub =
+          t.context.sandbox.stub(notificationController, 'sendNotification');
+      t.context.sandbox.stub(userModel, 'getLoginDetails')
+          .callsFake((username: string) => {
+            // Return some fake details to ensure
+            return {
+              githubToken: 'inject-fake-token',
+              username,
+              scopes: null,
+            };
+          });
+      const githubInstance = github();
+      t.context.sandbox.stub(githubInstance, 'query')
+          .callsFake(({context}: {context: {token: string}}) => {
+            t.deepEqual(context.token, 'inject-fake-token');
 
-        return {
-          data: {
-            pullRequests: {
-              nodes: [
-                {
-                  __typename: 'PullRequest',
-                  author: {
-                    login: 'injected-pr-author'
-                  },
-                  commits: {
-                    nodes: [
-                      {
+            return {
+              data: {
+                pullRequests: {
+                  nodes: [{
+                    __typename: 'PullRequest',
+                    author: {login: 'injected-pr-author'},
+                    commits: {
+                      nodes: [{
                         commit: {
                           oid: 'diff-sha',
                         },
-                      }
-                    ],
-                  }
+                      }],
+                    }
+                  }]
                 }
-              ]
-            }
-          }
-        };
-      });
+              }
+            };
+          });
 
-  const handled = await handleStatus(eventContent);
-  t.deepEqual(handled, false);
-  t.deepEqual(sendStub.callCount, 0);
-});
+      const handled = await handleStatus(eventContent);
+      t.deepEqual(handled, false);
+      t.deepEqual(sendStub.callCount, 0);
+    });
 
-test.serial('Webhook status: error-travis.json with user token and required info', async (t) => {
-  const eventContent =
-      await fs.readJSON(path.join(hookJsonDir, 'status', 'error-travis.json'));
+test.serial(
+    'Webhook status: error-travis.json with user token and required info',
+    async (t) => {
+      const eventContent = await fs.readJSON(
+          path.join(hookJsonDir, 'status', 'error-travis.json'));
 
-  const sendStub = t.context.sandbox.stub(notificationController, 'sendNotification');
-  t.context.sandbox.stub(userModel, 'getLoginDetails')
-      .callsFake((username: string) => {
-        // Return some fake details to ensure 
-        return {
-          githubToken: 'inject-fake-token',
-          username,
-          scopes: null,
-        };
-      });
-  const githubInstance = github();
-  t.context.sandbox.stub(githubInstance, 'query')
-      .callsFake(({context}: {context: {token: string}}) => {
-        t.deepEqual(context.token, 'inject-fake-token');
+      const sendStub =
+          t.context.sandbox.stub(notificationController, 'sendNotification');
+      t.context.sandbox.stub(userModel, 'getLoginDetails')
+          .callsFake((username: string) => {
+            // Return some fake details to ensure
+            return {
+              githubToken: 'inject-fake-token',
+              username,
+              scopes: null,
+            };
+          });
+      const githubInstance = github();
+      t.context.sandbox.stub(githubInstance, 'query')
+          .callsFake(({context}: {context: {token: string}}) => {
+            t.deepEqual(context.token, 'inject-fake-token');
 
-        return {
-          data: {
-            pullRequests: {
-              nodes: [
-                {
-                  __typename: 'PullRequest',
-                  title: 'Injected title',
-                  url: 'https://example.com/pr/123',
-                  author: {
-                    login: 'injected-pr-author'
-                  },
-                  commits: {
-                    nodes: [
-                      {
+            return {
+              data: {
+                pullRequests: {
+                  nodes: [{
+                    __typename: 'PullRequest',
+                    title: 'Injected title',
+                    url: 'https://example.com/pr/123',
+                    author: {login: 'injected-pr-author'},
+                    commits: {
+                      nodes: [{
                         commit: {
                           oid: eventContent.sha,
                         },
-                      }
-                    ],
-                  }
+                      }],
+                    }
+                  }]
                 }
-              ]
-            }
-          }
-        };
-      });
+              }
+            };
+          });
 
-  const handled = await handleStatus(eventContent);
-  t.deepEqual(handled, true);
-  t.deepEqual(sendStub.callCount, 1);
-  t.deepEqual(sendStub.args[0], [
-    'injected-pr-author',
-    {
-      title: 'The Travis CI build could not complete due to an error',
-      body: '[project-health] Injected title',
-      requireInteraction: false,
-      icon: '/images/notification-images/icon-192x192.png',
-      data: {
-        url: 'https://example.com/pr/123'
-      }
-    }
-  ]);
-});
+      const handled = await handleStatus(eventContent);
+      t.deepEqual(handled, true);
+      t.deepEqual(sendStub.callCount, 1);
+      t.deepEqual(sendStub.args[0], [
+        'injected-pr-author',
+        {
+          title: 'The Travis CI build could not complete due to an error',
+          body: '[project-health] Injected title',
+          requireInteraction: false,
+          icon: '/images/notification-images/icon-192x192.png',
+          data: {url: 'https://example.com/pr/123'}
+        }
+      ]);
+    });
 
 test.serial('Webhook status: pending-travis.json', async (t) => {
-  const sendStub = t.context.sandbox.stub(notificationController, 'sendNotification');
+  const sendStub =
+      t.context.sandbox.stub(notificationController, 'sendNotification');
 
   const eventContent = await fs.readJSON(
       path.join(hookJsonDir, 'status', 'pending-travis.json'));
@@ -505,7 +508,8 @@ test.serial('Webhook status: pending-travis.json', async (t) => {
 });
 
 test.serial('Webhook status: success-travis.json', async (t) => {
-  const sendStub = t.context.sandbox.stub(notificationController, 'sendNotification');
+  const sendStub =
+      t.context.sandbox.stub(notificationController, 'sendNotification');
   const eventContent = await fs.readJSON(
       path.join(hookJsonDir, 'status', 'success-travis.json'));
   const handled = await handleStatus(eventContent);
@@ -514,7 +518,8 @@ test.serial('Webhook status: success-travis.json', async (t) => {
 });
 
 test.serial('Webhook pull_request: review_requested.json', async (t) => {
-  const sendStub = t.context.sandbox.stub(notificationController, 'sendNotification');
+  const sendStub =
+      t.context.sandbox.stub(notificationController, 'sendNotification');
 
   const eventContent = await fs.readJSON(
       path.join(hookJsonDir, 'pull_request', 'review_requested.json'));
@@ -528,15 +533,14 @@ test.serial('Webhook pull_request: review_requested.json', async (t) => {
       body: '[project-health] Add icon to notification and correcting URL link',
       requireInteraction: true,
       icon: '/images/notification-images/icon-192x192.png',
-      data: {
-        url: 'https://github.com/PolymerLabs/project-health/pull/146'
-      }
+      data: {url: 'https://github.com/PolymerLabs/project-health/pull/146'}
     }
   ]);
 });
 
 test.serial('Webhook pull_request: edited-open.json', async (t) => {
-  const sendStub = t.context.sandbox.stub(notificationController, 'sendNotification');
+  const sendStub =
+      t.context.sandbox.stub(notificationController, 'sendNotification');
 
   const eventContent = await fs.readJSON(
       path.join(hookJsonDir, 'pull_request', 'edited-open.json'));

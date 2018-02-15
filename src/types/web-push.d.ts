@@ -1,5 +1,5 @@
 type WebPushOptions = {
-    TTL?: number;
+  TTL?: number;
 };
 
 declare module 'web-push' {
@@ -10,5 +10,6 @@ declare module 'web-push' {
       ): void;
 
   export function sendNotification(
-      subscription: object, payload: string, options?: WebPushOptions): Promise<void>;
+      subscription: object, payload: string, options?: WebPushOptions):
+      Promise<void>;
 }

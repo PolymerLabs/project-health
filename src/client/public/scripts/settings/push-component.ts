@@ -14,8 +14,8 @@ class PushComponent {
   private state: PushComponentState;
 
   constructor() {
-    const toggleElement =
-      document.querySelector('.js-push-component__toggle') as HTMLInputElement;
+    const toggleElement = document.querySelector(
+                              '.js-push-component__toggle') as HTMLInputElement;
     const statusElement = document.querySelector('.push-component__status');
 
     if (!toggleElement) {

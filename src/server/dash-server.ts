@@ -29,19 +29,25 @@ export class DashServer {
 
     app.use(cookieParser());
     app.use('/node_modules/lit-html', express.static(litPath));
-    app.use(express.static(path.join(__dirname, '..', 'client', 'public'), {
-      extensions: ['html']
-    }));
+    app.use(express.static(
+        path.join(__dirname, '..', 'client', 'public'),
+        {extensions: ['html']}));
     app.use(express.static(path.join(__dirname, '..', 'sw')));
     app.use('/api/login/', bodyParser.text(), getLoginRouter());
     app.use('/api/webhook/', bodyParser.json(), getGitHubHookRouter());
 
     // Require Login for all endpoints used after this middleware
     app.use(requireLogin);
+<<<<<<< HEAD
 
     app.use(express.static(path.join(__dirname, '..', 'client', 'require-login'), {
       extensions: ['html']
     }));
+=======
+    app.use(express.static(
+        path.join(__dirname, '..', 'client', 'require-login'),
+        {extensions: ['html']}));
+>>>>>>> bee3710... Formatting
     app.get('/api/dash.json', new DashData().getHandler());
     app.use('/api/push-subscription/', getPushSubRouter());
     app.use('/api/manage-webhook/', bodyParser.json(), getWebhookRouter());

@@ -1,11 +1,10 @@
 import {html, render} from '../../../../../node_modules/lit-html/lit-html.js';
 import * as api from '../../../../types/api';
-import { PullRequest } from '../../../../types/api';
+import {PullRequest} from '../../../../types/api';
 
-// Poll every 30 Minutes
-const POLLING_INTERVAL = 30 * 60 * 1000;
+// Poll every 5 Minutes
+const POLLING_INTERVAL = 5 * 60 * 1000;
 
-let workLock = false;
 let lastResponse: api.DashResponse;
 
 type EventDisplay = {
@@ -26,7 +25,8 @@ const dashTmpl = (data: api.DashResponse) => html`
 `;
 
 function renderDash(data: api.DashResponse) {
-  render(dashTmpl(data), (document.querySelector('.dash-container') as Element));
+  render(
+      dashTmpl(data), (document.querySelector('.dash-container') as Element));
 }
 
 function timeToString(dateTime: number) {
@@ -237,7 +237,7 @@ function hasNewActions(newData: api.DashResponse, oldData: api.DashResponse) {
 
   // Outgoing PR's are likely to be less than incoming, so check that first
   return newActions(newData.outgoingPrs, oldData.outgoingPrs) ||
-    newActions(newData.incomingPrs, oldData.incomingPrs);
+      newActions(newData.incomingPrs, oldData.incomingPrs);
 }
 
 async function getDashData() {
@@ -246,26 +246,29 @@ async function getDashData() {
   // This allows you to see another users dashboard.
   const loginParams =
       queryParams.get('login') ? `?login=${queryParams.get('login')}` : '';
-  const res = await fetch(`/api/dash.json${loginParams}`, {credentials: 'include'});
+  const res =
+      await fetch(`/api/dash.json${loginParams}`, {credentials: 'include'});
   const newData = await res.json() as api.DashResponse;
   const results = {
     data: newData,
     newActions: hasNewActions(newData, lastResponse),
   };
-  
+
   lastResponse = newData;
 
   return results;
 }
 
 function changeFavIcon(hasAction: boolean) {
-  const iconElements = (document.querySelectorAll('link[rel=icon]') as NodeListOf<HTMLLinkElement>);
-    for(let i = 0; i < iconElements.length; i++) {
-      const iconElement = iconElements.item(i);
-      const size = iconElement.href.indexOf('32x32') === -1 ? 16 : 32;
-      const actionString = hasAction ? 'action-' : '';
-      iconElement.href = `/images/favicon-${actionString}${size}x${size}.png`;
-    }
+  const iconElements =
+      (document.querySelectorAll('link[rel=icon]') as
+       NodeListOf<HTMLLinkElement>);
+  for (let i = 0; i < iconElements.length; i++) {
+    const iconElement = iconElements.item(i);
+    const size = iconElement.href.indexOf('32x32') === -1 ? 16 : 32;
+    const actionString = hasAction ? 'action-' : '';
+    iconElement.href = `/images/favicon-${actionString}${size}x${size}.png`;
+  }
 }
 
 async function performPollAction() {
@@ -277,30 +280,23 @@ async function performPollAction() {
   }
 }
 
-function startPolling() {
-  setInterval(async () => {
-    // If workLock is true, it means we are still working
-    // from the previous interval, so return;
-    if (workLock) {
-      return;
-    }
-  
-    workLock = true;
-  
+
+function performPolling() {
+  setTimeout(async () => {
     try {
       await performPollAction();
     } catch (err) {
       console.log('Unable to perform poll update: ', err);
     }
-  
-    workLock = false;
+
+    performPolling();
   }, POLLING_INTERVAL);
 }
 
 async function start() {
   const {data} = await getDashData();
   renderDash(data);
-  startPolling();
+  performPolling();
 }
 
 start();
