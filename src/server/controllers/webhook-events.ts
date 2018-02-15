@@ -14,7 +14,7 @@ type ReviewHook = {
 };
 
 type PullRequest = {
-  title: string; user: User; html_url: string; requested_reviewers: Reviewer[];
+  title: string; user: User; html_url: string;;
 };
 
 type RepositoryHook = {
@@ -27,6 +27,7 @@ type Reviewer = {
 
 type PullRequestHook = {
   action: string; pull_request: PullRequest; repository: RepositoryHook;
+  requested_reviewer: Reviewer
 };
 
 type PullRequestReviewHook = {
@@ -122,7 +123,7 @@ export async function handlePullRequest(hookBody: PullRequestHook):
   const pullRequest = hookBody.pull_request;
   const repo = hookBody.repository;
   const user = pullRequest.user;
-  const reviewers = pullRequest.requested_reviewers;
+  const reviewer = hookBody.requested_reviewer;
   const notification = {
     title: `${user.login} requested a review`,
     body: `[${repo.name}] ${pullRequest.title}`,
@@ -133,9 +134,7 @@ export async function handlePullRequest(hookBody: PullRequestHook):
     }
   };
 
-  for (const reviewer of reviewers) {
-    await sendNotification(reviewer.login, notification);
-  }
+  await sendNotification(reviewer.login, notification);
 
   return true;
 }
