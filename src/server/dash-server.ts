@@ -39,16 +39,10 @@ export class DashServer {
 
     // Require Login for all endpoints used after this middleware
     app.use(requireLogin);
-<<<<<<< HEAD
 
     app.use(express.static(
         path.join(__dirname, '..', 'client', 'require-login'),
         {extensions: ['html']}));
-=======
-    app.use(express.static(
-        path.join(__dirname, '..', 'client', 'require-login'),
-        {extensions: ['html']}));
->>>>>>> bee3710... Formatting
     app.get('/api/dash.json', new DashData().getHandler());
     app.use('/api/push-subscription/', getPushSubRouter());
     app.use('/api/manage-webhook/', bodyParser.json(), getWebhookRouter());
