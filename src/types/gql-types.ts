@@ -11,6 +11,15 @@ export enum PullRequestReviewState {
 }
 
 
+// The possible states of a subscription.
+export enum SubscriptionState {
+  UNSUBSCRIBED = "UNSUBSCRIBED", // The User is only notified when particpating or @mentioned.
+  SUBSCRIBED = "SUBSCRIBED", // The User is notified of all conversations.
+  IGNORED = "IGNORED", // The User is never notified.
+  UNAVAILABLE = "UNAVAILABLE", // Subscriptions are currently unavailable
+}
+
+
 // The possible commit status states.
 export enum StatusState {
   EXPECTED = "EXPECTED", // Status is expected.
@@ -618,6 +627,8 @@ export interface ViewerPullRequestsQuery {
         id: string,
         // Identifies the date and time when the object was created.
         createdAt: string,
+        // Identifies if the viewer is watching, not watching, or ignoring the subscribable entity.
+        viewerSubscription: SubscriptionState,
         // The actor who authored the comment.
         author: ( {
             __typename: "Organization",
@@ -746,6 +757,8 @@ export interface ViewerPullRequestsQuery {
         id: string,
         // Identifies the date and time when the object was created.
         createdAt: string,
+        // Identifies if the viewer is watching, not watching, or ignoring the subscribable entity.
+        viewerSubscription: SubscriptionState,
         // The actor who authored the comment.
         author: ( {
             __typename: "Organization",
@@ -805,6 +818,8 @@ export interface ViewerPullRequestsQuery {
         id: string,
         // Identifies the date and time when the object was created.
         createdAt: string,
+        // Identifies if the viewer is watching, not watching, or ignoring the subscribable entity.
+        viewerSubscription: SubscriptionState,
         // The actor who authored the comment.
         author: ( {
             __typename: "Organization",
@@ -1148,6 +1163,8 @@ export interface prFieldsFragment {
   id: string,
   // Identifies the date and time when the object was created.
   createdAt: string,
+  // Identifies if the viewer is watching, not watching, or ignoring the subscribable entity.
+  viewerSubscription: SubscriptionState,
   // The actor who authored the comment.
   author: ( {
       __typename: "Organization",

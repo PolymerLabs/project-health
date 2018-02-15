@@ -43,11 +43,16 @@ export class DashData {
       fetchPolicy: 'network-only',
       context: {token}
     });
+
     const outgoingPrs = [];
     const incomingPrs = [];
     if (viewerPrsResult.data.user) {
       for (const pr of viewerPrsResult.data.user.pullRequests.nodes || []) {
         if (!pr) {
+          continue;
+        }
+
+        if (pr.viewerSubscription === 'IGNORED') {
           continue;
         }
 
@@ -115,6 +120,10 @@ export class DashData {
       // Incoming PRs that I've reviewed.
       for (const pr of viewerPrsResult.data.reviewed.nodes || []) {
         if (!pr || pr.__typename !== 'PullRequest') {
+          continue;
+        }
+
+        if (pr.viewerSubscription === 'IGNORED') {
           continue;
         }
 
@@ -204,6 +213,10 @@ export class DashData {
       for (const pr of viewerPrsResult.data.reviewRequests.nodes || []) {
         if (!pr || pr.__typename !== 'PullRequest' ||
             prsShown.includes(pr.id)) {
+          continue;
+        }
+
+        if (pr.viewerSubscription === 'IGNORED') {
           continue;
         }
 
@@ -465,6 +478,7 @@ fragment prFields on PullRequest {
   url
   id
   createdAt
+  viewerSubscription
   author {
     avatarUrl
     login
