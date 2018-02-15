@@ -1,7 +1,7 @@
 import * as express from 'express';
 
 import {github} from '../../utils/github';
-import {userModel, LoginDetails} from '../models/userModel';
+import {LoginDetails, userModel} from '../models/userModel';
 
 const PROD_ORIGIN = 'https://github-health.appspot.com';
 const STAGING_ORIGIN = 'https://github-health-staging.appspot.com';
@@ -22,7 +22,10 @@ export function getHookUrl(request: express.Request) {
   return host + HOOK_PATH;
 }
 
-async function addWebHook(loginDetails: LoginDetails, request: express.Request, response: express.Response) {
+async function addWebHook(
+    loginDetails: LoginDetails,
+    request: express.Request,
+    response: express.Response) {
   try {
     const hookUrl = getHookUrl(request);
 
@@ -49,13 +52,16 @@ async function addWebHook(loginDetails: LoginDetails, request: express.Request, 
   }
 }
 
-async function removeWebHook(loginDetails: LoginDetails, request: express.Request, response: express.Response) {
+async function removeWebHook(
+    loginDetails: LoginDetails,
+    request: express.Request,
+    response: express.Response) {
   try {
     const hookUrl = getHookUrl(request);
 
     const org = request.body.org;
-    const hooks = await github().get(
-        `orgs/${org}/hooks`, loginDetails.githubToken);
+    const hooks =
+        await github().get(`orgs/${org}/hooks`, loginDetails.githubToken);
     let hookId = null;
     for (const hook of hooks) {
       if (hook.config.url === hookUrl) {
@@ -85,26 +91,28 @@ async function removeWebHook(loginDetails: LoginDetails, request: express.Reques
 function getRouter(): express.Router {
   const webhookRouter = express.Router();
 <<<<<<< HEAD
-  webhookRouter.post('/:action', async (request: express.Request, response: express.Response) => {
-    const loginDetails = await userModel.getLoginFromRequest(request);
-    if (!loginDetails) {
-      response.sendStatus(400);
-      return;
-    }
+  webhookRouter.post(
+      '/:action',
+      async (request: express.Request, response: express.Response) => {
+        const loginDetails = await userModel.getLoginFromRequest(request);
+        if (!loginDetails) {
+          response.sendStatus(400);
+          return;
+        }
 
-    if (!request.body.org) {
-      response.status(400).send('No org provided.');
-      return;
-    }
+        if (!request.body.org) {
+          response.status(400).send('No org provided.');
+          return;
+        }
 
-    if (request.params.action === 'add') {
-      await addWebHook(loginDetails, request, response);
-    } else if (request.params.action === 'remove') {
-      await removeWebHook(loginDetails, request, response);
-    } else {
-      response.sendStatus(400);
-    }
-  });
+        if (request.params.action === 'add') {
+          await addWebHook(loginDetails, request, response);
+        } else if (request.params.action === 'remove') {
+          await removeWebHook(loginDetails, request, response);
+        } else {
+          response.sendStatus(400);
+        }
+      });
 =======
   webhookRouter.post(
       '/', async (request: express.Request, response: express.Response) => {
