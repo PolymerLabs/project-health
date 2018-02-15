@@ -14,8 +14,7 @@ type ReviewHook = {
 };
 
 type PullRequest = {
-  title: string; user: User; html_url: string;
-  requested_reviewers: Reviewer[];
+  title: string; user: User; html_url: string; requested_reviewers: Reviewer[];
 };
 
 type RepositoryHook = {
@@ -27,9 +26,7 @@ type Reviewer = {
 };
 
 type PullRequestHook = {
-  action: string;
-  pull_request: PullRequest;
-  repository: RepositoryHook;
+  action: string; pull_request: PullRequest; repository: RepositoryHook;
 };
 
 type PullRequestReviewHook = {
@@ -116,7 +113,8 @@ export async function handleStatus(hookData: StatusHook): Promise<boolean> {
 
 // Triggered when a pull request is assigned, unassigned, labeled, unlabeled,
 // opened, edited, closed, reopened, or synchronized
-export async function handlePullRequest(hookBody: PullRequestHook): Promise<boolean> {
+export async function handlePullRequest(hookBody: PullRequestHook):
+    Promise<boolean> {
   if (hookBody.action !== 'review_requested') {
     return false;
   }
@@ -134,7 +132,7 @@ export async function handlePullRequest(hookBody: PullRequestHook): Promise<bool
       url: pullRequest.html_url,
     }
   };
-  
+
   for (const reviewer of reviewers) {
     await sendNotification(reviewer.login, notification);
   }
@@ -142,7 +140,8 @@ export async function handlePullRequest(hookBody: PullRequestHook): Promise<bool
   return true;
 }
 
-export async function handlePullRequestReview(hookData: PullRequestReviewHook): Promise<boolean> {
+export async function handlePullRequestReview(hookData: PullRequestReviewHook):
+    Promise<boolean> {
   if (hookData.action !== 'submitted') {
     return false;
   }
@@ -156,7 +155,7 @@ export async function handlePullRequestReview(hookData: PullRequestReviewHook): 
   if (review.state === 'approved') {
     notificationTitle = `${review.user.login} approved your PR`;
   } else if (review.state === 'changes_requested') {
-    notificationTitle =  `${review.user.login} requested changes`;
+    notificationTitle = `${review.user.login} requested changes`;
   } else if (review.state === 'commented') {
     if (review.user.login === pullReq.user.login) {
       // If the PR author is the commenter, do nothing;
@@ -165,7 +164,7 @@ export async function handlePullRequestReview(hookData: PullRequestReviewHook): 
 
     notificationTitle = `${review.user.login} commented on your PR`;
   }
-  
+
   if (!notificationTitle) {
     return false;
   }

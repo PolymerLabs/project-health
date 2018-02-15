@@ -5,18 +5,19 @@ import {Server} from 'http';
 import * as path from 'path';
 
 import {firestore} from '../utils/firestore';
+
 import {DashData} from './apis/dash-data';
+import {getRouter as getGitHubHookRouter} from './apis/github-webhook';
 import {getRouter as getLoginRouter} from './apis/login';
 import {getRouter as getPushSubRouter} from './apis/push-subscription';
 import {getRouter as getSettingsRouter} from './apis/settings';
 import {getRouter as getWebhookRouter} from './apis/webhook';
-import {getRouter as getGitHubHookRouter} from './apis/github-webhook';
 import {enforceHTTPS} from './utils/enforce-https';
 import {requireLogin} from './utils/require-login';
 
 export class DashServer {
   private app: express.Express;
-  private server: Server | null;
+  private server: Server|null;
 
   constructor() {
     this.server = null;
@@ -29,9 +30,9 @@ export class DashServer {
 
     app.use(cookieParser());
     app.use('/node_modules/lit-html', express.static(litPath));
-    app.use(express.static(path.join(__dirname, '..', 'client', 'public'), {
-      extensions: ['html']
-    }));
+    app.use(express.static(
+        path.join(__dirname, '..', 'client', 'public'),
+        {extensions: ['html']}));
     app.use(express.static(path.join(__dirname, '..', 'sw')));
     app.use('/api/login/', bodyParser.text(), getLoginRouter());
     app.use('/api/webhook/', bodyParser.json(), getGitHubHookRouter());
@@ -39,9 +40,9 @@ export class DashServer {
     // Require Login for all endpoints used after this middleware
     app.use(requireLogin);
 
-    app.use(express.static(path.join(__dirname, '..', 'client', 'require-login'), {
-      extensions: ['html']
-    }));
+    app.use(express.static(
+        path.join(__dirname, '..', 'client', 'require-login'),
+        {extensions: ['html']}));
     app.get('/api/dash.json', new DashData().getHandler());
     app.use('/api/push-subscription/', getPushSubRouter());
     app.use('/api/manage-webhook/', bodyParser.json(), getWebhookRouter());

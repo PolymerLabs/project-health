@@ -22,19 +22,22 @@ export const sendNotification =
 
   return Promise.all(userSubscriptionDetails.map((subDetails) => {
     const options = {
-        // TTL in seconds (1 Day). After which, notification will not
-        // be delivered.
-        TTL: 24 * 60 * 60,
+      // TTL in seconds (1 Day). After which, notification will not
+      // be delivered.
+      TTL: 24 * 60 * 60,
     };
-    return webpush.sendNotification(subDetails.subscription, JSON.stringify(data), options)
+    return webpush
+        .sendNotification(
+            subDetails.subscription, JSON.stringify(data), options)
         .catch(async (err) => {
-            // 410 and 404 response from the Web Push module means
-            // the subscription is no longer usable.
-            if (err.statusCode === 410 || err.statusCode === 404) {
-            await pushSubscriptionModel.removePushSubscription(recipient, subDetails.subscription);
-            } else {
-                console.error('Failed to send notification: ', err);
-            }
+          // 410 and 404 response from the Web Push module means
+          // the subscription is no longer usable.
+          if (err.statusCode === 410 || err.statusCode === 404) {
+            await pushSubscriptionModel.removePushSubscription(
+                recipient, subDetails.subscription);
+          } else {
+            console.error('Failed to send notification: ', err);
+          }
         });
   }));
 };
