@@ -1,3 +1,7 @@
+type WebPushOptions = {
+    TTL?: number;
+};
+
 declare module 'web-push' {
   export function setVapidDetails(
       url: string,
@@ -6,5 +10,5 @@ declare module 'web-push' {
       ): void;
 
   export function sendNotification(
-      subscription: object, payload: string): Promise<void>;
+      subscription: object, payload: string, options?: WebPushOptions): Promise<void>;
 }
