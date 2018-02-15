@@ -40,7 +40,7 @@ function hookTemplate(org: OrgWebHookState) {
       action = 'remove';
     }
 
-    response = await fetch(`/api/webhook/${action}`, {
+    response = await fetch(`/api/manage-webhook/${action}`, {
       method: 'POST',
       credentials: 'include',
       body: JSON.stringify({

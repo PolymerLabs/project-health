@@ -7,7 +7,7 @@ import {github} from '../../utils/github';
 
 const TOKEN_COLLECTION_NAME = 'githubTokens';
 
-interface LoginDetails {
+export interface LoginDetails {
   username: string;
   githubToken: string;
   scopes: string[]|null;
