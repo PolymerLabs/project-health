@@ -16,8 +16,10 @@ import {requireLogin} from './utils/require-login';
 
 export class DashServer {
   private app: express.Express;
+  private server: Server | null;
 
   constructor() {
+    this.server = null;
     const app = express();
     const litPath = path.dirname(require.resolve('lit-html'));
 
@@ -51,23 +53,43 @@ export class DashServer {
   }
 
   listen() {
-    const port = Number(process.env.PORT || '') || 8080;
-    let server: Server;
-    const printStatus = () => {
-      const addr = server.address();
-      let urlHost = addr.address;
-      if (addr.family === 'IPv6') {
-        urlHost = '[' + urlHost + ']';
-      }
-      console.log('project health server listening');
-      console.log(`http://${urlHost}:${addr.port}`);
-    };
+    return new Promise((resolve, reject) => {
+      const port = Number(process.env.PORT || '') || 8080;
 
-    if (process.env.NODE_ENV === 'production') {
-      server = this.app.listen(port, printStatus);
-    } else {
-      server = this.app.listen(port, 'localhost', printStatus);
-    }
+      const printStatus = () => {
+        if (!this.server) {
+          return reject(new Error('No server configured'));
+        }
+
+        const addr = this.server.address();
+        let urlHost = addr.address;
+        if (addr.family === 'IPv6') {
+          urlHost = '[' + urlHost + ']';
+        }
+
+        const serverAddress = `http://${urlHost}:${addr.port}`;
+        resolve(serverAddress);
+      };
+
+      if (process.env.NODE_ENV === 'production') {
+        this.server = this.app.listen(port, printStatus);
+      } else {
+        this.server = this.app.listen(port, 'localhost', printStatus);
+      }
+    });
+  }
+
+  close() {
+    return new Promise((resolve) => {
+      if (!this.server) {
+        return resolve();
+      }
+
+      this.server.close(() => {
+        this.server = null;
+        resolve();
+      });
+    });
   }
 
   async handleFirestoreTest(_req: express.Request, res: express.Response) {

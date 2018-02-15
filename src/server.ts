@@ -31,7 +31,10 @@ async function launch() {
   initFirestore();
 
   const server = new DashServer();
-  server.listen();
+  const serverAddress = await server.listen();
+
+  console.log('project health server listening');
+  console.log(serverAddress);
 }
 
 // Display stack traces for uncaught errors.
