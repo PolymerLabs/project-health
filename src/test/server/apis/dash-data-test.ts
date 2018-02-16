@@ -5,11 +5,10 @@ import {startTestReplayServer} from '../../../replay-server';
 import {DashData} from '../../../server/apis/dash-data';
 import {PullRequestReviewState} from '../../../types/gql-types';
 import {initGithub} from '../../../utils/github';
+import { DashResponse } from '../../../types/api';
 
 type TestContext = {
-  replayServer: Server,
-  dashData: DashData,
-  token: string,
+  dashData: DashResponse,
 };
 const test = anyTest as TestInterface<TestContext>;
 
@@ -17,25 +16,34 @@ const test = anyTest as TestInterface<TestContext>;
  * Generates the test context object before each test.
  */
 test.beforeEach(async (t) => {
-  const {server, url} = await startTestReplayServer(t);
+  const {server, url} =
+      await startTestReplayServer(t);
   initGithub(url, url);
 
-  t.context = {
-    replayServer: server,
-    dashData: new DashData(),
-    // This token must be set in the environment during recording.
-    token: process.env.GITHUB_TOKEN || '',
-  };
+  const instance = new DashData();
+  const dashData = await instance.fetchUserData(
+      'project-health1', process.env.GITHUB_TOKEN || '');
+  server.close();
+  return {dashData};
 });
 
-test.afterEach.cb((t) => {
-  t.context.replayServer.close(t.end);
+test('project-health1 dashboard - sane output', (t) => {
+  const data = t.context.dashData;
+  t.is(data.incomingPrs.length, 5);
+  t.is(data.outgoingPrs.length, 6);
+});
+
+test('project-health1 dashboard - outgoing PRs are sorted', (t) => {
+  const data = t.context.dashData;
+  let lastCreatedAt = data.outgoingPrs[0].createdAt;
+  data.outgoingPrs.forEach((pr) => {
+    t.true(pr.createdAt <= lastCreatedAt);
+    lastCreatedAt = pr.createdAt;
+  });
 });
 
 test('project-health1 dashboard', async (t) => {
-  const result = await t.context.dashData.fetchUserData(
-      'project-health1', t.context.token);
-  t.deepEqual(result, {
+  t.deepEqual(t.context.dashData, {
     outgoingPrs: [
       // Outgoing PR, review with my own replies.
       {
