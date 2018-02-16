@@ -171,7 +171,7 @@ test.serial('Webhook pull_request_review: unknown action', async (t) => {
         login: '',
       },
       html_url: '',
-      requested_reviewers: [],
+      requested_reviewer: {login: ''},
     },
     repository: {
       name: '',
@@ -199,7 +199,6 @@ test.serial('Webhook pull_request_review: unknown review state', async (t) => {
         login: '',
       },
       html_url: '',
-      requested_reviewers: [],
     },
     repository: {
       name: '',
@@ -525,18 +524,8 @@ test.serial('Webhook pull_request: review_requested.json', async (t) => {
       path.join(hookJsonDir, 'pull_request', 'review_requested.json'));
   const handled = await handlePullRequest(eventContent);
   t.deepEqual(handled, true);
-  t.deepEqual(sendStub.callCount, 2);
+  t.deepEqual(sendStub.callCount, 1);
   t.deepEqual(sendStub.args[0], [
-    'gauntface',
-    {
-      title: 'gauntface requested a review',
-      body: '[project-health] Add icon to notification and correcting URL link',
-      requireInteraction: true,
-      icon: '/images/notification-images/icon-192x192.png',
-      data: {url: 'https://github.com/PolymerLabs/project-health/pull/146'}
-    }
-  ]);
-  t.deepEqual(sendStub.args[1], [
     'samuelli',
     {
       title: 'gauntface requested a review',
