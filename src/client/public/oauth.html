@@ -22,7 +22,7 @@
         credentials: 'include',
       }).then(() => {
         window.location.href =
-          queryParams.get('final-redirect') || '/dash';
+          queryParams.get('final-redirect') || '/';
       });
     } else if(queryParams.has('error')) {
       // User logged in but there is an error from Github
