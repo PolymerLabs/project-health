@@ -1,4 +1,5 @@
-import test from 'ava';
+import anyTest, {TestInterface} from 'ava';
+
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as sinon from 'sinon';
@@ -10,6 +11,8 @@ import {userModel} from '../../../server/models/userModel';
 import {initFirestore} from '../../../utils/firestore';
 import {github, initGithub} from '../../../utils/github';
 import {initSecrets} from '../../../utils/secrets';
+import { SinonSandbox } from 'sinon';
+import { Server } from 'http';
 
 const hookJsonDir = path.join(__dirname, '..', '..', 'static', 'webhook-data');
 
@@ -20,6 +23,9 @@ const TEST_SECRETS = {
       'BPtJjYprRvU3TOb0tw3FrVbLww3bp7ssGjX99PFlqIOb3b8uOH4_Q21GYhwsDRwcfToaFVVeOxWOq5XaXD1MGdw',
   PRIVATE_VAPID_KEY: 'o1P9aXm-QPZezF_8b7aQabivhv3QqaB0yg5zoFs6-qc',
 };
+
+// tslint:disable-next-line:no-any
+const test: TestInterface<{server: Server, sandbox: SinonSandbox}> = anyTest as any;
 
 test.before(() => {
   initFirestore();
