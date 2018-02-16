@@ -6,8 +6,13 @@ import {DashData} from '../../../server/apis/dash-data';
 import {PullRequestReviewState} from '../../../types/gql-types';
 import {initGithub} from '../../../utils/github';
 
+type TestContext = {
+  replayServer: Server,
+  dashData: DashData,
+  token: string,
+};
 // tslint:disable-next-line:no-any
-const test: TestInterface<{replayServer: Server, dashData: DashData, token: string}> = anyTest as any;
+const test: TestInterface<TestContext> = anyTest as any;
 
 /**
  * Generates the test context object before each test.

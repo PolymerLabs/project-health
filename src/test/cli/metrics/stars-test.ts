@@ -1,9 +1,9 @@
 import anyTest, {TestInterface} from 'ava';
+import {Server} from 'http';
 
 import {getStars} from '../../../cli/metrics/stars';
 import {startTestReplayServer} from '../../../replay-server';
 import {initGithub} from '../../../utils/github';
-import { Server } from 'http';
 
 // tslint:disable-next-line:no-any
 const test: TestInterface<{server: Server}> = anyTest as any;
