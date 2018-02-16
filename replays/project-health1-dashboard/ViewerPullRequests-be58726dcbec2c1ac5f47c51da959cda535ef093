@@ -43,6 +43,7 @@
             "url": "https://github.com/project-health1/repo/pull/1",
             "id": "MDExOlB1bGxSZXF1ZXN0MTU4Njg4ODg0",
             "createdAt": "2017-12-15T20:37:42Z",
+            "viewerSubscription": "UNSUBSCRIBED",
             "author": {
               "avatarUrl": "https://avatars3.githubusercontent.com/u/34584679?v=4",
               "login": "project-health1",
@@ -92,6 +93,7 @@
             "url": "https://github.com/project-health1/repo/pull/2",
             "id": "MDExOlB1bGxSZXF1ZXN0MTYzODY0NTkz",
             "createdAt": "2018-01-19T01:18:46Z",
+            "viewerSubscription": "UNSUBSCRIBED",
             "author": {
               "avatarUrl": "https://avatars3.githubusercontent.com/u/34584679?v=4",
               "login": "project-health1",
@@ -141,6 +143,7 @@
             "url": "https://github.com/project-health1/repo/pull/5",
             "id": "MDExOlB1bGxSZXF1ZXN0MTY1NzkzNDcx",
             "createdAt": "2018-01-29T19:19:43Z",
+            "viewerSubscription": "UNSUBSCRIBED",
             "author": {
               "avatarUrl": "https://avatars3.githubusercontent.com/u/34584679?v=4",
               "login": "project-health1",
@@ -190,6 +193,7 @@
             "url": "https://github.com/project-health1/repo/pull/6",
             "id": "MDExOlB1bGxSZXF1ZXN0MTY1NzkzODg3",
             "createdAt": "2018-01-29T19:21:29Z",
+            "viewerSubscription": "UNSUBSCRIBED",
             "author": {
               "avatarUrl": "https://avatars3.githubusercontent.com/u/34584679?v=4",
               "login": "project-health1",
@@ -229,6 +233,7 @@
             "url": "https://github.com/project-health1/repo/pull/7",
             "id": "MDExOlB1bGxSZXF1ZXN0MTY2MTIxMzYx",
             "createdAt": "2018-01-30T22:57:43Z",
+            "viewerSubscription": "UNSUBSCRIBED",
             "author": {
               "avatarUrl": "https://avatars3.githubusercontent.com/u/34584679?v=4",
               "login": "project-health1",
@@ -296,6 +301,7 @@
             "url": "https://github.com/project-health1/repo/pull/8",
             "id": "MDExOlB1bGxSZXF1ZXN0MTY2MTM2ODI5",
             "createdAt": "2018-01-31T00:36:46Z",
+            "viewerSubscription": "UNSUBSCRIBED",
             "author": {
               "avatarUrl": "https://avatars3.githubusercontent.com/u/34584679?v=4",
               "login": "project-health1",
@@ -320,6 +326,7 @@
           "url": "https://github.com/project-health1/repo/pull/11",
           "id": "MDExOlB1bGxSZXF1ZXN0MTY3ODI2Mzk1",
           "createdAt": "2018-02-07T22:25:29Z",
+          "viewerSubscription": "UNSUBSCRIBED",
           "author": {
             "avatarUrl": "https://avatars3.githubusercontent.com/u/34584974?v=4",
             "login": "project-health2",
@@ -337,6 +344,7 @@
           "url": "https://github.com/project-health1/repo/pull/4",
           "id": "MDExOlB1bGxSZXF1ZXN0MTY0NzI1NzUw",
           "createdAt": "2018-01-24T00:19:19Z",
+          "viewerSubscription": "UNSUBSCRIBED",
           "author": {
             "avatarUrl": "https://avatars3.githubusercontent.com/u/34584974?v=4",
             "login": "project-health2",
@@ -393,6 +401,7 @@
           "url": "https://github.com/project-health1/repo/pull/11",
           "id": "MDExOlB1bGxSZXF1ZXN0MTY3ODI2Mzk1",
           "createdAt": "2018-02-07T22:25:29Z",
+          "viewerSubscription": "UNSUBSCRIBED",
           "author": {
             "avatarUrl": "https://avatars3.githubusercontent.com/u/34584974?v=4",
             "login": "project-health2",
@@ -444,6 +453,7 @@
           "url": "https://github.com/project-health1/repo/pull/10",
           "id": "MDExOlB1bGxSZXF1ZXN0MTY3Nzg1NjAw",
           "createdAt": "2018-02-07T19:24:25Z",
+          "viewerSubscription": "UNSUBSCRIBED",
           "author": {
             "avatarUrl": "https://avatars3.githubusercontent.com/u/34584974?v=4",
             "login": "project-health2",
@@ -506,6 +516,7 @@
           "url": "https://github.com/project-health1/repo/pull/9",
           "id": "MDExOlB1bGxSZXF1ZXN0MTY2MzUxNTky",
           "createdAt": "2018-01-31T19:18:59Z",
+          "viewerSubscription": "UNSUBSCRIBED",
           "author": {
             "avatarUrl": "https://avatars3.githubusercontent.com/u/34584974?v=4",
             "login": "project-health2",
@@ -557,6 +568,7 @@
           "url": "https://github.com/project-health1/repo/pull/3",
           "id": "MDExOlB1bGxSZXF1ZXN0MTY0NzE5MzU4",
           "createdAt": "2018-01-23T23:35:23Z",
+          "viewerSubscription": "UNSUBSCRIBED",
           "author": {
             "avatarUrl": "https://avatars3.githubusercontent.com/u/34584974?v=4",
             "login": "project-health2",
@@ -667,11 +679,11 @@
       "__typename": "SearchResultItemConnection"
     },
     "rateLimit": {
-      "cost": 4,
+      "cost": 2,
       "limit": 5000,
-      "remaining": 4984,
-      "resetAt": "2018-02-07T23:21:50Z",
-      "nodeCount": 9460,
+      "remaining": 4989,
+      "resetAt": "2018-02-15T23:50:41Z",
+      "nodeCount": 3060,
       "__typename": "RateLimit"
     }
   }
