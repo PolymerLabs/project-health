@@ -87,8 +87,9 @@ async function updateUI() {
     if (data.error.id === 'missing_scopes') {
       render(requestPermissionTemplate(), orgListContainer);
     } else {
-      console.error('Unable to manage organization permissions: ' +
-        `"${data.error.message}"`);
+      console.error(
+          'Unable to manage organization permissions: ' +
+          `"${data.error.message}"`);
     }
   } else {
     const orgTemplate = html`${data.orgs.map(hookTemplate)}`;
