@@ -5,8 +5,7 @@ import {getStars} from '../../../cli/metrics/stars';
 import {startTestReplayServer} from '../../../replay-server';
 import {initGithub} from '../../../utils/github';
 
-// tslint:disable-next-line:no-any
-const test: TestInterface<{server: Server}> = anyTest as any;
+const test = anyTest as TestInterface<{server: Server}>;
 
 test.beforeEach(async (t) => {
   const {server, url} = await startTestReplayServer(t);

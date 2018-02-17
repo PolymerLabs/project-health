@@ -27,8 +27,7 @@ type TestContext = {
   server: Server,
   sandbox: SinonSandbox
 };
-// tslint:disable-next-line:no-any
-const test: TestInterface<TestContext> = anyTest as any;
+const test = anyTest as TestInterface<TestContext>;
 
 test.before(() => {
   initFirestore();

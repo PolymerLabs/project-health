@@ -11,8 +11,7 @@ type TestContext = {
   dashData: DashData,
   token: string,
 };
-// tslint:disable-next-line:no-any
-const test: TestInterface<TestContext> = anyTest as any;
+const test = anyTest as TestInterface<TestContext>;
 
 /**
  * Generates the test context object before each test.
