@@ -23,13 +23,13 @@ let recordingLogged = false;
  * "replayRoot/testName/queryName-queryVarsHash". Otherwise, the responses are
  * read back from those files.
  */
-export async function startTestReplayServer(t: ava.TestContext):
+export async function startTestReplayServer(t: ava.ExecutionContext):
     Promise<{server: http.Server, url: string}> {
   const record = process.env.RECORD === 'true';
 
   // Kind of weirdly, t.title will include the name of the current function
   // plus " for " as a prefix. Get the original name instead.
-  const testTitle = t.title.replace(/^\w+ for /, '');
+  const testTitle = t.title.replace(/^[\w\s]+ hook for /, '');
 
   // We don't want spaces in our directory name.
   const replayDir = path.join(replayRoot, testTitle.replace(/\s+/g, '-'));

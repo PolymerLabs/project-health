@@ -1,8 +1,11 @@
-import test from 'ava';
+import anyTest, {TestInterface} from 'ava';
+import {Server} from 'http';
 
 import {getReviewLatency} from '../../../cli/metrics/review-latency';
 import {startTestReplayServer} from '../../../replay-server';
 import {initGithub} from '../../../utils/github';
+
+const test = anyTest as TestInterface<{server: Server}>;
 
 test.beforeEach(async (t) => {
   const {server, url} = await startTestReplayServer(t);

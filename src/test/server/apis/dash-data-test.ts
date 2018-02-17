@@ -1,30 +1,26 @@
-import * as ava from 'ava';
+import anyTest, {TestInterface} from 'ava';
+import {Server} from 'http';
 
 import {startTestReplayServer} from '../../../replay-server';
 import {DashData} from '../../../server/apis/dash-data';
 import {PullRequestReviewState} from '../../../types/gql-types';
 import {initGithub} from '../../../utils/github';
 
-/**
- * Assigns the test context object before each test to ensure it is correctly
- * typed.
- */
-function contextualize<T>(getContext: (_: ava.TestContext) => Promise<T>):
-    ava.RegisterContextual<T> {
-  ava.test.beforeEach(async (t) => {
-    Object.assign(t.context, await getContext(t));
-  });
-  return ava.test;
-}
+type TestContext = {
+  replayServer: Server,
+  dashData: DashData,
+  token: string,
+};
+const test = anyTest as TestInterface<TestContext>;
 
 /**
  * Generates the test context object before each test.
  */
-const test = contextualize(async (t) => {
+test.beforeEach(async (t) => {
   const {server, url} = await startTestReplayServer(t);
   initGithub(url, url);
 
-  return {
+  t.context = {
     replayServer: server,
     dashData: new DashData(),
     // This token must be set in the environment during recording.

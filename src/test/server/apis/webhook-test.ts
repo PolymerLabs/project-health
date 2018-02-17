@@ -1,7 +1,9 @@
-import test from 'ava';
+import anyTest, {TestInterface} from 'ava';
 import * as fs from 'fs-extra';
+import {Server} from 'http';
 import * as path from 'path';
 import * as sinon from 'sinon';
+import {SinonSandbox} from 'sinon';
 
 import {startTestReplayServer} from '../../../replay-server';
 import * as notificationController from '../../../server/controllers/notifications';
@@ -20,6 +22,12 @@ const TEST_SECRETS = {
       'BPtJjYprRvU3TOb0tw3FrVbLww3bp7ssGjX99PFlqIOb3b8uOH4_Q21GYhwsDRwcfToaFVVeOxWOq5XaXD1MGdw',
   PRIVATE_VAPID_KEY: 'o1P9aXm-QPZezF_8b7aQabivhv3QqaB0yg5zoFs6-qc',
 };
+
+type TestContext = {
+  server: Server,
+  sandbox: SinonSandbox
+};
+const test = anyTest as TestInterface<TestContext>;
 
 test.before(() => {
   initFirestore();
