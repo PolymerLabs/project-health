@@ -1,3 +1,5 @@
+import {FieldValue} from '@google-cloud/firestore';
+import * as crypto from 'crypto';
 import * as express from 'express';
 import gql from 'graphql-tag';
 
@@ -5,7 +7,9 @@ import {ViewerLoginQuery} from '../../types/gql-types';
 import {firestore} from '../../utils/firestore';
 import {github} from '../../utils/github';
 
-const TOKEN_COLLECTION_NAME = 'githubTokens';
+export const ID_COOKIE_NAME = 'health-id';
+export const USERS_COLLECTION_NAME = 'users';
+export const TOKEN_COLLECTION_NAME = 'user-tokens';
 
 export interface LoginDetails {
   username: string;
@@ -16,78 +20,90 @@ export interface LoginDetails {
 /**
  * The structure of the data base is:
  *
- * - githubTokens
- *   - <GitHub Token>
- *     - username
+ * - users/
+ *   - <username>
+ *     - subscriptions[]
  *     - githubToken
- *     - scopes
+ *     - githubTokenScopes[]
+ *     - username
+ *
+ * - user-tokens/
+ *   - <Random Token>
+ *     - username
+ *     - creationTime
  */
 class UserModel {
-  async getLoginDetails(login: string): Promise<LoginDetails|null> {
-    const tokensCollection =
-        await firestore().collection(TOKEN_COLLECTION_NAME);
-
-    const query = await tokensCollection.where('username', '==', login).get();
-    if (query.empty) {
+  async getLoginDetails(username: string): Promise<LoginDetails|null> {
+    const userDoc =
+        await firestore().collection(USERS_COLLECTION_NAME).doc(username).get();
+    const userData = userDoc.data();
+    if (!userData) {
+      // Document doesn't exist.
       return null;
     }
 
-    const loginDetails = query.docs[0].data();
-    if (!loginDetails) {
-      return null;
-    }
-
-    return loginDetails as LoginDetails;
+    return userData as LoginDetails;
   }
 
-  async getLoginFromRequest(request: express.Request):
-      Promise<LoginDetails|null> {
-    if (!request.cookies) {
-      return null;
-    }
-
-    const token = request.cookies['id'];
-    if (!token) {
-      return null;
-    }
-
-    const tokenDoc =
-        await firestore().collection(TOKEN_COLLECTION_NAME).doc(token).get();
-
-    if (tokenDoc.exists) {
-      const data = tokenDoc.data();
-      if (data) {
-        return data as LoginDetails;
-      }
-    }
-
-    try {
-      return await this.addNewUser(token, null);
-    } catch (err) {
-      // If adding the user errors, then the token is no longer valid.
-      return null;
-    }
+  async getLoginFromRequest(req: Express.Request) {
+    return this.getLoginFromToken(req.cookies[ID_COOKIE_NAME]);
   }
 
-  async addNewUser(token: string, scopes: string[]|null) {
+  async getLoginFromToken(userToken: string|
+                          undefined): Promise<LoginDetails|null> {
+    if (!userToken) {
+      return null;
+    }
+
+    const tokenDoc = await firestore()
+                         .collection(TOKEN_COLLECTION_NAME)
+                         .doc(userToken)
+                         .get();
+    const tokenData = tokenDoc.data();
+    if (!tokenData || !tokenData.username) {
+      return null;
+    }
+
+    return this.getLoginDetails(tokenData.username);
+  }
+
+  async generateNewUserToken(githubToken: string, scopes: string[]):
+      Promise<string> {
     const loginResult = await github().query<ViewerLoginQuery>({
       query: viewerLoginQuery,
       fetchPolicy: 'network-only',
-      context: {token},
+      context: {githubToken},
     });
 
-    const userTokenDoc =
-        await firestore().collection(TOKEN_COLLECTION_NAME).doc(token);
+    const username = loginResult.data.viewer.login;
+
+    const userDocument =
+        await firestore().collection(USERS_COLLECTION_NAME).doc(username);
 
     const details = {
-      username: loginResult.data.viewer.login,
+      username,
       scopes,
-      githubToken: token,
+      githubToken,
     };
 
-    await userTokenDoc.set(details);
+    await userDocument.set(details);
 
-    return details;
+    const userToken = crypto.randomBytes(20).toString('hex');
+    const tokenDocument =
+        await firestore().collection(TOKEN_COLLECTION_NAME).doc(userToken);
+    tokenDocument.set({
+      username,
+      creationTime: FieldValue.serverTimestamp(),
+    });
+    return userToken;
+  }
+
+  async deleteUserToken(userToken: string) {
+    await firestore().collection(TOKEN_COLLECTION_NAME).doc(userToken).delete();
+  }
+
+  async deleteUser(username: string) {
+    await firestore().collection(USERS_COLLECTION_NAME).doc(username).delete();
   }
 }
 

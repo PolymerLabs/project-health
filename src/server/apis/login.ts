@@ -2,7 +2,7 @@ import * as express from 'express';
 import fetch from 'node-fetch';
 
 import {secrets} from '../../utils/secrets';
-import {userModel} from '../models/userModel';
+import {ID_COOKIE_NAME, userModel} from '../models/userModel';
 
 function getRouter(): express.Router {
   const loginRouter = express.Router();
@@ -42,14 +42,22 @@ function getRouter(): express.Router {
             [];
 
         try {
-          await userModel.addNewUser(accessToken, userScopes);
+          const newToken =
+              await userModel.generateNewUserToken(accessToken, userScopes);
 
-          response.cookie('id', accessToken, {httpOnly: true});
+          response.cookie(ID_COOKIE_NAME, newToken, {httpOnly: true});
           response.end();
         } catch (err) {
           console.error('Unable to login user with cookie: ', err);
           response.status(500).send('Unexpected login error.');
         }
+
+        const previousCookie = request.cookies[ID_COOKIE_NAME];
+        if (!previousCookie) {
+          return;
+        }
+
+        await userModel.deleteUserToken(previousCookie);
       });
   return loginRouter;
 }
