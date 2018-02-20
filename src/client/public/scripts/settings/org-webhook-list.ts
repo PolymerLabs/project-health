@@ -3,24 +3,6 @@ import {OrgWebHookState} from '../../../../types/api';
 
 let orgListContainer: Element;
 
-type AllOrgsState = {
-  orgs: OrgWebHookState[];
-};
-
-async function getState() {
-  const state: AllOrgsState = {
-    orgs: [],
-  };
-
-  const response = await fetch('/api/settings/orgs.json', {
-    credentials: 'include',
-    method: 'POST',
-  });
-  const data = await response.json();
-  state.orgs = data.orgs;
-  return state;
-}
-
 function hookTemplate(org: OrgWebHookState) {
   const checkboxClick = async (event: Event) => {
     const checkboxElement = (event.target as HTMLInputElement);
@@ -96,12 +78,22 @@ function requestPermissionTemplate() {
 }
 
 async function updateUI() {
-  try {
-    const state = await getState();
-    const orgTemplate = html`${state.orgs.map(hookTemplate)}`;
+  const response = await fetch('/api/settings/orgs.json', {
+    credentials: 'include',
+    method: 'POST',
+  });
+  const data = await response.json();
+  if (data.error) {
+    if (data.error.id === 'missing_scopes') {
+      render(requestPermissionTemplate(), orgListContainer);
+    } else {
+      console.error(
+          'Unable to manage organization permissions: ' +
+          `"${data.error.message}"`);
+    }
+  } else {
+    const orgTemplate = html`${data.orgs.map(hookTemplate)}`;
     render(orgTemplate, orgListContainer);
-  } catch (err) {
-    render(requestPermissionTemplate(), orgListContainer);
   }
 }
 
