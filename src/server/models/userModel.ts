@@ -45,7 +45,7 @@ class UserModel {
     return userData as LoginDetails;
   }
 
-  async getLoginFromRequest(req: Express.Request) {
+  async getLoginFromRequest(req: express.Request) {
     return this.getLoginFromToken(req.cookies[ID_COOKIE_NAME]);
   }
 

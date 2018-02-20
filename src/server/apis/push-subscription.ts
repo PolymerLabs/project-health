@@ -2,7 +2,7 @@ import * as bodyParser from 'body-parser';
 import * as express from 'express';
 
 import {getSubscriptionModel} from '../models/pushSubscriptionModel';
-import {ID_COOKIE_NAME, userModel} from '../models/userModel';
+import {userModel} from '../models/userModel';
 
 function getRouter(): express.Router {
   const pushSubscriptionRouter = express.Router();
@@ -16,8 +16,7 @@ function getRouter(): express.Router {
             return;
           }
 
-          const loginDetails = await userModel.getLoginFromToken(
-              request.cookies[ID_COOKIE_NAME]);
+          const loginDetails = await userModel.getLoginFromRequest(request);
           if (!loginDetails) {
             response.status(400).send('No login details.');
             return;

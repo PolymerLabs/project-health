@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import * as api from '../../types/api';
 import {mentionedFieldsFragment, prFieldsFragment, PullRequestReviewState, reviewFieldsFragment, ViewerPullRequestsQuery} from '../../types/gql-types';
 import {github} from '../../utils/github';
-import {ID_COOKIE_NAME, userModel} from '../models/userModel';
+import {userModel} from '../models/userModel';
 
 export class DashData {
   getHandler() {
@@ -12,8 +12,7 @@ export class DashData {
   }
 
   private async handler(req: express.Request, res: express.Response) {
-    const loginDetails =
-        await userModel.getLoginFromToken(req.cookies[ID_COOKIE_NAME]);
+    const loginDetails = await userModel.getLoginFromRequest(req);
     if (!loginDetails) {
       res.sendStatus(401);
       return;

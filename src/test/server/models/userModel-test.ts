@@ -1,4 +1,4 @@
-import test from 'ava';
+import anyTest, {TestInterface} from 'ava';
 import * as crypto from 'crypto';
 import * as sinon from 'sinon';
 
@@ -8,6 +8,11 @@ import * as githubFactory from '../../../utils/github';
 
 const TEST_USER_TOKEN = 'fake-user-token-abcd';
 const TEST_USERNAME = 'fake-username';
+
+type TestContext = {
+  sandbox: sinon.SinonSandbox,
+};
+const test = anyTest as TestInterface<TestContext>;
 
 test.before(() => {
   initFirestore();
@@ -102,7 +107,7 @@ test.serial('should return a new user token', async (t) => {
 
   const result = await userModel.getLoginFromToken(TEST_USER_TOKEN);
   t.deepEqual(result, {
-    githubToken: TEST_USER_TOKEN,
+    githubToken,
     username: TEST_USERNAME,
     scopes,
   });

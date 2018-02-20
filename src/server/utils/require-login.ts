@@ -1,11 +1,10 @@
 import * as express from 'express';
 
-import {ID_COOKIE_NAME, userModel} from '../models/userModel';
+import {userModel} from '../models/userModel';
 
 export async function requireLogin(
     request: express.Request, response: express.Response, next: Function) {
-  const loginDetails =
-      await userModel.getLoginFromToken(request.cookies[ID_COOKIE_NAME]);
+  const loginDetails = await userModel.getLoginFromRequest(request);
   if (loginDetails) {
     next();
     return;

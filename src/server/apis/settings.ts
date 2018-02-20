@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import {OrgWebHookState} from '../../types/api';
 import {OrgDetailsQuery} from '../../types/gql-types';
 import {github} from '../../utils/github';
-import {ID_COOKIE_NAME, userModel} from '../models/userModel';
+import {userModel} from '../models/userModel';
 
 import {getHookUrl} from './webhook';
 
@@ -13,8 +13,7 @@ function getRouter(): express.Router {
   settingsRouter.post(
       '/orgs.json',
       async (request: express.Request, response: express.Response) => {
-        const loginDetails =
-            await userModel.getLoginFromToken(request.cookies[ID_COOKIE_NAME]);
+        const loginDetails = await userModel.getLoginFromRequest(request);
         if (!loginDetails) {
           response.sendStatus(400);
           return;

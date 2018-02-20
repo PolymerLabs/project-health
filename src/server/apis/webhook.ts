@@ -1,7 +1,7 @@
 import * as express from 'express';
 
 import {github} from '../../utils/github';
-import {ID_COOKIE_NAME, LoginDetails, userModel} from '../models/userModel';
+import {LoginDetails, userModel} from '../models/userModel';
 
 const PROD_ORIGIN = 'github-health.appspot.com';
 const STAGING_ORIGIN = 'github-health-staging.appspot.com';
@@ -92,8 +92,7 @@ function getRouter(): express.Router {
   webhookRouter.post(
       '/:action',
       async (request: express.Request, response: express.Response) => {
-        const loginDetails =
-            await userModel.getLoginFromToken(request.cookies[ID_COOKIE_NAME]);
+        const loginDetails = await userModel.getLoginFromRequest(request);
         if (!loginDetails) {
           response.sendStatus(400);
           return;
