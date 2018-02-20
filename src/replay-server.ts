@@ -30,7 +30,8 @@ export async function startTestReplayServer(
 
   // Kind of weirdly, t.title will include the name of the current function
   // plus " for " as a prefix. Get the original name instead.
-  const testTitle = overrideTitle ? overrideTitle : t.title.replace(/^[\w\s]+ hook for /, '');
+  const testTitle =
+      overrideTitle ? overrideTitle : t.title.replace(/^[\w\s]+ hook for /, '');
 
   // We don't want spaces in our directory name.
   const replayDir = path.join(replayRoot, testTitle.replace(/\s+/g, '-'));

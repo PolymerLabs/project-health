@@ -58,7 +58,7 @@ test('dashdata: outgoing PRs are sorted', (t) => {
   for (const pr of data.outgoingPrs) {
     t.true(pr.createdAt <= lastCreatedAt);
     lastCreatedAt = pr.createdAt;
-  };
+  }
 });
 
 test('dashdata: outgoing PR, review with my own replies', (t) => {
