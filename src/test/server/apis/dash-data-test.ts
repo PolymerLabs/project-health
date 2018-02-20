@@ -55,10 +55,10 @@ test('dashdata: sane output', (t) => {
 test('dashdata: outgoing PRs are sorted', (t) => {
   const data = t.context.dashData;
   let lastCreatedAt = data.outgoingPrs[0].createdAt;
-  data.outgoingPrs.forEach((pr) => {
+  for (const pr of data.outgoingPrs) {
     t.true(pr.createdAt <= lastCreatedAt);
     lastCreatedAt = pr.createdAt;
-  });
+  };
 });
 
 test('dashdata: outgoing PR, review with my own replies', (t) => {

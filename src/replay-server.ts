@@ -25,12 +25,12 @@ let recordingLogged = false;
  */
 export async function startTestReplayServer(
     t: ava.ExecutionContext,
-    title?: string): Promise<{server: http.Server, url: string}> {
+    overrideTitle?: string): Promise<{server: http.Server, url: string}> {
   const record = process.env.RECORD === 'true';
 
   // Kind of weirdly, t.title will include the name of the current function
   // plus " for " as a prefix. Get the original name instead.
-  const testTitle = title ? title : t.title.replace(/^[\w\s]+ hook for /, '');
+  const testTitle = overrideTitle ? overrideTitle : t.title.replace(/^[\w\s]+ hook for /, '');
 
   // We don't want spaces in our directory name.
   const replayDir = path.join(replayRoot, testTitle.replace(/\s+/g, '-'));
