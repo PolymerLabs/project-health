@@ -179,7 +179,6 @@ test.serial('Webhook pull_request_review: unknown action', async (t) => {
         login: '',
       },
       html_url: '',
-      requested_reviewer: {login: ''},
     },
     repository: {
       name: '',

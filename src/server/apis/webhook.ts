@@ -3,8 +3,8 @@ import * as express from 'express';
 import {github} from '../../utils/github';
 import {LoginDetails, userModel} from '../models/userModel';
 
-const PROD_ORIGIN = 'https://github-health.appspot.com';
-const STAGING_ORIGIN = 'https://github-health-staging.appspot.com';
+const PROD_ORIGIN = 'github-health.appspot.com';
+const STAGING_ORIGIN = 'github-health-staging.appspot.com';
 const HOOK_PATH = '/api/webhook';
 
 export function getHookUrl(request: express.Request) {
@@ -12,14 +12,14 @@ export function getHookUrl(request: express.Request) {
   if (!host) {
     // If we have no host URL, use prod
     host = PROD_ORIGIN;
-  }
-
-  if (host.indexOf('localhost') !== -1) {
+  } else if (host.indexOf('localhost') !== -1) {
     // If we are testing on localhost, use staging.
     host = STAGING_ORIGIN;
+  } else if (host !== STAGING_ORIGIN && host !== PROD_ORIGIN) {
+    throw new Error('Unexpected request host.');
   }
 
-  return host + HOOK_PATH;
+  return `https://${host}${HOOK_PATH}`;
 }
 
 async function addWebHook(
@@ -28,7 +28,6 @@ async function addWebHook(
     response: express.Response) {
   try {
     const hookUrl = getHookUrl(request);
-
     await github().post(
         `orgs/${request.body.org}/hooks`, loginDetails.githubToken, {
           name: 'web',
