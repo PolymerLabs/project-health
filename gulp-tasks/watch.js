@@ -5,6 +5,7 @@ const getTaskFilepaths = require('./utils/get-task-filepaths');
 
 function watch(done) {
   console.log('\n\nWatching for changes....\n\n');
+  global.__buildConfig.watching = true;
   const watchTasks = [];
   const taskFiles = getTaskFilepaths();
   for (const taskFilepath of taskFiles) {
