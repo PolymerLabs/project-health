@@ -4,6 +4,7 @@ const path = require('path');
 
 function buildTypescript(tsConfigPath, destPath) {
   const tsProject = ts.createProject(tsConfigPath);
+  const errorMessages = [];
   const tsResult = tsProject.src().pipe(tsProject())
     .on('error', (err) => {
       if (global.__buildConfig.watching) {
