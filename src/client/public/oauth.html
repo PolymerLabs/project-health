@@ -20,7 +20,13 @@
         method: 'POST',
         body: queryParams.get('code'),
         credentials: 'include',
-      }).then(() => {
+      }).then((response) => {
+        if (!response.ok) {
+          return response.text()
+          .then((responseText) => {
+            console.error(responseText);
+          });
+        }
         window.location.href =
           queryParams.get('final-redirect') || '/';
       });

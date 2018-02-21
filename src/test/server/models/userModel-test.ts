@@ -59,8 +59,8 @@ test.serial('should return a new user token', async (t) => {
 
   t.context.sandbox.stub(githubFactory, 'github').callsFake(() => {
     return {
-      query: ({context}: {context: {githubToken: string}}) => {
-        t.deepEqual(context.githubToken, githubToken);
+      query: ({context}: {context: {token: string}}) => {
+        t.deepEqual(context.token, githubToken);
         return {
           data: {
             viewer: {
