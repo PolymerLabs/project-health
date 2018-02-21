@@ -72,9 +72,7 @@ class UserModel {
     const loginResult = await github().query<ViewerLoginQuery>({
       query: viewerLoginQuery,
       fetchPolicy: 'network-only',
-      context: {
-        token: githubToken
-      },
+      context: {token: githubToken},
     });
 
     const username = loginResult.data.viewer.login;
