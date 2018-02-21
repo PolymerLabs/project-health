@@ -13,6 +13,8 @@ export const TOKEN_COLLECTION_NAME = 'user-tokens';
 
 export interface LoginDetails {
   username: string;
+  avatarUrl: string|null;
+  fullname: string|null;
   githubToken: string;
   scopes: string[]|null;
 }
@@ -33,6 +35,36 @@ export interface LoginDetails {
  *     - creationTime
  */
 class UserModel {
+  /**
+   * A very simple validation step to ensure a users set of details
+   * is what we expect, want and need.
+   *
+   * @private
+   */
+  validateDetails(loginDetails: LoginDetails): boolean {
+    if (!loginDetails.githubToken) {
+      return false;
+    }
+
+    if (typeof loginDetails.scopes === 'undefined') {
+      return false;
+    }
+
+    if (!loginDetails.username) {
+      return false;
+    }
+
+    if (typeof loginDetails.fullname === 'undefined') {
+      return false;
+    }
+
+    if (typeof loginDetails.avatarUrl === 'undefined') {
+      return false;
+    }
+
+    return true;
+  }
+
   async getLoginDetails(username: string): Promise<LoginDetails|null> {
     const userDoc =
         await firestore().collection(USERS_COLLECTION_NAME).doc(username).get();
@@ -42,7 +74,12 @@ class UserModel {
       return null;
     }
 
-    return userData as LoginDetails;
+    const loginDetails = userData as LoginDetails;
+    if (!this.validateDetails(loginDetails)) {
+      return null;
+    }
+
+    return loginDetails;
   }
 
   async getLoginFromRequest(req: express.Request) {
@@ -80,8 +117,10 @@ class UserModel {
     const userDocument =
         await firestore().collection(USERS_COLLECTION_NAME).doc(username);
 
-    const details = {
+    const details: LoginDetails = {
       username,
+      avatarUrl: loginResult.data.viewer.avatarUrl,
+      fullname: loginResult.data.viewer.name,
       scopes,
       githubToken,
     };
@@ -113,6 +152,8 @@ const viewerLoginQuery = gql`
 query ViewerLogin {
   viewer {
     login
+    avatarUrl
+    name
   }
 }
 `;

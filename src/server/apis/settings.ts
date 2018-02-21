@@ -95,10 +95,7 @@ function getRouter(): express.Router {
         } catch (err) {
           console.error(err);
           response.status(500).send({
-            error: {
-              message: 'An unhandled error occured: ' +
-              err.message
-            },
+            error: {message: 'An unhandled error occured: ' + err.message},
           });
         }
       });

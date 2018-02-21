@@ -1081,6 +1081,10 @@ export interface ViewerLoginQuery {
     __typename: "User",
     // The username used to login.
     login: string,
+    // A URL pointing to the user's public avatar.
+    avatarUrl: string,
+    // The user's public profile name.
+    name: string | null,
   },
 };
 
