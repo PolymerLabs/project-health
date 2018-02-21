@@ -66,9 +66,9 @@ function getRouter(): express.Router {
                     }
                   }
                 } catch (err) {
-                  // This can occur is the user is a public member of an org
-                  // but the OAuth app does not have access to org due to
-                  // org restrictions.
+                  // This can occur if the user is a public member of an org
+                  // but the OAuth app does not have access due to
+                  // org restrictions against GitHub apps.
                   console.log(`Unable to get hooks for ${org.login}.`);
                   return;
                 }
