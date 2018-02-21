@@ -60,14 +60,19 @@ function getRouter(): express.Router {
                       `orgs/${org.login}/hooks`, loginDetails.githubToken);
 
                   const hookUrl = getHookUrl(request);
+                  // If the above github get request was successful, we know
+                  // the OAuth app has writes to view the list of hooks.
                   for (const hook of hooks) {
                     if (hook.config.url === hookUrl) {
                       hookEnabled = true;
                     }
                   }
                 } catch (err) {
+                  // This can occur is the user is a public member of an org
+                  // but the OAuth app does not have access to org due to
+                  // org restrictions.
                   console.log(`Unable to get hooks for ${org.login}.`);
-                  hookEnabled = false;
+                  return;
                 }
               }
 
@@ -91,8 +96,12 @@ function getRouter(): express.Router {
           }));
         } catch (err) {
           console.error(err);
-          response.status(500).send('An unhandled error occured: ' +
-              err.message);
+          response.status(500).send({
+            error: {
+              message: 'An unhandled error occured: ' +
+              err.message
+            },
+          });
         }
       });
 
