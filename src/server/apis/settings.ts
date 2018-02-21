@@ -60,8 +60,6 @@ function getRouter(): express.Router {
                       `orgs/${org.login}/hooks`, loginDetails.githubToken);
 
                   const hookUrl = getHookUrl(request);
-                  // If the above github get request was successful, we know
-                  // the OAuth app has writes to view the list of hooks.
                   for (const hook of hooks) {
                     if (hook.config.url === hookUrl) {
                       hookEnabled = true;
