@@ -268,28 +268,24 @@ function sortIncomingPRs(prs: api.PullRequest[]): api.PullRequest[] {
   // Sort descending by latest event time.
   const timeSorted =
       prs.sort((a, b) => getLatestEventTime(b) - getLatestEventTime(a));
-  const result = [];
 
-  const notActionable = [
+  const notActionableStatuses = [
     'UnknownStatus',
     'NoActionRequired',
     'NewActivity',
     'StatusChecksPending'
   ];
+  const actionable = [];
+  const notActionable = [];
   // Add actionable PRs.
   for (const pr of timeSorted) {
-    if (!notActionable.includes(pr.status.type)) {
-      result.push(pr);
+    if (notActionableStatuses.includes(pr.status.type)) {
+      notActionable.push(pr);
+    } else {
+      actionable.push(pr);
     }
   }
-  // Add non-actionable PRs.
-  for (const pr of timeSorted) {
-    if (notActionable.includes(pr.status.type)) {
-      result.push(pr);
-    }
-  }
-
-  return result;
+  return actionable.concat(notActionable);
 }
 
 function reviewsForOutgoingPrs(
