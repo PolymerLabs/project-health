@@ -144,16 +144,17 @@ function eventTemplate(event: api.PullRequestEvent) {
       html`<a class="pr-event__url" href="${url}" target="_blank">${text}</a>`;
 
   return html`
-    ${display.time ? timeTemplate(display.time) : ''}
+    <div class="pr-event">
+      ${display.time ? timeTemplate(display.time) : ''}
 
-    <div class="pr-event__bullet">
-      <svg width="40" height="26">
-        <line x1="20" x2="20" y1="0" y2="16"/>
-        <circle cx="20" cy="20" r="4.5" />
-      </svg>
-    </div>
-    <div class="pr-event__title">
-      ${display.url ? linkTemplate(display.url, display.text) : display.text}
+      <div class="pr-event__bullet">
+        <svg width="40" height="100%">
+          <circle cx="20.5" cy="6" r="4.5" />
+        </svg>
+      </div>
+      <div class="pr-event__title">
+        ${display.url ? linkTemplate(display.url, display.text) : display.text}
+      </div>
     </div>`;
 }
 
@@ -195,29 +196,32 @@ function statusToDisplay(pr: api.PullRequest): StatusDisplay {
 function prTemplate(pr: api.PullRequest) {
   const status = statusToDisplay(pr);
   return html`
-    <div class="pr-author">
-      <div class="pr-author__name">${pr.author}</div>
-      <time class="pr-author__creation-time" datetime="${
+    <div class="pr">
+      <div class="pr-header">
+        <div class="pr-author">
+          <div class="pr-author__name">${pr.author}</div>
+          <time class="pr-author__creation-time" datetime="${
       new Date(pr.createdAt).toISOString()}">${
       timeToString(pr.createdAt)}</time>
-    </div>
+        </div>
 
-    <div class="pr-avatar">
-      <img class="pr-avatar__img" src="${pr.avatarUrl}">
-    </div>
+        <div class="pr-avatar">
+          <img class="pr-avatar__img" src="${pr.avatarUrl}">
+        </div>
 
-    <a class="pr-body" href="${pr.url}" target="_blank">
-      <div class="small-heading pr-status">
-        <span class="pr-status__msg ${status.actionable ? 'actionable' : ''}">${
-      status.text}</span>
+        <a class="pr-body" href="${pr.url}" target="_blank">
+          <div class="small-heading pr-status">
+            <span class="pr-status__msg ${
+      status.actionable ? 'actionable' : ''}">${status.text}</span>
+          </div>
+          <div class="pr-info">
+            <span class="pr-info__repo-name">${pr.repository}</span>
+            <span class="pr-info__title">${pr.title}</span>
+          </div>
+        </a>
       </div>
-      <div class="pr-info">
-        <span class="pr-info__repo-name">${pr.repository}</span>
-        <span class="pr-info__title">${pr.title}</span>
-      </div>
-    </a>
-
-    ${pr.events.map(eventTemplate)}`;
+      ${pr.events.map(eventTemplate)}
+    </div>`;
 }
 
 function hasNewActions(newData: api.DashResponse, oldData: api.DashResponse) {
