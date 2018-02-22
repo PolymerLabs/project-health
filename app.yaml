@@ -6,6 +6,7 @@ skip_files:
 - .github/
 - .nyc/
 - .nyc_output/
+- .vscode/
 - coverage/
 - gulp-tasks/
 - node_modules/
