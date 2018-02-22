@@ -5,7 +5,10 @@ import {PullRequest} from '../../../../types/api';
 // Poll every 5 Minutes
 const POLLING_INTERVAL = 5 * 60 * 1000;
 
-let lastResponse: api.DashResponse;
+// This is the latest data received from the server and rendered to the page
+let lastPolledData: api.DashResponse;
+// This is the data that the user view the last time they were on the page
+let lastViewedData: api.DashResponse;
 
 type EventDisplay = {
   time: number|null; text: string; url: string | null;
@@ -251,10 +254,13 @@ async function getDashData() {
   const newData = await res.json() as api.DashResponse;
   const results = {
     data: newData,
-    newActions: hasNewActions(newData, lastResponse),
+    newActions: hasNewActions(newData, lastViewedData),
   };
 
-  lastResponse = newData;
+  lastPolledData = newData;
+  if (document.hasFocus()) {
+    lastViewedData = newData;
+  }
 
   return results;
 }
@@ -277,6 +283,8 @@ async function performPollAction() {
 
   if (newActions && document.hasFocus() === false) {
     changeFavIcon(true);
+  } else {
+    changeFavIcon(false);
   }
 }
 
@@ -302,6 +310,8 @@ async function start() {
 start();
 
 window.addEventListener('focus', () => {
+  lastViewedData = lastPolledData;
+
   // This will reset the favicon when the user revisits the page
   changeFavIcon(false);
 });
