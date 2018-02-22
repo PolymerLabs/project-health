@@ -27,15 +27,14 @@ const dashTmpl = (data: api.DashResponse) => {
     buttonTemplates.push(
         html`<a href="/settings" title="Settings" class="settings"></a>`);
   }
-  const prListTemplate =
-      (prList: api.PullRequest[], emptyMessage: string) => {
-        if (prList.length) {
-          return prList.map(prTemplate);
-        } else {
-          return html
-          `<div class="pr-list__empty-message">${emptyMessage}</div>`;
-        }
-      }
+  const prListTemplate = (prList: api.PullRequest[], emptyMessage: string) => {
+    if (prList.length) {
+      return prList.map(prTemplate);
+    } else {
+      return html
+      `<div class="pr-list__empty-message">${emptyMessage}</div>`;
+    }
+  };
 
   return html`
   <div class="profile-container">
