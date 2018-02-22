@@ -7,28 +7,45 @@ a {
   color: inherit;
 }
 
-.pr-list h2 {
-  grid-column: 1 / -1;
-}
-
 .pr-list {
   max-width: var(--max-desktop-width);
   margin: 0 auto;
 
-  display: grid;
-  align-items: center;
-  grid-template-columns: auto 40px 1fr;
-  grid-gap: 0px var(--padding);
-
   font-size: 14px;
 }
 
-.pr-author {
-  grid-column: 1 / 1;
+.pr {
+  position: relative;
+  --avatar-size: 40px;
+  --time-width: 100px;
+}
 
+.pr::before {
+  position: absolute;
+  top: calc(var(--padding) / 3);
+  bottom: calc(var(--padding) / 3);
+  left: calc(var(--time-width) + var(--padding) + var(--avatar-size) / 2 - 1px);
+  z-index: -1;
+  display: block;
+  width: 3px;
+  content: "";
+  background-color: var(--timeline-color);
+}
+
+.pr-header, .pr-event {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.pr-author {
+  width: var(--time-width);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   text-align: right;
   font-size: var(--small-text);
   font-weight: normal;
+  flex-shrink: 0;
 }
 
 .pr-author__creation-time {
@@ -36,9 +53,9 @@ a {
 }
 
 .pr-avatar {
-  grid-column: 2 / 2;
-  height: 40px;
-  margin: 4px 0;
+  height: var(--avatar-size);
+  width: var(--avatar-size);
+  margin: calc(var(--padding) / 3) var(--padding);
 }
 
 .pr-avatar__img {
@@ -54,10 +71,6 @@ a {
   flex-direction: row;
   align-items: center;
   color: var(--non-actionable-color);
-}
-
-.pr-body {
-  grid-column: 3 / 3;
 }
 
 .pr-body:hover .pr-info, .pr-event__url:hover {
@@ -78,32 +91,49 @@ a {
   color: var(--actionable-color);
 }
 
-.pr-event__title {
-  grid-column: 3 / 3;
+.pr-event {
+  line-height: 18px;
 }
 
 .pr-event__bullet {
-  height: 26px;
-  grid-column: 2 / 2;
+  min-height: 26px;
+  width: var(--avatar-size);
+  margin: 0 var(--padding);
+  position: relative; /* Allow SVG to size to this container */
+}
+
+.pr-event__time, .pr-event__title {
+  margin: 4px 0px;
 }
 
 .pr-event__time {
   text-align: right;
   font-size: var(--small-text);
   color: var(--secondary-text-color);
+  width: var(--time-width);
+  line-height: 18px;
+}
+
+.pr-event__title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .pr-event__bullet svg {
-  margin-top: -7px;
+  margin-top: 8px;
   stroke: var(--timeline-color);
-  fill: none;
+  fill: white;
   stroke-width: 3px;
+  position: absolute; /* Don't factor in SVG in layout */
+}
+
+/* Hide the timeline line after the last event  */
+.pr > .pr-header:last-child, .pr > .pr-event:last-child > .pr-event__bullet svg {
+  background: white;
 }
 
 .pr-event__url {
   max-width: 600px;
   display: inline-block;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
 }
