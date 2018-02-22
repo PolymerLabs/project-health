@@ -608,6 +608,12 @@ export interface ViewerPullRequestsQuery {
   // Lookup a user by login.
   user:  {
     __typename: "User",
+    // The user's public profile name.
+    name: string | null,
+    // A URL pointing to the user's public avatar.
+    avatarUrl: string,
+    // The username used to login.
+    login: string,
     // A list of pull requests assocated with this user.
     pullRequests:  {
       __typename: "PullRequestConnection",
