@@ -16,8 +16,6 @@ a {
 
 .pr {
   position: relative;
-  --avatar-size: 40px;
-  --time-width: 100px;
 }
 
 .pr::before {
