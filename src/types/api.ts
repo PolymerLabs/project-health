@@ -1,7 +1,7 @@
 import {PullRequestReviewState} from './gql-types';
 
 export interface OrgWebHookState {
-  name: string|null;
+  name: string;
   login: string;
   viewerCanAdminister: boolean;
   hookEnabled: boolean;
@@ -50,7 +50,9 @@ export interface JSONAPIResponse<T> {
   data?: T;
 }
 
-export interface LoginResponse { status: string; }
+export interface LoginResponse {
+  status: string;
+}
 
 /** Not necessarily actionable. */
 
@@ -158,4 +160,6 @@ export interface ErrorPayload {
   message: string;
 }
 
-export interface NotificationURLData { url: string; }
+export interface NotificationURLData {
+  url: string;
+}

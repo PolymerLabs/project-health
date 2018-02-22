@@ -53,6 +53,10 @@ function getRouter(): express.Router {
                 return;
               }
 
+              if (!org.name) {
+                return;
+              }
+
               let hookEnabled = false;
               if (org.viewerCanAdminister) {
                 try {
@@ -88,6 +92,26 @@ function getRouter(): express.Router {
               }
             });
           }
+
+          // Sort by org name first
+          apiOrgs.sort((a, b) => {
+            if (a.name < b.name) {
+              return -1;
+            }
+            if (a.name > b.name) {
+              return 1;
+            }
+            return 0;
+          });
+
+          // Sort by orgs the user can administer
+          apiOrgs.sort((a, b) => {
+            if (a.viewerCanAdminister === b.viewerCanAdminister) {
+              return 0;
+            }
+
+            return a.viewerCanAdminister ? -1 : 1;
+          });
 
           response.send(JSON.stringify({
             orgs: apiOrgs,
