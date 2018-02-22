@@ -37,6 +37,13 @@ export interface Review {
   reviewState: PullRequestReviewState;
 }
 
+export interface JSONAPIResponse<T> {
+  error?: {code: string; message: string;};
+  data?: T;
+}
+
+export interface LoginResponse { status: string; }
+
 /** Not necessarily actionable. */
 
 interface UnknownStatus {
