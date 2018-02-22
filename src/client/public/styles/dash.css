@@ -1,5 +1,6 @@
 @import "./variables/dimens.css";
 @import "./variables/colors.css";
+@import "./components/profile.css";
 
 a {
   text-decoration: none;

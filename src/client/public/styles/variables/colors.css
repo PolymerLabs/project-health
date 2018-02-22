@@ -1,6 +1,12 @@
 :root {
+  --light-grey: hsl(0, 0%, 80%);
+
   --actionable-color: #ee9709;
   --non-actionable-color: #4a90e2;
   --secondary-text-color: hsl(0, 0%, 40%); /* 5.7 contrast ratio on white */
   --timeline-color: hsl(0, 0%, 75%);
+  --profile-border-color: var(--light-grey);
+  --avatar-bg-color: var(--light-grey);
+  --profile-button-color: hsl(0, 0%, 40%);
+  --profile-button-hover-color: hsl(0, 0%, 20%);
 }

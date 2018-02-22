@@ -138,4 +138,14 @@ export interface NotificationPayload {
   data: NotificationURLData|void;
 }
 
+export interface ErrorPayload {
+  code: string;
+  message: string;
+}
+
+export interface ProfileResponse {
+  error?: ErrorPayload;
+  data?: {username: string; fullname: string | null; avatarUrl: string | null;};
+}
+
 export interface NotificationURLData { url: string; }

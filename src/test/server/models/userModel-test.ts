@@ -8,6 +8,8 @@ import * as githubFactory from '../../../utils/github';
 
 const TEST_USER_TOKEN = 'fake-user-token-abcd';
 const TEST_USERNAME = 'fake-username';
+const TEST_NAME = 'fake name';
+const TEST_AVATAR = 'https://example.com/avatar.png';
 
 type TestContext = {
   sandbox: sinon.SinonSandbox,
@@ -40,6 +42,8 @@ test.serial('should return null for no user', async (t) => {
 test.serial('should return data for existing user', async (t) => {
   const exampleData = {
     username: TEST_USER_TOKEN,
+    fullname: TEST_NAME,
+    avatarUrl: TEST_AVATAR,
     githubToken: '1234',
     scopes: [],
   };
@@ -65,6 +69,8 @@ test.serial('should return a new user token', async (t) => {
           data: {
             viewer: {
               login: TEST_USERNAME,
+              name: TEST_NAME,
+              avatarUrl: TEST_AVATAR,
             }
           }
         };
@@ -89,8 +95,10 @@ test.serial('should return a new user token', async (t) => {
                       .get();
   t.deepEqual(userDoc.data(), {
     githubToken,
-    username: TEST_USERNAME,
     scopes,
+    username: TEST_USERNAME,
+    fullname: TEST_NAME,
+    avatarUrl: TEST_AVATAR,
   });
 
   const tokenDoc = await firestore()
@@ -109,6 +117,8 @@ test.serial('should return a new user token', async (t) => {
   t.deepEqual(result, {
     githubToken,
     username: TEST_USERNAME,
+    fullname: TEST_NAME,
+    avatarUrl: TEST_AVATAR,
     scopes,
   });
 });

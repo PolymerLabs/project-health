@@ -1,0 +1,59 @@
+@import "../variables/dimens.css";
+@import "../variables/colors.css";
+
+.profile-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  max-width: var(--max-desktop-width);
+  margin: 0 auto;
+
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--profile-border-color);
+  border-radius: 4px;
+  padding: calc(var(--padding) * 1.5);
+  box-sizing: border-box;
+}
+
+.profile-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: calc(var(--padding) * 5);
+  height: calc(var(--padding) * 5);
+
+  border-radius: 100%;
+  overflow: hidden;
+
+  background-color: var(--avatar-bg-color);
+
+  margin-right: var(--padding);
+}
+
+.profile-avatar a {
+  max-width: 100%;
+  height: auto;
+}
+
+.profile-header {
+  display: inline;
+  flex: 1;
+}
+
+.profile-buttons a {
+  display: block;
+  width: calc(var(--padding) * 2);
+  height: calc(var(--padding) * 2);
+  background-color: var(--profile-button-color);
+}
+
+.profile-buttons a:hover {
+  background-color: var(--profile-button-hover-color);
+}
+
+.profile-buttons .settings {
+  mask-image: url('/images/settings.svg');
+}
