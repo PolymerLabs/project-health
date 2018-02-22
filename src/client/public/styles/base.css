@@ -23,6 +23,11 @@ a {
   color: inherit;
 }
 
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 .small-heading {
   font-weight: 700;
   line-height: 24px;
