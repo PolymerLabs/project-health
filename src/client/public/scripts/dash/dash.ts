@@ -18,14 +18,32 @@ type StatusDisplay = {
   actionable: boolean; text: string;
 };
 
-const dashTmpl = (data: api.DashResponse) => html`
-<div class="pr-list">
-  <h2>Outgoing pull requests</h2>
-  ${data.outgoingPrs.map(prTemplate)}
-  <h2>Incoming pull requests</h2>
-  ${data.incomingPrs.map(prTemplate)}
-</div>
-`;
+const DEFAULT_AVATAR = '/images/default-avatar.svg';
+
+const dashTmpl = (data: api.DashResponse) => {
+  const imageUrl = data.user.avatarUrl ? data.user.avatarUrl : DEFAULT_AVATAR, ;
+  const buttonTemplates = [];
+  if (data.user.isCurrentUser) {
+    buttonTemplates.push(
+        html`<a href="/settings" title="Settings" class="settings"></a>`);
+  }
+  return html`
+  <div class="profile-container">
+    <div class="profile-avatar"><img src="${imageUrl}" alt="Avatar of ${
+      data.user.login}" /></div>
+    <div class="profile-header">Welcome ${data.user.login}</div>
+    <div class="profile-buttons">
+      ${buttonTemplates}
+    </div>
+  </div>
+  <div class="pr-list">
+    <h2>Outgoing pull requests</h2>
+    ${data.outgoingPrs.map(prTemplate)}
+    <h2>Incoming pull requests</h2>
+    ${data.incomingPrs.map(prTemplate)}
+  </div>
+  `;
+};
 
 function renderDash(data: api.DashResponse) {
   render(
@@ -302,16 +320,16 @@ function performPolling() {
 }
 
 async function start() {
+  window.addEventListener('focus', () => {
+    lastViewedData = lastPolledData;
+
+    // This will reset the favicon when the user revisits the page
+    changeFavIcon(false);
+  });
+
   const {data} = await getDashData();
   renderDash(data);
   performPolling();
 }
 
 start();
-
-window.addEventListener('focus', () => {
-  lastViewedData = lastPolledData;
-
-  // This will reset the favicon when the user revisits the page
-  changeFavIcon(false);
-});

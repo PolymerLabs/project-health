@@ -21,9 +21,16 @@ test.beforeEach(async (t) => {
       await startTestReplayServer(t, 'project-health1-dashboard');
   initGithub(url, url);
 
+  const loginDetails = {
+    username: 'project-health1',
+    githubToken: 'test-token',
+    scopes: [],
+    avatarUrl: null,
+    fullname: null,
+  };
   const instance = new DashData();
   const dashData = await instance.fetchUserData(
-      'project-health1', process.env.GITHUB_TOKEN || '');
+      loginDetails, 'project-health1', process.env.GITHUB_TOKEN || '');
   server.close();
 
   const incomingPrsById = new Map();

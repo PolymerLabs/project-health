@@ -26,7 +26,15 @@ export type PullRequestStatus =
 export type PullRequestEvent =
     OutgoingReviewEvent|MyReviewEvent|NewCommitsEvent|MentionedEvent;
 
+export interface DashboardUser {
+  login: string;
+  isCurrentUser: boolean;
+  name: string|null;
+  avatarUrl: string|null;
+}
+
 export interface DashResponse {
+  user: DashboardUser;
   outgoingPrs: PullRequest[];
   incomingPrs: PullRequest[];
 }
@@ -148,11 +156,6 @@ export interface NotificationPayload {
 export interface ErrorPayload {
   code: string;
   message: string;
-}
-
-export interface ProfileResponse {
-  error?: ErrorPayload;
-  data?: {username: string; fullname: string | null; avatarUrl: string | null;};
 }
 
 export interface NotificationURLData { url: string; }

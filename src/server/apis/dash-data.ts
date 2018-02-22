@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import * as api from '../../types/api';
 import {mentionedFieldsFragment, prFieldsFragment, PullRequestReviewState, reviewFieldsFragment, ViewerPullRequestsQuery} from '../../types/gql-types';
 import {github} from '../../utils/github';
-import {userModel} from '../models/userModel';
+import {LoginDetails, userModel} from '../models/userModel';
 
 export class DashData {
   getHandler() {
@@ -19,12 +19,16 @@ export class DashData {
     }
 
     const userData = await this.fetchUserData(
-        req.query.login || loginDetails.username, loginDetails.githubToken);
+        loginDetails,
+        req.query.login || loginDetails.username,
+        loginDetails.githubToken,
+    );
     res.header('content-type', 'application/json');
     res.send(JSON.stringify(userData, null, 2));
   }
 
-  async fetchUserData(login: string, token: string): Promise<api.DashResponse> {
+  async fetchUserData(loginDetails: LoginDetails, login: string, token: string):
+      Promise<api.DashResponse> {
     const openPrQuery = 'is:open is:pr archived:false';
     const reviewedQueryString =
         `reviewed-by:${login} ${openPrQuery} -author:${login}`;
@@ -44,6 +48,16 @@ export class DashData {
       context: {token}
     });
 
+    const user: api.DashboardUser = {
+      login,
+      isCurrentUser: loginDetails.username === login,
+      name: null,
+      avatarUrl: null,
+    };
+    if (viewerPrsResult.data.user) {
+      user.name = viewerPrsResult.data.user.name;
+      user.avatarUrl = viewerPrsResult.data.user.avatarUrl;
+    }
     const outgoingPrs = [];
     const incomingPrs = [];
     if (viewerPrsResult.data.user) {
@@ -230,6 +244,7 @@ export class DashData {
     }
     return {
       // Sort newest first.
+      user,
       outgoingPrs: outgoingPrs.sort((a, b) => b.createdAt - a.createdAt),
       incomingPrs: sortIncomingPRs(incomingPrs),
     };
@@ -444,6 +459,9 @@ function getLastMentioned(pullRequest: mentionedFieldsFragment, login: string):
 const prsQuery = gql`
 query ViewerPullRequests($login: String!, $reviewRequestsQueryString: String!, $reviewedQueryString: String!, $mentionsQueryString: String!) {
 	user(login: $login) {
+    name
+    avatarUrl
+    login
     pullRequests(last: 20, states: [OPEN]) {
       nodes {
         ...prFields

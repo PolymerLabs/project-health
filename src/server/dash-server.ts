@@ -9,7 +9,6 @@ import {firestore} from '../utils/firestore';
 import {DashData} from './apis/dash-data';
 import {getRouter as getGitHubHookRouter} from './apis/github-webhook';
 import {getRouter as getLoginRouter} from './apis/login';
-import {getProfileRouter} from './apis/profile';
 import {getRouter as getPushSubRouter} from './apis/push-subscription';
 import {getRouter as getSettingsRouter} from './apis/settings';
 import {getRouter as getWebhookRouter} from './apis/webhook';
@@ -48,7 +47,6 @@ export class DashServer {
     app.use('/api/push-subscription/', getPushSubRouter());
     app.use('/api/manage-webhook/', bodyParser.json(), getWebhookRouter());
     app.use('/api/settings/', getSettingsRouter());
-    app.use('/api/profile/', getProfileRouter());
 
     app.get('/firestore-test', this.handleFirestoreTest.bind(this));
 
