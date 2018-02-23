@@ -353,7 +353,7 @@ async function performLongPoll(userLogin: string|null) {
 }
 
 async function performShortPollAction(userLogin: string|null) {
-  const loginParams = userLogin ? `?login=${userLogin}` : ''
+  const loginParams = userLogin ? `?login=${userLogin}` : '';
   const response = await fetch(`/api/updates/last-known.json${loginParams}`, {
     credentials: 'include',
   });
