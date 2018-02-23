@@ -2,6 +2,21 @@ import {} from '.';
 declare var self: ServiceWorkerGlobalScope;
 
 import {NotificationPayload, NotificationURLData, SWClientMessage} from '../types/api';
+import {Analytics} from './analytics';
+
+const analytics = new Analytics('UA-114703954-1');
+
+async function pingAnalytics(eventAction: string, eventValue: string) {
+  let clientID = 'unknown-client-id';
+  console.log('Ping Analytics');
+  if ('pushManager' in self.registration) {
+    const subscription = await self.registration.pushManager.getSubscription();
+    if (subscription) {
+      clientID = subscription.endpoint;
+    }
+  }
+  await analytics.trackEvent(clientID, eventAction, eventValue);
+}
 
 type CustomNotification = {
   data: NotificationURLData|void;
@@ -57,11 +72,17 @@ async function showNotification(data: NotificationPayload) {
         data,
     );
   }
+
+  const eventValue =
+      mustShowNotification ? 'notification-shown' : 'page-visible';
+  await pingAnalytics('push-event', eventValue);
 }
 
 // This is an "EventListener"
 const pushEventHandler = {
   handleEvent: (event: PushEvent) => {
+    event.waitUntil(pingAnalytics('push-event', 'push-received'));
+
     let notificationData = DEFAULT_NOTIFICATION_OPTIONS;
     if (event.data) {
       try {

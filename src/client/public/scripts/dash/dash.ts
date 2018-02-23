@@ -439,7 +439,7 @@ async function start() {
 
       const swMessage = event.data;
       if (swMessage.action === 'push-received') {
-        performLongPoll(userLogin);
+        updateDashboard(userLogin);
       }
     });
   }

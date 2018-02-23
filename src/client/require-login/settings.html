@@ -24,7 +24,9 @@
           </div>
         </div>
         <div class="settings-toggle-item__details">
-          <div class="small-heading">Push Notifications <span class="push-component__status"></span></div>
+          <div class="small-heading">Push Notifications
+            <span class="push-component__status"></span>
+          </div>
           <p>Push notifications are enabled. Toggle to no longer receive push notifications on this device.</p>
         </div>
       </div>
@@ -32,8 +34,9 @@
 
     <section>
       <h2>Organization Permissions</h2>
-      <p>Each organization must add a webhook before any push notifications can be
-        received by anyone in the organization. <a target="_blank" href="https://github.com/settings/connections/applications/23b7d82aec29a3a1a2a8">Review Project-Health Permissions</a>
+      <p>Each organization must add a webhook before any push notifications can be received by anyone in the organization.
+        <a
+          target="_blank" href="https://github.com/settings/connections/applications/23b7d82aec29a3a1a2a8">Review Project-Health Permissions</a>
       </p>
       <div class="org-webhook-list"></div>
     </section>
@@ -42,5 +45,13 @@
 
 <script src="/scripts/settings/push-component.js"></script>
 <script src="/scripts/settings/org-webhook-list.js"></script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-114703954-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'UA-114703954-1');
+</script>
 
 </html>
