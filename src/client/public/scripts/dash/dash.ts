@@ -3,7 +3,8 @@ import * as api from '../../../../types/api';
 import {PullRequest} from '../../../../types/api';
 
 // Poll every 5 Minutes
-const POLLING_INTERVAL = 5 * 60 * 1000;
+const LONG_POLL_INTERVAL = 5 * 60 * 1000;
+const SHORT_POLL_INTERVAL = 10 * 1000;
 
 // This is the latest data received from the server and rendered to the page
 let lastPolledData: api.DashResponse;
@@ -328,33 +329,41 @@ function changeFavIcon(hasAction: boolean) {
 }
 
 async function performPollAction() {
-  const {data, newActions} = await getDashData();
-  renderDash(data, newActions);
-
-  if (newActions.length > 0 && document.hasFocus() === false) {
-    changeFavIcon(true);
-  } else {
-    changeFavIcon(false);
-  }
 }
 
 
-function performPolling() {
+function performLongPoll() {
   setTimeout(async () => {
     try {
-      await performPollAction();
+      const {data, newActions} = await getDashData();
+      renderDash(data, newActions);
+
+      if (newActions.length > 0 && document.hasFocus() === false) {
+        changeFavIcon(true);
+      } else {
+        changeFavIcon(false);
+      }
     } catch (err) {
-      console.log('Unable to perform poll update: ', err);
+      console.log('Unable to perform long poll update: ', err);
     }
 
-    performPolling();
-  }, POLLING_INTERVAL);
+    performLongPoll();
+  }, LONG_POLL_INTERVAL);
+}
+
+function performShortPoll() {
+  setTimeout(async () => {
+    try {
+      console.log('Perform short poll.....');
+    } catch (err) {
+      console.log('Unable to performshort  poll update: ', err);
+    }
+
+    performShortPoll();
+  }, SHORT_POLL_INTERVAL);
 }
 
 async function start() {
-  const {data} = await getDashData();
-  renderDash(data, []);
-
   window.addEventListener('focus', () => {
     // This will reset the favicon when the user revisits the page
     changeFavIcon(false);
@@ -377,7 +386,9 @@ async function start() {
     }
   });
 
-  performPolling();
+  const {data} = await getDashData();
+  renderDash(data, []);
+  performLongPoll();
 }
 
 start();
