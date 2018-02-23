@@ -41,8 +41,8 @@ test.beforeEach(async (t) => {
   initGithub(url, url);
 });
 
-test.afterEach.always.cb((t) => {
-  t.context.server.close(t.end);
+test.afterEach.always(async (t) => {
+  await t.context.server.close();
   t.context.sandbox.restore();
 });
 

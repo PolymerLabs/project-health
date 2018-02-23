@@ -56,7 +56,7 @@ export class DashServer {
     this.app = app;
   }
 
-  listen() {
+  listen(): Promise<string> {
     return new Promise((resolve, reject) => {
       const port = Number(process.env.PORT || '') || 8080;
 
