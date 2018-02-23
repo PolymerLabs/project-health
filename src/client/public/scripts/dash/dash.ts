@@ -1,6 +1,7 @@
 import {html, render} from '../../../../../node_modules/lit-html/lit-html.js';
 import * as api from '../../../../types/api';
-import {JSONAPIResponse, LastKnownResponse, PullRequest} from '../../../../types/api';
+
+import {JSONAPIResponse, LastKnownResponse, PullRequest, SWClientMessage} from '../../../../types/api';
 
 // Poll every 5 Minutes
 const LONG_POLL_INTERVAL = 5 * 60 * 1000;
@@ -404,6 +405,10 @@ async function startPolling(userLogin: string|null) {
 }
 
 async function start() {
+  // This allows you to see another users dashboard.
+  const queryParams = new URLSearchParams(window.location.search);
+  const userLogin = queryParams.get('login');
+
   window.addEventListener('focus', () => {
     // This will reset the favicon when the user revisits the page
     changeFavIcon(false);
@@ -426,9 +431,20 @@ async function start() {
     }
   });
 
-  // This allows you to see another users dashboard.
-  const queryParams = new URLSearchParams(window.location.search);
-  startPolling(queryParams.get('login'));
+  if (navigator.serviceWorker) {
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      if (!event.data || !event.data.action) {
+        return;
+      }
+
+      const swMessage = event.data;
+      if (swMessage.action === 'push-received') {
+        performLongPoll(userLogin);
+      }
+    });
+  }
+
+  startPolling(userLogin);
 }
 
 start();
