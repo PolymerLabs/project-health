@@ -368,19 +368,13 @@ async function start() {
     // frame to ensure the class is up to date, then apply the flash.
     const elements = document.querySelectorAll('.is-newly-actionable');
     for (let i = 0; i < elements.length; i++) {
-      const element = elements.item(i);
+      const element = elements.item(i) as HTMLElement;
       element.classList.remove('actionable-flash');
+      // tslint:disable-next-line:no-unused-expression
+      element.offsetTop;  // Force a style recalc
+      element.classList.remove('is-newly-actionable');
+      element.classList.add('actionable-flash');
     }
-
-    window.requestAnimationFrame(() => {
-      const elements = document.querySelectorAll('.is-newly-actionable');
-
-      for (let i = 0; i < elements.length; i++) {
-        const element = elements.item(i);
-        element.classList.remove('is-newly-actionable');
-        element.classList.add('actionable-flash');
-      }
-    });
   });
 
   performPolling();
