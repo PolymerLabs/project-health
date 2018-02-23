@@ -40,7 +40,6 @@ function hookTemplate(org: OrgWebHookState) {
     }
 
     updateUI();
-    // checkboxElement.removeAttribute('disabled');
   };
 
   let message = `You cannot enable updates for ${
