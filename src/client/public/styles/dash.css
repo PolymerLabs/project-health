@@ -27,7 +27,8 @@ a {
   top: calc(var(--padding) / 3);
   bottom: calc(var(--padding) / 3);
   left: calc(var(--time-width) + var(--padding) + var(--avatar-size) / 2 - 1px);
-  z-index: -1;
+  /* 1px to ensure the line is *below* the avatar */
+  margin-top: 1px;
   display: block;
   width: 3px;
   content: "";
@@ -102,6 +103,7 @@ a {
   width: var(--avatar-size);
   margin: 0 var(--padding);
   position: relative; /* Allow SVG to size to this container */
+  overflow: hidden;
 }
 
 .pr-event__time, .pr-event__title {
@@ -131,8 +133,25 @@ a {
 }
 
 /* Hide the timeline line after the last event  */
-.pr > .pr-header:last-child, .pr > .pr-event:last-child > .pr-event__bullet svg {
-  background: white;
+.pr, .pr > .pr-event:last-child > .pr-event__bullet svg {
+  background-color: var(--page-bg-color);
+}
+
+@keyframes flashKeyframe {
+  0% {
+    background-color: var(--actionable-highlight-color);
+  }
+  25% {
+    background-color: var(--actionable-highlight-color);
+  }
+  to {
+    background-color: var(--page-bg-color);
+  }
+}
+
+.pr.actionable-flash, .pr.actionable-flash > .pr-event:last-child > .pr-event__bullet svg {
+  animation-duration: 700ms;
+  animation-name: flashKeyframe;
 }
 
 .pr-event__url {
