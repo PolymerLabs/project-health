@@ -67,7 +67,7 @@ const pushEventHandler = {
       try {
         notificationData = JSON.parse(event.data.text()) as NotificationPayload;
       } catch (err) {
-        console.log(`Unable to parse received push: `, err);
+        console.log('Unable to parse received push: ', err);
       }
     }
 
