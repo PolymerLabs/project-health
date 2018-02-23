@@ -39,14 +39,20 @@ function hookTemplate(org: OrgWebHookState) {
       checkboxElement.checked = !checkboxElement.checked;
     }
 
-    checkboxElement.removeAttribute('disabled');
+    updateUI();
   };
 
   let message = `You cannot enable updates for ${
-      org.name}. Request an owner to add the project-health WebHook.`;
+      org.name}. Request an owner add the web hook.`;
   if (org.viewerCanAdminister) {
-    // TODO: Handle scenario where the webhook is already added.
-    message = `Toggle to enable updates for ${org.name}.`;
+    if (org.hookEnabled) {
+      message = `Updates enabled for members of ${
+          org.name}. Toggle to disable updates for all members of ${org.name}.`;
+    } else {
+      message =
+          `Updates not enabled. Toggle to enable updates for all members of ${
+              org.name}.`;
+    }
   }
 
   return html`
