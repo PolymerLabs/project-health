@@ -243,8 +243,9 @@ export class DashData {
       }
     }
     return {
-      // Sort newest first.
+      timestamp: new Date().toISOString(),
       user,
+      // Sort newest first.
       outgoingPrs: outgoingPrs.sort((a, b) => b.createdAt - a.createdAt),
       incomingPrs: sortIncomingPRs(incomingPrs),
     };

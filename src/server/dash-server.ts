@@ -9,9 +9,10 @@ import {firestore} from '../utils/firestore';
 import {DashData} from './apis/dash-data';
 import {getRouter as getGitHubHookRouter} from './apis/github-webhook';
 import {getRouter as getLoginRouter} from './apis/login';
+import {getRouter as getManageWebhookRouter} from './apis/manage-webhook';
 import {getRouter as getPushSubRouter} from './apis/push-subscription';
 import {getRouter as getSettingsRouter} from './apis/settings';
-import {getRouter as getWebhookRouter} from './apis/webhook';
+import {getRouter as getUpdatesRouter} from './apis/updates';
 import {enforceHTTPS} from './utils/enforce-https';
 import {requireLogin} from './utils/require-login';
 
@@ -45,8 +46,10 @@ export class DashServer {
         {extensions: ['html']}));
     app.get('/api/dash.json', new DashData().getHandler());
     app.use('/api/push-subscription/', getPushSubRouter());
-    app.use('/api/manage-webhook/', bodyParser.json(), getWebhookRouter());
+    app.use(
+        '/api/manage-webhook/', bodyParser.json(), getManageWebhookRouter());
     app.use('/api/settings/', getSettingsRouter());
+    app.use('/api/updates/', getUpdatesRouter());
 
     app.get('/firestore-test', this.handleFirestoreTest.bind(this));
 

@@ -124,6 +124,12 @@ export async function handlePullRequest(hookBody: PullRequestHook):
   const repo = hookBody.repository;
   const user = pullRequest.user;
   const reviewer = hookBody.requested_reviewer;
+
+  // The reviewer's dash will have a new entry under incoming
+  await userModel.markUserForUpdate(reviewer.login);
+  // The PR owner's dash should update with an incoming entry
+  await userModel.markUserForUpdate(user.login);
+
   const notification = {
     title: `${user.login} requested a review`,
     body: `[${repo.name}] ${pullRequest.title}`,
@@ -151,32 +157,33 @@ export async function handlePullRequestReview(hookData: PullRequestReviewHook):
 
   let notificationTitle = null;
 
+  // The author of the review should change to no longer having any action.
+  await userModel.markUserForUpdate(review.user.login);
+  // The PR owner should update with latest info.
+  await userModel.markUserForUpdate(pullReq.user.login);
+
   if (review.state === 'approved') {
     notificationTitle = `${review.user.login} approved your PR`;
   } else if (review.state === 'changes_requested') {
     notificationTitle = `${review.user.login} requested changes`;
   } else if (review.state === 'commented') {
-    if (review.user.login === pullReq.user.login) {
-      // If the PR author is the commenter, do nothing;
-      return false;
+    // Check if the PR author is the commenter
+    if (review.user.login !== pullReq.user.login) {
+      notificationTitle = `${review.user.login} commented on your PR`;
     }
-
-    notificationTitle = `${review.user.login} commented on your PR`;
   }
 
-  if (!notificationTitle) {
-    return false;
+  if (notificationTitle) {
+    await sendNotification(pullReq.user.login, {
+      title: notificationTitle,
+      body: `[${repo.name}] ${pullReq.title}`,
+      requireInteraction: true,
+      icon: '/images/notification-images/icon-192x192.png',
+      data: {
+        url: pullReq.html_url,
+      },
+    });
   }
-
-  await sendNotification(pullReq.user.login, {
-    title: notificationTitle,
-    body: `[${repo.name}] ${pullReq.title}`,
-    requireInteraction: true,
-    icon: '/images/notification-images/icon-192x192.png',
-    data: {
-      url: pullReq.html_url,
-    },
-  });
 
   return true;
 }
@@ -184,13 +191,13 @@ export async function handlePullRequestReview(hookData: PullRequestReviewHook):
 const statusToPR = gql`
 query StatusToPR($query: String!) {
   pullRequests: search (
-    first: 10, 
+    first: 10,
     type: ISSUE,
     query: $query
   ) {
     nodes {
       ... on PullRequest {
-        number, 
+        number,
         title,
         url,
         author {

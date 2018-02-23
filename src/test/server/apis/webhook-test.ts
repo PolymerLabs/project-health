@@ -138,7 +138,7 @@ test.serial(
           'pull_request_review',
           'submitted-state-self-commented.json'));
       const handled = await handlePullRequestReview(eventContent);
-      t.deepEqual(handled, false);
+      t.deepEqual(handled, true);
 
       t.deepEqual(sendStub.callCount, 0);
     });
@@ -203,7 +203,7 @@ test.serial('Webhook pull_request_review: unknown review state', async (t) => {
     pull_request: {
       title: '',
       user: {
-        login: '',
+        login: 'example-pr-login',
       },
       html_url: '',
     },
@@ -211,7 +211,7 @@ test.serial('Webhook pull_request_review: unknown review state', async (t) => {
       name: '',
     },
   });
-  t.deepEqual(handled, false);
+  t.deepEqual(handled, true);
   t.deepEqual(sendStub.callCount, 0);
 });
 

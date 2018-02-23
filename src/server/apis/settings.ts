@@ -6,7 +6,7 @@ import {OrgDetailsQuery} from '../../types/gql-types';
 import {github} from '../../utils/github';
 import {userModel} from '../models/userModel';
 
-import {getHookUrl} from './webhook';
+import {getHookUrl} from './manage-webhook';
 
 function getRouter(): express.Router {
   const settingsRouter = express.Router();

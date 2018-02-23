@@ -1,14 +1,18 @@
 import {html, render} from '../../../../../node_modules/lit-html/lit-html.js';
 import * as api from '../../../../types/api';
-import {PullRequest} from '../../../../types/api';
+import {JSONAPIResponse, LastKnownResponse, PullRequest} from '../../../../types/api';
 
 // Poll every 5 Minutes
-const POLLING_INTERVAL = 5 * 60 * 1000;
+const LONG_POLL_INTERVAL = 5 * 60 * 1000;
+const SHORT_POLL_INTERVAL = 15 * 1000;
 
 // This is the latest data received from the server and rendered to the page
 let lastPolledData: api.DashResponse;
 // This is the data that the user view the last time they were on the page
 let lastViewedData: api.DashResponse;
+
+let longPollTimeoutId: number;
+let shortPollTimeoutId: number;
 
 type EventDisplay = {
   time: number|null; text: string; url: string | null;
@@ -293,12 +297,9 @@ function hasNewActions(
   return newlyActionablePRs;
 }
 
-async function getDashData() {
-  const queryParams = new URLSearchParams(window.location.search);
-
+async function getDashData(userLogin: string|null) {
   // This allows you to see another users dashboard.
-  const loginParams =
-      queryParams.get('login') ? `?login=${queryParams.get('login')}` : '';
+  const loginParams = userLogin ? `?login=${userLogin}` : '';
   const res =
       await fetch(`/api/dash.json${loginParams}`, {credentials: 'include'});
   const newData = await res.json() as api.DashResponse;
@@ -327,34 +328,82 @@ function changeFavIcon(hasAction: boolean) {
   }
 }
 
-async function performPollAction() {
-  const {data, newActions} = await getDashData();
-  renderDash(data, newActions);
 
-  if (newActions.length > 0 && document.hasFocus() === false) {
-    changeFavIcon(true);
-  } else {
-    changeFavIcon(false);
+async function performLongPoll(userLogin: string|null) {
+  if (longPollTimeoutId) {
+    window.clearTimeout(longPollTimeoutId);
+  }
+
+  try {
+    const {data, newActions} = await getDashData(userLogin);
+    renderDash(data, newActions);
+
+    if (newActions.length > 0 && document.hasFocus() === false) {
+      changeFavIcon(true);
+    } else {
+      changeFavIcon(false);
+    }
+  } catch (err) {
+    console.log('Unable to perform long poll update: ', err);
+  }
+
+  longPollTimeoutId = window.setTimeout(() => {
+    performLongPoll(userLogin);
+  }, LONG_POLL_INTERVAL);
+}
+
+async function performShortPollAction(userLogin: string|null) {
+  const loginParams = userLogin ? `?login=${userLogin}` : '';
+  const response = await fetch(`/api/updates/last-known.json${loginParams}`, {
+    credentials: 'include',
+  });
+  const details = (await response.json()) as JSONAPIResponse<LastKnownResponse>;
+  if (details.error) {
+    console.error(`Uneable to get last known update: ${details.error.message}`);
+    return;
+  }
+
+  if (!details.data) {
+    throw new Error('No data provided by JSON API.');
+  }
+
+  if (!details.data.lastKnownUpdate) {
+    return;
+  }
+
+  if (!lastPolledData) {
+    return;
+  }
+
+  const lastKnownUpdate = new Date(details.data.lastKnownUpdate);
+  const lastDashUpdate = new Date(lastPolledData.timestamp);
+  if (lastKnownUpdate > lastDashUpdate) {
+    await performLongPoll(userLogin);
   }
 }
 
+async function performShortPoll(userLogin: string|null) {
+  if (shortPollTimeoutId) {
+    window.clearTimeout(shortPollTimeoutId);
+  }
 
-function performPolling() {
-  setTimeout(async () => {
-    try {
-      await performPollAction();
-    } catch (err) {
-      console.log('Unable to perform poll update: ', err);
-    }
+  try {
+    await performShortPollAction(userLogin);
+  } catch (err) {
+    console.log('Unable to perform short poll update: ', err);
+  }
 
-    performPolling();
-  }, POLLING_INTERVAL);
+  shortPollTimeoutId = window.setTimeout(() => {
+    performShortPoll(userLogin);
+  }, SHORT_POLL_INTERVAL);
+}
+
+async function startPolling(userLogin: string|null) {
+  await performLongPoll(userLogin);
+  await performShortPoll(userLogin);
 }
 
 async function start() {
-  const {data} = await getDashData();
-  renderDash(data, []);
-
   window.addEventListener('focus', () => {
     // This will reset the favicon when the user revisits the page
     changeFavIcon(false);
@@ -377,7 +426,9 @@ async function start() {
     }
   });
 
-  performPolling();
+  // This allows you to see another users dashboard.
+  const queryParams = new URLSearchParams(window.location.search);
+  startPolling(queryParams.get('login'));
 }
 
 start();
