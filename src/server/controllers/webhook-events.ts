@@ -127,7 +127,7 @@ export async function handlePullRequest(hookBody: PullRequestHook):
 
   // The reviewer's dash will have a new entry under incoming
   await userModel.markUserForUpdate(reviewer.login);
-  // The PR owner should update with incoming
+  // The PR owner's dash should update with an incoming entry
   await userModel.markUserForUpdate(user.login);
 
   const notification = {
@@ -167,7 +167,7 @@ export async function handlePullRequestReview(hookData: PullRequestReviewHook):
   } else if (review.state === 'changes_requested') {
     notificationTitle = `${review.user.login} requested changes`;
   } else if (review.state === 'commented') {
-    // If the PR author is the commenter, do nothing;
+    // Check if the PR author is the commenter
     if (review.user.login !== pullReq.user.login) {
       notificationTitle = `${review.user.login} commented on your PR`;
     }

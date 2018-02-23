@@ -148,9 +148,14 @@ class UserModel {
   }
 
   async markUserForUpdate(username: string) {
-    await firestore().collection(USERS_COLLECTION_NAME).doc(username).update({
-      lastKnownUpdate: FieldValue.serverTimestamp(),
-    });
+    const doc =
+        await firestore().collection(USERS_COLLECTION_NAME).doc(username);
+    const docSnapshot = await doc.get();
+    if (docSnapshot.exists) {
+      doc.update({
+        lastKnownUpdate: FieldValue.serverTimestamp(),
+      });
+    }
   }
 }
 

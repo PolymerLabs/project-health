@@ -375,8 +375,9 @@ async function performShortPollAction(userLogin: string|null) {
     return;
   }
 
-  const lastUpdate = new Date(details.data.lastKnownUpdate);
-  if (lastUpdate > new Date(lastPolledData.timestamp)) {
+  const lastKnownUpdate = new Date(details.data.lastKnownUpdate);
+  const lastDashUpdate = new Date(lastPolledData.timestamp);
+  if (lastKnownUpdate > lastDashUpdate) {
     await performLongPoll(userLogin);
   }
 }
