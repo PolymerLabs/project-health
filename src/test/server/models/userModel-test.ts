@@ -100,6 +100,7 @@ test.serial('should return a new user token', async (t) => {
     username: TEST_USERNAME,
     fullname: TEST_NAME,
     avatarUrl: TEST_AVATAR,
+    lastKnownUpdate: null,
   });
 
   const tokenDoc = await firestore()
@@ -121,7 +122,7 @@ test.serial('should return a new user token', async (t) => {
     fullname: TEST_NAME,
     avatarUrl: TEST_AVATAR,
     scopes,
-    lastKnownUpdate: new Date().toISOString(),
+    lastKnownUpdate: null,
   });
 });
 
