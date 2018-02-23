@@ -17,6 +17,7 @@ export interface LoginDetails {
   fullname: string|null;
   githubToken: string;
   scopes: string[]|null;
+  lastKnownUpdate: string|null;
 }
 
 /**
@@ -123,6 +124,7 @@ class UserModel {
       fullname: loginResult.data.viewer.name,
       scopes,
       githubToken,
+      lastKnownUpdate: null,
     };
 
     await userDocument.set(details);
@@ -143,6 +145,12 @@ class UserModel {
 
   async deleteUser(username: string) {
     await firestore().collection(USERS_COLLECTION_NAME).doc(username).delete();
+  }
+
+  async markUserForUpdate(username: string) {
+    await firestore().collection(USERS_COLLECTION_NAME).doc(username).update({
+      lastKnownUpdate: FieldValue.serverTimestamp(),
+    });
   }
 }
 

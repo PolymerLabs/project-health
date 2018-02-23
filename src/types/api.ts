@@ -34,6 +34,7 @@ export interface DashboardUser {
 }
 
 export interface DashResponse {
+  timestamp: string;
   user: DashboardUser;
   outgoingPrs: PullRequest[];
   incomingPrs: PullRequest[];
@@ -52,6 +53,10 @@ export interface JSONAPIResponse<T> {
 
 export interface LoginResponse {
   status: string;
+}
+
+export interface LastKnownResponse {
+  lastKnownUpdate: string|null;
 }
 
 /** Not necessarily actionable. */

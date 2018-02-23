@@ -27,6 +27,7 @@ test.beforeEach(async (t) => {
     scopes: [],
     avatarUrl: null,
     fullname: null,
+    lastKnownUpdate: new Date().toISOString(),
   };
   const instance = new DashData();
   const dashData = await instance.fetchUserData(
