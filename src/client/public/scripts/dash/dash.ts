@@ -21,12 +21,21 @@ type StatusDisplay = {
 const DEFAULT_AVATAR = '/images/default-avatar.svg';
 
 const dashTmpl = (data: api.DashResponse) => {
-  const imageUrl = data.user.avatarUrl ? data.user.avatarUrl : DEFAULT_AVATAR, ;
+  const imageUrl = data.user.avatarUrl ? data.user.avatarUrl : DEFAULT_AVATAR;
   const buttonTemplates = [];
   if (data.user.isCurrentUser) {
     buttonTemplates.push(
         html`<a href="/settings" title="Settings" class="settings"></a>`);
   }
+  const prListTemplate = (prList: api.PullRequest[], emptyMessage: string) => {
+    if (prList.length) {
+      return prList.map(prTemplate);
+    } else {
+      return html
+      `<div class="pr-list__empty-message">${emptyMessage}</div>`;
+    }
+  };
+
   return html`
   <div class="profile-container">
     <div class="profile-avatar"><img src="${imageUrl}" alt="Avatar of ${
@@ -38,9 +47,15 @@ const dashTmpl = (data: api.DashResponse) => {
   </div>
   <div class="pr-list">
     <h2>Outgoing pull requests</h2>
-    ${data.outgoingPrs.map(prTemplate)}
+    ${
+      prListTemplate(
+          data.outgoingPrs,
+          'You have no outgoing pull requests. When you open new pull requests, they\'ll appear here')}
     <h2>Incoming pull requests</h2>
-    ${data.incomingPrs.map(prTemplate)}
+    ${
+      prListTemplate(
+          data.incomingPrs,
+          '🎉 No incoming pull requests! When you\'re added as a reviewer to a pull request, it\'ll appear here.')}
   </div>
   `;
 };
