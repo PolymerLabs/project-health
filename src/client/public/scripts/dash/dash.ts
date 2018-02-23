@@ -20,21 +20,25 @@ type StatusDisplay = {
 
 const DEFAULT_AVATAR = '/images/default-avatar.svg';
 
-const dashTmpl = (data: api.DashResponse) => {
+const dashTmpl = (data: api.DashResponse, newlyActionablePRs: string[]) => {
   const imageUrl = data.user.avatarUrl ? data.user.avatarUrl : DEFAULT_AVATAR;
   const buttonTemplates = [];
+
   if (data.user.isCurrentUser) {
     buttonTemplates.push(
         html`<a href="/settings" title="Settings" class="settings"></a>`);
   }
-  const prListTemplate = (prList: api.PullRequest[], emptyMessage: string) => {
-    if (prList.length) {
-      return prList.map(prTemplate);
-    } else {
-      return html
-      `<div class="pr-list__empty-message">${emptyMessage}</div>`;
-    }
-  };
+  const prListTemplate =
+      (prList: api.PullRequest[],
+       newlyActionablePRs: string[],
+       emptyMessage: string) => {
+        if (prList.length) {
+          return prList.map((pr) => prTemplate(pr, newlyActionablePRs));
+        } else {
+          return html
+          `<div class="pr-list__empty-message">${emptyMessage}</div>`;
+        }
+      };
 
   return html`
   <div class="profile-container">
@@ -50,19 +54,22 @@ const dashTmpl = (data: api.DashResponse) => {
     ${
       prListTemplate(
           data.outgoingPrs,
+          newlyActionablePRs,
           'You have no outgoing pull requests. When you open new pull requests, they\'ll appear here')}
     <h2>Incoming pull requests</h2>
     ${
       prListTemplate(
           data.incomingPrs,
+          newlyActionablePRs,
           '🎉 No incoming pull requests! When you\'re added as a reviewer to a pull request, it\'ll appear here.')}
   </div>
   `;
 };
 
-function renderDash(data: api.DashResponse) {
+function renderDash(data: api.DashResponse, newlyActionablePRs: string[]) {
   render(
-      dashTmpl(data), (document.querySelector('.dash-container') as Element));
+      dashTmpl(data, newlyActionablePRs),
+      (document.querySelector('.dash-container') as Element));
 }
 
 function timeToString(dateTime: number) {
@@ -208,10 +215,14 @@ function statusToDisplay(pr: api.PullRequest): StatusDisplay {
   }
 }
 
-function prTemplate(pr: api.PullRequest) {
+function prTemplate(pr: api.PullRequest, newlyActionablePRs: string[]) {
   const status = statusToDisplay(pr);
+  const prClasses = ['pr'];
+  if (newlyActionablePRs.indexOf(pr.url) !== -1) {
+    prClasses.push('is-newly-actionable');
+  }
   return html`
-    <div class="pr">
+    <div class="${prClasses.join(' ')}">
       <div class="pr-header">
         <div class="pr-author">
           <div class="pr-author__name">${pr.author}</div>
@@ -239,10 +250,13 @@ function prTemplate(pr: api.PullRequest) {
     </div>`;
 }
 
-function hasNewActions(newData: api.DashResponse, oldData: api.DashResponse) {
+function hasNewActions(
+    newData: api.DashResponse, oldData: api.DashResponse): string[] {
   if (!oldData) {
-    return false;
+    return [];
   }
+
+  const newlyActionablePRs: string[] = [];
 
   const newActions = (newList: PullRequest[], oldList: PullRequest[]) => {
     const oldActionablePRs: {[prUrl: string]: PullRequest} = {};
@@ -264,20 +278,19 @@ function hasNewActions(newData: api.DashResponse, oldData: api.DashResponse) {
       const oldPr = oldActionablePRs[newPr.url];
       if (!oldPr) {
         // New list has an actionable PR that didn't exist before
-        return true;
+        newlyActionablePRs.push(newPr.url);
       }
 
       if (JSON.stringify(newPr) !== JSON.stringify(oldPr)) {
-        return true;
+        newlyActionablePRs.push(newPr.url);
       }
     }
-
-    return false;
   };
 
-  // Outgoing PR's are likely to be less than incoming, so check that first
-  return newActions(newData.outgoingPrs, oldData.outgoingPrs) ||
-      newActions(newData.incomingPrs, oldData.incomingPrs);
+  newActions(newData.outgoingPrs, oldData.outgoingPrs);
+  newActions(newData.incomingPrs, oldData.incomingPrs);
+
+  return newlyActionablePRs;
 }
 
 async function getDashData() {
@@ -316,9 +329,9 @@ function changeFavIcon(hasAction: boolean) {
 
 async function performPollAction() {
   const {data, newActions} = await getDashData();
-  renderDash(data);
+  renderDash(data, newActions);
 
-  if (newActions && document.hasFocus() === false) {
+  if (newActions.length > 0 && document.hasFocus() === false) {
     changeFavIcon(true);
   } else {
     changeFavIcon(false);
@@ -339,15 +352,31 @@ function performPolling() {
 }
 
 async function start() {
-  window.addEventListener('focus', () => {
-    lastViewedData = lastPolledData;
+  const {data} = await getDashData();
+  renderDash(data, []);
 
+  window.addEventListener('focus', () => {
     // This will reset the favicon when the user revisits the page
     changeFavIcon(false);
+
+    lastViewedData = lastPolledData;
+
+    // When an element is marked as 'is-newly-actionable' we need to apply the
+    // flash keyframe animation (achieved by adding the 'actionable-flash'
+    // class).
+    // To reliably do this, ensure the class is removed, wait for an animation
+    // frame to ensure the class is up to date, then apply the flash.
+    const elements = document.querySelectorAll('.is-newly-actionable');
+    for (let i = 0; i < elements.length; i++) {
+      const element = elements.item(i) as HTMLElement;
+      element.classList.remove('actionable-flash');
+      // tslint:disable-next-line:no-unused-expression
+      element.offsetTop;  // Force a style recalc
+      element.classList.remove('is-newly-actionable');
+      element.classList.add('actionable-flash');
+    }
   });
 
-  const {data} = await getDashData();
-  renderDash(data);
   performPolling();
 }
 
