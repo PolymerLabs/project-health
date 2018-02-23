@@ -24,11 +24,9 @@ a {
 
 .pr::before {
   position: absolute;
-  top: calc(var(--padding) / 3);
+  top: calc((var(--padding) / 3) + 1px);
   bottom: calc(var(--padding) / 3);
   left: calc(var(--time-width) + var(--padding) + var(--avatar-size) / 2 - 1px);
-  /* 1px to ensure the line is *below* the avatar */
-  margin-top: 1px;
   display: block;
   width: 3px;
   content: "";
@@ -137,11 +135,8 @@ a {
   background-color: var(--page-bg-color);
 }
 
-@keyframes flashKeyframe {
+@keyframes flash {
   0% {
-    background-color: var(--actionable-highlight-color);
-  }
-  25% {
     background-color: var(--actionable-highlight-color);
   }
   to {
@@ -150,8 +145,10 @@ a {
 }
 
 .pr.actionable-flash, .pr.actionable-flash > .pr-event:last-child > .pr-event__bullet svg {
-  animation-duration: 700ms;
-  animation-name: flashKeyframe;
+  animation-fill-mode: backwards;
+  animation-delay: 200ms;
+  animation-duration: 500ms;
+  animation-name: flash;
 }
 
 .pr-event__url {
