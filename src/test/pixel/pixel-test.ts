@@ -46,6 +46,7 @@ test('project-health1 dashboard UI', async (t) => {
       fullname: null,
       githubToken: '',
       scopes: null,
+      lastKnownUpdate: null,
     };
   };
   const loginStub = t.context.sandbox.stub(userModel, 'getLoginFromRequest')
