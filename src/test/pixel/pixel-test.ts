@@ -25,7 +25,7 @@ test.before(async (t) => {
       await startTestReplayServer(t, 'project-health1-dashboard');
   const dashServer = new DashServer();
   t.context = {
-    browser: await puppeteer.launch(),
+    browser: await puppeteer.launch({args: ['--no-sandbox']}),
     dashServer,
     dashAddress: await dashServer.listen(),
     replayServer: server,
