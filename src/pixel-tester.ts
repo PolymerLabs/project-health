@@ -1,5 +1,6 @@
 import * as ava from 'ava';
 import * as fs from 'fs-extra';
+import * as jimp from 'jimp';
 import * as path from 'path';
 import {PNG} from 'pngjs';
 import * as puppeteer from 'puppeteer';
@@ -7,23 +8,49 @@ import * as puppeteer from 'puppeteer';
 // tslint:disable-next-line:no-require-imports
 import pixelmatch = require('pixelmatch');
 
+// tslint:disable-next-line:no-require-imports no-any
+const mergeImg = require('merge-img') as any;
+
 const goldensRoot = path.join(__dirname, '..', 'goldens');
 
 /**
  * Given paths to two images, will return whether or not the two images are the
- * same.
+ * same. Writes a diff image as well.
  */
-async function imagesMatch(path1: string, path2: string): Promise<boolean> {
-  const img1 = new PNG();
-  img1.data = await fs.readFile(path1);
-  const img2 = new PNG();
-  img2.data = await fs.readFile(path2);
+function imagesMatch(
+    path1: string, path2: string, diffPath: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    const img1 =
+        fs.createReadStream(path1).pipe(new PNG()).on('parsed', doneReading);
+    const img2 =
+        fs.createReadStream(path2).pipe(new PNG()).on('parsed', doneReading);
+    let filesRead = 0;
 
-  if (img1.width !== img2.width || img1.height !== img2.height) {
-    return false;
-  }
+    function doneReading() {
+      if (++filesRead < 2) {
+        return;
+      }
 
-  return pixelmatch(img1.data, img2.data, null, img1.width, img1.height) === 0;
+      if (img1.width !== img2.width || img1.height !== img2.height) {
+        resolve(false);
+      }
+
+      const diff = new PNG({width: img1.width, height: img1.height});
+      const matches =
+          pixelmatch(img1.data, img2.data, diff.data, img1.width, img1.height, {
+            threshold: 0
+          }) === 0;
+
+      // Write out diff file.
+      if (!matches) {
+        diff.pack().pipe(fs.createWriteStream(diffPath)).on('finish', () => {
+          resolve(matches);
+        });
+      } else {
+        resolve(matches);
+      }
+    }
+  });
 }
 
 /**
@@ -39,19 +66,42 @@ export async function testScreenshot(
   const expectedPath = path.resolve(goldensRoot, `${title}-expected.png`);
 
   if (!record) {
-    // Check expected golden exists
+    // Check expected golden exists.
     t.true(
-        await fs.ensureFile(expectedPath),
+        await fs.pathExists(expectedPath),
         `Golden file not found, run in rebaseline mode to generate golden:
         npm run test:rebaseline -- --match '${t.title}'`);
 
     const actualPath = path.resolve(goldensRoot, `${title}-actual.png`);
-    await page.screenshot({path: actualPath, fullPage: true});
+    const diffPath = path.resolve(goldensRoot, `${title}-diff.png`);
+    const previewPath = path.resolve(goldensRoot, `${title}-preview.png`);
 
-    t.true(await imagesMatch(actualPath, expectedPath));
+    await page.screenshot({path: actualPath, fullPage: true});
+    const matches = await imagesMatch(actualPath, expectedPath, diffPath);
+
+    // Write out a combined image of actual, expected, diff for easy viewing.
+    if (!matches) {
+      const img: jimp = await mergeImg([actualPath, expectedPath, diffPath]);
+      await writeJimp(img, previewPath);
+    }
+
+    t.true(matches, `Screenshot does not match golden.
+    View diff:
+      google-chrome ${previewPath}
+    To rebaseline:
+      npm run test:rebaseline -- --match '${t.title}'`);
   } else {
     // Generate new golden file.
     await page.screenshot({path: expectedPath, fullPage: true});
     console.info(`💾 Generated golden at ${expectedPath}`);
   }
+}
+
+/**
+ * Promisified version of writing a jimp to a file.
+ */
+function writeJimp(jimp: jimp, path: string): Promise<void> {
+  return new Promise((resolve) => {
+    jimp.write(path, () => resolve());
+  });
 }

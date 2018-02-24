@@ -51,9 +51,7 @@ export interface JSONAPIResponse<T> {
   data?: T;
 }
 
-export interface LoginResponse {
-  status: string;
-}
+export interface LoginResponse { status: string; }
 
 export interface LastKnownResponse {
   lastKnownUpdate: string|null;
@@ -165,6 +163,4 @@ export interface ErrorPayload {
   message: string;
 }
 
-export interface NotificationURLData {
-  url: string;
-}
+export interface NotificationURLData { url: string; }
