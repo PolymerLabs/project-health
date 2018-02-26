@@ -7,7 +7,7 @@ import * as puppeteer from 'puppeteer';
 
 // Pixelmatch doesn't export a module, so we need to use require.
 // tslint:disable-next-line:no-require-imports
-import pixelmatch = require('pixelmatch');
+// import pixelmatch = require('pixelmatch');
 
 // tslint:disable-next-line:no-require-imports no-any
 const mergeImg = require('merge-img') as any;
@@ -50,7 +50,7 @@ function imagesMatch(
         console.log(`Found ${
             pixelmatch(
                 img1.data, img2.data, diff.data, img1.width, img1.height, {
-                  threshold: 1
+                  threshold: 0.1
                 })} differences in the image`);
       } else {
         resolve(matches);
