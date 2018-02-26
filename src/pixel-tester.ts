@@ -5,6 +5,7 @@ import * as path from 'path';
 import {PNG} from 'pngjs';
 import * as puppeteer from 'puppeteer';
 
+// Pixelmatch doesn't export a module, so we need to use require.
 // tslint:disable-next-line:no-require-imports
 import pixelmatch = require('pixelmatch');
 
@@ -38,7 +39,7 @@ function imagesMatch(
       const diff = new PNG({width: img1.width, height: img1.height});
       const matches =
           pixelmatch(img1.data, img2.data, diff.data, img1.width, img1.height, {
-            threshold: 0.1
+            threshold: 0.5
           }) === 0;
 
       // Write out diff file.
@@ -100,8 +101,8 @@ export async function testScreenshot(
 /**
  * Promisified version of writing a jimp to a file.
  */
-function writeJimp(jimp: jimp, path: string): Promise<void> {
+function writeJimp(jimp: jimp, imgPath: string): Promise<void> {
   return new Promise((resolve) => {
-    jimp.write(path, () => resolve());
+    jimp.write(imgPath, () => resolve());
   });
 }
