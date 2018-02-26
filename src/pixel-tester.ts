@@ -1,6 +1,7 @@
 import * as ava from 'ava';
 import * as fs from 'fs-extra';
 import * as jimp from 'jimp';
+import mergeImg from 'merge-img';
 import * as path from 'path';
 import {PNG} from 'pngjs';
 import * as puppeteer from 'puppeteer';
@@ -8,9 +9,6 @@ import * as puppeteer from 'puppeteer';
 // Pixelmatch doesn't export a module, so we need to use require.
 // tslint:disable-next-line:no-require-imports
 import pixelmatch = require('pixelmatch');
-
-// tslint:disable-next-line:no-require-imports no-any
-const mergeImg = require('merge-img') as any;
 
 const goldensRoot = path.join(__dirname, '..', 'goldens');
 
@@ -84,6 +82,7 @@ export async function testScreenshot(
     if (!matches) {
       const img: jimp = await mergeImg([actualPath, expectedPath, diffPath]);
       await writeJimp(img, previewPath);
+      console.log(jimpBase64(img));
     }
 
     t.true(
@@ -106,5 +105,13 @@ export async function testScreenshot(
 function writeJimp(jimp: jimp, imgPath: string): Promise<void> {
   return new Promise((resolve) => {
     jimp.write(imgPath, () => resolve());
+  });
+}
+
+// tslint:disable-next-line:no-any
+function jimpBase64(img: any): Promise<string> {
+  return new Promise((resolve) => {
+    // tslint:disable-next-line:no-any
+    img.getBase64('image/png', (data: any) => resolve(data));
   });
 }
