@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 import {StatusToPRQuery} from '../../types/gql-types';
 import {github} from '../../utils/github';
 import {sendNotification} from '../controllers/notifications';
+import {pullRequestsModel} from '../models/pullRequestsModel';
 import {userModel} from '../models/userModel';
 
 type User = {
@@ -94,18 +95,28 @@ export async function handleStatus(hookData: StatusHook): Promise<boolean> {
       continue;
     }
 
+
     const commit = commitNode.commit;
     if (commit.oid === hookData.sha) {
-      sentNotifications = true;
-      await sendNotification(prData.author.login, {
-        title: hookData.description,
-        body: `[${repo.name}] ${prData.title}`,
-        requireInteraction: false,
-        icon: '/images/notification-images/icon-192x192.png',
-        data: {
-          url: prData.url,
-        }
-      });
+      const commitDetails =
+          await pullRequestsModel.getCommitDetails(prData.number, commit.oid);
+
+      if (!commitDetails || commitDetails.status !== hookData.state) {
+        sentNotifications = true;
+
+        await pullRequestsModel.setCommitStatus(
+            prData.number, commit.oid, hookData.state);
+
+        await sendNotification(prData.author.login, {
+          title: hookData.description,
+          body: `[${repo.name}] ${prData.title}`,
+          requireInteraction: false,
+          icon: '/images/notification-images/icon-192x192.png',
+          data: {
+            url: prData.url,
+          }
+        });
+      }
     }
   }
 
