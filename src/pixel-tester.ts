@@ -7,7 +7,7 @@ import * as puppeteer from 'puppeteer';
 
 // Pixelmatch doesn't export a module, so we need to use require.
 // tslint:disable-next-line:no-require-imports
-// import pixelmatch = require('pixelmatch');
+import pixelmatch = require('pixelmatch');
 
 // tslint:disable-next-line:no-require-imports no-any
 const mergeImg = require('merge-img') as any;
