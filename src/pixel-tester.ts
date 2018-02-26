@@ -47,6 +47,11 @@ function imagesMatch(
         diff.pack().pipe(fs.createWriteStream(diffPath)).on('finish', () => {
           resolve(matches);
         });
+        console.log(`Found ${
+            pixelmatch(
+                img1.data, img2.data, diff.data, img1.width, img1.height, {
+                  threshold: 1
+                })} differences in the image`);
       } else {
         resolve(matches);
       }
