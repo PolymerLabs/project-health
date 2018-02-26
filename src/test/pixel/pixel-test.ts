@@ -54,7 +54,20 @@ test('project-health1 dashboard UI', async (t) => {
 
   await page.goto(t.context.dashAddress, {waitUntil: 'networkidle0'});
   t.true(loginStub.called);
+
+  // Hide time stamps from screenshots.
+  await page.$$eval('time', /* istanbul ignore next */ (elements) => {
+    if (!elements) {
+      return;
+    }
+    for (const el of elements) {
+      el.style.visibility = 'hidden';
+    }
+    return elements;
+  });
+
   await testScreenshot(page, t);
+  await page.close();
 });
 
 test.afterEach.always((t) => {

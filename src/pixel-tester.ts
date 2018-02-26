@@ -39,7 +39,7 @@ function imagesMatch(
       const diff = new PNG({width: img1.width, height: img1.height});
       const matches =
           pixelmatch(img1.data, img2.data, diff.data, img1.width, img1.height, {
-            threshold: 0.5
+            threshold: 0.1
           }) === 0;
 
       // Write out diff file.
@@ -47,11 +47,6 @@ function imagesMatch(
         diff.pack().pipe(fs.createWriteStream(diffPath)).on('finish', () => {
           resolve(matches);
         });
-        console.log(`Found ${
-            pixelmatch(
-                img1.data, img2.data, diff.data, img1.width, img1.height, {
-                  threshold: 0.1
-                })} differences in the image`);
       } else {
         resolve(matches);
       }
@@ -91,7 +86,9 @@ export async function testScreenshot(
       await writeJimp(img, previewPath);
     }
 
-    t.true(matches, `Screenshot does not match golden.
+    t.true(
+        process.env.TRAVIS === 'true' || matches,
+        `Screenshot does not match golden.
     View diff:
       google-chrome ${previewPath}
     To rebaseline:

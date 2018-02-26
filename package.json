@@ -17,7 +17,7 @@
     "start": "node ./build/server.js",
     "test": "gulp build && RECORD=false npm run test:ava -- --timeout=10sec && npm run check-coverage",
     "test:record": "gulp build && RECORD=true npm run test:ava -- --timeout=1min",
-    "test:rebaseline": "gulp build && REBASELINE=true npm run test:ava",
+    "test:rebaseline": "gulp build && REBASELINE=true npm run test:ava -- --timeout=1min",
     "test:ava": "nyc --reporter=text --reporter=html ava 'build/**/*-test.js' --verbose"
   },
   "repository": {
