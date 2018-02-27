@@ -1,11 +1,12 @@
 const path = require('path');
-const {buildTypescript} = require('./utils/build-typescript');
+const {buildBrowserTypescript} = require('./utils/build-browser-typescript');
 
 function buildSW() {
+  const srcDir = path.join(global.__buildConfig.src, 'sw');
+  const tsConfigPath = path.join(srcDir, 'tsconfig.json');
   const destDir = path.join(global.__buildConfig.dest, 'sw');
-  const tsConfigPath =
-      path.join(global.__buildConfig.src, 'sw', 'tsconfig.json');
-  return buildTypescript(tsConfigPath, destDir);
+
+  return buildBrowserTypescript(srcDir, tsConfigPath, destDir);
 };
 buildSW.displayName = `build-sw`;
 

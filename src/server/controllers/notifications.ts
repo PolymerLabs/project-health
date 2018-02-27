@@ -22,9 +22,9 @@ export const sendNotification =
 
   return Promise.all(userSubscriptionDetails.map((subDetails) => {
     const options = {
-      // TTL in seconds (1 Day). After which, notification will not
+      // TTL in seconds (12 Hours). After which, notification will not
       // be delivered.
-      TTL: 24 * 60 * 60,
+      TTL: 12 * 60 * 60,
     };
     return webpush
         .sendNotification(
