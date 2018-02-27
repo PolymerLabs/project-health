@@ -11,6 +11,7 @@ skip_files:
 - gulp-tasks/
 - node_modules/
 - replays/
+- goldens/
 - src/
 - github-health-.*\.json
 
