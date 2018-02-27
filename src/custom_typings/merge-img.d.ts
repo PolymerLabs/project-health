@@ -1,7 +1,7 @@
 declare module 'merge-img' {
 import {Jimp} from 'jimp';
 
-  export default function mergeImg(
+  function mergeImg(
       images: Array<string|
                     {src: string | Buffer, offsetX?: number, offsetY?: number}|
                     Buffer|Jimp>,
@@ -13,4 +13,6 @@ import {Jimp} from 'jimp';
         margin?: number|string|
               {top?: number, right?: number, bottom?: number, left?: number},
       }): Promise<Jimp>;
+
+  export = mergeImg;
 }
