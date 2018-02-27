@@ -24,7 +24,7 @@ const TEST_SECRETS = {
   PRIVATE_VAPID_KEY: 'o1P9aXm-QPZezF_8b7aQabivhv3QqaB0yg5zoFs6-qc',
 };
 
-const TEST_PR_NUMBER = 1;
+const TEST_PR_NUMBER = 2;
 
 type TestContext = {
   server: Server,

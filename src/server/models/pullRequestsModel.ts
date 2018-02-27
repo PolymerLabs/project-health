@@ -31,9 +31,9 @@ class PullRequestsModel {
     currentData.commits[commitId].status = status;
 
     if (snapshot.exists) {
-      prDoc.update(currentData);
+      await prDoc.update(currentData);
     } else {
-      prDoc.set(currentData);
+      await prDoc.set(currentData);
     }
   }
 
