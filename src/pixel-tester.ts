@@ -86,7 +86,9 @@ export async function testScreenshot(
     }
 
     // Bypass pixel tests on Travis due to font mismatching.
-    t.true(matches || process.env.TRAVIS, `Screenshot does not match golden.
+    t.true(
+        matches || process.env.TRAVIS === 'true',
+        `Screenshot does not match golden.
     View diff:
       google-chrome ${previewPath}
     To rebaseline:
