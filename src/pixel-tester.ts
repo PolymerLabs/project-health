@@ -36,7 +36,7 @@ function imagesMatch(
       }
 
       const diff = new PNG({width: img1.width, height: img1.height});
-      const threshold = process.env.TRAVIS === 'TRUE' ? 0.3 : 0.1;
+      const threshold = process.env.TRAVIS === 'TRUE' ? 0.5 : 0.1;
       const matches = pixelmatch(
                           img1.data,
                           img2.data,
