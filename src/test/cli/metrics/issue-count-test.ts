@@ -14,8 +14,8 @@ test.beforeEach(async (t) => {
   initGithub(url, url);
 });
 
-test.afterEach.cb((t) => {
-  t.context.server.close(t.end);
+test.afterEach.always(async (t) => {
+  await new Promise((resolve) => t.context.server.close(resolve));
 });
 
 test.serial('WebComponents issue count', async (t) => {

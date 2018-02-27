@@ -8,6 +8,7 @@ import {SinonSandbox} from 'sinon';
 import {startTestReplayServer} from '../../../replay-server';
 import * as notificationController from '../../../server/controllers/notifications';
 import {handlePullRequest, handlePullRequestReview, handleStatus} from '../../../server/controllers/webhook-events';
+import {pullRequestsModel} from '../../../server/models/pullRequestsModel';
 import {userModel} from '../../../server/models/userModel';
 import {initFirestore} from '../../../utils/firestore';
 import {github, initGithub} from '../../../utils/github';
@@ -22,6 +23,8 @@ const TEST_SECRETS = {
       'BPtJjYprRvU3TOb0tw3FrVbLww3bp7ssGjX99PFlqIOb3b8uOH4_Q21GYhwsDRwcfToaFVVeOxWOq5XaXD1MGdw',
   PRIVATE_VAPID_KEY: 'o1P9aXm-QPZezF_8b7aQabivhv3QqaB0yg5zoFs6-qc',
 };
+
+const TEST_PR_NUMBER = 2;
 
 type TestContext = {
   server: Server,
@@ -39,11 +42,14 @@ test.beforeEach(async (t) => {
   t.context.server = server;
   t.context.sandbox = sinon.sandbox.create();
   initGithub(url, url);
+
+  await pullRequestsModel.deletePR(TEST_PR_NUMBER);
 });
 
 test.afterEach.always(async (t) => {
-  await t.context.server.close();
   t.context.sandbox.restore();
+  await new Promise((resolve) => t.context.server.close(resolve));
+  await pullRequestsModel.deletePR(TEST_PR_NUMBER);
 });
 
 test.serial(
@@ -445,7 +451,7 @@ test.serial(
     });
 
 test.serial(
-    'Webhook status: error-travis.json with user token and required info',
+    'Webhook status: error-travis.json with user token and required info (and not duplicate)',
     async (t) => {
       const eventContent = await fs.readJSON(
           path.join(hookJsonDir, 'status', 'error-travis.json'));
@@ -471,6 +477,7 @@ test.serial(
                 pullRequests: {
                   nodes: [{
                     __typename: 'PullRequest',
+                    number: TEST_PR_NUMBER,
                     title: 'Injected title',
                     url: 'https://example.com/pr/123',
                     author: {login: 'injected-pr-author'},
@@ -487,7 +494,7 @@ test.serial(
             };
           });
 
-      const handled = await handleStatus(eventContent);
+      let handled = await handleStatus(eventContent);
       t.deepEqual(handled, true);
       t.deepEqual(sendStub.callCount, 1);
       t.deepEqual(sendStub.args[0], [
@@ -500,6 +507,14 @@ test.serial(
           data: {url: 'https://example.com/pr/123'}
         }
       ]);
+
+      sendStub.reset();
+
+      // Sending a second hook (i.e. travis fail on pr and fail on push) should
+      // send no notification
+      handled = await handleStatus(eventContent);
+      t.deepEqual(handled, false);
+      t.deepEqual(sendStub.callCount, 0);
     });
 
 test.serial('Webhook status: pending-travis.json', async (t) => {
