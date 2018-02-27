@@ -1,6 +1,5 @@
 import {html, render} from '../../../../../node_modules/lit-html/lit-html.js';
 import * as api from '../../../../types/api';
-import {JSONAPIResponse, LastKnownResponse, PullRequest} from '../../../../types/api';
 
 // Poll every 5 Minutes
 const LONG_POLL_INTERVAL = 5 * 60 * 1000;
@@ -262,34 +261,35 @@ function hasNewActions(
 
   const newlyActionablePRs: string[] = [];
 
-  const newActions = (newList: PullRequest[], oldList: PullRequest[]) => {
-    const oldActionablePRs: {[prUrl: string]: PullRequest} = {};
-    oldList.forEach((pr: PullRequest) => {
-      const {actionable} = statusToDisplay(pr);
-      if (!actionable) {
-        return;
-      }
+  const newActions =
+      (newList: api.PullRequest[], oldList: api.PullRequest[]) => {
+        const oldActionablePRs: {[prUrl: string]: api.PullRequest} = {};
+        oldList.forEach((pr: api.PullRequest) => {
+          const {actionable} = statusToDisplay(pr);
+          if (!actionable) {
+            return;
+          }
 
-      oldActionablePRs[pr.url] = pr;
-    });
+          oldActionablePRs[pr.url] = pr;
+        });
 
-    for (const newPr of newList) {
-      const {actionable} = statusToDisplay(newPr);
-      if (!actionable) {
-        continue;
-      }
+        for (const newPr of newList) {
+          const {actionable} = statusToDisplay(newPr);
+          if (!actionable) {
+            continue;
+          }
 
-      const oldPr = oldActionablePRs[newPr.url];
-      if (!oldPr) {
-        // New list has an actionable PR that didn't exist before
-        newlyActionablePRs.push(newPr.url);
-      }
+          const oldPr = oldActionablePRs[newPr.url];
+          if (!oldPr) {
+            // New list has an actionable PR that didn't exist before
+            newlyActionablePRs.push(newPr.url);
+          }
 
-      if (JSON.stringify(newPr) !== JSON.stringify(oldPr)) {
-        newlyActionablePRs.push(newPr.url);
-      }
-    }
-  };
+          if (JSON.stringify(newPr) !== JSON.stringify(oldPr)) {
+            newlyActionablePRs.push(newPr.url);
+          }
+        }
+      };
 
   newActions(newData.outgoingPrs, oldData.outgoingPrs);
   newActions(newData.incomingPrs, oldData.incomingPrs);
@@ -329,7 +329,7 @@ function changeFavIcon(hasAction: boolean) {
 }
 
 
-async function performLongPoll(userLogin: string|null) {
+async function updateDashboard(userLogin: string|null) {
   if (longPollTimeoutId) {
     window.clearTimeout(longPollTimeoutId);
   }
@@ -348,7 +348,7 @@ async function performLongPoll(userLogin: string|null) {
   }
 
   longPollTimeoutId = window.setTimeout(() => {
-    performLongPoll(userLogin);
+    updateDashboard(userLogin);
   }, LONG_POLL_INTERVAL);
 }
 
@@ -357,7 +357,8 @@ async function performShortPollAction(userLogin: string|null) {
   const response = await fetch(`/api/updates/last-known.json${loginParams}`, {
     credentials: 'include',
   });
-  const details = (await response.json()) as JSONAPIResponse<LastKnownResponse>;
+  const details =
+      (await response.json()) as api.JSONAPIResponse<api.LastKnownResponse>;
   if (details.error) {
     console.error(`Uneable to get last known update: ${details.error.message}`);
     return;
@@ -378,7 +379,7 @@ async function performShortPollAction(userLogin: string|null) {
   const lastKnownUpdate = new Date(details.data.lastKnownUpdate);
   const lastDashUpdate = new Date(lastPolledData.timestamp);
   if (lastKnownUpdate > lastDashUpdate) {
-    await performLongPoll(userLogin);
+    await updateDashboard(userLogin);
   }
 }
 
@@ -399,11 +400,15 @@ async function performShortPoll(userLogin: string|null) {
 }
 
 async function startPolling(userLogin: string|null) {
-  await performLongPoll(userLogin);
+  await updateDashboard(userLogin);
   await performShortPoll(userLogin);
 }
 
 async function start() {
+  // This allows you to see another users dashboard.
+  const queryParams = new URLSearchParams(window.location.search);
+  const userLogin = queryParams.get('login');
+
   window.addEventListener('focus', () => {
     // This will reset the favicon when the user revisits the page
     changeFavIcon(false);
@@ -426,9 +431,20 @@ async function start() {
     }
   });
 
-  // This allows you to see another users dashboard.
-  const queryParams = new URLSearchParams(window.location.search);
-  startPolling(queryParams.get('login'));
+  if (navigator.serviceWorker) {
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      if (!event.data || !event.data.action) {
+        return;
+      }
+
+      const swMessage = event.data;
+      if (swMessage.action === 'push-received') {
+        performLongPoll(userLogin);
+      }
+    });
+  }
+
+  startPolling(userLogin);
 }
 
 start();

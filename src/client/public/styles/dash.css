@@ -56,6 +56,7 @@ a {
 .pr-avatar {
   height: var(--avatar-size);
   width: var(--avatar-size);
+  min-width: var(--avatar-size);
   margin: calc(var(--padding) / 3) var(--padding);
 }
 
@@ -99,6 +100,7 @@ a {
 .pr-event__bullet {
   min-height: 26px;
   width: var(--avatar-size);
+  min-width: var(--avatar-size);
   margin: 0 var(--padding);
   position: relative; /* Allow SVG to size to this container */
   overflow: hidden;
@@ -113,6 +115,7 @@ a {
   font-size: var(--small-text);
   color: var(--secondary-text-color);
   width: var(--time-width);
+  min-width: var(--time-width);
   line-height: 18px;
 }
 

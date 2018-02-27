@@ -161,4 +161,11 @@ export interface ErrorPayload {
   message: string;
 }
 
-export interface NotificationURLData { url: string; }
+export interface NotificationURLData {
+  url: string;
+}
+
+export type SWClientMessage<T> = {
+  action: 'push-received',
+  data: T|void,
+};
