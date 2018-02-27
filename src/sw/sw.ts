@@ -8,13 +8,14 @@ const analytics = new Analytics('UA-114703954-1');
 
 async function pingAnalytics(eventAction: string, eventValue: string) {
   let clientID = 'unknown-client-id';
-  console.log('Ping Analytics');
+
   if ('pushManager' in self.registration) {
     const subscription = await self.registration.pushManager.getSubscription();
     if (subscription) {
       clientID = subscription.endpoint;
     }
   }
+
   await analytics.trackEvent(clientID, eventAction, eventValue);
 }
 
