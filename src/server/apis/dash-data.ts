@@ -6,250 +6,306 @@ import {mentionedFieldsFragment, prFieldsFragment, PullRequestReviewState, revie
 import {github} from '../../utils/github';
 import {LoginDetails, userModel} from '../models/userModel';
 
-export class DashData {
-  getHandler() {
-    return this.handler.bind(this);
+/**
+ * Router for the dash component.
+ */
+export function getRouter(): express.Router {
+  const router = express.Router();
+  router.get('/outgoing', outgoingHandler);
+  router.get('/incoming', incomingHandler);
+  return router;
+}
+
+/**
+ * Handles a response for outgoing pull requests.
+ */
+async function outgoingHandler(req: express.Request, res: express.Response) {
+  const loginDetails = await userModel.getLoginFromRequest(req);
+  if (!loginDetails) {
+    res.sendStatus(401);
+    return;
   }
 
-  private async handler(req: express.Request, res: express.Response) {
-    const loginDetails = await userModel.getLoginFromRequest(req);
-    if (!loginDetails) {
-      res.sendStatus(401);
-      return;
+  const userData = await fetchOutgoingData(
+      loginDetails,
+      req.query.login || loginDetails.username,
+      loginDetails.githubToken,
+  );
+
+  res.header('content-type', 'application/json');
+  res.send(JSON.stringify(userData, null, 2));
+}
+
+/**
+ * Fetches outgoing pull requests for user.
+ */
+export async function fetchOutgoingData(
+    loginDetails: LoginDetails, dashboardLogin: string, token: string):
+    Promise<api.OutgoingDashResponse> {
+  const openPrQuery = 'is:open is:pr archived:false';
+  const reviewedQueryString =
+      `reviewed-by:${dashboardLogin} ${openPrQuery} -author:${dashboardLogin}`;
+  const reviewRequestsQueryString =
+      `review-requested:${dashboardLogin} ${openPrQuery}`;
+  const mentionsQueryString =
+      `${reviewedQueryString} mentions:${dashboardLogin}`;
+
+  const viewerPrsResult = await github().query<ViewerPullRequestsQuery>({
+    query: outgoingPrsQuery,
+    variables: {
+      login: dashboardLogin,
+      reviewRequestsQueryString,
+      reviewedQueryString,
+      mentionsQueryString,
+    },
+    fetchPolicy: 'network-only',
+    context: {token}
+  });
+
+  const user: api.DashboardUser = {
+    login: dashboardLogin,
+    isCurrentUser: loginDetails.username === dashboardLogin,
+    name: null,
+    avatarUrl: null,
+  };
+  if (viewerPrsResult.data.user) {
+    user.name = viewerPrsResult.data.user.name;
+    user.avatarUrl = viewerPrsResult.data.user.avatarUrl;
+  }
+  const outgoingPrs = [];
+  if (viewerPrsResult.data.user) {
+    for (const pr of viewerPrsResult.data.user.pullRequests.nodes || []) {
+      if (!pr) {
+        continue;
+      }
+
+      if (pr.viewerSubscription === 'IGNORED') {
+        continue;
+      }
+
+      const outgoingPr: api.PullRequest = {
+        ...convertPrFields(pr),
+        status: {type: 'WaitingReview', reviewers: []},
+      };
+
+      if (pr.author && pr.author.__typename === 'User') {
+        outgoingPr.author = pr.author.login;
+        outgoingPr.avatarUrl = pr.author.avatarUrl;
+      }
+
+      const reviewRequests = [];
+      if (pr.reviewRequests) {
+        for (const request of pr.reviewRequests.nodes || []) {
+          if (!request || !request.requestedReviewer ||
+              request.requestedReviewer.__typename !== 'User') {
+            continue;
+          }
+          reviewRequests.push(request.requestedReviewer.login);
+        }
+      }
+
+      let reviews: api.Review[] = [];
+      if (pr.reviews && pr.reviews.nodes) {
+        // Filter out reviews from the viewer.
+        const prReviews = pr.reviews.nodes.filter(
+            (review) => review && review.author &&
+                review.author.login !== dashboardLogin);
+        reviews = reviewsForOutgoingPrs(prReviews, outgoingPr);
+      }
+
+      const reviewersCount = reviewRequests.length + reviews.length;
+      if (outgoingPr.status.type === 'WaitingReview' && reviewersCount === 0) {
+        outgoingPr.status = {type: 'NoReviewers'};
+      } else if (outgoingPr.status.type === 'WaitingReview') {
+        outgoingPr.status.reviewers = Array.from(new Set([
+          ...reviewRequests,
+          ...reviews.map((review) => review.author),
+        ]));
+      }
+
+      outgoingPrs.push(outgoingPr);
+    }
+  }
+  return {
+    timestamp: new Date().toISOString(),
+    user,
+    // Sort newest first.
+    outgoingPrs: outgoingPrs.sort((a, b) => b.createdAt - a.createdAt),
+  };
+}
+/**
+ * Handles a response for incoming pull requests.
+ */
+async function incomingHandler(req: express.Request, res: express.Response) {
+  const loginDetails = await userModel.getLoginFromRequest(req);
+  if (!loginDetails) {
+    res.sendStatus(401);
+    return;
+  }
+
+  const userData = await fetchIncomingData(
+      req.query.login || loginDetails.username,
+      loginDetails.githubToken,
+  );
+
+  res.header('content-type', 'application/json');
+  res.send(JSON.stringify(userData, null, 2));
+}
+
+/**
+ * Fetches incoming pull requests for user.
+ */
+export async function fetchIncomingData(
+    dashboardLogin: string, token: string): Promise<api.IncomingDashResponse> {
+  const openPrQuery = 'is:open is:pr archived:false';
+  const reviewedQueryString =
+      `reviewed-by:${dashboardLogin} ${openPrQuery} -author:${dashboardLogin}`;
+  const reviewRequestsQueryString =
+      `review-requested:${dashboardLogin} ${openPrQuery}`;
+  const mentionsQueryString =
+      `${reviewedQueryString} mentions:${dashboardLogin}`;
+
+  const viewerPrsResult = await github().query<ViewerPullRequestsQuery>({
+    query: incomingPrsQuery,
+    variables: {
+      login: dashboardLogin,
+      reviewRequestsQueryString,
+      reviewedQueryString,
+      mentionsQueryString,
+    },
+    fetchPolicy: 'network-only',
+    context: {token}
+  });
+
+  const incomingPrs = [];
+  // In some cases, GitHub will return a PR both in the review request list
+  // and the reviewed list. This ID set is used to ensure we don't show a PR
+  // twice.
+  const prsShown = [];
+
+  // Build a list of mentions.
+  const mentioned: Map<string, api.MentionedEvent> = new Map();
+  for (const item of viewerPrsResult.data.mentions.nodes || []) {
+    if (!item || item.__typename !== 'PullRequest') {
+      continue;
+    }
+    const mention = getLastMentioned(item, dashboardLogin);
+    if (mention) {
+      mentioned.set(item.id, mention);
+    }
+  }
+
+  // Incoming PRs that I've reviewed.
+  for (const pr of viewerPrsResult.data.reviewed.nodes || []) {
+    if (!pr || pr.__typename !== 'PullRequest') {
+      continue;
     }
 
-    const userData = await this.fetchUserData(
-        loginDetails,
-        req.query.login || loginDetails.username,
-        loginDetails.githubToken,
-    );
-    res.header('content-type', 'application/json');
-    res.send(JSON.stringify(userData, null, 2));
-  }
+    if (pr.viewerSubscription === 'IGNORED') {
+      continue;
+    }
 
-  async fetchUserData(loginDetails: LoginDetails, login: string, token: string):
-      Promise<api.DashResponse> {
-    const openPrQuery = 'is:open is:pr archived:false';
-    const reviewedQueryString =
-        `reviewed-by:${login} ${openPrQuery} -author:${login}`;
-    const reviewRequestsQueryString =
-        `review-requested:${login} ${openPrQuery}`;
-    const mentionsQueryString = `${reviewedQueryString} mentions:${login}`;
+    // Find relevant review.
+    let relevantReview: MyReviewFields|null = null;
+    if (pr.reviews && pr.reviews.nodes) {
+      // Generated gql-types is missing the proper __type field so a cast is
+      // needed.
+      relevantReview =
+          findMyRelevantReview(pr.reviews.nodes as Array<MyReviewFields|null>);
+    }
 
-    const viewerPrsResult = await github().query<ViewerPullRequestsQuery>({
-      query: prsQuery,
-      variables: {
-        login,
-        reviewRequestsQueryString,
-        reviewedQueryString,
-        mentionsQueryString,
-      },
-      fetchPolicy: 'network-only',
-      context: {token}
-    });
+    let myReview: api.Review|null = null;
+    let status: api.PullRequestStatus = {type: 'NoActionRequired'};
+    if (relevantReview) {
+      // Cast because inner type has less strict type for __typename.
+      myReview = convertReviewFields(relevantReview as reviewFieldsFragment);
 
-    const user: api.DashboardUser = {
-      login,
-      isCurrentUser: loginDetails.username === login,
-      name: null,
-      avatarUrl: null,
+      if (relevantReview.state !== PullRequestReviewState.APPROVED) {
+        status = {type: 'ApprovalRequired'};
+      }
+    }
+
+    const reviewedPr: api.PullRequest = {
+      ...convertPrFields(pr),
+      status,
     };
-    if (viewerPrsResult.data.user) {
-      user.name = viewerPrsResult.data.user.name;
-      user.avatarUrl = viewerPrsResult.data.user.avatarUrl;
+
+    const prMention = mentioned.get(pr.id);
+    if (myReview) {
+      reviewedPr.events.push({type: 'MyReviewEvent', review: myReview});
+
+      // TODO: this could be in the wrong order with the new commits below.
+      if (prMention && prMention.mentionedAt > myReview.createdAt) {
+        reviewedPr.events.push(prMention);
+      }
+    } else if (prMention) {
+      reviewedPr.events.push(prMention);
     }
-    const outgoingPrs = [];
-    const incomingPrs = [];
-    if (viewerPrsResult.data.user) {
-      for (const pr of viewerPrsResult.data.user.pullRequests.nodes || []) {
-        if (!pr) {
+
+    // Check if there are new commits to the pull request.
+    if (pr.commits.nodes) {
+      const newCommits = [];
+      let additions = 0;
+      let deletions = 0;
+      let changedFiles = 0;
+      let lastPushedAt = 0;
+      let lastOid;
+      for (const node of pr.commits.nodes) {
+        if (!myReview || !node || !node.commit.pushedDate) {
           continue;
         }
-
-        if (pr.viewerSubscription === 'IGNORED') {
+        const pushedAt = Date.parse(node.commit.pushedDate);
+        if (pushedAt <= myReview.createdAt) {
           continue;
         }
-
-        const outgoingPr: api.PullRequest = {
-          ...convertPrFields(pr),
-          status: {type: 'WaitingReview', reviewers: []},
-        };
-
-        if (pr.author && pr.author.__typename === 'User') {
-          outgoingPr.author = pr.author.login;
-          outgoingPr.avatarUrl = pr.author.avatarUrl;
+        additions += node.commit.additions;
+        deletions += node.commit.deletions;
+        changedFiles += node.commit.changedFiles;
+        if (pushedAt > lastPushedAt) {
+          lastPushedAt = Date.parse(node.commit.pushedDate);
+          lastOid = node.commit.oid;
         }
-
-        const reviewRequests = [];
-        if (pr.reviewRequests) {
-          for (const request of pr.reviewRequests.nodes || []) {
-            if (!request || !request.requestedReviewer ||
-                request.requestedReviewer.__typename !== 'User') {
-              continue;
-            }
-            reviewRequests.push(request.requestedReviewer.login);
-          }
-        }
-
-        let reviews: api.Review[] = [];
-        if (pr.reviews && pr.reviews.nodes) {
-          // Filter out reviews from the viewer.
-          const prReviews = pr.reviews.nodes.filter(
-              (review) =>
-                  review && review.author && review.author.login !== login);
-          reviews = reviewsForOutgoingPrs(prReviews, outgoingPr);
-        }
-
-        const reviewersCount = reviewRequests.length + reviews.length;
-        if (outgoingPr.status.type === 'WaitingReview' &&
-            reviewersCount === 0) {
-          outgoingPr.status = {type: 'NoReviewers'};
-        } else if (outgoingPr.status.type === 'WaitingReview') {
-          outgoingPr.status.reviewers = Array.from(new Set([
-            ...reviewRequests,
-            ...reviews.map((review) => review.author),
-          ]));
-        }
-
-        outgoingPrs.push(outgoingPr);
+        newCommits.push(node);
       }
 
-      // In some cases, GitHub will return a PR both in the review request list
-      // and the reviewed list. This ID set is used to ensure we don't show a PR
-      // twice.
-      const prsShown = [];
-
-      // Build a list of mentions.
-      const mentioned: Map<string, api.MentionedEvent> = new Map();
-      for (const item of viewerPrsResult.data.mentions.nodes || []) {
-        if (!item || item.__typename !== 'PullRequest') {
-          continue;
-        }
-        const mention = getLastMentioned(item, login);
-        if (mention) {
-          mentioned.set(item.id, mention);
-        }
-      }
-
-      // Incoming PRs that I've reviewed.
-      for (const pr of viewerPrsResult.data.reviewed.nodes || []) {
-        if (!pr || pr.__typename !== 'PullRequest') {
-          continue;
-        }
-
-        if (pr.viewerSubscription === 'IGNORED') {
-          continue;
-        }
-
-        // Find relevant review.
-        let relevantReview: MyReviewFields|null = null;
-        if (pr.reviews && pr.reviews.nodes) {
-          // Generated gql-types is missing the proper __type field so a cast is
-          // needed.
-          relevantReview = findMyRelevantReview(
-              pr.reviews.nodes as Array<MyReviewFields|null>);
-        }
-
-        let myReview: api.Review|null = null;
-        let status: api.PullRequestStatus = {type: 'NoActionRequired'};
-        if (relevantReview) {
-          // Cast because inner type has less strict type for __typename.
-          myReview =
-              convertReviewFields(relevantReview as reviewFieldsFragment);
-
-          if (relevantReview.state !== PullRequestReviewState.APPROVED) {
-            status = {type: 'ApprovalRequired'};
-          }
-        }
-
-        const reviewedPr: api.PullRequest = {
-          ...convertPrFields(pr),
-          status,
-        };
-
-        const prMention = mentioned.get(pr.id);
-        if (myReview) {
-          reviewedPr.events.push({type: 'MyReviewEvent', review: myReview});
-
-          // TODO: this could be in the wrong order with the new commits below.
-          if (prMention && prMention.mentionedAt > myReview.createdAt) {
-            reviewedPr.events.push(prMention);
-          }
-        } else if (prMention) {
-          reviewedPr.events.push(prMention);
-        }
-
-        // Check if there are new commits to the pull request.
-        if (pr.commits.nodes) {
-          const newCommits = [];
-          let additions = 0;
-          let deletions = 0;
-          let changedFiles = 0;
-          let lastPushedAt = 0;
-          let lastOid;
-          for (const node of pr.commits.nodes) {
-            if (!myReview || !node || !node.commit.pushedDate) {
-              continue;
-            }
-            const pushedAt = Date.parse(node.commit.pushedDate);
-            if (pushedAt <= myReview.createdAt) {
-              continue;
-            }
-            additions += node.commit.additions;
-            deletions += node.commit.deletions;
-            changedFiles += node.commit.changedFiles;
-            if (pushedAt > lastPushedAt) {
-              lastPushedAt = Date.parse(node.commit.pushedDate);
-              lastOid = node.commit.oid;
-            }
-            newCommits.push(node);
-          }
-
-          if (newCommits.length && relevantReview) {
-            reviewedPr.events.push({
-              type: 'NewCommitsEvent',
-              count: newCommits.length,
-              additions,
-              deletions,
-              changedFiles,
-              lastPushedAt,
-              url: `${pr.url}/files/${relevantReview.commit.oid}..${
-                  lastOid || ''}`,
-            });
-          }
-        }
-
-        prsShown.push(pr.id);
-        incomingPrs.push(reviewedPr);
-      }
-
-      // Incoming review requests.
-      for (const pr of viewerPrsResult.data.reviewRequests.nodes || []) {
-        if (!pr || pr.__typename !== 'PullRequest' ||
-            prsShown.includes(pr.id)) {
-          continue;
-        }
-
-        if (pr.viewerSubscription === 'IGNORED') {
-          continue;
-        }
-
-        const incomingPr: api.PullRequest = {
-          ...convertPrFields(pr),
-          status: {type: 'ReviewRequired'},
-        };
-
-        incomingPrs.push(incomingPr);
+      if (newCommits.length && relevantReview) {
+        reviewedPr.events.push({
+          type: 'NewCommitsEvent',
+          count: newCommits.length,
+          additions,
+          deletions,
+          changedFiles,
+          lastPushedAt,
+          url: `${pr.url}/files/${relevantReview.commit.oid}..${lastOid || ''}`,
+        });
       }
     }
-    return {
-      timestamp: new Date().toISOString(),
-      user,
-      // Sort newest first.
-      outgoingPrs: outgoingPrs.sort((a, b) => b.createdAt - a.createdAt),
-      incomingPrs: sortIncomingPRs(incomingPrs),
-    };
+
+    prsShown.push(pr.id);
+    incomingPrs.push(reviewedPr);
   }
+
+  // Incoming review requests.
+  for (const pr of viewerPrsResult.data.reviewRequests.nodes || []) {
+    if (!pr || pr.__typename !== 'PullRequest' || prsShown.includes(pr.id)) {
+      continue;
+    }
+
+    if (pr.viewerSubscription === 'IGNORED') {
+      continue;
+    }
+
+    const incomingPr: api.PullRequest = {
+      ...convertPrFields(pr),
+      status: {type: 'ReviewRequired'},
+    };
+
+    incomingPrs.push(incomingPr);
+  }
+  return {
+    // Sort newest first.
+    incomingPrs: sortIncomingPRs(incomingPrs),
+  };
 }
 
 /**
@@ -457,8 +513,8 @@ function getLastMentioned(pullRequest: mentionedFieldsFragment, login: string):
   };
 }
 
-const prsQuery = gql`
-query ViewerPullRequests($login: String!, $reviewRequestsQueryString: String!, $reviewedQueryString: String!, $mentionsQueryString: String!) {
+const outgoingPrsQuery = gql`
+query OutgoingPullRequests($login: String!) {
 	user(login: $login) {
     name
     avatarUrl
@@ -486,6 +542,60 @@ query ViewerPullRequests($login: String!, $reviewRequestsQueryString: String!, $
       }
     }
   }
+  rateLimit {
+    cost
+    limit
+    remaining
+    resetAt
+    nodeCount
+  }
+}
+
+fragment reviewFields on PullRequestReview {
+  createdAt
+  state
+  author {
+    login
+  }
+}
+
+fragment prFields on PullRequest {
+  repository {
+    nameWithOwner
+  }
+  title
+  url
+  id
+  createdAt
+  viewerSubscription
+  author {
+    avatarUrl
+    login
+    url
+  }
+}
+
+fragment statusFields on PullRequest {
+	commits(last: 1) {
+    nodes {
+      commit {
+        status {
+          contexts {
+            id
+            context
+            state
+            createdAt
+          }
+          state
+        }
+      }
+    }
+  }
+}
+`;
+
+const incomingPrsQuery = gql`
+query IncomingPullRequests($login: String!, $reviewRequestsQueryString: String!, $reviewedQueryString: String!, $mentionsQueryString: String!) {
   reviewRequests: search(type: ISSUE, query: $reviewRequestsQueryString, last: 20) {
     nodes {
       ... on PullRequest {
@@ -554,24 +664,6 @@ fragment prFields on PullRequest {
     avatarUrl
     login
     url
-  }
-}
-
-fragment statusFields on PullRequest {
-	commits(last: 1) {
-    nodes {
-      commit {
-        status {
-          contexts {
-            id
-            context
-            state
-            createdAt
-          }
-          state
-        }
-      }
-    }
   }
 }
 
