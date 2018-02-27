@@ -42,13 +42,9 @@ function imagesMatch(
           }) === 0;
 
       // Write out diff file.
-      if (!matches) {
-        diff.pack().pipe(fs.createWriteStream(diffPath)).on('finish', () => {
-          resolve(matches);
-        });
-      } else {
+      diff.pack().pipe(fs.createWriteStream(diffPath)).on('finish', () => {
         resolve(matches);
-      }
+      });
     }
   });
 }
@@ -82,10 +78,10 @@ export async function testScreenshot(
     // Write out a combined image of actual, expected, diff for easy viewing.
     if (!matches) {
       const img: jimp = await mergeImg([actualPath, expectedPath, diffPath]);
-      await writeJimp(img, previewPath);
-
       if (process.env.TRAVIS === 'true') {
         console.log(await jimpBase64(img));
+      } else {
+        await writeJimp(img, previewPath);
       }
     }
 
