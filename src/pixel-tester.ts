@@ -31,17 +31,19 @@ function imagesMatch(
         return;
       }
 
+      let matches = true;
       if (img1.width !== img2.width || img1.height !== img2.height) {
-        resolve(false);
+        matches = false;
       }
 
       const diff = new PNG({width: img1.width, height: img1.height});
-      const matches =
+      const numPixelsDifferent =
           pixelmatch(img1.data, img2.data, diff.data, img1.width, img1.height, {
             threshold: 0.1
-          }) === 0;
+          });
+      matches = matches && numPixelsDifferent === 0;
 
-      // Write out diff file.
+      // Wait till diff file is written before resolving.
       diff.pack().pipe(fs.createWriteStream(diffPath)).on('finish', () => {
         resolve(matches);
       });

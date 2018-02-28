@@ -32,8 +32,7 @@ async function outgoingHandler(req: express.Request, res: express.Response) {
       loginDetails.githubToken,
   );
 
-  res.header('content-type', 'application/json');
-  res.send(JSON.stringify(userData, null, 2));
+  res.json(userData);
 }
 
 /**
@@ -133,6 +132,7 @@ export async function fetchOutgoingData(
     prs: outgoingPrs.sort((a, b) => b.createdAt - a.createdAt),
   };
 }
+
 /**
  * Handles a response for incoming pull requests.
  */
@@ -148,8 +148,7 @@ async function incomingHandler(req: express.Request, res: express.Response) {
       loginDetails.githubToken,
   );
 
-  res.header('content-type', 'application/json');
-  res.send(JSON.stringify(userData, null, 2));
+  res.json(userData);
 }
 
 /**

@@ -4,8 +4,6 @@ import * as express from 'express';
 import {Server} from 'http';
 import * as path from 'path';
 
-import {firestore} from '../utils/firestore';
-
 import {getRouter as getDashRouter} from './apis/dash-data';
 import {getRouter as getGitHubHookRouter} from './apis/github-webhook';
 import {getRouter as getLoginRouter} from './apis/login';
@@ -51,8 +49,6 @@ export class DashServer {
     app.use('/api/settings/', getSettingsRouter());
     app.use('/api/updates/', getUpdatesRouter());
 
-    app.get('/firestore-test', this.handleFirestoreTest.bind(this));
-
     this.app = app;
   }
 
@@ -94,13 +90,5 @@ export class DashServer {
         resolve();
       });
     });
-  }
-
-  async handleFirestoreTest(_req: express.Request, res: express.Response) {
-    const colRef = firestore().collection('test');
-    const snapshot = await colRef.get();
-    const data = snapshot.docs.map((doc) => doc.data());
-    res.header('content-type', 'application/json');
-    res.send(JSON.stringify(data, null, 2));
   }
 }
