@@ -8,6 +8,7 @@ import {testScreenshot} from '../../pixel-tester';
 import {startTestReplayServer} from '../../replay-server';
 import {DashServer} from '../../server/dash-server';
 import {LoginDetails, userModel} from '../../server/models/userModel';
+import {initFirestore} from '../../utils/firestore';
 import {initGithub} from '../../utils/github';
 
 type TestContext = {
@@ -33,6 +34,7 @@ test.before(async (t) => {
     sandbox: sinon.sandbox.create(),
   };
 
+  initFirestore();
   initGithub(t.context.replayAddress, t.context.replayAddress);
 });
 

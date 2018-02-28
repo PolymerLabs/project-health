@@ -33,11 +33,15 @@ export interface DashboardUser {
   avatarUrl: string|null;
 }
 
-export interface DashResponse {
+export interface OutgoingDashResponse {
   timestamp: string;
   user: DashboardUser;
-  outgoingPrs: PullRequest[];
-  incomingPrs: PullRequest[];
+  prs: PullRequest[];
+}
+
+export interface IncomingDashResponse {
+  timestamp: string;
+  prs: PullRequest[];
 }
 
 export interface Review {

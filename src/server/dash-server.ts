@@ -6,7 +6,7 @@ import * as path from 'path';
 
 import {firestore} from '../utils/firestore';
 
-import {DashData} from './apis/dash-data';
+import {getRouter as getDashRouter} from './apis/dash-data';
 import {getRouter as getGitHubHookRouter} from './apis/github-webhook';
 import {getRouter as getLoginRouter} from './apis/login';
 import {getRouter as getManageWebhookRouter} from './apis/manage-webhook';
@@ -44,7 +44,7 @@ export class DashServer {
     app.use(express.static(
         path.join(__dirname, '..', 'client', 'require-login'),
         {extensions: ['html']}));
-    app.get('/api/dash.json', new DashData().getHandler());
+    app.use('/api/dash/', getDashRouter());
     app.use('/api/push-subscription/', getPushSubRouter());
     app.use(
         '/api/manage-webhook/', bodyParser.json(), getManageWebhookRouter());

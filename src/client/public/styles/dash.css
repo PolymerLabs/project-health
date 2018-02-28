@@ -8,9 +8,6 @@ a {
 }
 
 .pr-list {
-  max-width: var(--max-desktop-width);
-  margin: 0 auto;
-
   font-size: 14px;
 }
 

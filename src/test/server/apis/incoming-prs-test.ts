@@ -1,15 +1,14 @@
 import anyTest, {TestInterface} from 'ava';
 
 import {startTestReplayServer} from '../../../replay-server';
-import {DashData} from '../../../server/apis/dash-data';
-import {DashResponse, PullRequest} from '../../../types/api';
+import {fetchIncomingData} from '../../../server/apis/dash-data';
+import {IncomingDashResponse, PullRequest} from '../../../types/api';
 import {PullRequestReviewState} from '../../../types/gql-types';
 import {initGithub} from '../../../utils/github';
 
 type TestContext = {
-  dashData: DashResponse,
-  incomingPrsById: Map<string, PullRequest>,
-  outgoingPrsById: Map<string, PullRequest>,
+  data: IncomingDashResponse,
+  prsById: Map<string, PullRequest>,
 };
 const test = anyTest as TestInterface<TestContext>;
 
@@ -18,59 +17,33 @@ const test = anyTest as TestInterface<TestContext>;
  */
 test.beforeEach(async (t) => {
   const {server, url} =
-      await startTestReplayServer(t, 'project-health1-dashboard');
+      await startTestReplayServer(t, 'project-health1-dashboard incoming');
   initGithub(url, url);
 
-  const loginDetails = {
-    username: 'project-health1',
-    githubToken: 'test-token',
-    scopes: [],
-    avatarUrl: null,
-    fullname: null,
-    lastKnownUpdate: new Date().toISOString(),
-  };
-  const instance = new DashData();
-  const dashData = await instance.fetchUserData(
-      loginDetails, 'project-health1', process.env.GITHUB_TOKEN || '');
+  const data = await fetchIncomingData(
+      'project-health1', process.env.GITHUB_TOKEN || '');
   server.close();
 
-  const incomingPrsById = new Map();
-  for (const pr of dashData.incomingPrs) {
-    incomingPrsById.set(
-        pr.url.replace('https://github.com/project-health1/repo/pull/', ''),
-        pr);
-  }
-  const outgoingPrsById = new Map();
-  for (const pr of dashData.outgoingPrs) {
-    outgoingPrsById.set(
+  const prsById = new Map();
+  for (const pr of data.prs) {
+    prsById.set(
         pr.url.replace('https://github.com/project-health1/repo/pull/', ''),
         pr);
   }
   t.context = {
-    dashData,
-    incomingPrsById,
-    outgoingPrsById,
+    data,
+    prsById,
   };
 });
 
-test('dashdata: sane output', (t) => {
-  const data = t.context.dashData;
+test('dashincoming: sane output', (t) => {
+  const data = t.context.data;
   // Make sure a test is added each time these numbers are changed.
-  t.is(data.incomingPrs.length, 5);
-  t.is(data.outgoingPrs.length, 6);
+  t.is(data.prs.length, 5);
 });
 
-test('dashdata: outgoing PRs are sorted', (t) => {
-  const data = t.context.dashData;
-  let lastCreatedAt = data.outgoingPrs[0].createdAt;
-  for (const pr of data.outgoingPrs) {
-    t.true(pr.createdAt <= lastCreatedAt);
-    lastCreatedAt = pr.createdAt;
-  }
-});
-
-test('dashdata: incoming PRs are ordered', (t) => {
-  const prs = t.context.dashData.incomingPrs;
+test('dashincoming: incoming PRs are ordered', (t) => {
+  const prs = t.context.data.prs;
 
   // Actionable status items appear before non actionable ones.
   const notActionable = [
@@ -143,123 +116,8 @@ test('dashdata: incoming PRs are ordered', (t) => {
   }
 });
 
-test('dashdata: outgoing PR, review with my own replies', (t) => {
-  t.deepEqual(t.context.outgoingPrsById.get('8'), {
-    author: 'project-health1',
-    avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
-    createdAt: 1517359006000,
-    events: [
-      {
-        reviews: [{
-          author: 'project-health2',
-          createdAt: 1517359027000,
-          reviewState: PullRequestReviewState.COMMENTED,
-        }],
-        type: 'OutgoingReviewEvent',
-      },
-    ],
-    repository: 'project-health1/repo',
-    status: {
-      reviewers: ['project-health2'],
-      type: 'WaitingReview',
-    },
-    title: 'Update readme to contain more information',
-    url: 'https://github.com/project-health1/repo/pull/8',
-  });
-});
-
-test('dashdata: Outgoing PR, no reviewers', (t) => {
-  t.deepEqual(t.context.outgoingPrsById.get('7'), {
-    author: 'project-health1',
-    avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
-    createdAt: 1517353063000,
-    events: [],
-    repository: 'project-health1/repo',
-    status: {
-      type: 'NoReviewers',
-    },
-    title: 'Update README.md',
-    url: 'https://github.com/project-health1/repo/pull/7',
-  });
-});
-
-test('dashdata: Outgoing PR, changes requested', (t) => {
-  t.deepEqual(t.context.outgoingPrsById.get('6'), {
-    author: 'project-health1',
-    avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
-    createdAt: 1517253689000,
-    repository: 'project-health1/repo',
-    status: {type: 'PendingChanges'},
-    title: 'Adding an oauth page',
-    url: 'https://github.com/project-health1/repo/pull/6',
-    events: [{
-      type: 'OutgoingReviewEvent',
-      reviews: [{
-        author: 'project-health2',
-        createdAt: 1517253712000,
-        reviewState: PullRequestReviewState.CHANGES_REQUESTED,
-      }],
-    }],
-  });
-});
-
-test('dashdata: Outgoing PR, approved, ready to merge', (t) => {
-  t.deepEqual(t.context.outgoingPrsById.get('5'), {
-    author: 'project-health1',
-    avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
-    createdAt: 1517253583000,
-    repository: 'project-health1/repo',
-    status: {type: 'PendingMerge'},
-    title: 'Add lint for TS files',
-    url: 'https://github.com/project-health1/repo/pull/5',
-    events: [{
-      type: 'OutgoingReviewEvent',
-      reviews: [{
-        author: 'project-health2',
-        createdAt: 1517253614000,
-        reviewState: PullRequestReviewState.APPROVED,
-      }],
-    }],
-  });
-});
-
-test('dashdata: Outgoing PR, has 1 commented review', (t) => {
-  t.deepEqual(t.context.outgoingPrsById.get('2'), {
-    author: 'project-health1',
-    avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
-    createdAt: 1516324726000,
-    repository: 'project-health1/repo',
-    title: 'Update all the things',
-    url: 'https://github.com/project-health1/repo/pull/2',
-    status: {type: 'WaitingReview', reviewers: ['project-health2']},
-    events: [{
-      type: 'OutgoingReviewEvent',
-      reviews: [
-        {
-          author: 'project-health2',
-          createdAt: 1516324775000,
-          reviewState: PullRequestReviewState.COMMENTED,
-        },
-      ]
-    }],
-  });
-});
-
-test('dashdata: Outgoing PR, requested reviews, no reviews', (t) => {
-  t.deepEqual(t.context.outgoingPrsById.get('1'), {
-    author: 'project-health1',
-    avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
-    createdAt: 1513370262000,
-    repository: 'project-health1/repo',
-    title: 'Update README.md',
-    url: 'https://github.com/project-health1/repo/pull/1',
-    status: {type: 'WaitingReview', reviewers: ['project-health2']},
-    events: [],
-  });
-});
-
-test('dashdata: Incoming PR with old @mention before I reviewed', (t) => {
-  t.deepEqual(t.context.incomingPrsById.get('11'), {
+test('dashincoming: Incoming PR with old @mention before I reviewed', (t) => {
+  t.deepEqual(t.context.prsById.get('11'), {
     author: 'project-health2',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1518042329000,
@@ -282,8 +140,8 @@ test('dashdata: Incoming PR with old @mention before I reviewed', (t) => {
   });
 });
 
-test('dashdata: Incoming PR with new @mention after I reviewed', (t) => {
-  t.deepEqual(t.context.incomingPrsById.get('10'), {
+test('dashincoming: Incoming PR with new @mention after I reviewed', (t) => {
+  t.deepEqual(t.context.prsById.get('10'), {
     author: 'project-health2',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1518031465000,
@@ -313,8 +171,8 @@ test('dashdata: Incoming PR with new @mention after I reviewed', (t) => {
   });
 });
 
-test('dashdata: Incoming PR that I reviewed. New commit since', (t) => {
-  t.deepEqual(t.context.incomingPrsById.get('9'), {
+test('dashincoming: Incoming PR that I reviewed. New commit since', (t) => {
+  t.deepEqual(t.context.prsById.get('9'), {
     author: 'project-health2',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1517426339000,
@@ -347,8 +205,8 @@ test('dashdata: Incoming PR that I reviewed. New commit since', (t) => {
   });
 });
 
-test('dashdata: Incoming PR, I requested changes', (t) => {
-  t.deepEqual(t.context.incomingPrsById.get('3'), {
+test('dashincoming: Incoming PR, I requested changes', (t) => {
+  t.deepEqual(t.context.prsById.get('3'), {
     author: 'project-health2',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1516750523000,
@@ -367,8 +225,8 @@ test('dashdata: Incoming PR, I requested changes', (t) => {
   });
 });
 
-test('dashdata: Incoming review request', (t) => {
-  t.deepEqual(t.context.incomingPrsById.get('4'), {
+test('dashincoming: Incoming review request', (t) => {
+  t.deepEqual(t.context.prsById.get('4'), {
     author: 'project-health2',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1516753159000,

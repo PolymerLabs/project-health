@@ -597,14 +597,11 @@ export interface StarsQuery {
   } | null,
 };
 
-export interface ViewerPullRequestsQueryVariables {
+export interface OutgoingPullRequestsQueryVariables {
   login: string,
-  reviewRequestsQueryString: string,
-  reviewedQueryString: string,
-  mentionsQueryString: string,
 };
 
-export interface ViewerPullRequestsQuery {
+export interface OutgoingPullRequestsQuery {
   // Lookup a user by login.
   user:  {
     __typename: "User",
@@ -742,6 +739,30 @@ export interface ViewerPullRequestsQuery {
       } | null > | null,
     },
   } | null,
+  // The client's rate limit information.
+  rateLimit:  {
+    __typename: "RateLimit",
+    // The point cost for the current query counting against the rate limit.
+    cost: number,
+    // The maximum number of points the client is permitted to consume in a 60 minute window.
+    limit: number,
+    // The number of points remaining in the current rate limit window.
+    remaining: number,
+    // The time at which the current rate limit window resets in UTC epoch seconds.
+    resetAt: string,
+    // The maximum number of nodes this query may return
+    nodeCount: number,
+  } | null,
+};
+
+export interface IncomingPullRequestsQueryVariables {
+  login: string,
+  reviewRequestsQueryString: string,
+  reviewedQueryString: string,
+  mentionsQueryString: string,
+};
+
+export interface IncomingPullRequestsQuery {
   // Perform a search across resources.
   reviewRequests:  {
     __typename: "SearchResultItemConnection",

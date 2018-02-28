@@ -4,11 +4,17 @@ import * as api from '../../../../types/api';
 // Poll every 5 Minutes
 const LONG_POLL_INTERVAL = 5 * 60 * 1000;
 const SHORT_POLL_INTERVAL = 15 * 1000;
+const NO_OUTGOING_PRS_MESSAGE =
+    'You have no outgoing pull requests. When you open new pull requests, they\'ll appear here';
+const NO_INCOMING_PRS_MESSAGE =
+    '🎉 No incoming pull requests! When you\'re added as a reviewer to a pull request, it\'ll appear here.';
 
 // This is the latest data received from the server and rendered to the page
-let lastPolledData: api.DashResponse;
+let lastPolledIncoming: api.IncomingDashResponse|undefined;
+let lastPolledOutgoing: api.OutgoingDashResponse|undefined;
 // This is the data that the user view the last time they were on the page
-let lastViewedData: api.DashResponse;
+let lastViewedOutgoing: api.OutgoingDashResponse|undefined;
+let lastViewedIncoming: api.IncomingDashResponse|undefined;
 
 let longPollTimeoutId: number;
 let shortPollTimeoutId: number;
@@ -23,56 +29,50 @@ type StatusDisplay = {
 
 const DEFAULT_AVATAR = '/images/default-avatar.svg';
 
-const dashTmpl = (data: api.DashResponse, newlyActionablePRs: string[]) => {
-  const imageUrl = data.user.avatarUrl ? data.user.avatarUrl : DEFAULT_AVATAR;
+const profileTmpl = (data: api.DashboardUser) => {
+  const imageUrl = data.avatarUrl ? data.avatarUrl : DEFAULT_AVATAR;
   const buttonTemplates = [];
 
-  if (data.user.isCurrentUser) {
+  if (data.isCurrentUser) {
     buttonTemplates.push(
         html`<a href="/settings" title="Settings" class="settings"></a>`);
   }
-  const prListTemplate =
-      (prList: api.PullRequest[],
-       newlyActionablePRs: string[],
-       emptyMessage: string) => {
-        if (prList.length) {
-          return prList.map((pr) => prTemplate(pr, newlyActionablePRs));
-        } else {
-          return html
-          `<div class="pr-list__empty-message">${emptyMessage}</div>`;
-        }
-      };
-
   return html`
-  <div class="profile-container">
     <div class="profile-avatar"><img src="${imageUrl}" alt="Avatar of ${
-      data.user.login}" /></div>
-    <div class="profile-header">Welcome ${data.user.login}</div>
+      data.login}" /></div>
+    <div class="profile-header">Welcome ${data.login}</div>
     <div class="profile-buttons">
       ${buttonTemplates}
-    </div>
-  </div>
-  <div class="pr-list">
-    <h2>Outgoing pull requests</h2>
-    ${
-      prListTemplate(
-          data.outgoingPrs,
-          newlyActionablePRs,
-          'You have no outgoing pull requests. When you open new pull requests, they\'ll appear here')}
-    <h2>Incoming pull requests</h2>
-    ${
-      prListTemplate(
-          data.incomingPrs,
-          newlyActionablePRs,
-          '🎉 No incoming pull requests! When you\'re added as a reviewer to a pull request, it\'ll appear here.')}
-  </div>
-  `;
+    </div>`;
 };
 
-function renderDash(data: api.DashResponse, newlyActionablePRs: string[]) {
+const prListTemplate =
+    (prList: api.PullRequest[],
+     newlyActionablePRs: string[],
+     emptyMessage: string) => {
+      if (prList.length) {
+        return html`${prList.map((pr) => prTemplate(pr, newlyActionablePRs))}`;
+      } else {
+        return html
+        `<div class="pr-list__empty-message">${emptyMessage}</div>`;
+      }
+    };
+
+function renderOutgoing(
+    data: api.OutgoingDashResponse, newlyActionablePRs: string[]) {
   render(
-      dashTmpl(data, newlyActionablePRs),
-      (document.querySelector('.dash-container') as Element));
+      profileTmpl(data.user),
+      (document.querySelector('#profile-container') as Element));
+  render(
+      prListTemplate(data.prs, newlyActionablePRs, NO_OUTGOING_PRS_MESSAGE),
+      (document.querySelector('#outgoing') as Element));
+}
+
+function renderIncoming(
+    data: api.IncomingDashResponse, newlyActionablePRs: string[]) {
+  render(
+      prListTemplate(data.prs, newlyActionablePRs, NO_INCOMING_PRS_MESSAGE),
+      (document.querySelector('#incoming') as Element));
 }
 
 function timeToString(dateTime: number) {
@@ -253,67 +253,76 @@ function prTemplate(pr: api.PullRequest, newlyActionablePRs: string[]) {
     </div>`;
 }
 
-function hasNewActions(
-    newData: api.DashResponse, oldData: api.DashResponse): string[] {
-  if (!oldData) {
-    return [];
+function newActions(
+    newList: api.PullRequest[], oldList: api.PullRequest[]): string[] {
+  const result = [];
+  const oldActionablePRs: {[prUrl: string]: api.PullRequest} = {};
+  oldList.forEach((pr: api.PullRequest) => {
+    const {actionable} = statusToDisplay(pr);
+    if (!actionable) {
+      return;
+    }
+
+    oldActionablePRs[pr.url] = pr;
+  });
+
+  for (const newPr of newList) {
+    const {actionable} = statusToDisplay(newPr);
+    if (!actionable) {
+      continue;
+    }
+
+    const oldPr = oldActionablePRs[newPr.url];
+    if (!oldPr) {
+      // New list has an actionable PR that didn't exist before
+      result.push(newPr.url);
+    }
+
+    if (JSON.stringify(newPr) !== JSON.stringify(oldPr)) {
+      result.push(newPr.url);
+    }
   }
-
-  const newlyActionablePRs: string[] = [];
-
-  const newActions =
-      (newList: api.PullRequest[], oldList: api.PullRequest[]) => {
-        const oldActionablePRs: {[prUrl: string]: api.PullRequest} = {};
-        oldList.forEach((pr: api.PullRequest) => {
-          const {actionable} = statusToDisplay(pr);
-          if (!actionable) {
-            return;
-          }
-
-          oldActionablePRs[pr.url] = pr;
-        });
-
-        for (const newPr of newList) {
-          const {actionable} = statusToDisplay(newPr);
-          if (!actionable) {
-            continue;
-          }
-
-          const oldPr = oldActionablePRs[newPr.url];
-          if (!oldPr) {
-            // New list has an actionable PR that didn't exist before
-            newlyActionablePRs.push(newPr.url);
-          }
-
-          if (JSON.stringify(newPr) !== JSON.stringify(oldPr)) {
-            newlyActionablePRs.push(newPr.url);
-          }
-        }
-      };
-
-  newActions(newData.outgoingPrs, oldData.outgoingPrs);
-  newActions(newData.incomingPrs, oldData.incomingPrs);
-
-  return newlyActionablePRs;
+  return result;
 }
 
-async function getDashData(userLogin: string|null) {
+async function fetchAndRender(userLogin: string|null): Promise<boolean> {
   // This allows you to see another users dashboard.
   const loginParams = userLogin ? `?login=${userLogin}` : '';
-  const res =
-      await fetch(`/api/dash.json${loginParams}`, {credentials: 'include'});
-  const newData = await res.json() as api.DashResponse;
-  const results = {
-    data: newData,
-    newActions: hasNewActions(newData, lastViewedData),
-  };
+  // Execute these requests in parallel.
+  const results = await Promise.all(
+      [getAndRenderOutgoing(loginParams), getAndRenderIncoming(loginParams)]);
 
-  lastPolledData = newData;
+  lastPolledOutgoing = results[0].data;
+  lastPolledIncoming = results[1].data;
+
   if (document.hasFocus()) {
-    lastViewedData = newData;
+    lastViewedOutgoing = results[0].data;
+    lastViewedIncoming = results[1].data;
   }
 
-  return results;
+  return results[0].actionable.length + results[1].actionable.length > 0;
+}
+
+async function getAndRenderOutgoing(loginParams: string) {
+  const response =
+      await fetch(`/api/dash/outgoing${loginParams}`, {credentials: 'include'});
+  const data = await response.json() as api.OutgoingDashResponse;
+
+  const oldPrs = lastViewedOutgoing ? lastViewedOutgoing.prs : [];
+  const actionable = newActions(data.prs, oldPrs);
+  renderOutgoing(data, actionable);
+  return {data, actionable};
+}
+
+async function getAndRenderIncoming(loginParams: string) {
+  const response =
+      await fetch(`/api/dash/incoming${loginParams}`, {credentials: 'include'});
+  const data = await response.json() as api.IncomingDashResponse;
+
+  const oldPrs = lastViewedIncoming ? lastViewedIncoming.prs : [];
+  const actionable = newActions(data.prs, oldPrs);
+  renderIncoming(data, actionable);
+  return {data, actionable};
 }
 
 function changeFavIcon(hasAction: boolean) {
@@ -328,17 +337,15 @@ function changeFavIcon(hasAction: boolean) {
   }
 }
 
-
 async function updateDashboard(userLogin: string|null) {
   if (longPollTimeoutId) {
     window.clearTimeout(longPollTimeoutId);
   }
 
   try {
-    const {data, newActions} = await getDashData(userLogin);
-    renderDash(data, newActions);
+    const hasActionable = await fetchAndRender(userLogin);
 
-    if (newActions.length > 0 && document.hasFocus() === false) {
+    if (hasActionable && document.hasFocus() === false) {
       changeFavIcon(true);
     } else {
       changeFavIcon(false);
@@ -360,7 +367,7 @@ async function performShortPollAction(userLogin: string|null) {
   const details =
       (await response.json()) as api.JSONAPIResponse<api.LastKnownResponse>;
   if (details.error) {
-    console.error(`Uneable to get last known update: ${details.error.message}`);
+    console.error(`Unable to get last known update: ${details.error.message}`);
     return;
   }
 
@@ -372,12 +379,12 @@ async function performShortPollAction(userLogin: string|null) {
     return;
   }
 
-  if (!lastPolledData) {
+  if (!lastPolledIncoming || !lastPolledOutgoing) {
     return;
   }
 
   const lastKnownUpdate = new Date(details.data.lastKnownUpdate);
-  const lastDashUpdate = new Date(lastPolledData.timestamp);
+  const lastDashUpdate = new Date(lastPolledIncoming.timestamp);
   if (lastKnownUpdate > lastDashUpdate) {
     await updateDashboard(userLogin);
   }
@@ -413,7 +420,8 @@ async function start() {
     // This will reset the favicon when the user revisits the page
     changeFavIcon(false);
 
-    lastViewedData = lastPolledData;
+    lastViewedIncoming = lastPolledIncoming;
+    lastViewedOutgoing = lastPolledOutgoing;
 
     // When an element is marked as 'is-newly-actionable' we need to apply the
     // flash keyframe animation (achieved by adding the 'actionable-flash'
