@@ -64,7 +64,7 @@ function getRouter(): express.Router {
           response.status(500).send(err.message);
         }
 
-        await await hooksModel.cleanHooks();
+        await hooksModel.cleanHooks();
       });
   return githubHookRouter;
 }

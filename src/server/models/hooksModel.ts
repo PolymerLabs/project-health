@@ -1,9 +1,8 @@
 import {firestore} from '../../utils/firestore';
 
-const HOOK_COLLECTION_NAME = 'github-hooks';
+const HOOK_COLLECTION_NAME = 'github-event-deliveries';
 
-// 1 Hour to allow some debugging time if needed.
-export const HOOK_MAX_AGE = 60 * 60 * 1000;
+export const HOOK_MAX_AGE = 60 * 1000;
 
 class HooksModel {
   async isNewHook(hookDelivery: string): Promise<boolean> {
@@ -14,15 +13,13 @@ class HooksModel {
     return !hookDoc.exists;
   }
 
-  async logHook(hookDelivery: string):
-      Promise<void> {  // TODO Log hook in collection
+  async logHook(hookDelivery: string): Promise<void> {
     const hookDoc =
         await firestore().collection(HOOK_COLLECTION_NAME).doc(hookDelivery);
     await hookDoc.create({received: true, timestamp: Date.now()});
   }
 
   async cleanHooks() {
-    // Search for hooks older than a minute and delete them
     const querySnapshot =
         await firestore()
             .collection(HOOK_COLLECTION_NAME)
