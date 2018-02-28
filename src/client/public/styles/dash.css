@@ -2,13 +2,14 @@
 @import "./variables/colors.css";
 @import "./components/profile.css";
 
-a {
+.pr-list a {
   text-decoration: none;
   color: inherit;
 }
 
 .pr-list {
   font-size: 14px;
+  margin-bottom: var(--padding);
 }
 
 .pr-list__empty-message {
@@ -152,6 +153,5 @@ a {
 }
 
 .pr-event__url {
-  max-width: 600px;
   display: inline-block;
 }
