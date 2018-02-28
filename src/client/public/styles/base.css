@@ -1,6 +1,8 @@
 body {
   font-family: Helvetica, Arial, sans-serif;
   font-size: 16px;
+  max-width: var(--max-desktop-width);
+  margin: 0 auto;
 }
 
 h1 {

@@ -363,7 +363,7 @@ async function performShortPollAction(userLogin: string|null) {
   const details =
       (await response.json()) as api.JSONAPIResponse<api.LastKnownResponse>;
   if (details.error) {
-    console.error(`Uneable to get last known update: ${details.error.message}`);
+    console.error(`Unable to get last known update: ${details.error.message}`);
     return;
   }
 
