@@ -1,3 +1,6 @@
+@import "./variables/colors.css";
+@import "./variables/dimens.css";
+
 body {
   font-family: Helvetica, Arial, sans-serif;
   font-size: 16px;
