@@ -1,9 +1,13 @@
 import {html, render} from '../../../../../node_modules/lit-html/lit-html.js';
 import * as api from '../../../../types/api';
 
-// Poll every 5 Minutes
+// Poll every 5 minutes
 const LONG_POLL_INTERVAL = 5 * 60 * 1000;
+// Poll every 15 seconds
 const SHORT_POLL_INTERVAL = 15 * 1000;
+// Wait 1 hour before showing local notification if updates have occured.
+const ACTIVITY_UPDATE_DURATION = 1 * 60 * 60 * 1000;
+
 const NO_OUTGOING_PRS_MESSAGE =
     'You have no outgoing pull requests. When you open new pull requests, they\'ll appear here';
 const NO_INCOMING_PRS_MESSAGE =
@@ -15,6 +19,8 @@ let lastPolledOutgoing: api.OutgoingDashResponse|undefined;
 // This is the data that the user view the last time they were on the page
 let lastViewedOutgoing: api.OutgoingDashResponse|undefined;
 let lastViewedIncoming: api.IncomingDashResponse|undefined;
+// The timestamp of users machine when they last viewed the dashboard
+let lastActivityUpdateTimestamp: number = Date.now();
 
 let longPollTimeoutId: number;
 let shortPollTimeoutId: number;
@@ -298,6 +304,7 @@ async function fetchAndRender(userLogin: string|null): Promise<boolean> {
   if (document.hasFocus()) {
     lastViewedOutgoing = results[0].data;
     lastViewedIncoming = results[1].data;
+    lastActivityUpdateTimestamp = Date.now();
   }
 
   return results[0].actionable.length + results[1].actionable.length > 0;
@@ -350,6 +357,9 @@ async function updateDashboard(userLogin: string|null) {
     } else {
       changeFavIcon(false);
     }
+
+    // Check if the user should be updated via notification
+    await checkActivity(hasActionable);
   } catch (err) {
     console.log('Unable to perform long poll update: ', err);
   }
@@ -390,6 +400,72 @@ async function performShortPollAction(userLogin: string|null) {
   }
 }
 
+async function hasPushEnabled() {
+  if ('permissions' in navigator) {
+    // tslint:disable-next-line:no-any
+    const permissionsAPI = (navigator as any)['permissions'];
+    const result = await permissionsAPI.query({
+      name: 'push',
+      userVisibleOnly: true,
+    });
+    return result.state === 'granted';
+  }
+
+  return false;
+}
+
+async function checkActivity(hasActionable: boolean) {
+  if (lastActivityUpdateTimestamp > Date.now() - ACTIVITY_UPDATE_DURATION) {
+    return;
+  }
+
+  // Reset the timestamp to wait a new hour before showing notification
+  lastActivityUpdateTimestamp = Date.now();
+  if (!await hasPushEnabled()) {
+    return;
+  }
+
+  if (!hasActionable) {
+    return;
+  }
+
+  const reg = await navigator.serviceWorker.getRegistration();
+  if (!reg) {
+    return;
+  }
+
+  if (!lastPolledOutgoing || !lastViewedOutgoing || !lastPolledIncoming ||
+      !lastViewedIncoming) {
+    return;
+  }
+
+  const actionableOutgoing =
+      newActions(lastPolledOutgoing.prs, lastViewedOutgoing.prs);
+  const actionableIncoming =
+      newActions(lastPolledIncoming.prs, lastViewedIncoming.prs);
+
+  const bodyMessages = [];
+  if (actionableOutgoing.length > 0) {
+    bodyMessages.push(`${actionableOutgoing.length} outgoing PRs`);
+  }
+  if (actionableIncoming.length > 0) {
+    bodyMessages.push(`${actionableOutgoing.length} incoming PRs`);
+  }
+
+  const options = {
+    body: `${bodyMessages.join(' and ')} require your attention`,
+    icon: '/images/notification-images/icon-192x192.png',
+    data: {
+      url: window.location.href,
+    },
+    // tslint:disable-next-line:no-any
+  } as any;
+  reg.showNotification(
+      `New activity on ${
+          actionableOutgoing.length + actionableIncoming.length} PRs`,
+      options);
+}
+
 async function performShortPoll(userLogin: string|null) {
   if (shortPollTimeoutId) {
     window.clearTimeout(shortPollTimeoutId);
@@ -422,6 +498,7 @@ async function start() {
 
     lastViewedIncoming = lastPolledIncoming;
     lastViewedOutgoing = lastPolledOutgoing;
+    lastActivityUpdateTimestamp = Date.now();
 
     // When an element is marked as 'is-newly-actionable' we need to apply the
     // flash keyframe animation (achieved by adding the 'actionable-flash'
