@@ -103,9 +103,9 @@ export async function testScreenshot(
 /**
  * Promisified version of writing a jimp to a file.
  */
-function writeJimp(jimp: jimp, imgPath: string): Promise<void> {
+function writeJimp(img: jimp, imgPath: string): Promise<void> {
   return new Promise((resolve) => {
-    jimp.write(imgPath, () => resolve());
+    img.write(imgPath, () => resolve());
   });
 }
 

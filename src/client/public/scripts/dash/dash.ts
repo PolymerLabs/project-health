@@ -4,6 +4,10 @@ import * as api from '../../../../types/api';
 // Poll every 5 Minutes
 const LONG_POLL_INTERVAL = 5 * 60 * 1000;
 const SHORT_POLL_INTERVAL = 15 * 1000;
+const NO_OUTGOING_PRS_MESSAGE =
+    'You have no outgoing pull requests. When you open new pull requests, they\'ll appear here';
+const NO_INCOMING_PRS_MESSAGE =
+    '🎉 No incoming pull requests! When you\'re added as a reviewer to a pull request, it\'ll appear here.';
 
 // This is the latest data received from the server and rendered to the page
 let lastPolledIncoming: api.IncomingDashResponse|undefined;
@@ -60,20 +64,14 @@ function renderOutgoing(
       profileTmpl(data.user),
       (document.querySelector('#profile-container') as Element));
   render(
-      prListTemplate(
-          data.prs,
-          newlyActionablePRs,
-          'You have no outgoing pull requests. When you open new pull requests, they\'ll appear here'),
+      prListTemplate(data.prs, newlyActionablePRs, NO_OUTGOING_PRS_MESSAGE),
       (document.querySelector('#outgoing') as Element));
 }
 
 function renderIncoming(
     data: api.IncomingDashResponse, newlyActionablePRs: string[]) {
   render(
-      prListTemplate(
-          data.prs,
-          newlyActionablePRs,
-          '🎉 No incoming pull requests! When you\'re added as a reviewer to a pull request, it\'ll appear here.'),
+      prListTemplate(data.prs, newlyActionablePRs, NO_INCOMING_PRS_MESSAGE),
       (document.querySelector('#incoming') as Element));
 }
 
@@ -290,35 +288,41 @@ function newActions(
 async function fetchAndRender(userLogin: string|null): Promise<boolean> {
   // This allows you to see another users dashboard.
   const loginParams = userLogin ? `?login=${userLogin}` : '';
-  // Send fetches in parallel.
-  const outgoing =
-      fetch(`/api/dash/outgoing${loginParams}`, {credentials: 'include'});
-  const incoming =
-      fetch(`/api/dash/incoming${loginParams}`, {credentials: 'include'});
+  // Execute these requests in parallel.
+  const results = await Promise.all(
+      [getAndRenderOutgoing(loginParams), getAndRenderIncoming(loginParams)]);
 
-  // Render outgoing first.
-  const outgoingData =
-      await (await outgoing).json() as api.OutgoingDashResponse;
-  let oldPrs = lastViewedOutgoing ? lastViewedOutgoing.prs : [];
-  const outgoingActionable = newActions(outgoingData.prs, oldPrs);
-  renderOutgoing(outgoingData, outgoingActionable);
-
-  // Render incoming.
-  const incomingData =
-      await (await incoming).json() as api.IncomingDashResponse;
-  oldPrs = lastViewedIncoming ? lastViewedIncoming.prs : [];
-  const incomingActionable = newActions(incomingData.prs, oldPrs);
-  renderIncoming(incomingData, incomingActionable);
-
-  lastPolledOutgoing = outgoingData;
-  lastPolledIncoming = incomingData;
+  lastPolledOutgoing = results[0].data;
+  lastPolledIncoming = results[1].data;
 
   if (document.hasFocus()) {
-    lastViewedOutgoing = outgoingData;
-    lastViewedIncoming = incomingData;
+    lastViewedOutgoing = results[0].data;
+    lastViewedIncoming = results[1].data;
   }
 
-  return outgoingActionable.length + incomingActionable.length > 0;
+  return results[0].actionable.length + results[1].actionable.length > 0;
+}
+
+async function getAndRenderOutgoing(loginParams: string) {
+  const response =
+      await fetch(`/api/dash/outgoing${loginParams}`, {credentials: 'include'});
+  const data = await response.json() as api.OutgoingDashResponse;
+
+  const oldPrs = lastViewedOutgoing ? lastViewedOutgoing.prs : [];
+  const actionable = newActions(data.prs, oldPrs);
+  renderOutgoing(data, actionable);
+  return {data, actionable};
+}
+
+async function getAndRenderIncoming(loginParams: string) {
+  const response =
+      await fetch(`/api/dash/incoming${loginParams}`, {credentials: 'include'});
+  const data = await response.json() as api.IncomingDashResponse;
+
+  const oldPrs = lastViewedIncoming ? lastViewedIncoming.prs : [];
+  const actionable = newActions(data.prs, oldPrs);
+  renderIncoming(data, actionable);
+  return {data, actionable};
 }
 
 function changeFavIcon(hasAction: boolean) {
