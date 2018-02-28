@@ -2,7 +2,7 @@ import * as express from 'express';
 import gql from 'graphql-tag';
 
 import * as api from '../../types/api';
-import {mentionedFieldsFragment, prFieldsFragment, PullRequestReviewState, reviewFieldsFragment, ViewerPullRequestsQuery} from '../../types/gql-types';
+import {IncomingPullRequestsQuery, mentionedFieldsFragment, OutgoingPullRequestsQuery, prFieldsFragment, PullRequestReviewState, reviewFieldsFragment} from '../../types/gql-types';
 import {github} from '../../utils/github';
 import {LoginDetails, userModel} from '../models/userModel';
 
@@ -50,7 +50,7 @@ export async function fetchOutgoingData(
   const mentionsQueryString =
       `${reviewedQueryString} mentions:${dashboardLogin}`;
 
-  const viewerPrsResult = await github().query<ViewerPullRequestsQuery>({
+  const viewerPrsResult = await github().query<OutgoingPullRequestsQuery>({
     query: outgoingPrsQuery,
     variables: {
       login: dashboardLogin,
@@ -130,7 +130,7 @@ export async function fetchOutgoingData(
     timestamp: new Date().toISOString(),
     user,
     // Sort newest first.
-    outgoingPrs: outgoingPrs.sort((a, b) => b.createdAt - a.createdAt),
+    prs: outgoingPrs.sort((a, b) => b.createdAt - a.createdAt),
   };
 }
 /**
@@ -165,7 +165,7 @@ export async function fetchIncomingData(
   const mentionsQueryString =
       `${reviewedQueryString} mentions:${dashboardLogin}`;
 
-  const viewerPrsResult = await github().query<ViewerPullRequestsQuery>({
+  const viewerPrsResult = await github().query<IncomingPullRequestsQuery>({
     query: incomingPrsQuery,
     variables: {
       login: dashboardLogin,
@@ -303,8 +303,9 @@ export async function fetchIncomingData(
     incomingPrs.push(incomingPr);
   }
   return {
+    timestamp: new Date().toISOString(),
     // Sort newest first.
-    incomingPrs: sortIncomingPRs(incomingPrs),
+    prs: sortIncomingPRs(incomingPrs),
   };
 }
 
@@ -513,6 +514,32 @@ function getLastMentioned(pullRequest: mentionedFieldsFragment, login: string):
   };
 }
 
+const reviewFragment = gql`
+fragment reviewFields on PullRequestReview {
+  createdAt
+  state
+  author {
+    login
+  }
+}`;
+
+const prFragment = gql`
+fragment prFields on PullRequest {
+  repository {
+    nameWithOwner
+  }
+  title
+  url
+  id
+  createdAt
+  viewerSubscription
+  author {
+    avatarUrl
+    login
+    url
+  }
+}`;
+
 const outgoingPrsQuery = gql`
 query OutgoingPullRequests($login: String!) {
 	user(login: $login) {
@@ -551,29 +578,8 @@ query OutgoingPullRequests($login: String!) {
   }
 }
 
-fragment reviewFields on PullRequestReview {
-  createdAt
-  state
-  author {
-    login
-  }
-}
-
-fragment prFields on PullRequest {
-  repository {
-    nameWithOwner
-  }
-  title
-  url
-  id
-  createdAt
-  viewerSubscription
-  author {
-    avatarUrl
-    login
-    url
-  }
-}
+${prFragment}
+${reviewFragment}
 
 fragment statusFields on PullRequest {
 	commits(last: 1) {
@@ -643,29 +649,8 @@ query IncomingPullRequests($login: String!, $reviewRequestsQueryString: String!,
   }
 }
 
-fragment reviewFields on PullRequestReview {
-  createdAt
-  state
-  author {
-    login
-  }
-}
-
-fragment prFields on PullRequest {
-  repository {
-    nameWithOwner
-  }
-  title
-  url
-  id
-  createdAt
-  viewerSubscription
-  author {
-    avatarUrl
-    login
-    url
-  }
-}
+${prFragment}
+${reviewFragment}
 
 fragment mentionedFields on PullRequest {
   id

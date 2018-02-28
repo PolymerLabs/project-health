@@ -44,7 +44,7 @@ export class DashServer {
     app.use(express.static(
         path.join(__dirname, '..', 'client', 'require-login'),
         {extensions: ['html']}));
-    app.get('/api/dash/', getDashRouter());
+    app.use('/api/dash/', getDashRouter());
     app.use('/api/push-subscription/', getPushSubRouter());
     app.use(
         '/api/manage-webhook/', bodyParser.json(), getManageWebhookRouter());

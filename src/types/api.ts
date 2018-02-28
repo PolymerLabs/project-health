@@ -36,11 +36,12 @@ export interface DashboardUser {
 export interface OutgoingDashResponse {
   timestamp: string;
   user: DashboardUser;
-  outgoingPrs: PullRequest[];
+  prs: PullRequest[];
 }
 
 export interface IncomingDashResponse {
-  incomingPrs: PullRequest[];
+  timestamp: string;
+  prs: PullRequest[];
 }
 
 export interface Review {
