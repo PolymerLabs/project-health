@@ -1,27 +1,47 @@
 import * as express from 'express';
 
 import * as webhookEvents from '../controllers/webhook-events';
+import {hooksModel} from '../models/hooksModel';
 
 function getRouter(): express.Router {
   const githubHookRouter = express.Router();
   githubHookRouter.post(
       '/', async (request: express.Request, response: express.Response) => {
+        const eventDelivery = request.headers['x-github-delivery'];
+        if (!eventDelivery) {
+          response.status(400).send('No event delivery provided.');
+          return;
+        }
+
+        if (typeof eventDelivery !== 'string') {
+          response.status(400).send('Event delivery was not a string.');
+          return;
+        }
+
         const eventName = request.headers['x-github-event'];
         if (!eventName) {
           response.status(400).send('No event type provided.');
           return;
         }
 
-        try {
-          let handled = false;
+        if (eventName === 'ping') {
+          // Ping event is sent by Github whenever a new webhook is setup
+          response.send();
+          return;
+        }
 
+        try {
+          if (!await hooksModel.isNewHook(eventDelivery)) {
+            response.status(202).send('Duplicate Event');
+            return;
+          }
+
+          await hooksModel.logHook(eventDelivery);
+
+          let handled = false;
           // List of these events available here:
           // https://developer.github.com/webhooks/
           switch (eventName) {
-            case 'ping':
-              // Ping event is sent by Github whenever a new webhook is setup
-              handled = true;
-              break;
             case 'status':
               handled = await webhookEvents.handleStatus(request.body);
               break;
@@ -43,6 +63,8 @@ function getRouter(): express.Router {
           console.error(err);
           response.status(500).send(err.message);
         }
+
+        await await hooksModel.cleanHooks();
       });
   return githubHookRouter;
 }

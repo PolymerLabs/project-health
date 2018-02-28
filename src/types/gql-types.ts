@@ -1054,8 +1054,7 @@ export interface StatusToPRQuery {
         __typename: "Issue",
       } | {
         __typename: "PullRequest",
-        // Identifies the pull request number.
-        number: number,
+        id: string,
         // Identifies the pull request title.
         title: string,
         // The HTTP URL for this pull request.

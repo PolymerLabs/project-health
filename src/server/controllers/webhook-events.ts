@@ -99,13 +99,13 @@ export async function handleStatus(hookData: StatusHook): Promise<boolean> {
     const commit = commitNode.commit;
     if (commit.oid === hookData.sha) {
       const commitDetails =
-          await pullRequestsModel.getCommitDetails(prData.number, commit.oid);
+          await pullRequestsModel.getCommitDetails(prData.id, commit.oid);
 
       if (!commitDetails || commitDetails.status !== hookData.state) {
         sentNotifications = true;
 
         await pullRequestsModel.setCommitStatus(
-            prData.number, commit.oid, hookData.state);
+            prData.id, commit.oid, hookData.state);
 
         await sendNotification(prData.author.login, {
           title: hookData.description,
@@ -208,7 +208,7 @@ query StatusToPR($query: String!) {
   ) {
     nodes {
       ... on PullRequest {
-        number,
+        id,
         title,
         url,
         author {

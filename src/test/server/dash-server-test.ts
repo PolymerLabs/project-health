@@ -11,10 +11,13 @@ test('/webhook/ ping should return 200', async (t) => {
     method: 'POST',
     headers: {
       'X-GitHub-Event': 'ping',
+      'X-GitHub-Delivery': 'example-delivery',
     }
   });
 
   await server.close();
 
+  const textResponse = await response.text();
+  t.deepEqual(textResponse, '');
   t.true(response.ok);
 });

@@ -13,9 +13,8 @@ export type CommitDetails = {
 };
 
 class PullRequestsModel {
-  async setCommitStatus(prId: number, commitId: string, status: Status) {
-    const prDoc =
-        await firestore().collection(PR_COLLECTION_NAME).doc(prId.toString());
+  async setCommitStatus(prId: string, commitId: string, status: Status) {
+    const prDoc = await firestore().collection(PR_COLLECTION_NAME).doc(prId);
     const snapshot = await prDoc.get();
     let currentData = snapshot.data();
     if (!currentData) {
@@ -37,12 +36,10 @@ class PullRequestsModel {
     }
   }
 
-  async getCommitDetails(prId: number, commitId: string):
+  async getCommitDetails(prId: string, commitId: string):
       Promise<null|CommitDetails> {
-    const prSnapshot = await firestore()
-                           .collection(PR_COLLECTION_NAME)
-                           .doc(prId.toString())
-                           .get();
+    const prSnapshot =
+        await firestore().collection(PR_COLLECTION_NAME).doc(prId).get();
     if (!prSnapshot.exists) {
       return null;
     }
@@ -55,11 +52,8 @@ class PullRequestsModel {
     return prData.commits[commitId];
   }
 
-  async deletePR(prId: number): Promise<void> {
-    await firestore()
-        .collection(PR_COLLECTION_NAME)
-        .doc(prId.toString())
-        .delete();
+  async deletePR(prId: string): Promise<void> {
+    await firestore().collection(PR_COLLECTION_NAME).doc(prId).delete();
   }
 }
 
