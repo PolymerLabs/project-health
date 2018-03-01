@@ -607,6 +607,7 @@ export interface StarsQuery {
 
 export interface OutgoingPullRequestsQueryVariables {
   login: string,
+  startCursor?: string | null,
 };
 
 export interface OutgoingPullRequestsQuery {
@@ -622,6 +623,16 @@ export interface OutgoingPullRequestsQuery {
     // A list of pull requests assocated with this user.
     pullRequests:  {
       __typename: "PullRequestConnection",
+      // Identifies the total count of items in the connection.
+      totalCount: number,
+      // Information to aid in pagination.
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating backwards, are there more items?
+        hasPreviousPage: boolean,
+        // When paginating backwards, the cursor to continue.
+        startCursor: string | null,
+      },
       // A list of nodes.
       nodes:  Array< {
         __typename: "PullRequest",
