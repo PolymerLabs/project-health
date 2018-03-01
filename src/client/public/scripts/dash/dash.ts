@@ -315,8 +315,8 @@ async function getAndRenderOutgoing(loginParams: string) {
       await fetch(`/api/dash/outgoing${loginParams}`, {credentials: 'include'});
   const data = await response.json() as api.OutgoingDashResponse;
 
-  const oldPrs = lastViewedOutgoing ? lastViewedOutgoing.prs : [];
-  const actionable = newActions(data.prs, oldPrs);
+  const actionable =
+      lastViewedOutgoing ? newActions(data.prs, lastViewedOutgoing.prs) : [];
   renderOutgoing(data, actionable);
   return {data, actionable};
 }
@@ -326,8 +326,8 @@ async function getAndRenderIncoming(loginParams: string) {
       await fetch(`/api/dash/incoming${loginParams}`, {credentials: 'include'});
   const data = await response.json() as api.IncomingDashResponse;
 
-  const oldPrs = lastViewedIncoming ? lastViewedIncoming.prs : [];
-  const actionable = newActions(data.prs, oldPrs);
+  const actionable =
+      lastViewedIncoming ? newActions(data.prs, lastViewedIncoming.prs) : [];
   renderIncoming(data, actionable);
   return {data, actionable};
 }

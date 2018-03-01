@@ -505,9 +505,14 @@ function getLastMentioned(pullRequest: mentionedFieldsFragment, login: string):
     return null;
   }
 
+  let text = latest.bodyText;
+  if (text.length > 300) {
+    text = text.substr(0, 300) + '…';
+  }
+
   return {
     type: 'MentionedEvent',
-    text: latest.bodyText,
+    text,
     mentionedAt: Date.parse(latest.createdAt),
     url: latest.url,
   };
