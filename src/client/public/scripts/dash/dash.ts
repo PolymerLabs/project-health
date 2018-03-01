@@ -1,4 +1,4 @@
-import { html, render } from '../../../../../node_modules/lit-html/lit-html.js';
+import {html, render} from '../../../../../node_modules/lit-html/lit-html.js';
 import * as api from '../../../../types/api';
 
 // Poll every 5 minutes
@@ -9,16 +9,16 @@ const SHORT_POLL_INTERVAL = 15 * 1000;
 const ACTIVITY_UPDATE_DURATION = 1 * 60 * 60 * 1000;
 
 const NO_OUTGOING_PRS_MESSAGE =
-  'You have no outgoing pull requests. When you open new pull requests, they\'ll appear here';
+    'You have no outgoing pull requests. When you open new pull requests, they\'ll appear here';
 const NO_INCOMING_PRS_MESSAGE =
-  '🎉 No incoming pull requests! When you\'re added as a reviewer to a pull request, it\'ll appear here.';
+    '🎉 No incoming pull requests! When you\'re added as a reviewer to a pull request, it\'ll appear here.';
 
 // This is the latest data received from the server and rendered to the page
-let lastPolledIncoming: api.IncomingDashResponse | undefined;
-let lastPolledOutgoing: api.OutgoingDashResponse | undefined;
+let lastPolledIncoming: api.IncomingDashResponse|undefined;
+let lastPolledOutgoing: api.OutgoingDashResponse|undefined;
 // This is the data that the user view the last time they were on the page
-let lastViewedOutgoing: api.OutgoingDashResponse | undefined;
-let lastViewedIncoming: api.IncomingDashResponse | undefined;
+let lastViewedOutgoing: api.OutgoingDashResponse|undefined;
+let lastViewedIncoming: api.IncomingDashResponse|undefined;
 // The timestamp of users machine when they last viewed the dashboard
 let lastActivityUpdateTimestamp: number = Date.now();
 
@@ -26,7 +26,7 @@ let longPollTimeoutId: number;
 let shortPollTimeoutId: number;
 
 type EventDisplay = {
-  time: number | null; text: string; url: string | null;
+  time: number|null; text: string; url: string | null;
 };
 
 type StatusDisplay = {
@@ -41,11 +41,11 @@ const profileTmpl = (data: api.DashboardUser) => {
 
   if (data.isCurrentUser) {
     buttonTemplates.push(
-      html`<a href="/settings" title="Settings" class="settings"></a>`);
+        html`<a href="/settings" title="Settings" class="settings"></a>`);
   }
   return html`
     <div class="profile-avatar"><img src="${imageUrl}" alt="Avatar of ${
-    data.login}" /></div>
+      data.login}" /></div>
     <div class="profile-header">Welcome ${data.login}</div>
     <div class="profile-buttons">
       ${buttonTemplates}
@@ -53,32 +53,32 @@ const profileTmpl = (data: api.DashboardUser) => {
 };
 
 const prListTemplate =
-  (prList: api.PullRequest[],
-    newlyActionablePRs: string[],
-    emptyMessage: string) => {
-    if (prList.length) {
-      return html`${prList.map((pr) => prTemplate(pr, newlyActionablePRs))}`;
-    } else {
-      return html
+    (prList: api.PullRequest[],
+     newlyActionablePRs: string[],
+     emptyMessage: string) => {
+      if (prList.length) {
+        return html`${prList.map((pr) => prTemplate(pr, newlyActionablePRs))}`;
+      } else {
+        return html
         `<div class="pr-list__empty-message">${emptyMessage}</div>`;
-    }
-  };
+      }
+    };
 
 function renderOutgoing(
-  data: api.OutgoingDashResponse, newlyActionablePRs: string[]) {
+    data: api.OutgoingDashResponse, newlyActionablePRs: string[]) {
   render(
-    profileTmpl(data.user),
-    (document.querySelector('#profile-container') as Element));
+      profileTmpl(data.user),
+      (document.querySelector('#profile-container') as Element));
   render(
-    prListTemplate(data.prs, newlyActionablePRs, NO_OUTGOING_PRS_MESSAGE),
-    (document.querySelector('#outgoing') as Element));
+      prListTemplate(data.prs, newlyActionablePRs, NO_OUTGOING_PRS_MESSAGE),
+      (document.querySelector('#outgoing') as Element));
 }
 
 function renderIncoming(
-  data: api.IncomingDashResponse, newlyActionablePRs: string[]) {
+    data: api.IncomingDashResponse, newlyActionablePRs: string[]) {
   render(
-    prListTemplate(data.prs, newlyActionablePRs, NO_INCOMING_PRS_MESSAGE),
-    (document.querySelector('#incoming') as Element));
+      prListTemplate(data.prs, newlyActionablePRs, NO_INCOMING_PRS_MESSAGE),
+      (document.querySelector('#incoming') as Element));
 }
 
 function timeToString(dateTime: number) {
@@ -127,10 +127,10 @@ function eventDisplay(event: api.PullRequestEvent): EventDisplay {
     case 'OutgoingReviewEvent':
       const authors = event.reviews.map((review) => review.author);
       const latest =
-        Math.max(...event.reviews.map((review) => review.createdAt));
+          Math.max(...event.reviews.map((review) => review.createdAt));
       let states = event.reviews.map((review) => review.reviewState);
       states =
-        states.filter((value, index, self) => self.indexOf(value) === index);
+          states.filter((value, index, self) => self.indexOf(value) === index);
 
       let text = '';
       if (states.length === 1) {
@@ -138,7 +138,7 @@ function eventDisplay(event: api.PullRequestEvent): EventDisplay {
       } else {
         text += `${authors.join(', ')} reviewed changes`;
       }
-      return { text, time: latest, url: null };
+      return {text, time: latest, url: null};
     case 'MyReviewEvent':
       return {
         text: `You ${reviewStateToString(event.review.reviewState)}`,
@@ -148,7 +148,7 @@ function eventDisplay(event: api.PullRequestEvent): EventDisplay {
     case 'NewCommitsEvent':
       return {
         text: `${event.count} new commits +${event.additions} -${
-          event.deletions}`,
+            event.deletions}`,
         time: event.lastPushedAt,
         url: event.url,
       };
@@ -168,11 +168,11 @@ function eventTemplate(event: api.PullRequestEvent) {
   const display = eventDisplay(event);
 
   const timeTemplate = (time: number) =>
-    html`<time class="pr-event__time" datetime="${
-      new Date(time).toISOString()}">${timeToString(time)}</time>`;
+      html`<time class="pr-event__time" datetime="${
+          new Date(time).toISOString()}">${timeToString(time)}</time>`;
 
   const linkTemplate = (url: string, text: string) =>
-    html`<a class="pr-event__url" href="${url}" target="_blank">${text}</a>`;
+      html`<a class="pr-event__url" href="${url}" target="_blank">${text}</a>`;
 
   return html`
     <div class="pr-event">
@@ -192,32 +192,32 @@ function eventTemplate(event: api.PullRequestEvent) {
 function statusToDisplay(pr: api.PullRequest): StatusDisplay {
   switch (pr.status.type) {
     case 'UnknownStatus':
-      return { text: '', actionable: false };
+      return {text: '', actionable: false};
     case 'NoActionRequired':
-      return { text: 'No action required', actionable: false };
+      return {text: 'No action required', actionable: false};
     case 'NewActivity':
-      return { text: 'New activity', actionable: false };
+      return {text: 'New activity', actionable: false};
     case 'StatusChecksPending':
-      return { text: 'Status checks pending', actionable: false };
+      return {text: 'Status checks pending', actionable: false};
     case 'WaitingReview':
       return {
         text: `Waiting on ${pr.status.reviewers.join(', ')}`,
         actionable: false
       };
     case 'PendingChanges':
-      return { text: 'Waiting on you', actionable: true };
+      return {text: 'Waiting on you', actionable: true};
     case 'PendingMerge':
-      return { text: 'Ready to merge', actionable: true };
+      return {text: 'Ready to merge', actionable: true};
     case 'StatusChecksFailed':
-      return { text: 'Status checks failed', actionable: true };
+      return {text: 'Status checks failed', actionable: true};
     case 'NoReviewers':
-      return { text: 'No reviewers assigned', actionable: true };
+      return {text: 'No reviewers assigned', actionable: true};
     case 'ReviewRequired':
-      return { text: 'Pending your review', actionable: true };
+      return {text: 'Pending your review', actionable: true};
     case 'ApprovalRequired':
-      return { text: 'Pending your approval', actionable: true };
+      return {text: 'Pending your approval', actionable: true};
     case 'MergeRequired':
-      return { text: 'Requires merging', actionable: true };
+      return {text: 'Requires merging', actionable: true};
     default:
       const unknown: never = pr.status;
       throw new Error(`Unknown PullRequestStatus: ${unknown}`);
@@ -236,8 +236,8 @@ function prTemplate(pr: api.PullRequest, newlyActionablePRs: string[]) {
         <div class="pr-author">
           <div class="pr-author__name">${pr.author}</div>
           <time class="pr-author__creation-time" datetime="${
-    new Date(pr.createdAt).toISOString()}">${
-    timeToString(pr.createdAt)}</time>
+      new Date(pr.createdAt).toISOString()}">${
+      timeToString(pr.createdAt)}</time>
         </div>
 
         <div class="pr-avatar">
@@ -247,7 +247,7 @@ function prTemplate(pr: api.PullRequest, newlyActionablePRs: string[]) {
         <a class="pr-body" href="${pr.url}" target="_blank">
           <div class="small-heading pr-status">
             <span class="pr-status__msg ${
-    status.actionable ? 'actionable' : ''}">${status.text}</span>
+      status.actionable ? 'actionable' : ''}">${status.text}</span>
           </div>
           <div class="pr-info">
             <span class="pr-info__repo-name">${pr.repository}</span>
@@ -260,11 +260,11 @@ function prTemplate(pr: api.PullRequest, newlyActionablePRs: string[]) {
 }
 
 function newActions(
-  newList: api.PullRequest[], oldList: api.PullRequest[]): string[] {
+    newList: api.PullRequest[], oldList: api.PullRequest[]): string[] {
   const result = [];
-  const oldActionablePRs: { [prUrl: string]: api.PullRequest } = {};
+  const oldActionablePRs: {[prUrl: string]: api.PullRequest} = {};
   oldList.forEach((pr: api.PullRequest) => {
-    const { actionable } = statusToDisplay(pr);
+    const {actionable} = statusToDisplay(pr);
     if (!actionable) {
       return;
     }
@@ -273,7 +273,7 @@ function newActions(
   });
 
   for (const newPr of newList) {
-    const { actionable } = statusToDisplay(newPr);
+    const {actionable} = statusToDisplay(newPr);
     if (!actionable) {
       continue;
     }
@@ -291,12 +291,12 @@ function newActions(
   return result;
 }
 
-async function fetchAndRender(userLogin: string | null): Promise<boolean> {
+async function fetchAndRender(userLogin: string|null): Promise<boolean> {
   // This allows you to see another users dashboard.
   const loginParams = userLogin ? `?login=${userLogin}` : '';
   // Execute these requests in parallel.
   const results = await Promise.all(
-    [getAndRenderOutgoing(loginParams), getAndRenderIncoming(loginParams)]);
+      [getAndRenderOutgoing(loginParams), getAndRenderIncoming(loginParams)]);
 
   lastPolledOutgoing = results[0].data;
   lastPolledIncoming = results[1].data;
@@ -312,30 +312,30 @@ async function fetchAndRender(userLogin: string | null): Promise<boolean> {
 
 async function getAndRenderOutgoing(loginParams: string) {
   const response =
-    await fetch(`/api/dash/outgoing${loginParams}`, { credentials: 'include' });
+      await fetch(`/api/dash/outgoing${loginParams}`, {credentials: 'include'});
   const data = await response.json() as api.OutgoingDashResponse;
 
   const actionable =
-    lastViewedOutgoing ? newActions(data.prs, lastViewedOutgoing.prs) : [];
+      lastViewedOutgoing ? newActions(data.prs, lastViewedOutgoing.prs) : [];
   renderOutgoing(data, actionable);
-  return { data, actionable };
+  return {data, actionable};
 }
 
 async function getAndRenderIncoming(loginParams: string) {
   const response =
-    await fetch(`/api/dash/incoming${loginParams}`, { credentials: 'include' });
+      await fetch(`/api/dash/incoming${loginParams}`, {credentials: 'include'});
   const data = await response.json() as api.IncomingDashResponse;
 
   const actionable =
-    lastViewedIncoming ? newActions(data.prs, lastViewedIncoming.prs) : [];
+      lastViewedIncoming ? newActions(data.prs, lastViewedIncoming.prs) : [];
   renderIncoming(data, actionable);
-  return { data, actionable };
+  return {data, actionable};
 }
 
 function changeFavIcon(hasAction: boolean) {
   const iconElements =
-    (document.querySelectorAll('link[rel=icon]') as
-      NodeListOf<HTMLLinkElement>);
+      (document.querySelectorAll('link[rel=icon]') as
+       NodeListOf<HTMLLinkElement>);
   for (let i = 0; i < iconElements.length; i++) {
     const iconElement = iconElements.item(i);
     const size = iconElement.href.indexOf('32x32') === -1 ? 16 : 32;
@@ -344,7 +344,7 @@ function changeFavIcon(hasAction: boolean) {
   }
 }
 
-async function updateDashboard(userLogin: string | null) {
+async function updateDashboard(userLogin: string|null) {
   if (longPollTimeoutId) {
     window.clearTimeout(longPollTimeoutId);
   }
@@ -369,13 +369,13 @@ async function updateDashboard(userLogin: string | null) {
   }, LONG_POLL_INTERVAL);
 }
 
-async function performShortPollAction(userLogin: string | null) {
+async function performShortPollAction(userLogin: string|null) {
   const loginParams = userLogin ? `?login=${userLogin}` : '';
   const response = await fetch(`/api/updates/last-known.json${loginParams}`, {
     credentials: 'include',
   });
   const details =
-    (await response.json()) as api.JSONAPIResponse<api.LastKnownResponse>;
+      (await response.json()) as api.JSONAPIResponse<api.LastKnownResponse>;
   if (details.error) {
     console.error(`Unable to get last known update: ${details.error.message}`);
     return;
@@ -435,14 +435,14 @@ async function checkActivity(hasActionable: boolean) {
   }
 
   if (!lastPolledOutgoing || !lastViewedOutgoing || !lastPolledIncoming ||
-    !lastViewedIncoming) {
+      !lastViewedIncoming) {
     return;
   }
 
   const actionableOutgoing =
-    newActions(lastPolledOutgoing.prs, lastViewedOutgoing.prs);
+      newActions(lastPolledOutgoing.prs, lastViewedOutgoing.prs);
   const actionableIncoming =
-    newActions(lastPolledIncoming.prs, lastViewedIncoming.prs);
+      newActions(lastPolledIncoming.prs, lastViewedIncoming.prs);
 
   const bodyMessages = [];
   if (actionableOutgoing.length > 0) {
@@ -461,12 +461,12 @@ async function checkActivity(hasActionable: boolean) {
     // tslint:disable-next-line:no-any
   } as any;
   reg.showNotification(
-    `New activity on ${
-    actionableOutgoing.length + actionableIncoming.length} PRs`,
-    options);
+      `New activity on ${
+          actionableOutgoing.length + actionableIncoming.length} PRs`,
+      options);
 }
 
-async function performShortPoll(userLogin: string | null) {
+async function performShortPoll(userLogin: string|null) {
   if (shortPollTimeoutId) {
     window.clearTimeout(shortPollTimeoutId);
   }
@@ -482,7 +482,7 @@ async function performShortPoll(userLogin: string | null) {
   }, SHORT_POLL_INTERVAL);
 }
 
-async function startPolling(userLogin: string | null) {
+async function startPolling(userLogin: string|null) {
   await updateDashboard(userLogin);
   await performShortPoll(userLogin);
 }
