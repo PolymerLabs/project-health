@@ -3,7 +3,7 @@ import test from 'ava';
 import {pullRequestsModel} from '../../../server/models/pullRequestsModel';
 import {initFirestore} from '../../../utils/firestore';
 
-const TEST_PR_ID = -1;
+const TEST_PR_ID = '-1';
 const TEST_COMMIT_ID = 123456;
 
 test.before(() => {
