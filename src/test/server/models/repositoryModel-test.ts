@@ -1,12 +1,12 @@
-import anyTest, {TestInterface} from 'ava';
-import {Server} from 'http';
+import anyTest, { TestInterface } from 'ava';
+import { Server } from 'http';
 import * as sinon from 'sinon';
-import {SinonSandbox} from 'sinon';
+import { SinonSandbox } from 'sinon';
 
-import {startTestReplayServer} from '../../../replay-server';
-import {MAX_CACHE_AGE, repositoryModel} from '../../../server/models/repositoryModel';
-import {initFirestore} from '../../../utils/firestore';
-import {github, initGithub} from '../../../utils/github';
+import { startTestReplayServer } from '../../../replay-server';
+import { MAX_CACHE_AGE, repositoryModel } from '../../../server/models/repositoryModel';
+import { initFirestore } from '../../../utils/firestore';
+import { github, initGithub } from '../../../utils/github';
 
 type TestContext = {
   server: Server,
@@ -25,7 +25,7 @@ test.before(() => {
 });
 
 test.beforeEach(async (t) => {
-  const {server, url} = await startTestReplayServer(t);
+  const { server, url } = await startTestReplayServer(t);
   t.context.server = server;
   t.context.sandbox = sinon.sandbox.create();
   initGithub(url, url);
@@ -39,27 +39,27 @@ test.afterEach.always(async (t) => {
   await repositoryModel.deleteRepository(REPO_OWNER, REPO_NAME);
 });
 
-test('getRepositoryDetails when not in Firestore', async (t) => {
+test.serial('getRepositoryDetails when not in Firestore', async (t) => {
   const repoDetails = await repositoryModel.getRepositoryDetails(
-      GITHUB_TOKEN, REPO_OWNER, REPO_NAME);
+    GITHUB_TOKEN, REPO_OWNER, REPO_NAME);
 
   t.true(repoDetails.allow_rebase_merge);
   t.true(repoDetails.allow_squash_merge);
   t.false(repoDetails.allow_merge_commit);
 });
 
-test('getRepositoryDetails when stashed in Firestore', async (t) => {
+test.serial('getRepositoryDetails when stashed in Firestore', async (t) => {
   const githubInstance = github();
   const githubGetSpy = t.context.sandbox.spy(githubInstance, 'get');
 
   let repoDetails = await repositoryModel.getRepositoryDetails(
-      GITHUB_TOKEN, REPO_OWNER, REPO_NAME);
+    GITHUB_TOKEN, REPO_OWNER, REPO_NAME);
   t.true(repoDetails.allow_rebase_merge);
   t.true(repoDetails.allow_squash_merge);
   t.false(repoDetails.allow_merge_commit);
 
   repoDetails = await repositoryModel.getRepositoryDetails(
-      GITHUB_TOKEN, REPO_OWNER, REPO_NAME);
+    GITHUB_TOKEN, REPO_OWNER, REPO_NAME);
   t.true(repoDetails.allow_rebase_merge);
   t.true(repoDetails.allow_squash_merge);
   t.false(repoDetails.allow_merge_commit);
@@ -67,7 +67,7 @@ test('getRepositoryDetails when stashed in Firestore', async (t) => {
   t.deepEqual(githubGetSpy.callCount, 1);
 });
 
-test('getRepositoryDetails should not use old data', async (t) => {
+test.serial('getRepositoryDetails should not use old data', async (t) => {
   let currentTime = Date.now() - MAX_CACHE_AGE;
   const githubInstance = github();
   const githubGetSpy = t.context.sandbox.spy(githubInstance, 'get');
@@ -76,7 +76,7 @@ test('getRepositoryDetails should not use old data', async (t) => {
   });
 
   let repoDetails = await repositoryModel.getRepositoryDetails(
-      GITHUB_TOKEN, REPO_OWNER, REPO_NAME);
+    GITHUB_TOKEN, REPO_OWNER, REPO_NAME);
   t.true(repoDetails.allow_rebase_merge);
   t.true(repoDetails.allow_squash_merge);
   t.false(repoDetails.allow_merge_commit);
@@ -84,7 +84,7 @@ test('getRepositoryDetails should not use old data', async (t) => {
   currentTime += MAX_CACHE_AGE + 1;
 
   repoDetails = await repositoryModel.getRepositoryDetails(
-      GITHUB_TOKEN, REPO_OWNER, REPO_NAME);
+    GITHUB_TOKEN, REPO_OWNER, REPO_NAME);
   t.true(repoDetails.allow_rebase_merge);
   t.true(repoDetails.allow_squash_merge);
   t.false(repoDetails.allow_merge_commit);
