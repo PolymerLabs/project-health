@@ -363,12 +363,39 @@ function sortIncomingPRs(prs: api.PullRequest[]): api.PullRequest[] {
 function reviewsForOutgoingPrs(
     reviews: Array<reviewFieldsFragment|null>,
     outgoingPr: api.PullRequest): api.Review[] {
-  const result = [];
+  // Get the latest important review by a reviewer.
+  const reviewerMap: Map<string, reviewFieldsFragment> = new Map();
   for (const review of reviews) {
-    if (!review) {
+    if (!review || !review.author) {
       continue;
     }
 
+    if (!reviewerMap.has(review.author.login)) {
+      reviewerMap.set(review.author.login, review);
+      continue;
+    }
+
+    const otherReview = reviewerMap.get(review.author.login)!;
+    const importantReviews = [
+      PullRequestReviewState.APPROVED,
+      PullRequestReviewState.CHANGES_REQUESTED
+    ];
+
+    // If the existing review is important and the incoming one isn't, ignore.
+    if (importantReviews.includes(otherReview.state) &&
+        !importantReviews.includes(review.state)) {
+      continue;
+    }
+
+    // Store if its newer.
+    if (review.createdAt > otherReview.createdAt) {
+      reviewerMap.set(review.author.login, review);
+    }
+  }
+
+  const result = [];
+  // Find the correct status for the PR and convert reviews.
+  for (const review of reviewerMap.values()) {
     if (outgoingPr.status.type === 'WaitingReview' &&
         review.state === PullRequestReviewState.APPROVED) {
       outgoingPr.status = {type: 'PendingMerge'};

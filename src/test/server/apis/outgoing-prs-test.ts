@@ -47,7 +47,7 @@ test.beforeEach(async (t) => {
 test('dashoutgoing: sane output', (t) => {
   const data = t.context.data;
   // Make sure a test is added each time these numbers are changed.
-  t.is(data.prs.length, 6);
+  t.is(data.prs.length, 7);
 });
 
 test('dashoutgoing: outgoing PRs are sorted', (t) => {
@@ -171,5 +171,26 @@ test('dashoutgoing: Outgoing PR, requested reviews, no reviews', (t) => {
     url: 'https://github.com/project-health1/repo/pull/1',
     status: {type: 'WaitingReview', reviewers: ['project-health2']},
     events: [],
+  });
+});
+
+
+test('dashoutgoing: review requested changes then approved', (t) => {
+  t.deepEqual(t.context.prsById.get('12'), {
+    author: 'project-health1',
+    avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
+    createdAt: 1519864550000,
+    repository: 'project-health1/repo',
+    title: 'Controversial changes',
+    url: 'https://github.com/project-health1/repo/pull/12',
+    status: {type: 'PendingMerge'},
+    events: [{
+      type: 'OutgoingReviewEvent',
+      reviews: [{
+        author: 'project-health2',
+        createdAt: 1519864611000,
+        reviewState: PullRequestReviewState.APPROVED,
+      }],
+    }],
   });
 });
