@@ -48,6 +48,9 @@ export interface OutgoingDashResponse {
   timestamp: string;
   user: DashboardUser;
   prs: OutgoingPullRequest[];
+  totalCount: number;
+  hasMore: boolean;
+  cursor: string|null;
 }
 
 export interface IncomingDashResponse {

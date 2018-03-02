@@ -18,7 +18,9 @@ export function getRouter(): express.Router {
 }
 
 /**
- * Handles a response for outgoing pull requests.
+ * Handles a response for outgoing pull requests. Available options:
+ *  - ?login - string of username to view as
+ *  - ?cursor - page cursor
  */
 async function outgoingHandler(req: express.Request, res: express.Response) {
   const loginDetails = await userModel.getLoginFromRequest(req);
@@ -31,6 +33,7 @@ async function outgoingHandler(req: express.Request, res: express.Response) {
       loginDetails,
       req.query.login || loginDetails.username,
       loginDetails.githubToken,
+      req.query.cursor,
   );
 
   res.json(userData);
@@ -40,8 +43,10 @@ async function outgoingHandler(req: express.Request, res: express.Response) {
  * Fetches outgoing pull requests for user.
  */
 export async function fetchOutgoingData(
-    loginDetails: LoginDetails, dashboardLogin: string, token: string):
-    Promise<api.OutgoingDashResponse> {
+    loginDetails: LoginDetails,
+    dashboardLogin: string,
+    token: string,
+    startCursor?: string): Promise<api.OutgoingDashResponse> {
   const openPrQuery = 'is:open is:pr archived:false';
   const reviewedQueryString =
       `reviewed-by:${dashboardLogin} ${openPrQuery} -author:${dashboardLogin}`;
@@ -57,6 +62,7 @@ export async function fetchOutgoingData(
       reviewRequestsQueryString,
       reviewedQueryString,
       mentionsQueryString,
+      startCursor
     },
     fetchPolicy: 'network-only',
     context: {token}
@@ -73,8 +79,18 @@ export async function fetchOutgoingData(
     user.avatarUrl = viewerPrsResult.data.user.avatarUrl;
   }
   const outgoingPrs: api.OutgoingPullRequest[] = [];
+  let totalCount = 0;
+  let hasMore = false;
+  let cursor = null;
   if (viewerPrsResult.data.user) {
-    const requestPrs = viewerPrsResult.data.user.pullRequests.nodes || [];
+    const prConnection = viewerPrsResult.data.user.pullRequests;
+
+    // Set pagination info.
+    totalCount = prConnection.totalCount;
+    hasMore = prConnection.pageInfo.hasPreviousPage;
+    cursor = prConnection.pageInfo.startCursor;
+
+    const requestPrs = prConnection.nodes || [];
     const outgoingPrPromises =
         requestPrs.map(async(pr): Promise<api.OutgoingPullRequest|null> => {
           if (!pr) {
@@ -150,6 +166,9 @@ export async function fetchOutgoingData(
     user,
     // Sort newest first.
     prs: outgoingPrs.sort((a, b) => b.createdAt - a.createdAt),
+    totalCount,
+    hasMore,
+    cursor,
   };
 }
 
@@ -597,12 +616,17 @@ fragment prFields on PullRequest {
 }`;
 
 const outgoingPrsQuery = gql`
-query OutgoingPullRequests($login: String!) {
+query OutgoingPullRequests($login: String!, $startCursor: String) {
 	user(login: $login) {
     name
     avatarUrl
     login
-    pullRequests(last: 20, states: [OPEN]) {
+    pullRequests(last: 15, states: [OPEN], before: $startCursor) {
+      totalCount
+      pageInfo {
+        hasPreviousPage
+        startCursor
+      }
       nodes {
         ...prFields
         ...statusFields

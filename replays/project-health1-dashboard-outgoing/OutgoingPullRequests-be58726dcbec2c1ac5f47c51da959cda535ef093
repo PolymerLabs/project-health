@@ -5,6 +5,12 @@
       "avatarUrl": "https://avatars3.githubusercontent.com/u/34584679?v=4",
       "login": "project-health1",
       "pullRequests": {
+        "totalCount": 7,
+        "pageInfo": {
+          "hasPreviousPage": false,
+          "startCursor": "Y3Vyc29yOnYyOpHOCXVmdA==",
+          "__typename": "PageInfo"
+        },
         "nodes": [
           {
             "reviews": {
@@ -421,9 +427,9 @@
     "rateLimit": {
       "cost": 1,
       "limit": 5000,
-      "remaining": 4962,
-      "resetAt": "2018-03-01T23:51:19Z",
-      "nodeCount": 280,
+      "remaining": 4983,
+      "resetAt": "2018-03-02T20:42:28Z",
+      "nodeCount": 210,
       "__typename": "RateLimit"
     }
   }
