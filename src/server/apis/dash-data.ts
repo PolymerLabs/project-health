@@ -4,6 +4,7 @@ import gql from 'graphql-tag';
 import * as api from '../../types/api';
 import {IncomingPullRequestsQuery, mentionedFieldsFragment, OutgoingPullRequestsQuery, prFieldsFragment, PullRequestReviewState, reviewFieldsFragment} from '../../types/gql-types';
 import {github} from '../../utils/github';
+import {repositoryModel} from '../models/repositoryModel';
 import {LoginDetails, userModel} from '../models/userModel';
 
 /**
@@ -71,59 +72,78 @@ export async function fetchOutgoingData(
     user.name = viewerPrsResult.data.user.name;
     user.avatarUrl = viewerPrsResult.data.user.avatarUrl;
   }
-  const outgoingPrs = [];
+  const outgoingPrs: api.OutgoingPullRequest[] = [];
   if (viewerPrsResult.data.user) {
-    for (const pr of viewerPrsResult.data.user.pullRequests.nodes || []) {
-      if (!pr) {
-        continue;
-      }
-
-      if (pr.viewerSubscription === 'IGNORED') {
-        continue;
-      }
-
-      const outgoingPr: api.PullRequest = {
-        ...convertPrFields(pr),
-        status: {type: 'WaitingReview', reviewers: []},
-      };
-
-      if (pr.author && pr.author.__typename === 'User') {
-        outgoingPr.author = pr.author.login;
-        outgoingPr.avatarUrl = pr.author.avatarUrl;
-      }
-
-      const reviewRequests = [];
-      if (pr.reviewRequests) {
-        for (const request of pr.reviewRequests.nodes || []) {
-          if (!request || !request.requestedReviewer ||
-              request.requestedReviewer.__typename !== 'User') {
-            continue;
+    const requestPrs = viewerPrsResult.data.user.pullRequests.nodes || [];
+    const outgoingPrPromises =
+        requestPrs.map(async(pr): Promise<api.OutgoingPullRequest|null> => {
+          if (!pr) {
+            return null;
           }
-          reviewRequests.push(request.requestedReviewer.login);
-        }
-      }
 
-      let reviews: api.Review[] = [];
-      if (pr.reviews && pr.reviews.nodes) {
-        // Filter out reviews from the viewer.
-        const prReviews = pr.reviews.nodes.filter(
-            (review) => review && review.author &&
-                review.author.login !== dashboardLogin);
-        reviews = reviewsForOutgoingPrs(prReviews, outgoingPr);
-      }
+          if (pr.viewerSubscription === 'IGNORED') {
+            return null;
+          }
 
-      const reviewersCount = reviewRequests.length + reviews.length;
-      if (outgoingPr.status.type === 'WaitingReview' && reviewersCount === 0) {
-        outgoingPr.status = {type: 'NoReviewers'};
-      } else if (outgoingPr.status.type === 'WaitingReview') {
-        outgoingPr.status.reviewers = Array.from(new Set([
-          ...reviewRequests,
-          ...reviews.map((review) => review.author),
-        ]));
-      }
+          const outgoingPr: api.PullRequest = {
+            ...convertPrFields(pr),
+            status: {type: 'WaitingReview', reviewers: []},
+          };
 
-      outgoingPrs.push(outgoingPr);
-    }
+          if (pr.author && pr.author.__typename === 'User') {
+            outgoingPr.author = pr.author.login;
+            outgoingPr.avatarUrl = pr.author.avatarUrl;
+          }
+
+          const reviewRequests = [];
+          if (pr.reviewRequests) {
+            for (const request of pr.reviewRequests.nodes || []) {
+              if (!request || !request.requestedReviewer ||
+                  request.requestedReviewer.__typename !== 'User') {
+                continue;
+              }
+              reviewRequests.push(request.requestedReviewer.login);
+            }
+          }
+
+          let reviews: api.Review[] = [];
+          if (pr.reviews && pr.reviews.nodes) {
+            // Filter out reviews from the viewer.
+            const prReviews = pr.reviews.nodes.filter(
+                (review) => review && review.author &&
+                    review.author.login !== dashboardLogin);
+            reviews = reviewsForOutgoingPrs(prReviews, outgoingPr);
+          }
+
+          const reviewersCount = reviewRequests.length + reviews.length;
+          if (outgoingPr.status.type === 'WaitingReview' &&
+              reviewersCount === 0) {
+            outgoingPr.status = {type: 'NoReviewers'};
+          } else if (outgoingPr.status.type === 'WaitingReview') {
+            outgoingPr.status.reviewers = Array.from(new Set([
+              ...reviewRequests,
+              ...reviews.map((review) => review.author),
+            ]));
+          }
+
+          const repoDetails = await repositoryModel.getRepositoryDetails(
+              loginDetails,
+              pr.repository.owner.login,
+              pr.repository.name,
+          );
+          return {
+            ...outgoingPr,
+            repoDetails,
+            mergeable: pr.mergeable,
+          };
+        });
+
+    const prs = (await Promise.all(outgoingPrPromises));
+    prs.forEach((pr) => {
+      if (pr) {
+        outgoingPrs.push(pr);
+      }
+    });
   }
   return {
     timestamp: new Date().toISOString(),
@@ -557,11 +577,16 @@ fragment reviewFields on PullRequestReview {
 const prFragment = gql`
 fragment prFields on PullRequest {
   repository {
+    name
     nameWithOwner
+    owner {
+      login
+    }
   }
   title
   url
   id
+  mergeable
   createdAt
   viewerSubscription
   author {
