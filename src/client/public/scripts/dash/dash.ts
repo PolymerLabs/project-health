@@ -449,7 +449,7 @@ async function checkActivity(hasActionable: boolean) {
     bodyMessages.push(`${actionableOutgoing.length} outgoing PRs`);
   }
   if (actionableIncoming.length > 0) {
-    bodyMessages.push(`${actionableOutgoing.length} incoming PRs`);
+    bodyMessages.push(`${actionableIncoming.length} incoming PRs`);
   }
 
   const options = {
