@@ -1,12 +1,12 @@
-import anyTest, { TestInterface } from 'ava';
-import { Server } from 'http';
+import anyTest, {TestInterface} from 'ava';
+import {Server} from 'http';
 import * as sinon from 'sinon';
-import { SinonSandbox } from 'sinon';
+import {SinonSandbox} from 'sinon';
 
-import { startTestReplayServer } from '../../../replay-server';
-import { MAX_CACHE_AGE, repositoryModel } from '../../../server/models/repositoryModel';
-import { initFirestore } from '../../../utils/firestore';
-import { github, initGithub } from '../../../utils/github';
+import {startTestReplayServer} from '../../../replay-server';
+import {MAX_CACHE_AGE, repositoryModel} from '../../../server/models/repositoryModel';
+import {initFirestore} from '../../../utils/firestore';
+import {github, initGithub} from '../../../utils/github';
 
 type TestContext = {
   server: Server,
@@ -18,6 +18,15 @@ const REPO_NAME = 'project-health';
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
 
+const LOGIN_DETAILS = {
+  username: 'gauntface',
+  avatarUrl: null,
+  fullname: null,
+  githubToken: GITHUB_TOKEN,
+  scopes: ['repo'],
+  lastKnownUpdate: null,
+};
+
 const test = anyTest as TestInterface<TestContext>;
 
 test.before(() => {
@@ -25,7 +34,7 @@ test.before(() => {
 });
 
 test.beforeEach(async (t) => {
-  const { server, url } = await startTestReplayServer(t);
+  const {server, url} = await startTestReplayServer(t);
   t.context.server = server;
   t.context.sandbox = sinon.sandbox.create();
   initGithub(url, url);
@@ -41,7 +50,7 @@ test.afterEach.always(async (t) => {
 
 test.serial('getRepositoryDetails when not in Firestore', async (t) => {
   const repoDetails = await repositoryModel.getRepositoryDetails(
-    GITHUB_TOKEN, REPO_OWNER, REPO_NAME);
+      LOGIN_DETAILS, REPO_OWNER, REPO_NAME);
 
   t.true(repoDetails.allow_rebase_merge);
   t.true(repoDetails.allow_squash_merge);
@@ -53,13 +62,13 @@ test.serial('getRepositoryDetails when stashed in Firestore', async (t) => {
   const githubGetSpy = t.context.sandbox.spy(githubInstance, 'get');
 
   let repoDetails = await repositoryModel.getRepositoryDetails(
-    GITHUB_TOKEN, REPO_OWNER, REPO_NAME);
+      LOGIN_DETAILS, REPO_OWNER, REPO_NAME);
   t.true(repoDetails.allow_rebase_merge);
   t.true(repoDetails.allow_squash_merge);
   t.false(repoDetails.allow_merge_commit);
 
   repoDetails = await repositoryModel.getRepositoryDetails(
-    GITHUB_TOKEN, REPO_OWNER, REPO_NAME);
+      LOGIN_DETAILS, REPO_OWNER, REPO_NAME);
   t.true(repoDetails.allow_rebase_merge);
   t.true(repoDetails.allow_squash_merge);
   t.false(repoDetails.allow_merge_commit);
@@ -76,7 +85,7 @@ test.serial('getRepositoryDetails should not use old data', async (t) => {
   });
 
   let repoDetails = await repositoryModel.getRepositoryDetails(
-    GITHUB_TOKEN, REPO_OWNER, REPO_NAME);
+      LOGIN_DETAILS, REPO_OWNER, REPO_NAME);
   t.true(repoDetails.allow_rebase_merge);
   t.true(repoDetails.allow_squash_merge);
   t.false(repoDetails.allow_merge_commit);
@@ -84,7 +93,7 @@ test.serial('getRepositoryDetails should not use old data', async (t) => {
   currentTime += MAX_CACHE_AGE + 1;
 
   repoDetails = await repositoryModel.getRepositoryDetails(
-    GITHUB_TOKEN, REPO_OWNER, REPO_NAME);
+      LOGIN_DETAILS, REPO_OWNER, REPO_NAME);
   t.true(repoDetails.allow_rebase_merge);
   t.true(repoDetails.allow_squash_merge);
   t.false(repoDetails.allow_merge_commit);

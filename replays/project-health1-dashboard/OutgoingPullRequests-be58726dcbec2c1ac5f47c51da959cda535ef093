@@ -39,12 +39,18 @@
               "__typename": "PullRequestCommitConnection"
             },
             "repository": {
+              "name": "repo",
               "nameWithOwner": "project-health1/repo",
+              "owner": {
+                "login": "project-health1",
+                "__typename": "User"
+              },
               "__typename": "Repository"
             },
             "title": "Update README.md",
             "url": "https://github.com/project-health1/repo/pull/1",
             "id": "MDExOlB1bGxSZXF1ZXN0MTU4Njg4ODg0",
+            "mergeable": "MERGEABLE",
             "createdAt": "2017-12-15T20:37:42Z",
             "viewerSubscription": "UNSUBSCRIBED",
             "author": {
@@ -89,12 +95,18 @@
               "__typename": "PullRequestCommitConnection"
             },
             "repository": {
+              "name": "repo",
               "nameWithOwner": "project-health1/repo",
+              "owner": {
+                "login": "project-health1",
+                "__typename": "User"
+              },
               "__typename": "Repository"
             },
             "title": "Update all the things",
             "url": "https://github.com/project-health1/repo/pull/2",
             "id": "MDExOlB1bGxSZXF1ZXN0MTYzODY0NTkz",
+            "mergeable": "MERGEABLE",
             "createdAt": "2018-01-19T01:18:46Z",
             "viewerSubscription": "UNSUBSCRIBED",
             "author": {
@@ -139,12 +151,18 @@
               "__typename": "PullRequestCommitConnection"
             },
             "repository": {
+              "name": "repo",
               "nameWithOwner": "project-health1/repo",
+              "owner": {
+                "login": "project-health1",
+                "__typename": "User"
+              },
               "__typename": "Repository"
             },
             "title": "Add lint for TS files",
             "url": "https://github.com/project-health1/repo/pull/5",
             "id": "MDExOlB1bGxSZXF1ZXN0MTY1NzkzNDcx",
+            "mergeable": "MERGEABLE",
             "createdAt": "2018-01-29T19:19:43Z",
             "viewerSubscription": "UNSUBSCRIBED",
             "author": {
@@ -189,12 +207,18 @@
               "__typename": "PullRequestCommitConnection"
             },
             "repository": {
+              "name": "repo",
               "nameWithOwner": "project-health1/repo",
+              "owner": {
+                "login": "project-health1",
+                "__typename": "User"
+              },
               "__typename": "Repository"
             },
             "title": "Adding an oauth page",
             "url": "https://github.com/project-health1/repo/pull/6",
             "id": "MDExOlB1bGxSZXF1ZXN0MTY1NzkzODg3",
+            "mergeable": "MERGEABLE",
             "createdAt": "2018-01-29T19:21:29Z",
             "viewerSubscription": "UNSUBSCRIBED",
             "author": {
@@ -229,12 +253,18 @@
               "__typename": "PullRequestCommitConnection"
             },
             "repository": {
+              "name": "repo",
               "nameWithOwner": "project-health1/repo",
+              "owner": {
+                "login": "project-health1",
+                "__typename": "User"
+              },
               "__typename": "Repository"
             },
             "title": "Update README.md",
             "url": "https://github.com/project-health1/repo/pull/7",
             "id": "MDExOlB1bGxSZXF1ZXN0MTY2MTIxMzYx",
+            "mergeable": "MERGEABLE",
             "createdAt": "2018-01-30T22:57:43Z",
             "viewerSubscription": "UNSUBSCRIBED",
             "author": {
@@ -297,13 +327,84 @@
               "__typename": "PullRequestCommitConnection"
             },
             "repository": {
+              "name": "repo",
               "nameWithOwner": "project-health1/repo",
+              "owner": {
+                "login": "project-health1",
+                "__typename": "User"
+              },
               "__typename": "Repository"
             },
             "title": "Update readme to contain more information",
             "url": "https://github.com/project-health1/repo/pull/8",
             "id": "MDExOlB1bGxSZXF1ZXN0MTY2MTM2ODI5",
+            "mergeable": "MERGEABLE",
             "createdAt": "2018-01-31T00:36:46Z",
+            "viewerSubscription": "UNSUBSCRIBED",
+            "author": {
+              "avatarUrl": "https://avatars3.githubusercontent.com/u/34584679?v=4",
+              "login": "project-health1",
+              "url": "https://github.com/project-health1",
+              "__typename": "User"
+            }
+          },
+          {
+            "reviews": {
+              "totalCount": 2,
+              "nodes": [
+                {
+                  "__typename": "PullRequestReview",
+                  "createdAt": "2018-03-01T00:36:42Z",
+                  "state": "CHANGES_REQUESTED",
+                  "author": {
+                    "login": "project-health2",
+                    "__typename": "User"
+                  }
+                },
+                {
+                  "__typename": "PullRequestReview",
+                  "createdAt": "2018-03-01T00:36:51Z",
+                  "state": "APPROVED",
+                  "author": {
+                    "login": "project-health2",
+                    "__typename": "User"
+                  }
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "reviewRequests": {
+              "totalCount": 0,
+              "nodes": [],
+              "__typename": "ReviewRequestConnection"
+            },
+            "__typename": "PullRequest",
+            "commits": {
+              "nodes": [
+                {
+                  "commit": {
+                    "status": null,
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "repository": {
+              "name": "repo",
+              "nameWithOwner": "project-health1/repo",
+              "owner": {
+                "login": "project-health1",
+                "__typename": "User"
+              },
+              "__typename": "Repository"
+            },
+            "title": "Controversial changes",
+            "url": "https://github.com/project-health1/repo/pull/12",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTcyMTEzODAz",
+            "mergeable": "MERGEABLE",
+            "createdAt": "2018-03-01T00:35:50Z",
             "viewerSubscription": "UNSUBSCRIBED",
             "author": {
               "avatarUrl": "https://avatars3.githubusercontent.com/u/34584679?v=4",
@@ -320,8 +421,8 @@
     "rateLimit": {
       "cost": 1,
       "limit": 5000,
-      "remaining": 4947,
-      "resetAt": "2018-02-28T02:11:35Z",
+      "remaining": 4987,
+      "resetAt": "2018-03-02T00:52:10Z",
       "nodeCount": 280,
       "__typename": "RateLimit"
     }

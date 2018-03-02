@@ -1,10 +1,21 @@
-import {PullRequestReviewState} from './gql-types';
+import {MergeableState, PullRequestReviewState} from './gql-types';
 
 export interface OrgWebHookState {
   name: string;
   login: string;
   viewerCanAdminister: boolean;
   hookEnabled: boolean;
+}
+
+export interface RepoDetails {
+  allow_rebase_merge: boolean;
+  allow_squash_merge: boolean;
+  allow_merge_commit: boolean;
+}
+
+export interface OutgoingPullRequest extends PullRequest {
+  repoDetails: RepoDetails;
+  mergeable: MergeableState;
 }
 
 export interface PullRequest {
@@ -36,7 +47,7 @@ export interface DashboardUser {
 export interface OutgoingDashResponse {
   timestamp: string;
   user: DashboardUser;
-  prs: PullRequest[];
+  prs: OutgoingPullRequest[];
 }
 
 export interface IncomingDashResponse {
@@ -55,13 +66,9 @@ export interface JSONAPIResponse<T> {
   data?: T;
 }
 
-export interface LoginResponse {
-  status: string;
-}
+export interface LoginResponse { status: string; }
 
-export interface LastKnownResponse {
-  lastKnownUpdate: string|null;
-}
+export interface LastKnownResponse { lastKnownUpdate: string|null; }
 
 /** Not necessarily actionable. */
 
@@ -169,9 +176,7 @@ export interface ErrorPayload {
   message: string;
 }
 
-export interface NotificationURLData {
-  url: string;
-}
+export interface NotificationURLData { url: string; }
 
 export type SWClientMessage<T> = {
   action: 'push-received',

@@ -38,6 +38,16 @@ test.before(async (t) => {
   initGithub(t.context.replayAddress, t.context.replayAddress);
 });
 
+test.afterEach.always((t) => {
+  t.context.sandbox.restore();
+});
+
+test.after.always(async (t) => {
+  t.context.replayServer.close();
+  t.context.dashServer.close();
+  await t.context.browser.close();
+});
+
 test('project-health1 dashboard UI', async (t) => {
   const page = await t.context.browser.newPage();
 
@@ -70,14 +80,4 @@ test('project-health1 dashboard UI', async (t) => {
 
   await testScreenshot(page, t);
   await page.close();
-});
-
-test.afterEach.always((t) => {
-  t.context.sandbox.restore();
-});
-
-test.after(async (t) => {
-  t.context.replayServer.close();
-  t.context.dashServer.close();
-  await t.context.browser.close();
 });
