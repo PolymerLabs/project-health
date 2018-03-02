@@ -18,7 +18,9 @@ export function getRouter(): express.Router {
 }
 
 /**
- * Handles a response for outgoing pull requests.
+ * Handles a response for outgoing pull requests. Available options:
+ *  - ?login - string of username to view as
+ *  - ?cursor - page cursor
  */
 async function outgoingHandler(req: express.Request, res: express.Response) {
   const loginDetails = await userModel.getLoginFromRequest(req);
@@ -31,6 +33,7 @@ async function outgoingHandler(req: express.Request, res: express.Response) {
       loginDetails,
       req.query.login || loginDetails.username,
       loginDetails.githubToken,
+      req.query.cursor,
   );
 
   res.json(userData);
@@ -40,8 +43,10 @@ async function outgoingHandler(req: express.Request, res: express.Response) {
  * Fetches outgoing pull requests for user.
  */
 export async function fetchOutgoingData(
-    loginDetails: LoginDetails, dashboardLogin: string, token: string):
-    Promise<api.OutgoingDashResponse> {
+    loginDetails: LoginDetails,
+    dashboardLogin: string,
+    token: string,
+    startCursor?: string): Promise<api.OutgoingDashResponse> {
   const openPrQuery = 'is:open is:pr archived:false';
   const reviewedQueryString =
       `reviewed-by:${dashboardLogin} ${openPrQuery} -author:${dashboardLogin}`;
@@ -57,6 +62,7 @@ export async function fetchOutgoingData(
       reviewRequestsQueryString,
       reviewedQueryString,
       mentionsQueryString,
+      startCursor
     },
     fetchPolicy: 'network-only',
     context: {token}
