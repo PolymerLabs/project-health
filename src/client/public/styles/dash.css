@@ -131,6 +131,16 @@
   position: absolute; /* Don't factor in SVG in layout */
 }
 
+.pr-event__action {
+  text-decoration: underline;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  cursor: pointer;
+}
+
 /* Hide the timeline line after the last event  */
 .pr, .pr > .pr-event:last-child > .pr-event__bullet svg {
   background-color: var(--page-bg-color);

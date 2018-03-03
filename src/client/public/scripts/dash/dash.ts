@@ -1,4 +1,5 @@
-import {html, render} from '../../../../../node_modules/lit-html/lit-html.js';
+import {html, render} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
+import {TemplateResult} from '../../../../../node_modules/lit-html/lit-html.js';
 import * as api from '../../../../types/api';
 
 // Poll every 5 minutes
@@ -26,7 +27,7 @@ let longPollTimeoutId: number;
 let shortPollTimeoutId: number;
 
 type EventDisplay = {
-  time: number|null; text: string; url: string | null;
+  time: number|null; text: string | TemplateResult; url: string | null;
 };
 
 type StatusDisplay = {
@@ -164,19 +165,19 @@ function eventDisplay(event: api.PullRequestEvent): EventDisplay {
   }
 }
 
-function eventTemplate(event: api.PullRequestEvent) {
-  const display = eventDisplay(event);
-
+function eventTemplate(event: EventDisplay) {
   const timeTemplate = (time: number) =>
       html`<time class="pr-event__time" datetime="${
           new Date(time).toISOString()}">${timeToString(time)}</time>`;
 
-  const linkTemplate = (url: string, text: string) =>
+  const linkTemplate = (url: string, text: string|TemplateResult) =>
       html`<a class="pr-event__url" href="${url}" target="_blank">${text}</a>`;
 
   return html`
     <div class="pr-event">
-      ${display.time ? timeTemplate(display.time) : ''}
+      ${
+      event.time ? timeTemplate(event.time) :
+                   html`<div class="pr-event__time"></div>`}
 
       <div class="pr-event__bullet">
         <svg width="40" height="100%">
@@ -184,7 +185,7 @@ function eventTemplate(event: api.PullRequestEvent) {
         </svg>
       </div>
       <div class="pr-event__title">
-        ${display.url ? linkTemplate(display.url, display.text) : display.text}
+        ${event.url ? linkTemplate(event.url, event.text) : event.text}
       </div>
     </div>`;
 }
@@ -230,6 +231,68 @@ function prTemplate(pr: api.PullRequest, newlyActionablePRs: string[]) {
   if (newlyActionablePRs.indexOf(pr.url) !== -1) {
     prClasses.push('is-newly-actionable');
   }
+  let mergeTemplate = null;
+  if ('mergeable' in pr) {
+    const outgoingPr = (pr as api.OutgoingPullRequest);
+    if (outgoingPr.mergeable === 'MERGEABLE') {
+      const mergeOptions = [];
+      if (outgoingPr.repoDetails.allow_merge_commit) {
+        const mergeClick = () => {
+          console.log('Time to merge');
+        };
+        mergeOptions.push(html`<button class="pr-event__action" on-click="${
+            mergeClick}">Merge Commit</button>&nbsp;`);
+      }
+      if (outgoingPr.repoDetails.allow_squash_merge) {
+        const squashClick = () => {
+          console.log('Time to squash');
+        };
+        mergeOptions.push(html`<button class="pr-event__action" on-click="${
+            squashClick}">Squash and Merge</button>&nbsp;`);
+      }
+      if (outgoingPr.repoDetails.allow_rebase_merge) {
+        const rebaseClick = () => {
+          console.log('Time to rebase');
+        };
+        mergeOptions.push(html`<button class="pr-event__action" on-click="${
+            rebaseClick}">Rebase and Merge</button>`);
+      }
+
+      if (mergeOptions.length) {
+        const statusType = outgoingPr.status.type;
+        if (statusType === 'StatusChecksPending') {
+          const mergeText = html
+          `<div class="pr-event">Auto merge when status checks pass.&nbsp;${
+              mergeOptions}</div>`;
+          mergeTemplate = eventTemplate({
+            time: null,
+            text: mergeText,
+            url: null,
+          } as EventDisplay);
+        } else if (statusType === 'PendingMerge') {
+          /* const mergeText =
+              html`<div class="pr-event">Merge now.&nbsp;${mergeOptions}</div>`;
+          mergeTemplate = eventTemplate({
+            time: null,
+            text: mergeText,
+            url: null,
+          } as EventDisplay); */
+          const mergeText =
+              html`<div class=pr-event">Auto merge available</div>`;
+          mergeTemplate = eventTemplate({
+            time: null,
+            text: mergeText,
+            url: null,
+          } as EventDisplay);
+        }
+      }
+    }
+  }
+
+  const statusTemplate = status.actionable ? html
+  `<span class="pr-status__msg actionable">${status.text}</span>`: html
+  `<span class="pr-status__msg">${status.text}</span>`;
+
   return html`
     <div class="${prClasses.join(' ')}">
       <div class="pr-header">
@@ -246,8 +309,7 @@ function prTemplate(pr: api.PullRequest, newlyActionablePRs: string[]) {
 
         <a class="pr-body" href="${pr.url}" target="_blank">
           <div class="small-heading pr-status">
-            <span class="pr-status__msg ${
-      status.actionable ? 'actionable' : ''}">${status.text}</span>
+            ${statusTemplate}
           </div>
           <div class="pr-info">
             <span class="pr-info__repo-name">${pr.repository}</span>
@@ -255,7 +317,8 @@ function prTemplate(pr: api.PullRequest, newlyActionablePRs: string[]) {
           </div>
         </a>
       </div>
-      ${pr.events.map(eventTemplate)}
+      ${pr.events.map((event) => eventTemplate(eventDisplay(event)))}
+      ${mergeTemplate}
     </div>`;
 }
 
