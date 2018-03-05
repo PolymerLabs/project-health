@@ -7,6 +7,7 @@
     "noUnusedParameters": true,
     "pretty": true,
     "skipLibCheck": true,
+    "rootDir": ".",
     "lib": [
       "es2017",
       "esnext.asynciterable",
