@@ -458,6 +458,8 @@ async function checkActivity(hasActionable: boolean) {
     data: {
       url: window.location.href,
     },
+    requiresInteraction: false,
+    tag: 'project-health-new-activity'
     // tslint:disable-next-line:no-any
   } as any;
   reg.showNotification(
