@@ -5,12 +5,18 @@
         {
           "__typename": "PullRequest",
           "repository": {
+            "name": "repo",
             "nameWithOwner": "project-health1/repo",
+            "owner": {
+              "login": "project-health1",
+              "__typename": "User"
+            },
             "__typename": "Repository"
           },
           "title": "A new pull request",
           "url": "https://github.com/project-health1/repo/pull/11",
           "id": "MDExOlB1bGxSZXF1ZXN0MTY3ODI2Mzk1",
+          "mergeable": "MERGEABLE",
           "createdAt": "2018-02-07T22:25:29Z",
           "viewerSubscription": "UNSUBSCRIBED",
           "author": {
@@ -23,12 +29,18 @@
         {
           "__typename": "PullRequest",
           "repository": {
+            "name": "repo",
             "nameWithOwner": "project-health1/repo",
+            "owner": {
+              "login": "project-health1",
+              "__typename": "User"
+            },
             "__typename": "Repository"
           },
           "title": "Add a field for getting the template of an element",
           "url": "https://github.com/project-health1/repo/pull/4",
           "id": "MDExOlB1bGxSZXF1ZXN0MTY0NzI1NzUw",
+          "mergeable": "MERGEABLE",
           "createdAt": "2018-01-24T00:19:19Z",
           "viewerSubscription": "UNSUBSCRIBED",
           "author": {
@@ -80,12 +92,18 @@
           },
           "__typename": "PullRequest",
           "repository": {
+            "name": "repo",
             "nameWithOwner": "project-health1/repo",
+            "owner": {
+              "login": "project-health1",
+              "__typename": "User"
+            },
             "__typename": "Repository"
           },
           "title": "A new pull request",
           "url": "https://github.com/project-health1/repo/pull/11",
           "id": "MDExOlB1bGxSZXF1ZXN0MTY3ODI2Mzk1",
+          "mergeable": "MERGEABLE",
           "createdAt": "2018-02-07T22:25:29Z",
           "viewerSubscription": "UNSUBSCRIBED",
           "author": {
@@ -132,12 +150,18 @@
           },
           "__typename": "PullRequest",
           "repository": {
+            "name": "repo",
             "nameWithOwner": "project-health1/repo",
+            "owner": {
+              "login": "project-health1",
+              "__typename": "User"
+            },
             "__typename": "Repository"
           },
           "title": "Questionable changes",
           "url": "https://github.com/project-health1/repo/pull/10",
           "id": "MDExOlB1bGxSZXF1ZXN0MTY3Nzg1NjAw",
+          "mergeable": "MERGEABLE",
           "createdAt": "2018-02-07T19:24:25Z",
           "viewerSubscription": "UNSUBSCRIBED",
           "author": {
@@ -195,12 +219,18 @@
           },
           "__typename": "PullRequest",
           "repository": {
+            "name": "repo",
             "nameWithOwner": "project-health1/repo",
+            "owner": {
+              "login": "project-health1",
+              "__typename": "User"
+            },
             "__typename": "Repository"
           },
           "title": "Update links in readme",
           "url": "https://github.com/project-health1/repo/pull/9",
           "id": "MDExOlB1bGxSZXF1ZXN0MTY2MzUxNTky",
+          "mergeable": "MERGEABLE",
           "createdAt": "2018-01-31T19:18:59Z",
           "viewerSubscription": "UNSUBSCRIBED",
           "author": {
@@ -247,12 +277,18 @@
           },
           "__typename": "PullRequest",
           "repository": {
+            "name": "repo",
             "nameWithOwner": "project-health1/repo",
+            "owner": {
+              "login": "project-health1",
+              "__typename": "User"
+            },
             "__typename": "Repository"
           },
           "title": "A couple minor changes for browserify compatibility",
           "url": "https://github.com/project-health1/repo/pull/3",
           "id": "MDExOlB1bGxSZXF1ZXN0MTY0NzE5MzU4",
+          "mergeable": "MERGEABLE",
           "createdAt": "2018-01-23T23:35:23Z",
           "viewerSubscription": "UNSUBSCRIBED",
           "author": {
@@ -367,8 +403,8 @@
     "rateLimit": {
       "cost": 1,
       "limit": 5000,
-      "remaining": 4940,
-      "resetAt": "2018-02-28T00:10:47Z",
+      "remaining": 4953,
+      "resetAt": "2018-03-01T23:51:19Z",
       "nodeCount": 3060,
       "__typename": "RateLimit"
     }
