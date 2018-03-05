@@ -35,16 +35,18 @@
     <section>
       <h2>Organization Permissions</h2>
       <p>Each organization must add a webhook before any push notifications can be received by anyone in the organization.
-        <a
-          target="_blank" href="https://github.com/settings/connections/applications/23b7d82aec29a3a1a2a8">Review Project-Health Permissions</a>
+        <a target="_blank" href="https://github.com/settings/connections/applications/23b7d82aec29a3a1a2a8">Review Project-Health Permissions</a>
       </p>
       <div class="org-webhook-list"></div>
     </section>
   </div>
 </body>
 
-<script src="/scripts/settings/push-component.js"></script>
-<script src="/scripts/settings/org-webhook-list.js"></script>
+<script nomodule src="/scripts/settings/push-component.min.js" crossorigin></script>
+<script type="module" src="/scripts/settings/push-component.js" crossorigin></script>
+
+<script nomodule src="/scripts/settings/org-webhook-list.min.js" crossorigin></script>
+<script type="module" src="/scripts/settings/org-webhook-list.js" crossorigin></script>
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-114703954-1"></script>
 <script>
