@@ -92,7 +92,7 @@ class PushComponent {
   }
 
   getRegistration() {
-    return navigator.serviceWorker.register('/sw.js');
+    return navigator.serviceWorker.register('/sw.min.js');
   }
 
   async setupPush() {

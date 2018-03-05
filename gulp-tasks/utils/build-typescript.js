@@ -21,7 +21,8 @@ function buildTypescript(tsConfigPath, destPath) {
                          process.exit(1);
                        });
 
-  return tsResult.js.pipe(sourcemaps.write()).pipe(gulp.dest(destPath + '/'));
+  return tsResult.js.pipe(sourcemaps.write('.'))
+      .pipe(gulp.dest(destPath + '/'));
 };
 
 module.exports = {

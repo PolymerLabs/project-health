@@ -1,6 +1,3 @@
-import {} from '.';
-declare var self: ServiceWorkerGlobalScope;
-
 // Make use of Google Analytics Measurement Protocol.
 // https://developers.google.com/analytics/devguides/collection/protocol/v1/reference
 export class Analytics {
