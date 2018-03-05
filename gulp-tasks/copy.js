@@ -2,6 +2,7 @@ const gulp = require('gulp');
 
 const extensions = [
   'json',
+  'ts',
 ];
 
 function extensionsGlob() {

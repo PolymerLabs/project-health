@@ -4,6 +4,7 @@ const sourcemaps = require('gulp-sourcemaps');
 const rollup = require('rollup');
 const rollupStream = require('rollup-stream');
 const uglifyPlugin = require('rollup-plugin-uglify');
+const sourcemapPlugin = require('rollup-plugin-sourcemaps');
 const esMinify = require('uglify-es').minify;
 const rename = require('gulp-rename');
 const source = require('vinyl-source-stream');
@@ -23,6 +24,7 @@ const processScript = (scriptPath, relativePath, destDir) => {
              name: path.basename(scriptPath),
            },
            plugins: [
+             sourcemapPlugin(),
              // uglifyPlugin({}, esMinify),
            ],
          })
@@ -31,7 +33,8 @@ const processScript = (scriptPath, relativePath, destDir) => {
       // Required to make some of these gulp plugins work.
       .pipe(buffer())
       .pipe(sourcemaps.init({loadMaps: true}))
-      .pipe(sourcemaps.write())
+      .pipe(rename({extname: '.min.js'}))
+      .pipe(sourcemaps.write('.'))
       .pipe(gulp.dest(destDir));
 };
 

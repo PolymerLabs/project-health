@@ -24,7 +24,7 @@ const TEST_SECRETS = {
   PRIVATE_VAPID_KEY: 'o1P9aXm-QPZezF_8b7aQabivhv3QqaB0yg5zoFs6-qc',
 };
 
-const TEST_PR_NUMBER = 2;
+const TEST_PR_ID = '2';
 
 type TestContext = {
   server: Server,
@@ -43,13 +43,13 @@ test.beforeEach(async (t) => {
   t.context.sandbox = sinon.sandbox.create();
   initGithub(url, url);
 
-  await pullRequestsModel.deletePR(TEST_PR_NUMBER);
+  await pullRequestsModel.deletePR(TEST_PR_ID);
 });
 
 test.afterEach.always(async (t) => {
   t.context.sandbox.restore();
   await new Promise((resolve) => t.context.server.close(resolve));
-  await pullRequestsModel.deletePR(TEST_PR_NUMBER);
+  await pullRequestsModel.deletePR(TEST_PR_ID);
 });
 
 test.serial(
@@ -477,7 +477,7 @@ test.serial(
                 pullRequests: {
                   nodes: [{
                     __typename: 'PullRequest',
-                    number: TEST_PR_NUMBER,
+                    id: TEST_PR_ID,
                     title: 'Injected title',
                     url: 'https://example.com/pr/123',
                     author: {login: 'injected-pr-author'},

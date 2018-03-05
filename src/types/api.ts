@@ -1,10 +1,21 @@
-import {PullRequestReviewState} from './gql-types';
+import {MergeableState, PullRequestReviewState} from './gql-types';
 
 export interface OrgWebHookState {
   name: string;
   login: string;
   viewerCanAdminister: boolean;
   hookEnabled: boolean;
+}
+
+export interface RepoDetails {
+  allow_rebase_merge: boolean;
+  allow_squash_merge: boolean;
+  allow_merge_commit: boolean;
+}
+
+export interface OutgoingPullRequest extends PullRequest {
+  repoDetails: RepoDetails;
+  mergeable: MergeableState;
 }
 
 export interface PullRequest {
@@ -36,7 +47,10 @@ export interface DashboardUser {
 export interface OutgoingDashResponse {
   timestamp: string;
   user: DashboardUser;
-  prs: PullRequest[];
+  prs: OutgoingPullRequest[];
+  totalCount: number;
+  hasMore: boolean;
+  cursor: string|null;
 }
 
 export interface IncomingDashResponse {

@@ -1,4 +1,5 @@
-@import './variables/dimens.css';
+@import "./variables/colors.css";
+@import "./variables/dimens.css";
 
 body {
   font-family: Helvetica, Arial, sans-serif;
@@ -6,6 +7,10 @@ body {
   max-width: var(--max-desktop-width);
   margin: 0 auto;
   padding: var(--padding);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
 h1 {
@@ -16,6 +21,8 @@ h1 {
 h2 {
   font-size: 22px;
   font-weight: normal;
+  padding-bottom: var(--padding);
+  border-bottom: 1px solid var(--light-grey);
 }
 
 h6 {
@@ -37,4 +44,13 @@ img {
   font-weight: 700;
   line-height: 24px;
   font-size: 14px;
+}
+
+footer {
+  text-align: center;
+  font-size: 12px;
+  margin-top: auto;
+  padding: var(--padding) 0;
+  border-top: 1px solid var(--light-grey);
+  color: var(--secondary-text-color);
 }

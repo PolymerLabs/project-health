@@ -11,6 +11,14 @@ export enum PullRequestReviewState {
 }
 
 
+// Whether or not a PullRequest can be merged.
+export enum MergeableState {
+  MERGEABLE = "MERGEABLE", // The pull request can be merged.
+  CONFLICTING = "CONFLICTING", // The pull request cannot be merged due to merge conflicts.
+  UNKNOWN = "UNKNOWN", // The mergeability of the pull request is still being calculated.
+}
+
+
 // The possible states of a subscription.
 export enum SubscriptionState {
   UNSUBSCRIBED = "UNSUBSCRIBED", // The User is only notified when particpating or @mentioned.
@@ -599,6 +607,7 @@ export interface StarsQuery {
 
 export interface OutgoingPullRequestsQueryVariables {
   login: string,
+  startCursor?: string | null,
 };
 
 export interface OutgoingPullRequestsQuery {
@@ -614,20 +623,45 @@ export interface OutgoingPullRequestsQuery {
     // A list of pull requests assocated with this user.
     pullRequests:  {
       __typename: "PullRequestConnection",
+      // Identifies the total count of items in the connection.
+      totalCount: number,
+      // Information to aid in pagination.
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating backwards, are there more items?
+        hasPreviousPage: boolean,
+        // When paginating backwards, the cursor to continue.
+        startCursor: string | null,
+      },
       // A list of nodes.
       nodes:  Array< {
         __typename: "PullRequest",
         // The repository associated with this node.
         repository:  {
           __typename: "Repository",
+          // The name of the repository.
+          name: string,
           // The repository's name with owner.
           nameWithOwner: string,
+          // The User owner of the repository.
+          owner: ( {
+              __typename: "Organization",
+              // The username used to login.
+              login: string,
+            } | {
+              __typename: "User",
+              // The username used to login.
+              login: string,
+            }
+          ),
         },
         // Identifies the pull request title.
         title: string,
         // The HTTP URL for this pull request.
         url: string,
         id: string,
+        // Whether or not the pull request can be merged based on the existence of merge conflicts.
+        mergeable: MergeableState,
         // Identifies the date and time when the object was created.
         createdAt: string,
         // Identifies if the viewer is watching, not watching, or ignoring the subscribable entity.
@@ -774,14 +808,29 @@ export interface IncomingPullRequestsQuery {
         // The repository associated with this node.
         repository:  {
           __typename: string,
+          // The name of the repository.
+          name: string,
           // The repository's name with owner.
           nameWithOwner: string,
+          // The User owner of the repository.
+          owner: ( {
+              __typename: "Organization",
+              // The username used to login.
+              login: string,
+            } | {
+              __typename: "User",
+              // The username used to login.
+              login: string,
+            }
+          ),
         },
         // Identifies the pull request title.
         title: string,
         // The HTTP URL for this pull request.
         url: string,
         id: string,
+        // Whether or not the pull request can be merged based on the existence of merge conflicts.
+        mergeable: MergeableState,
         // Identifies the date and time when the object was created.
         createdAt: string,
         // Identifies if the viewer is watching, not watching, or ignoring the subscribable entity.
@@ -835,14 +884,29 @@ export interface IncomingPullRequestsQuery {
         // The repository associated with this node.
         repository:  {
           __typename: string,
+          // The name of the repository.
+          name: string,
           // The repository's name with owner.
           nameWithOwner: string,
+          // The User owner of the repository.
+          owner: ( {
+              __typename: "Organization",
+              // The username used to login.
+              login: string,
+            } | {
+              __typename: "User",
+              // The username used to login.
+              login: string,
+            }
+          ),
         },
         // Identifies the pull request title.
         title: string,
         // The HTTP URL for this pull request.
         url: string,
         id: string,
+        // Whether or not the pull request can be merged based on the existence of merge conflicts.
+        mergeable: MergeableState,
         // Identifies the date and time when the object was created.
         createdAt: string,
         // Identifies if the viewer is watching, not watching, or ignoring the subscribable entity.
@@ -1054,8 +1118,7 @@ export interface StatusToPRQuery {
         __typename: "Issue",
       } | {
         __typename: "PullRequest",
-        // Identifies the pull request number.
-        number: number,
+        id: string,
         // Identifies the pull request title.
         title: string,
         // The HTTP URL for this pull request.
@@ -1184,14 +1247,29 @@ export interface prFieldsFragment {
   // The repository associated with this node.
   repository:  {
     __typename: string,
+    // The name of the repository.
+    name: string,
     // The repository's name with owner.
     nameWithOwner: string,
+    // The User owner of the repository.
+    owner: ( {
+        __typename: "Organization",
+        // The username used to login.
+        login: string,
+      } | {
+        __typename: "User",
+        // The username used to login.
+        login: string,
+      }
+    ),
   },
   // Identifies the pull request title.
   title: string,
   // The HTTP URL for this pull request.
   url: string,
   id: string,
+  // Whether or not the pull request can be merged based on the existence of merge conflicts.
+  mergeable: MergeableState,
   // Identifies the date and time when the object was created.
   createdAt: string,
   // Identifies if the viewer is watching, not watching, or ignoring the subscribable entity.
