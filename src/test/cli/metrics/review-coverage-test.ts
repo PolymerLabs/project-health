@@ -19,19 +19,20 @@ test.afterEach.always(async (t) => {
 });
 
 test.serial('gen-typescript-declarations review coverage', async (t) => {
+  const since = new Date(0);
   const result = await getReviewCoverage(
-      {org: 'polymer', repo: 'gen-typescript-declarations'});
-  t.is(result.numReviewed(), 79);
-  t.is(result.commits.length, 82);
+      {org: 'polymer', repo: 'gen-typescript-declarations', since});
+  t.is(result.numReviewed(), 172);
+  t.is(result.commits.length, 197);
 });
 
 test.serial('webcomponents.org review coverage', async (t) => {
-  const result = await getReviewCoverage({
-    org: 'webcomponents',
-    repo: 'webcomponents.org',
-  });
-  t.is(result.numReviewed(), 552);
-  t.is(result.commits.length, 904);
+  const since = new Date(0);
+
+  const result = await getReviewCoverage(
+      {org: 'webcomponents', repo: 'webcomponents.org', since});
+  t.is(result.numReviewed(), 587);
+  t.is(result.commits.length, 939);
   t.truthy(result.summary());
   t.truthy(result.rawData());
 });

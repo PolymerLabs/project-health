@@ -56,8 +56,7 @@ export class ReviewCoverageResult implements MetricResult {
 
 type ReviewCoverageOpts = {
   org: string,
-  repo?: string,
-  since?: string,  // ISO date string
+  repo?: string, since: Date,
 };
 
 type Commit = {
@@ -104,7 +103,7 @@ export async function getReviewCoverage(opts: ReviewCoverageOpts):
  * year.
  */
 async function getMasterCommits(
-    owner: string, name: string, since?: string): Promise<Commit[]> {
+    owner: string, name: string, since: Date): Promise<Commit[]> {
   const getPageInfo = (data: RepoCommitsQuery) => {
     if (!data.repository || !data.repository.defaultBranchRef ||
         data.repository.defaultBranchRef.target.__typename !== 'Commit') {
@@ -114,7 +113,9 @@ async function getMasterCommits(
   };
   const results =
       github().cursorQuery<RepoCommitsQuery, RepoCommitsQueryVariables>(
-          repoCommitsQuery, {owner, name, since}, getPageInfo);
+          repoCommitsQuery,
+          {owner, name, since: since.toISOString()},
+          getPageInfo);
 
   const commits = [];
   for await (const data of results) {

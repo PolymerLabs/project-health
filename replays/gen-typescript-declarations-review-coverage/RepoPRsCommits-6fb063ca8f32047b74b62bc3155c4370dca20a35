@@ -3,7 +3,7 @@
     "repository": {
       "pullRequests": {
         "pageInfo": {
-          "endCursor": "Y3Vyc29yOnYyOpHOCQ9e8w==",
+          "endCursor": "Y3Vyc29yOnYyOpHOChcQ2w==",
           "hasNextPage": false,
           "__typename": "PageInfo"
         },
@@ -1847,6 +1847,2841 @@
                   "commit": {
                     "oid": "d837eba0365f33951f7a24f6d4023a5d49212d5b",
                     "committedDate": "2017-11-10T21:03:59Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-04T23:12:05Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU2MzMxNTg0",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-04T23:36:51Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "a834daf934653f07fb236c3b467caef5a605f49c",
+              "committedDate": "2017-12-04T23:37:28Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "2911fd4c808857d11a34ad04ec27848c35b5d5d5",
+                    "committedDate": "2017-11-29T04:07:57Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "8a585106ffb40f4b93bcd47f2edff4ef04e1996a",
+                    "committedDate": "2017-12-04T23:21:12Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "0b8b592b462590826df867c236aa691402ff10c1",
+                    "committedDate": "2017-12-04T23:21:23Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-05T07:07:23Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU2Mzg2NjE2",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-05T18:01:07Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "justinfagnani",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-05T18:26:40Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "eb28295b7c94db84cf3dc3b38ae725e56f65898e",
+              "committedDate": "2017-12-05T23:03:29Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "cd0bebb0cedebca0ec35683cbe31624276631255",
+                    "committedDate": "2017-12-05T04:48:16Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "9474cf9e0850c578f6ff6bb7ec332c34324c0081",
+                    "committedDate": "2017-12-05T07:00:13Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-05T23:41:11Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU2NjA0NDAz",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-06T00:16:00Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-06T00:52:13Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-06T00:55:50Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-06T00:57:35Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-06T01:11:49Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-06T01:22:54Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "c29fdf7f27146ddab77d132677d95e6f533ffd53",
+              "committedDate": "2017-12-06T01:34:31Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "d857aad91b886c40331c336c81420258f1df7260",
+                    "committedDate": "2017-12-06T01:21:53Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-06T04:53:50Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU2NjQwNzkz",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-06T05:56:59Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "fa5bc9df5af3b5efb5889b888773b350d1f652ae",
+              "committedDate": "2017-12-06T06:04:00Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "b5d18db5a80e91c20792473643c5dae18be0f747",
+                    "committedDate": "2017-12-06T04:59:27Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-08T04:01:46Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU3MTU5NDkw",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-08T19:58:00Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "990fdf8ca7c24521378a507d243e6b3d00e5cda7",
+              "committedDate": "2017-12-08T20:17:28Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "a42182dbf9128980dee28e437c85f201b9b3a9be",
+                    "committedDate": "2017-12-08T20:11:44Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-08T04:22:33Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU3MTYxMjMz",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-08T19:58:28Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-08T20:03:17Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "59b2c47b9a1b798a1cf3f01fb9deb8be7200687a",
+              "committedDate": "2017-12-08T20:22:27Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "b4215684ceea7beaeadfddd2bb18213001716c84",
+                    "committedDate": "2017-12-08T20:19:15Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-08T20:27:27Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU3MzI3MDQy",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "samuelli",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-08T22:20:12Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "604190615b954fb3296c97c4577ffbaad15b2103",
+              "committedDate": "2017-12-08T22:20:20Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "4e049aede5373cf829442ad11d839374dcb65223",
+                    "committedDate": "2017-12-08T20:27:10Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-08T22:29:08Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU3MzQ3Njcz",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "samuelli",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-08T22:31:42Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "5c8dc7c6a3c39cc056c3e72c5378a7e78332187b",
+              "committedDate": "2017-12-08T22:35:50Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "ed04f27da9fc7904ccd83571890c4e8f21e979b4",
+                    "committedDate": "2017-12-08T22:28:55Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-09T04:29:56Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU3MzczMDA0",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-13T19:36:18Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-13T22:04:23Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "d0cc559f3e0399db08425cc55e63070c1b7f6d7c",
+              "committedDate": "2017-12-13T22:04:28Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "a9b744e198d4f6e2d1e0b721b39c773bd742a7b4",
+                    "committedDate": "2017-12-13T22:03:42Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-09T04:40:17Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU3MzczMjkx",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "samuelli",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-09T04:41:23Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "cf962ede16252aeeb0587a73e53e5e1c802b83b0",
+              "committedDate": "2017-12-09T04:42:10Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "91fb9b81b67535dda6a87eb61d47ca1b58cc39ee",
+                    "committedDate": "2017-12-09T04:39:53Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-11T20:02:12Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU3NjU4Mjc5",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "TimvdLippe",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-11T20:03:04Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "87704bf5c1312184b6b68f00a18fa585ce632f06",
+              "committedDate": "2017-12-11T20:05:07Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "47ac8e44ef43db0669cf46c5dc29ebb16527d393",
+                    "committedDate": "2017-12-11T19:57:08Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-11T23:50:47Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU3NzAyMzMz",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "TimvdLippe",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-12T00:16:38Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-12T01:27:24Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-12T02:40:13Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-12T18:16:35Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "ee0f7481f947feda26e21f566ea7eb7328f1b992",
+              "committedDate": "2017-12-12T18:18:11Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "b89f7175029e6e4cc2e7a06a85b368e010a80ed7",
+                    "committedDate": "2017-12-11T22:21:39Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "ccec9565b85748c4b3a0e39c780c7fbcb30d40bf",
+                    "committedDate": "2017-12-11T23:12:44Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "f0f3a857b61e4f98cc3021141ca3c0e1e78202ff",
+                    "committedDate": "2017-12-11T23:16:45Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "da6c544b165bad6fa574706e276d595e449926ed",
+                    "committedDate": "2017-12-11T23:46:01Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "3f78b556e19d378e60cf65f2480bc1717ed6789d",
+                    "committedDate": "2017-12-12T18:15:57Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "7bdff92b0905eb30a0dd66633d7a4004d8bd5ea4",
+                    "committedDate": "2017-12-12T18:16:01Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-13T01:24:44Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU3OTgxODMz",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "samuelli",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-13T01:25:00Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "438e75e0aed4e358ea47bf6fa285a27d62f033a6",
+              "committedDate": "2017-12-13T01:32:01Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "eb80cb0ce2cd7c126278a4d2b322404a2122dfab",
+                    "committedDate": "2017-12-13T01:24:29Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "08e5cfd30e3a56f4da41e80faabe13f5a2f1f702",
+                    "committedDate": "2017-12-13T01:28:54Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-13T19:30:01Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU4MTgzMTg0",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-13T19:34:58Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "202516da26bbcb56327160d0db5d32c6dbe1dc90",
+              "committedDate": "2017-12-13T19:43:02Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "638e7256261b35735e39c8011e77492728562830",
+                    "committedDate": "2017-12-13T19:28:16Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-13T19:59:35Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU4MTg5OTE3",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-13T21:22:19Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-13T22:01:54Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "6a41f6268a9c5a5b5c9db5dcd84bf5e86b97e55e",
+              "committedDate": "2017-12-13T22:02:15Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "4d81fbda9a4affbfa7113f6f38d3c294fcd5c958",
+                    "committedDate": "2017-12-13T19:49:00Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "29dcb06ed5b4aa34444370a2a0e6922603e7544b",
+                    "committedDate": "2017-12-13T19:59:45Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "9b62a481283262927efec643503a7d0cc83b7940",
+                    "committedDate": "2017-12-13T22:01:45Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-13T23:04:04Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU4MjI4NTA1",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "samuelli",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-13T23:04:46Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "samuelli",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-15T22:50:25Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "39d7192bb8847d93eefb352ae1433cd9988546a2",
+              "committedDate": "2017-12-15T22:51:08Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "b7125875d98a8594509e963daffcb6af5282cae1",
+                    "committedDate": "2017-12-15T22:41:53Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "57ffdfc9c4fd963a76d52ca5d3a858b8fa1754ac",
+                    "committedDate": "2017-12-15T22:43:13Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "ec6187f99713f301066df30a058745c02e85a671",
+                    "committedDate": "2017-12-15T22:47:38Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-17T19:08:27Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU4Nzk4ODY4",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "TimvdLippe",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-17T19:37:14Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-17T19:39:42Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-18T00:20:23Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "TimvdLippe",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-18T13:22:49Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "036c4e7ce5956801cdf8fa31b4a18a322df9ef77",
+              "committedDate": "2017-12-18T22:19:16Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "afbe5a85666c5f9506f6f68511355d2cd40eba4f",
+                    "committedDate": "2017-12-16T20:33:55Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "d2d89a3236a7152a083bdd179c1cbb7afb9c6fe9",
+                    "committedDate": "2017-12-18T22:17:42Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "fa7bcb3109453581afbbb347c11fdc48a623e2b9",
+                    "committedDate": "2017-12-18T22:17:53Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-18T00:14:23Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU4ODExNDUw",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "TimvdLippe",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-18T13:24:24Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-18T22:01:50Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "c309bb09c0bddbc129b6cb939c5fe4732dd23c2f",
+              "committedDate": "2017-12-18T22:31:37Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "14dab075dd9885a1500bd3a985dfd39469c80b0d",
+                    "committedDate": "2017-12-18T22:29:12Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "1a6a62c7de8b945a5da8859b12547f3c3a0e2962",
+                    "committedDate": "2017-12-18T22:30:19Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "0879795714dd4fa3fa8614f45539457e923b4733",
+                    "committedDate": "2017-12-18T22:30:23Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-18T23:18:53Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU5MDQyMjk3",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "justinfagnani",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-18T23:34:42Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-18T23:35:53Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-18T23:36:13Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "874c51a4c3826e10f0901ec052e4602161fb9a75",
+              "committedDate": "2017-12-18T23:42:43Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "41f09d020ea4c3a3aea9c8a39a37c46d16ee82fd",
+                    "committedDate": "2017-12-18T23:42:46Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-18T23:45:01Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU5MDQ2MDMw",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "justinfagnani",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-18T23:45:56Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "b5db0b80632ed8a3a2869ff3164547ab1406dfe6",
+              "committedDate": "2017-12-18T23:46:10Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "7b2f4f84fca24362e7c21b4fd46ad26a78b0c923",
+                    "committedDate": "2017-12-18T23:45:09Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-18T23:57:10Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU5MDQ3NjI3",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-18T23:58:46Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "9cea4d606426606f7d9e8eed8fc3cc9e18b43e1a",
+              "committedDate": "2017-12-18T23:58:56Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "dd2bdae2d121e8ef3640d5c83570f1d39df62ff1",
+                    "committedDate": "2017-12-18T23:57:18Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-20T01:36:49Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU5MzEyMjQ1",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-20T02:09:00Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "e376f0ff8f0bcab902b939d87382a2bafa8629d9",
+              "committedDate": "2017-12-20T02:12:51Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "5f25ee6e79a02a12a5d124a07534deb926eecb89",
+                    "committedDate": "2017-12-20T01:36:08Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-20T03:47:56Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU5MzI1NDI3",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-20T04:33:33Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "b0fef6e499d899d928b2001f70b9ac4391633257",
+              "committedDate": "2017-12-20T04:45:51Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "afab9c7f4160c2f50c1b349df73b6a661f85f6c5",
+                    "committedDate": "2017-12-20T03:46:57Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-20T04:01:31Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU5MzI2NjI5",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-20T04:34:33Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "af5b96f9294557c11e18e229074199da0dd13fb5",
+              "committedDate": "2017-12-20T04:46:18Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "513e3d5814500702f2982f8ae318086fde132d8f",
+                    "committedDate": "2017-12-20T04:00:56Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-20T18:41:28Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTU5NDg5ODQ2",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "samuelli",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-20T18:44:54Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "8c3ae60496e6e41ae49e865424a539a0ba1153ea",
+              "committedDate": "2017-12-20T18:46:17Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "3d275876bd3c5e6f390c0d849d90eafd0d43155d",
+                    "committedDate": "2017-12-20T18:41:45Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "80264c60d3d98caa229a5fe515b85d85772ef855",
+                    "committedDate": "2017-12-20T18:46:21Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-27T22:21:43Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTYwMzA5NzAy",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-27T22:26:51Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "e6f67efa31306ef1f08349531d1fe730151d2ecd",
+              "committedDate": "2017-12-27T22:27:07Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "e850fdff129fb96db02957c80a7b807d2fe1d8e8",
+                    "committedDate": "2017-12-27T22:21:16Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2017-12-29T03:08:24Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTYwNDY3NjM0",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-29T21:28:20Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-30T03:13:27Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2017-12-31T23:35:58Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-02T21:54:00Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-02T22:27:30Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-02T22:28:02Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-02T22:28:11Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-02T22:31:19Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "007c1f4025160ddf1e867ef950e1bcf2ce3dbbd1",
+              "committedDate": "2018-01-02T22:32:18Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "94979c82a970e6f39dc65869880c25b6ff093587",
+                    "committedDate": "2017-12-29T03:07:45Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "bacad649fdc30cd68d28446f9e07444cfede14c6",
+                    "committedDate": "2018-01-02T22:27:08Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2018-01-02T23:13:15Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTYwODIyMzA5",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-02T23:14:36Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "49362b3cd98df37585c4854181e95742f4263db0",
+              "committedDate": "2018-01-02T23:15:10Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "bc1979a9b23491730173f99b8d29e38a84f06e69",
+                    "committedDate": "2018-01-02T23:10:33Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "d0f7a79cf5c0c128c34a1f845e5dfc46a8599740",
+                    "committedDate": "2018-01-02T23:12:22Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "d46e13822ead3ef08da66b42d125c1cb243aff1f",
+                    "committedDate": "2018-01-02T23:12:39Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "43081j",
+              "__typename": "User"
+            },
+            "createdAt": "2018-01-08T22:52:01Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTYxNzQ1NzE3",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "43081j",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-08T23:05:15Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-08T23:31:48Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "178fa3d778f333bf63f48565322b5072e6cee21b",
+              "committedDate": "2018-01-09T18:39:56Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "c93472696e5a0887c1995fe2dddd1234d4eac766",
+                    "committedDate": "2018-01-08T22:49:31Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "981c248acbba33a750a7f3b649f0a499ca7d83a9",
+                    "committedDate": "2018-01-08T23:03:41Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "a145e006bf002df03f059b42842086f795edcd2f",
+                    "committedDate": "2018-01-09T08:21:49Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "7b55e5bc8758cd738e46616e1fc370fa0562f3c1",
+                    "committedDate": "2018-01-09T08:43:06Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2018-01-09T23:22:01Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTYyMDAxMDI4",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-10T00:32:08Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "4c2e4c7cdadc7929fbdbc149afaf85c29657051b",
+              "committedDate": "2018-01-10T00:34:30Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "cc7a4bdec230157acdb9b62896158682db1465be",
+                    "committedDate": "2018-01-09T23:20:46Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "40af8cd86a4baf4d3d3ac840195fa5db0c87f35c",
+                    "committedDate": "2018-01-09T23:21:26Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "kito99",
+              "__typename": "User"
+            },
+            "createdAt": "2018-01-19T22:27:52Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTY0MDgyOTc5",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-19T22:55:52Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-22T16:48:33Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "75835c675062e99a605c53332ce0671d119ccebf",
+              "committedDate": "2018-01-22T16:48:53Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "0f42427f3be40333367f5ab9cd0b0020d4420003",
+                    "committedDate": "2018-01-19T22:27:09Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "c889cb3ab077e5fc8af19e1f7ada64cc3e7ee065",
+                    "committedDate": "2018-01-22T13:16:57Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2018-01-25T07:33:25Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTY1MDQ3NzM4",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-25T22:19:30Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "9f6d81426781f72cc8bb33f461b30ca2cc576f41",
+              "committedDate": "2018-01-25T22:21:33Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "ee01430ff7c7f7ae47eb04da20e4759a45f6e9ec",
+                    "committedDate": "2018-01-25T07:32:35Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "5cda75446f3a5f103585bac4dab09ee013f00672",
+                    "committedDate": "2018-01-25T22:21:24Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2018-01-25T08:02:24Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTY1MDUxOTgx",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-25T22:17:03Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-25T22:20:06Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-25T22:20:55Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "0a09af27be91bfbe4779d53e0465d84fc5f78bef",
+              "committedDate": "2018-01-25T22:22:11Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "60873c90c0236549a4afcb6cfab49d6d70a43744",
+                    "committedDate": "2018-01-25T08:01:24Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "e0af60dea5939e0892d0340fea848b9bee20fb21",
+                    "committedDate": "2018-01-25T22:20:49Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "e582d6217ddaaf169d92df2275c16aa934c49ead",
+                    "committedDate": "2018-01-25T22:21:56Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2018-01-25T18:59:57Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTY1MjAwNzIy",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "usergenic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-25T19:29:00Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-25T19:40:52Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-25T19:42:14Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "43638503aa5a9529dcea18c714a313a3cae1e668",
+              "committedDate": "2018-01-25T19:42:59Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "1827feb79490b5f00626f4bb151134a189349b88",
+                    "committedDate": "2018-01-25T18:54:24Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "e9f837a66b81857c87d15f6e6cb7f4faabe09cb1",
+                    "committedDate": "2018-01-25T19:42:40Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2018-01-25T22:23:41Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTY1MjQ0NTMy",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-25T22:24:37Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-25T22:26:53Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "97bf60bc42dd12a935bbcd56dbb07a6c9605fc44",
+              "committedDate": "2018-01-25T22:28:44Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "7df41c7dd3145ac6359e3ba8707fb5bc48bfb20b",
+                    "committedDate": "2018-01-25T22:23:23Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "7fe83bb03afb3b3687db7aebed7863daa1ff14ae",
+                    "committedDate": "2018-01-25T22:27:47Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2018-01-27T03:21:36Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTY1NTAwNDQ4",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-29T22:05:30Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-29T22:26:16Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-30T23:56:48Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-31T00:07:53Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "da4b7f5cfcb60da838bec5c5310382c55ab28bfc",
+              "committedDate": "2018-01-31T00:08:42Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "74d0bec339fad32d2779577f7d633f8a4d7e9c9e",
+                    "committedDate": "2018-01-27T03:17:11Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "8c14267bda30e7fadbb1aaee978089606557ce5d",
+                    "committedDate": "2018-01-27T03:17:39Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "5b9e85702b44dd33d8bb62b54f558b234083d00e",
+                    "committedDate": "2018-01-30T23:08:14Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2018-01-27T08:01:22Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTY1NTA4NDE3",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "samuelli",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-28T02:17:04Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-29T21:56:52Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "768c592b39c80114d79501b1a0f4fd8d67b16bdc",
+              "committedDate": "2018-01-31T00:20:38Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "75c267e72c10f1ccd47715b9070ed022fde60c3d",
+                    "committedDate": "2018-01-31T00:19:36Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2018-01-31T00:10:19Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTY2MTMzMTQ3",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-31T00:45:04Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-31T00:47:06Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-31T00:51:45Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-31T01:17:02Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-31T01:17:06Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "1b942e7dec90aaee54b77ab1c402704015dce4c7",
+              "committedDate": "2018-01-31T01:19:33Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "61c33ffc4fb3376f46bedc335c75c3418d85f9c0",
+                    "committedDate": "2018-01-31T00:20:58Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "157c82cdb19924ac814af2f7c3f96338262ac022",
+                    "committedDate": "2018-01-31T01:18:41Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2018-01-31T01:21:18Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTY2MTQyOTA3",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-01-31T01:21:51Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "e987d6ec257f6bc72dfc6310af9113d595740c1c",
+              "committedDate": "2018-02-02T01:38:37Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "7543caeb4109b4f15bd4c2966f207fd7c84e69ce",
+                    "committedDate": "2018-02-02T01:38:20Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2018-02-03T04:21:31Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTY2OTQ1NzU5",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-02-05T19:08:44Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "ae78f43033f4e62ae4a0b4cc0bf804691588baf9",
+              "committedDate": "2018-02-05T19:23:14Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "7189352b78d8bfac6202a367143f68f5c6a51f4a",
+                    "committedDate": "2018-02-03T04:20:01Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "7dd971b60d07661f4be329f507576057ec11dbac",
+                    "committedDate": "2018-02-03T04:20:08Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "dafdb9451501deba59e86d9fb68f93d9cbd4bdf1",
+                    "committedDate": "2018-02-03T04:20:30Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2018-02-04T01:56:52Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTY2OTkwNDIw",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-02-05T19:12:02Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-02-05T19:30:55Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "54f2ec4f4273d2ce546a4167908e1274b06357d8",
+              "committedDate": "2018-02-05T19:31:38Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "ae78f43033f4e62ae4a0b4cc0bf804691588baf9",
+                    "committedDate": "2018-02-05T19:23:14Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "b3c1ea8081f0d691acc9ae2c80bd9cb5c6738d83",
+                    "committedDate": "2018-02-05T19:23:53Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "9d06b54ea93a14766c2de3695657362156e1917c",
+                    "committedDate": "2018-02-05T19:30:09Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2018-02-05T20:47:47Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTY3MjUwNTM5",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "usergenic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-02-05T20:49:38Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "a5063ffb04ea18556a5089084668acdb4827aafc",
+              "committedDate": "2018-02-05T20:50:41Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "fe4d5bd276bbee1e6886fd84f515ab423caabc16",
+                    "committedDate": "2018-02-05T20:47:31Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2018-02-05T20:57:07Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTY3MjUyNDky",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "usergenic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-02-05T20:58:05Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "cc9f959ce7b40ae7215f143400a8e0cad95f3def",
+              "committedDate": "2018-02-05T21:23:52Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "775dbbd04d1f733b6c39618cc25d3f27dcea7ff1",
+                    "committedDate": "2018-02-05T20:56:35Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2018-02-08T02:05:30Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTY3ODU5NDE0",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-02-08T04:04:01Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "82dfff61d231aeeb07e28134e6230ed5725823ff",
+              "committedDate": "2018-02-08T04:34:21Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "c45729e6a554f5560fbaf7fbe6400920f0872f6a",
+                    "committedDate": "2018-02-07T07:34:18Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "2b4410b67f01d6b5adf8e7a18cd2493e350cc95c",
+                    "committedDate": "2018-02-08T02:01:33Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2018-02-08T03:58:39Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTY3ODcyMDQ0",
+            "reviews": {
+              "nodes": [],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "872dd7825750de0cf26adccdb5768ff1d380fc55",
+              "committedDate": "2018-02-08T04:34:46Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "f4892faffe84efa6840b879f0d1d3d8867434847",
+                    "committedDate": "2018-02-08T03:57:33Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2018-02-08T04:51:26Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTY3ODc3MjUy",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "justinfagnani",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-02-08T18:08:57Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "93858cb7275b4b606b5c07dc7546da7975361d40",
+              "committedDate": "2018-02-08T18:14:33Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "4a54b5cf63a85c87d1f8476111388e58263e5b64",
+                    "committedDate": "2018-02-08T04:51:10Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2018-02-13T02:08:01Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTY4NzM3MTAx",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-02-13T03:04:58Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-02-13T03:05:07Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-02-13T04:27:29Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "c639b60e7c09def4d4b779e2d710d6d53787fb3a",
+              "committedDate": "2018-02-13T04:27:41Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "0ddb8427dabdcf5e269363738cf6383fc247a539",
+                    "committedDate": "2018-02-13T02:06:32Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "56e710252c8b27eca554714f517d6d205c9c9ca9",
+                    "committedDate": "2018-02-13T04:27:23Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2018-02-13T06:37:53Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTY4NzY1MjA1",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-02-13T06:41:56Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "77c3bd6e5301ec3bd7e1e8d0e12f4f07e3b6b4d2",
+              "committedDate": "2018-02-13T06:42:17Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "31301a9e02c95eab96b82e2e21a99939a25a54bc",
+                    "committedDate": "2018-02-13T06:37:39Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "aomarks",
+              "__typename": "User"
+            },
+            "createdAt": "2018-02-15T04:40:04Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTY5MjgzODAz",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "rictic",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-02-15T17:13:12Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "e7bf0474d4de035faafbb299b656be91167f98a0",
+              "committedDate": "2018-02-15T20:54:18Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "8626db93ecde02a74a5a826ad580b012d755cfdd",
+                    "committedDate": "2018-02-15T04:32:36Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "88f10b5f1b62c5100517e51a5d25032dac4b12d9",
+                    "committedDate": "2018-02-15T04:37:39Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "1d42d8a2f2c80fe6a4dfe2920b5d23da8494567d",
+                    "committedDate": "2018-02-15T04:38:47Z",
                     "__typename": "Commit"
                   },
                   "__typename": "PullRequestCommit"

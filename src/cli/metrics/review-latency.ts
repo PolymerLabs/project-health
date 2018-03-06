@@ -77,7 +77,7 @@ export class ReviewLatencyResult implements MetricResult {
 
 type ReviewLatencyOpts = {
   org: string,
-  repo?: string,
+  repo?: string, since: Date,
 };
 
 /**
@@ -100,7 +100,11 @@ export async function getReviewLatency(opts: ReviewLatencyOpts):
   }
   for (const prs of fetches) {
     for (const pr of await prs) {
-      reviews.push(...getReviewsForPullRequest(pr));
+      for (const review of getReviewsForPullRequest(pr)) {
+        if (new Date(review.reviewedAt) > opts.since) {
+          reviews.push(review);
+        }
+      }
     }
   }
 
