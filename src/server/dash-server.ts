@@ -31,7 +31,7 @@ export class DashServer {
     app.use('/node_modules/lit-html', express.static(litPath));
     app.use(express.static(
         path.join(__dirname, '..', 'client', 'public'),
-        {extensions: ['html']}));
+        {extensions: ['html', 'mjs']}));
     app.use(express.static(path.join(__dirname, '..', 'sw')));
     app.use('/api/login/', bodyParser.text(), getLoginRouter());
     app.use('/api/webhook/', bodyParser.json(), getGitHubHookRouter());
