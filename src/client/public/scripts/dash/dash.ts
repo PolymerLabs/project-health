@@ -28,6 +28,7 @@ let shortPollTimeoutId: number;
 
 type EventDisplay = {
   time: number|null; text: string | TemplateResult; url: string | null;
+  classes?: string[];
 };
 
 type StatusDisplay = {
@@ -174,7 +175,7 @@ function eventTemplate(event: EventDisplay) {
       html`<a class="pr-event__url" href="${url}" target="_blank">${text}</a>`;
 
   return html`
-    <div class="pr-event">
+    <div class$="pr-event ${event.classes ? event.classes.join(' ') : ''}">
       ${
       event.time ? timeTemplate(event.time) :
                    html`<div class="pr-event__time"></div>`}
@@ -262,8 +263,7 @@ function prTemplate(pr: api.PullRequest, newlyActionablePRs: string[]) {
         const statusType = outgoingPr.status.type;
         if (statusType === 'StatusChecksPending') {
           const mergeText = html
-          `<div class="pr-event">Auto merge when status checks pass.&nbsp;${
-              mergeOptions}</div>`;
+          `Auto merge when status checks pass.&nbsp;${mergeOptions}`;
           mergeTemplate = eventTemplate({
             time: null,
             text: mergeText,
@@ -271,18 +271,23 @@ function prTemplate(pr: api.PullRequest, newlyActionablePRs: string[]) {
           } as EventDisplay);
         } else if (statusType === 'PendingMerge') {
           /* const mergeText =
-              html`<div class="pr-event">Merge now.&nbsp;${mergeOptions}</div>`;
+              html`Merge now.&nbsp;${mergeOptions}`;
           mergeTemplate = eventTemplate({
             time: null,
             text: mergeText,
             url: null,
           } as EventDisplay); */
-          const mergeText =
-              html`<div class=pr-event">Auto merge available</div>`;
+          const enableAutoMerge = () => {
+            console.log('Enable auto merge');
+          };
+          const mergeText = html
+          `<button class="pr-event__action" on-click="${
+              enableAutoMerge}">Auto merge available</button>`;
           mergeTemplate = eventTemplate({
             time: null,
             text: mergeText,
             url: null,
+            classes: ['disconnected', 'blue-dot']
           } as EventDisplay);
         }
       }
@@ -294,7 +299,7 @@ function prTemplate(pr: api.PullRequest, newlyActionablePRs: string[]) {
   `<span class="pr-status__msg">${status.text}</span>`;
 
   return html`
-    <div class="${prClasses.join(' ')}">
+    <div class$="${prClasses.join(' ')}">
       <div class="pr-header">
         <div class="pr-author">
           <div class="pr-author__name">${pr.author}</div>

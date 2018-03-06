@@ -1,4 +1,5 @@
 @import "./variables/dimens.css";
+@import "./variables/z-index.css";
 @import "./variables/colors.css";
 @import "./components/profile.css";
 
@@ -18,6 +19,7 @@
 
 .pr {
   position: relative;
+  overflow: hidden;
 }
 
 .pr::before {
@@ -29,6 +31,7 @@
   width: 3px;
   content: "";
   background-color: var(--timeline-color);
+  z-index: var(--z-index-pr-line);
 }
 
 .pr-header, .pr-event {
@@ -101,7 +104,21 @@
   min-width: var(--avatar-size);
   margin: 0 var(--padding);
   position: relative; /* Allow SVG to size to this container */
-  overflow: hidden;
+}
+
+.pr-event.disconnected .pr-event__bullet::before {
+  content: '';
+  display: block;
+  position: absolute;
+  background-color: var(--page-bg-color);
+  width: 100%;
+  height: calc(8px * 3);
+  top: -8px;
+  z-index: var(--z-index-pr-line-cover);
+}
+
+.pr-event.blue-dot .pr-event__bullet svg {
+  stroke: var(--non-actionable-color);
 }
 
 .pr-event__time, .pr-event__title {
@@ -129,6 +146,7 @@
   fill: white;
   stroke-width: 3px;
   position: absolute; /* Don't factor in SVG in layout */
+  z-index: var(--z-index-pr-dot);
 }
 
 .pr-event__action {
