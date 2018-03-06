@@ -5,6 +5,7 @@ const rollup = require('rollup');
 const rollupStream = require('rollup-stream');
 const uglifyPlugin = require('rollup-plugin-uglify');
 const sourcemapPlugin = require('rollup-plugin-sourcemaps');
+const resolve = require('rollup-plugin-node-resolve');
 const esMinify = require('uglify-es').minify;
 const rename = require('gulp-rename');
 const source = require('vinyl-source-stream');
@@ -25,6 +26,12 @@ const processScript = (scriptPath, relativePath, destDir) => {
            },
            plugins: [
              sourcemapPlugin(),
+             resolve({
+               // use "module" field for ES6 module if possible
+               module: true,
+               modulesOnly: true,
+               extensions: ['.mjs'],
+             }),
              // uglifyPlugin({}, esMinify),
            ],
          })
@@ -33,16 +40,16 @@ const processScript = (scriptPath, relativePath, destDir) => {
       // Required to make some of these gulp plugins work.
       .pipe(buffer())
       .pipe(sourcemaps.init({loadMaps: true}))
-      .pipe(rename({extname: '.min.js'}))
+      .pipe(rename({extname: '.js'}))
       .pipe(sourcemaps.write('.'))
       .pipe(gulp.dest(destDir));
 };
 
 const buildBrowserTypescript = async (directory, tsConfigPath, destDir) => {
-  const taskFunc = () => buildTypescript(tsConfigPath, destDir);
+  const taskFunc = () => buildTypescript(tsConfigPath, destDir, '.mjs');
   return new Promise((resolve) => gulp.series(taskFunc)(resolve))
       .then(async () => {
-        const scriptFiles = await glob('**/*.js', {
+        const scriptFiles = await glob('**/*.mjs', {
           cwd: destDir,
           absolute: true,
         });

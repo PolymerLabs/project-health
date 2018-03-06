@@ -1,5 +1,5 @@
-import {applicationServerKey} from './application-server-key.js';
-import {addSubscriptionToBackend, removeSubscriptionFromBackend} from './push-backend.js';
+import {applicationServerKey} from './application-server-key';
+import {addSubscriptionToBackend, removeSubscriptionFromBackend} from './push-backend';
 
 interface PushComponentState {
   isSupported: boolean;
@@ -92,7 +92,7 @@ class PushComponent {
   }
 
   getRegistration() {
-    return navigator.serviceWorker.register('/sw.min.js');
+    return navigator.serviceWorker.register('/sw.js');
   }
 
   async setupPush() {
