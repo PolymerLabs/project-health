@@ -25,7 +25,7 @@ let lastActivityUpdateTimestamp: number = Date.now();
 
 let longPollTimeoutId: number;
 let shortPollTimeoutId: number;
-let automergeOpts: {
+const automergeOpts: {
   [prUrl: string]: {
     showOptions: boolean,
     optionSelected: undefined|'manual'|'merge'|'squash'|'rebase',
@@ -250,7 +250,7 @@ function selectAutomergeOpt(
       lastPolledOutgoing,
       [],
   );
-};
+}
 
 function togglerAutoMergeOptions(prUrl: string) {
   if (!lastPolledOutgoing) {
@@ -268,7 +268,7 @@ function togglerAutoMergeOptions(prUrl: string) {
       lastPolledOutgoing,
       [],
   );
-};
+}
 
 function getAutoMergeOptions(pr: api.PullRequest): TemplateResult[] {
   if (!('mergeable' in pr)) {

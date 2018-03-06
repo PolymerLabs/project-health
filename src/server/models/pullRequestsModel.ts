@@ -5,11 +5,15 @@ const PR_COLLECTION_NAME = 'pull-requests';
 type Status = 'error'|'failure'|'pending'|'success';
 
 export type PRDetails = {
-  commits: {[key: string]: CommitDetails};
+  commits: {[key: string]: CommitDetails}; automerge: AutomergeOpts | undefined;
 };
 
 export type CommitDetails = {
   status: Status;
+};
+
+export type AutomergeOpts = {
+  option: 'manual'|'merge'|'squash'|'rebase',
 };
 
 class PullRequestsModel {
@@ -50,6 +54,32 @@ class PullRequestsModel {
     }
 
     return prData.commits[commitId];
+  }
+
+  async setAutomergeOptions(
+      prId: string,
+      opt: 'manual'|'merge'|'squash'|'rebase',
+  ) {
+    const prDoc = await firestore().collection(PR_COLLECTION_NAME).doc(prId);
+    const snapshot = await prDoc.get();
+    let currentData = snapshot.data();
+    if (!currentData) {
+      currentData = {
+        commits: {},
+      } as PRDetails;
+    }
+
+    if (!currentData.automerge) {
+      currentData.automerge = {};
+    }
+
+    currentData.automerge.option = opt;
+
+    if (snapshot.exists) {
+      await prDoc.update(currentData);
+    } else {
+      await prDoc.set(currentData);
+    }
   }
 
   async deletePR(prId: string): Promise<void> {

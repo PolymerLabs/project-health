@@ -498,6 +498,7 @@ function findMyRelevantReview(reviews: Array<MyReviewFields|null>):
  */
 function convertPrFields(fields: prFieldsFragment): api.PullRequest {
   const pr: api.PullRequest = {
+    id: fields.id,
     repository: fields.repository.nameWithOwner,
     title: fields.title,
     createdAt: Date.parse(fields.createdAt),
