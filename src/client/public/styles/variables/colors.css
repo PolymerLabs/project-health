@@ -11,6 +11,7 @@
   --profile-button-color: hsl(0, 0%, 40%);
   --profile-button-hover-color: hsl(0, 0%, 20%);
   --page-bg-color: white;
+  --red-color: #d0021b;
 
   /* Styles sliders used on settings */
   --mdc-theme-secondary: rgb(57, 73, 171);

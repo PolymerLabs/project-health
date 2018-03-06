@@ -112,13 +112,17 @@
   position: absolute;
   background-color: var(--page-bg-color);
   width: 100%;
-  height: calc(8px * 3);
+  height: 100%;
   top: -8px;
   z-index: var(--z-index-pr-line-cover);
 }
 
 .pr-event.blue-dot .pr-event__bullet svg {
   stroke: var(--non-actionable-color);
+}
+
+.pr-event.red-dot .pr-event__bullet svg {
+  stroke: var(--red-color);
 }
 
 .pr-event__time, .pr-event__title {
@@ -149,14 +153,18 @@
   z-index: var(--z-index-pr-dot);
 }
 
-.pr-event__action {
-  text-decoration: underline;
+.pr-event__option, .pr-event__action {
   background: none;
   border: none;
   padding: 0;
   font-size: inherit;
   font-weight: inherit;
   cursor: pointer;
+  text-align: left;
+}
+
+.pr-event__action {
+  text-decoration: underline;
 }
 
 /* Hide the timeline line after the last event  */
