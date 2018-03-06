@@ -1,0 +1,133 @@
+{
+  "data": {
+    "repository": {
+      "pullRequests": {
+        "pageInfo": {
+          "endCursor": "Y3Vyc29yOnYyOpHOCjSQsA==",
+          "hasNextPage": false,
+          "__typename": "PageInfo"
+        },
+        "nodes": [
+          {
+            "author": {
+              "login": "samuelli",
+              "__typename": "User"
+            },
+            "createdAt": "2018-02-22T20:13:41Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTcwODU0MDU3",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "aomarks",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-02-22T21:59:44Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "samuelli",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-02-23T00:51:52Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "samuelli",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-02-23T00:52:05Z",
+                  "__typename": "PullRequestReview"
+                },
+                {
+                  "author": {
+                    "login": "samuelli",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-02-23T00:55:14Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": {
+              "oid": "21e51ab5dd768e48f7136625597f03fd5d8f2599",
+              "committedDate": "2018-02-23T18:49:01Z",
+              "__typename": "Commit"
+            },
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "ccb2136e028bb952d403321856eaccde9e6e614f",
+                    "committedDate": "2018-02-22T20:11:47Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                },
+                {
+                  "commit": {
+                    "oid": "d61ec49d0330daa8da8ac440d0923367618c538b",
+                    "committedDate": "2018-02-23T00:55:01Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          },
+          {
+            "author": {
+              "login": "rjsteinert",
+              "__typename": "User"
+            },
+            "createdAt": "2018-02-25T07:12:16Z",
+            "id": "MDExOlB1bGxSZXF1ZXN0MTcxMjE3MDcy",
+            "reviews": {
+              "nodes": [
+                {
+                  "author": {
+                    "login": "samuelli",
+                    "__typename": "User"
+                  },
+                  "submittedAt": "2018-02-27T23:26:53Z",
+                  "__typename": "PullRequestReview"
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "mergeCommit": null,
+            "commits": {
+              "pageInfo": {
+                "hasNextPage": false,
+                "__typename": "PageInfo"
+              },
+              "nodes": [
+                {
+                  "commit": {
+                    "oid": "9e6f6becb81db54b5c02f7b4400e9bbd96ef53f5",
+                    "committedDate": "2018-02-25T07:03:29Z",
+                    "__typename": "Commit"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "__typename": "PullRequest"
+          }
+        ],
+        "__typename": "PullRequestConnection"
+      },
+      "__typename": "Repository"
+    }
+  }
+}

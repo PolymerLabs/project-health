@@ -17,6 +17,8 @@
 import * as commandLineArgs from 'command-line-args';
 import * as ora from 'ora';
 
+import {initGithub} from '../utils/github';
+
 import {getIssueCounts} from './metrics/issue-counts';
 import {getReviewCoverage} from './metrics/review-coverage';
 import {getReviewLatency} from './metrics/review-latency';
@@ -24,6 +26,8 @@ import {getStars} from './metrics/stars';
 
 // tslint:disable-next-line:no-require-imports no-any
 const commandLineUsage = require('command-line-usage') as any;
+
+initGithub();
 
 const argDefs = [
   {
@@ -52,6 +56,11 @@ const argDefs = [
     name: 'repo',
     type: String,
     description: 'Optional. Owner/name of the GitHub repo to measure',
+  },
+  {
+    name: 'days',
+    type: Number,
+    description: 'Number of days before today to start calculating from',
   },
 ];
 
@@ -84,18 +93,24 @@ export async function run(argv: string[]) {
 
   let metricResult;
   const orgInfo = {org: args.org, repo: args.repo};
+
+  const since = new Date();
+  if (!args.days) {
+    console.log(
+        'Defaulting to 1 year time period. Use --days to specify number of days');
+  }
+  since.setDate(since.getDate() - (args.days || 365));
+
   switch (args.metric) {
     case 'review-latency':
-      metricResult = await getReviewLatency(orgInfo);
+      metricResult = await getReviewLatency({...orgInfo, since});
       break;
     case 'issue-counts':
       metricResult = await getIssueCounts(orgInfo);
       break;
     case 'review-coverage':
-      const yearAgo = new Date();
-      yearAgo.setFullYear(yearAgo.getFullYear() - 1);
-      metricResult = await getReviewCoverage(
-          {org: args.org, repo: args.repo, since: yearAgo.toISOString()});
+      metricResult =
+          await getReviewCoverage({org: args.org, repo: args.repo, since});
       break;
     case 'stars':
       metricResult = await getStars({org: args.org, repo: args.repo});
