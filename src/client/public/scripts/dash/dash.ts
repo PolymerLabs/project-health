@@ -36,12 +36,14 @@ type StatusDisplay = {
 const DEFAULT_AVATAR = '/images/default-avatar.svg';
 
 const profileTmpl = (data: api.DashboardUser) => {
-  const imageUrl = data.avatarUrl ? data.avatarUrl : DEFAULT_AVATAR;
+  let imageUrl = data.avatarUrl ? data.avatarUrl : DEFAULT_AVATAR;
   const buttonTemplates = [];
 
   if (data.isCurrentUser) {
     buttonTemplates.push(
         html`<a href="/settings" title="Settings" class="settings"></a>`);
+  } else {
+    imageUrl = '/images/incognito.svg';
   }
   return html`
     <div class="profile-avatar"><img src="${imageUrl}" alt="Avatar of ${
@@ -66,9 +68,14 @@ const prListTemplate =
 
 function renderOutgoing(
     data: api.OutgoingDashResponse, newlyActionablePRs: string[]) {
-  render(
-      profileTmpl(data.user),
-      (document.querySelector('#profile-container') as Element));
+  const profileContainerElement =
+      (document.querySelector('#profile-container') as Element);
+  render(profileTmpl(data.user), profileContainerElement);
+  if (data.user.isCurrentUser) {
+    profileContainerElement.classList.remove('incognito');
+  } else {
+    profileContainerElement.classList.add('incognito');
+  }
   render(
       prListTemplate(data.prs, newlyActionablePRs, NO_OUTGOING_PRS_MESSAGE),
       (document.querySelector('#outgoing') as Element));
