@@ -2,21 +2,25 @@ import {firestore} from '../../utils/firestore';
 
 const HOOK_COLLECTION_NAME = 'github-event-deliveries';
 
-export const HOOK_MAX_AGE = 10 * 60 * 1000;
+export const HOOK_MAX_AGE = 60 * 1000;
 
 class HooksModel {
-  async isNewHook(hookDelivery: string): Promise<boolean> {
-    const hookDoc = await firestore()
-                        .collection(HOOK_COLLECTION_NAME)
-                        .doc(hookDelivery)
-                        .get();
-    return !hookDoc.exists;
-  }
-
-  async logHook(hookDelivery: string): Promise<void> {
+  /**
+   * This method may be called multiple times in quick succession resulting
+   * in a the doc already existing.
+   */
+  async logHook(hookDelivery: string): Promise<boolean> {
     const hookDoc =
         await firestore().collection(HOOK_COLLECTION_NAME).doc(hookDelivery);
-    await hookDoc.set({received: true, timestamp: Date.now()});
+    try {
+      await hookDoc.create({received: true, timestamp: Date.now()});
+      return true;
+    } catch (err) {
+      if (err.message.indexOf('Document already exists') !== -1) {
+        return false;
+      }
+      throw err;
+    }
   }
 
   async cleanHooks() {
