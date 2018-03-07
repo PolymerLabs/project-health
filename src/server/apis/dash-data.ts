@@ -307,6 +307,10 @@ export async function fetchIncomingData(
       }
 
       if (newCommits.length && relevantReview) {
+        // Commit can be null.
+        const url = relevantReview.commit ?
+            `${pr.url}/files/${relevantReview.commit.oid}..${lastOid || ''}` :
+            '';
         reviewedPr.events.push({
           type: 'NewCommitsEvent',
           count: newCommits.length,
@@ -314,7 +318,7 @@ export async function fetchIncomingData(
           deletions,
           changedFiles,
           lastPushedAt,
-          url: `${pr.url}/files/${relevantReview.commit.oid}..${lastOid || ''}`,
+          url,
         });
       }
     }
