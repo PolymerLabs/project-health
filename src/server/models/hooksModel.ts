@@ -5,18 +5,21 @@ const HOOK_COLLECTION_NAME = 'github-event-deliveries';
 export const HOOK_MAX_AGE = 60 * 1000;
 
 class HooksModel {
-  async isNewHook(hookDelivery: string): Promise<boolean> {
-    const hookDoc = await firestore()
-                        .collection(HOOK_COLLECTION_NAME)
-                        .doc(hookDelivery)
-                        .get();
-    return !hookDoc.exists;
-  }
-
-  async logHook(hookDelivery: string): Promise<void> {
+  /**
+   * This method may be called multiple times in quick succession resulting
+   * in a the doc already existing.
+   */
+  async logHook(hookDelivery: string): Promise<boolean> {
     const hookDoc =
         await firestore().collection(HOOK_COLLECTION_NAME).doc(hookDelivery);
-    await hookDoc.create({received: true, timestamp: Date.now()});
+    return firestore().runTransaction(async () => {
+      const docSnapshot = await hookDoc.get();
+      if (docSnapshot.exists) {
+        return false;
+      }
+      await hookDoc.create({received: true, timestamp: Date.now()});
+      return true;
+    });
   }
 
   async cleanHooks() {

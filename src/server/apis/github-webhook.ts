@@ -31,12 +31,11 @@ function getRouter(): express.Router {
         }
 
         try {
-          if (!await hooksModel.isNewHook(eventDelivery)) {
+          const loggedHook = await hooksModel.logHook(eventDelivery);
+          if (!loggedHook) {
             response.status(202).send('Duplicate Event');
             return;
           }
-
-          await hooksModel.logHook(eventDelivery);
 
           let handled = false;
           // List of these events available here:
