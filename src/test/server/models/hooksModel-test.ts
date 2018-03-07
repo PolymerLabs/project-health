@@ -30,40 +30,43 @@ test.afterEach.always(async (t) => {
 });
 
 test.serial('should return true for new', async (t) => {
-  const value = await hooksModel.isNewHook(TEST_HOOK_STRING);
+  const value = await hooksModel.logHook(TEST_HOOK_STRING);
   t.deepEqual(value, true);
 });
 
-test.serial('should set, get and delete commit details', async (t) => {
-  await hooksModel.logHook(TEST_HOOK_STRING);
+test.serial('should set, get and delete hook details correctly', async (t) => {
+  let value = await hooksModel.logHook(TEST_HOOK_STRING);
+  t.deepEqual(value, true);
 
-  let value = await hooksModel.isNewHook(TEST_HOOK_STRING);
+  value = await hooksModel.logHook(TEST_HOOK_STRING);
   t.deepEqual(value, false);
 
   await hooksModel.deleteHook(TEST_HOOK_STRING);
 
-  value = await hooksModel.isNewHook(TEST_HOOK_STRING);
+  value = await hooksModel.logHook(TEST_HOOK_STRING);
   t.deepEqual(value, true);
 });
 
-test.serial('should clean old commit details', async (t) => {
+test.serial('should clean old hook details', async (t) => {
   let fakeTime = 0;
   sinon.stub(Date, 'now').callsFake(() => {
     return fakeTime;
   });
 
-  await hooksModel.logHook(TEST_HOOK_STRING);
+  let value = await hooksModel.logHook(TEST_HOOK_STRING);
+  t.deepEqual(value, true);
 
   fakeTime += HOOK_MAX_AGE + 1;
-  await hooksModel.logHook(TEST_HOOK_STRING_2);
+  value = await hooksModel.logHook(TEST_HOOK_STRING_2);
+  t.deepEqual(value, true);
 
   await hooksModel.cleanHooks();
 
   // This should be treated as "old" and removed
-  let value = await hooksModel.isNewHook(TEST_HOOK_STRING);
+  value = await hooksModel.logHook(TEST_HOOK_STRING);
   t.deepEqual(value, true);
 
   // This should be treated as new enough to avoid cleaning
-  value = await hooksModel.isNewHook(TEST_HOOK_STRING_2);
+  value = await hooksModel.logHook(TEST_HOOK_STRING_2);
   t.deepEqual(value, false);
 });
