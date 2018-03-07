@@ -194,3 +194,7 @@ export type SWClientMessage<T> = {
   action: 'push-received',
   data: T|void,
 };
+
+export type AutomergeOpts = {
+  mergeType: 'manual'|'merge'|'squash'|'rebase',
+};

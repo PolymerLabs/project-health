@@ -18,35 +18,166 @@ test.afterEach.always(async () => {
   await pullRequestsModel.deletePR(TEST_PR_ID);
 });
 
-test.serial('should return null for no commits', async (t) => {
-  const value = await pullRequestsModel.getCommitDetails(
-      TEST_PR_ID,
-      TEST_COMMIT_ID.toString(),
-  );
-  t.deepEqual(value, null);
-});
+test.serial(
+    '[pullRequestsModel] should return null for no commits', async (t) => {
+      const value = await pullRequestsModel.getCommitDetails(
+          TEST_PR_ID,
+          TEST_COMMIT_ID.toString(),
+      );
+      t.deepEqual(value, null);
+    });
 
-test.serial('should set, get and delete commit details', async (t) => {
+test.serial(
+    '[pullRequestsModel] should set, get and delete commit details',
+    async (t) => {
+      await pullRequestsModel.setCommitStatus(
+          TEST_PR_ID,
+          TEST_COMMIT_ID.toString(),
+          'pending',
+      );
+
+      let value = await pullRequestsModel.getCommitDetails(
+          TEST_PR_ID,
+          TEST_COMMIT_ID.toString(),
+      );
+      if (!value) {
+        throw new Error('Value must exist.');
+      }
+      t.deepEqual(value.status, 'pending');
+
+      await pullRequestsModel.deletePR(TEST_PR_ID);
+
+      value = await pullRequestsModel.getCommitDetails(
+          TEST_PR_ID,
+          TEST_COMMIT_ID.toString(),
+      );
+      t.deepEqual(value, null);
+    });
+
+test.serial(
+    '[pullRequestsModel] should return null if request a commit that doesnt exist for a PR',
+    async (t) => {
+      await pullRequestsModel.setCommitStatus(
+          TEST_PR_ID,
+          TEST_COMMIT_ID.toString(),
+          'pending',
+      );
+
+      const value = await pullRequestsModel.getCommitDetails(
+          TEST_PR_ID,
+          '1111111',
+      );
+      t.deepEqual(value, null);
+
+      await pullRequestsModel.deletePR(TEST_PR_ID);
+    });
+
+test.serial('[pullRequestsModel] should update commit details', async (t) => {
   await pullRequestsModel.setCommitStatus(
       TEST_PR_ID,
       TEST_COMMIT_ID.toString(),
       'pending',
   );
 
-  let value = await pullRequestsModel.getCommitDetails(
+  await pullRequestsModel.setCommitStatus(
+      TEST_PR_ID,
+      TEST_COMMIT_ID.toString(),
+      'error',
+  );
+
+  const value = await pullRequestsModel.getCommitDetails(
       TEST_PR_ID,
       TEST_COMMIT_ID.toString(),
   );
   if (!value) {
-    throw new Error('Value must exists.');
+    throw new Error('value must exist.');
   }
-  t.deepEqual(value.status, 'pending');
+  t.deepEqual(value.status, 'error');
+});
 
-  await pullRequestsModel.deletePR(TEST_PR_ID);
+test.serial(
+    '[pullRequestsModel] should return null for no no PR', async (t) => {
+      const value = await pullRequestsModel.getAutomergeOpts(TEST_PR_ID);
+      t.deepEqual(value, null);
+    });
 
-  value = await pullRequestsModel.getCommitDetails(
+test.serial(
+    '[pullRequestsModel] should return null for PR with no automerge opts',
+    async (t) => {
+      await pullRequestsModel.setCommitStatus(
+          TEST_PR_ID,
+          TEST_COMMIT_ID.toString(),
+          'pending',
+      );
+
+      const value = await pullRequestsModel.getAutomergeOpts(TEST_PR_ID);
+      t.deepEqual(value, null);
+    });
+
+test.serial(
+    '[pullRequestsModel] should be able to set and get auto merge opts',
+    async (t) => {
+      await pullRequestsModel.setAutomergeOptions(
+          TEST_PR_ID,
+          'manual',
+      );
+
+      const value = await pullRequestsModel.getAutomergeOpts(TEST_PR_ID);
+      if (!value) {
+        throw new Error('Value must exist.');
+      }
+      t.deepEqual(value.mergeType, 'manual');
+    });
+
+test.serial(
+    '[pullRequestsModel] should add auto merge opts to existing PR',
+    async (t) => {
+      await pullRequestsModel.setCommitStatus(
+          TEST_PR_ID,
+          TEST_COMMIT_ID.toString(),
+          'pending',
+      );
+
+      await pullRequestsModel.setAutomergeOptions(
+          TEST_PR_ID,
+          'manual',
+      );
+
+      const automergeValue =
+          await pullRequestsModel.getAutomergeOpts(TEST_PR_ID);
+      if (!automergeValue) {
+        throw new Error('automergeValue must exist.');
+      }
+      t.deepEqual(automergeValue.mergeType, 'manual');
+
+      const commitDetails = await pullRequestsModel.getCommitDetails(
+          TEST_PR_ID, TEST_COMMIT_ID.toString());
+      if (!commitDetails) {
+        throw new Error('commitDetails must exist.');
+      }
+      t.deepEqual(commitDetails.status, 'pending');
+    });
+
+test.serial('[pullRequestsModel] should update automerge opts', async (t) => {
+  await pullRequestsModel.setAutomergeOptions(
       TEST_PR_ID,
-      TEST_COMMIT_ID.toString(),
+      'manual',
   );
-  t.deepEqual(value, null);
+
+  let value = await pullRequestsModel.getAutomergeOpts(TEST_PR_ID);
+  if (!value) {
+    throw new Error('Value must exist.');
+  }
+  t.deepEqual(value.mergeType, 'manual');
+
+  await pullRequestsModel.setAutomergeOptions(
+      TEST_PR_ID,
+      'rebase',
+  );
+
+  value = await pullRequestsModel.getAutomergeOpts(TEST_PR_ID);
+  if (!value) {
+    throw new Error('Value must exist.');
+  }
+  t.deepEqual(value.mergeType, 'rebase');
 });
