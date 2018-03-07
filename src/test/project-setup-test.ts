@@ -1,4 +1,5 @@
 import {test} from 'ava';
+import * as crypto from 'crypto';
 import * as fs from 'fs-extra';
 import * as yamlParser from 'js-yaml';
 import * as path from 'path';
@@ -38,4 +39,19 @@ test('should skip all top level directories', async (t) => {
   } else {
     t.pass();
   }
+});
+
+test('should have up-to-date secrets', async (t) => {
+  const secretsPath = path.join(__dirname, '..', '..', 'secrets.json');
+  try {
+    await fs.access(secretsPath);
+  } catch (err) {
+    // Error thrown meaning either the file doesn't exist or we can't read it
+    t.pass();
+    return;
+  }
+
+  const fileBuffer = await fs.readFile(secretsPath);
+  const hash = crypto.createHash('md5').update(fileBuffer).digest('hex');
+  t.deepEqual(hash, '6b9bc61e46a73a91a6e2901a242e7dc9');
 });
