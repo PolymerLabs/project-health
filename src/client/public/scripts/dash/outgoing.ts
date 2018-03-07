@@ -4,6 +4,10 @@ import * as api from '../../../../types/api';
 
 import {prTemplate} from './prs';
 
+/**
+ * Async generator which yields lit-html TemplateResults. This fetches pages
+ * from the API and yields each rendered pull request result.
+ */
 async function* getNextElement(userLogin: string|null) {
   const loginParam = userLogin ? `login=${userLogin}` : '';
   let data: api.OutgoingDashResponse|null = null;
@@ -16,9 +20,9 @@ async function* getNextElement(userLogin: string|null) {
         {credentials: 'include'});
     data = await response.json() as api.OutgoingDashResponse;
 
-    // Render each PR.
+    // Render each PR and yield each result so they can be added to the DOM.
     for (const pr of data.prs) {
-      yield prTemplate(pr, []);
+      yield prTemplate(pr);
     }
   }
 }
@@ -27,6 +31,8 @@ function start() {
   // This allows you to see another users dashboard.
   const queryParams = new URLSearchParams(window.location.search);
   const userLogin = queryParams.get('login');
+  // asyncAppend() expects an async iterable which loops over the iterator and
+  // appends these results to the containing element.
   render(
       html`${asyncAppend(getNextElement(userLogin))}`,
       (document.querySelector('#outgoing') as Element));

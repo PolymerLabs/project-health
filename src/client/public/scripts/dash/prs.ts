@@ -186,10 +186,10 @@ export function statusToDisplay(pr: api.PullRequest): StatusDisplay {
   }
 }
 
-export function prTemplate(pr: api.PullRequest, newlyActionablePRs: string[]) {
+export function prTemplate(pr: api.PullRequest, newlyActionablePRs?: string[]) {
   const status = statusToDisplay(pr);
   const prClasses = ['pr'];
-  if (newlyActionablePRs.indexOf(pr.url) !== -1) {
+  if (newlyActionablePRs && newlyActionablePRs.indexOf(pr.url) !== -1) {
     prClasses.push('is-newly-actionable');
   }
   return html`
