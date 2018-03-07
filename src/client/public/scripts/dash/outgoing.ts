@@ -2,7 +2,7 @@ import {asyncAppend} from '../../../../../node_modules/lit-html/lib/async-append
 import {html, render} from '../../../../../node_modules/lit-html/lit-html.js';
 import * as api from '../../../../types/api';
 
-import {profileTemplate, prTemplate} from './prs';
+import {prTemplate} from './prs';
 
 async function* getNextElement(userLogin: string|null) {
   const loginParam = userLogin ? `login=${userLogin}` : '';
@@ -10,7 +10,7 @@ async function* getNextElement(userLogin: string|null) {
 
   while (!data || data.hasMore) {
     // Set new cursor information.
-    let cursorParam = data ? `cursor=${data.cursor}` : '';
+    const cursorParam: string = data ? `cursor=${data.cursor}` : '';
     const response = await fetch(
         `/api/dash/outgoing?${[loginParam, cursorParam].join('&')}`,
         {credentials: 'include'});

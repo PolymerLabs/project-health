@@ -25,6 +25,7 @@ test.before(async (t) => {
   const {server, url} =
       await startTestReplayServer(t, 'project-health1-dashboard');
   const dashServer = new DashServer();
+
   t.context = {
     browser: await puppeteer.launch({args: ['--no-sandbox']}),
     dashServer,
@@ -36,6 +37,21 @@ test.before(async (t) => {
 
   initFirestore();
   initGithub(t.context.replayAddress, t.context.replayAddress);
+
+  const getFakeLogin = (): LoginDetails => {
+    return {
+      username: 'project-health1',
+      avatarUrl: null,
+      fullname: null,
+      githubToken: '',
+      scopes: null,
+      lastKnownUpdate: null,
+    };
+  };
+
+  // Stub login to point to fake user.
+  t.context.sandbox.stub(userModel, 'getLoginFromRequest')
+      .callsFake(getFakeLogin);
 });
 
 test.afterEach.always((t) => {
@@ -50,22 +66,28 @@ test.after.always(async (t) => {
 
 test('project-health1 dashboard UI', async (t) => {
   const page = await t.context.browser.newPage();
-
-  const getFakeLogin = (): LoginDetails => {
-    return {
-      username: 'project-health1',
-      avatarUrl: null,
-      fullname: null,
-      githubToken: '',
-      scopes: null,
-      lastKnownUpdate: null,
-    };
-  };
-  const loginStub = t.context.sandbox.stub(userModel, 'getLoginFromRequest')
-                        .callsFake(getFakeLogin);
-
   await page.goto(t.context.dashAddress, {waitUntil: 'networkidle0'});
-  t.true(loginStub.called);
+
+  // Hide time stamps from screenshots.
+  await page.$$eval('time', /* istanbul ignore next */ (elements) => {
+    if (!elements) {
+      return;
+    }
+    for (const el of elements) {
+      el.style.visibility = 'hidden';
+    }
+    return elements;
+  });
+
+  await testScreenshot(page, t);
+  await page.close();
+});
+
+
+test('project-health1 outgoing UI', async (t) => {
+  const page = await t.context.browser.newPage();
+  await page.goto(
+      `${t.context.dashAddress}/outgoing`, {waitUntil: 'networkidle0'});
 
   // Hide time stamps from screenshots.
   await page.$$eval('time', /* istanbul ignore next */ (elements) => {
