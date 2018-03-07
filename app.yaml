@@ -12,6 +12,7 @@ skip_files:
 - node_modules/
 - replays/
 - goldens/
+- tsconfigs/
 - src/
 - github-health-.*\.json
 

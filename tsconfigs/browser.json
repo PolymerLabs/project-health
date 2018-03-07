@@ -11,7 +11,12 @@
     "lib": [
       "es2017",
       "esnext.asynciterable",
-      "webworker"
-    ]
-  }
+      "dom"
+    ],
+    "rootDir": "../src",
+    "outDir": "../build"
+  },
+  "include": [
+    "../src/client/**/*"
+  ]
 }

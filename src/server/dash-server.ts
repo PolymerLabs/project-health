@@ -1,6 +1,7 @@
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
+import {Express} from 'express';
 import {Server} from 'http';
 import * as path from 'path';
 
@@ -14,6 +15,8 @@ import {getRouter as getUpdatesRouter} from './apis/updates';
 import {enforceHTTPS} from './utils/enforce-https';
 import {requireLogin} from './utils/require-login';
 
+const STATIC_EXT = ['html'];
+
 export class DashServer {
   private app: express.Express;
   private server: Server|null;
@@ -21,35 +24,65 @@ export class DashServer {
   constructor() {
     this.server = null;
     const app = express();
-    const litPath = path.dirname(require.resolve('lit-html'));
 
     if (process.env.NODE_ENV === 'production') {
       app.use(enforceHTTPS);
     }
 
+    // Setup common middleware
     app.use(cookieParser());
-    app.use('/node_modules/lit-html', express.static(litPath));
-    app.use(express.static(
-        path.join(__dirname, '..', 'client', 'public'),
-        {extensions: ['html', 'mjs']}));
-    app.use(express.static(path.join(__dirname, '..', 'sw')));
-    app.use('/api/login/', bodyParser.text(), getLoginRouter());
-    app.use('/api/webhook/', bodyParser.json(), getGitHubHookRouter());
+    app.use(bodyParser.text());
+    app.use(bodyParser.json());
 
-    // Require Login for all endpoints used after this middleware
+    this.setupPublicRoutes(app);
+
+    // Add login middleware
     app.use(requireLogin);
 
-    app.use(express.static(
-        path.join(__dirname, '..', 'client', 'require-login'),
-        {extensions: ['html']}));
-    app.use('/api/dash/', getDashRouter());
-    app.use('/api/push-subscription/', getPushSubRouter());
-    app.use(
-        '/api/manage-webhook/', bodyParser.json(), getManageWebhookRouter());
-    app.use('/api/settings/', getSettingsRouter());
-    app.use('/api/updates/', getUpdatesRouter());
+    this.setupPrivateRoutes(app);
 
     this.app = app;
+  }
+
+  private setupPublicRoutes(app: Express) {
+    // Enable lit-html
+    const litPath = path.dirname(require.resolve('lit-html'));
+    app.use('/node_modules/lit-html', express.static(litPath));
+
+    // Enable /* to serve /client/public
+    // Enable /bundled.* to serve /client/bundled/public
+    const clientPath = path.join(__dirname, '..', 'client');
+    const publicPath = path.join(clientPath, 'public');
+    const bundledPath = path.join(clientPath, 'bundled', 'public');
+    app.use('/', express.static(publicPath, {extensions: STATIC_EXT}));
+    app.use('/bundled/', express.static(bundledPath, {extensions: STATIC_EXT}));
+
+    // Enable /* to serve /sw/bundled
+    // NOTE: We only serve bundled for sw scoping and lack of module support
+    // in service workers.
+    const swPath = path.join(__dirname, '..', 'sw', 'bundled');
+    app.use('/', express.static(swPath));
+
+    // Enable public APIs
+    app.use('/api/login/', getLoginRouter());
+    app.use('/api/webhook/', getGitHubHookRouter());
+  }
+
+  private setupPrivateRoutes(app: Express) {
+    // Enable /* to serve /client/require-login
+    // Enable /bundled.* to serve /client/bundled/require-login
+    const clientPath = path.join(__dirname, '..', 'client');
+    const privatePath = path.join(clientPath, 'require-login');
+    const bundledPath = path.join(clientPath, 'bundled', 'require-login');
+    app.use('/', express.static(privatePath, {extensions: STATIC_EXT}));
+    app.use('/bundled/', express.static(bundledPath, {extensions: STATIC_EXT}));
+
+    // Enable private APIs
+    app.use('/api/dash/', getDashRouter());
+    app.use('/api/push-subscription/', getPushSubRouter());
+    app.use('/api/manage-webhook/', getManageWebhookRouter());
+    app.use('/api/settings/', getSettingsRouter());
+    app.use('/api/updates/', getUpdatesRouter());
   }
 
   listen(): Promise<string> {

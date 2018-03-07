@@ -1,14 +1,14 @@
-const path = require('path');
-const {buildTypescript} = require('./utils/build-typescript');
+const {npmRunScript} = require('./utils/npm-run-script');
 
-function buildServer() {
-  const destDir = global.__buildConfig.dest;
-  const tsConfigPath = path.join(global.__buildConfig.src, 'tsconfig.json');
-  return buildTypescript(tsConfigPath, destDir);
+async function buildServer() {
+  await npmRunScript('typescript:node');
 };
 buildServer.displayName = `build-server`;
 
 module.exports = {
   build: buildServer,
-  watchGlobs: `${global.__buildConfig.src}/**/*.{ts,d.ts}`
+  watchGlobs: [
+    `${global.__buildConfig.src}/{cli,server,test,types,utils}/**/*.{ts,d.ts}`,
+    `${global.__buildConfig.src}/*.{ts,d.ts}`
+  ],
 }

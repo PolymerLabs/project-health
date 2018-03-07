@@ -1,4 +1,7 @@
-import {MergeableState, PullRequestReviewState} from './gql-types';
+// NOTE: Avoid import files here as this file is expected to build for commonJS
+// and ES2015 modules meaning any imported files will be built with that
+// module type as well (resulting in possibly unexpected results - like running
+// commonJS code in the browser)
 
 export interface OrgWebHookState {
   name: string;
@@ -15,7 +18,7 @@ export interface RepoDetails {
 
 export interface OutgoingPullRequest extends PullRequest {
   repoDetails: RepoDetails;
-  mergeable: MergeableState;
+  mergeable: 'MERGEABLE'|'CONFLICTING'|'UNKNOWN';
 }
 
 export interface PullRequest {
@@ -61,7 +64,7 @@ export interface IncomingDashResponse {
 export interface Review {
   author: string;
   createdAt: number;
-  reviewState: PullRequestReviewState;
+  reviewState: 'PENDING'|'COMMENTED'|'APPROVED'|'CHANGES_REQUESTED'|'DISMISSED';
 }
 
 export interface JSONAPIResponse<T> {
@@ -69,9 +72,13 @@ export interface JSONAPIResponse<T> {
   data?: T;
 }
 
-export interface LoginResponse { status: string; }
+export interface LoginResponse {
+  status: string;
+}
 
-export interface LastKnownResponse { lastKnownUpdate: string|null; }
+export interface LastKnownResponse {
+  lastKnownUpdate: string|null;
+}
 
 /** Not necessarily actionable. */
 
@@ -179,7 +186,9 @@ export interface ErrorPayload {
   message: string;
 }
 
-export interface NotificationURLData { url: string; }
+export interface NotificationURLData {
+  url: string;
+}
 
 export type SWClientMessage<T> = {
   action: 'push-received',
