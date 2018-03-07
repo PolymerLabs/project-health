@@ -11,12 +11,14 @@ interface PushComponentState {
 class PushComponent {
   private pushToggle: HTMLInputElement;
   private pushStatus: Element;
+  private pushText: Element;
   private state: PushComponentState;
 
   constructor() {
     const toggleElement = document.querySelector(
                               '.js-push-component__toggle') as HTMLInputElement;
     const statusElement = document.querySelector('.push-component__status');
+    const textElement = document.querySelector('.push-component__text');
 
     if (!toggleElement) {
       throw new Error('Unable to find toggle element.');
@@ -24,9 +26,13 @@ class PushComponent {
     if (!statusElement) {
       throw new Error('Unable to find status element.');
     }
+    if (!textElement) {
+      throw new Error('Unable to find text element.');
+    }
 
     this.pushToggle = toggleElement;
     this.pushStatus = statusElement;
+    this.pushText = textElement;
     this.state = {
       isSupported: (navigator.serviceWorker && ('PushManager' in window)),
       permissionBlocked: false,
@@ -64,6 +70,13 @@ class PushComponent {
         this.pushToggle.removeAttribute('disabled');
         this.pushToggle.checked =
             !!(this.state.subscription && this.state.savedToBackend);
+        if (this.pushToggle.checked) {
+          this.pushText.textContent =
+              'Push notifications are enabled. Toggle to no longer receive push notifications on this device.';
+        } else {
+          this.pushText.textContent =
+              'Push notifications are disabled. Toggle to receive push notifications on this device.';
+        }
       }
 
     } catch (err) {
