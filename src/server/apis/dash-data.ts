@@ -621,7 +621,7 @@ query OutgoingPullRequests($login: String!, $startCursor: String) {
     name
     avatarUrl
     login
-    pullRequests(last: 15, states: [OPEN], before: $startCursor) {
+    pullRequests(last: 10, states: [OPEN], before: $startCursor) {
       totalCount
       pageInfo {
         hasPreviousPage

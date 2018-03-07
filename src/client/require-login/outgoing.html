@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Project Health</title>
+  <link href="/styles/base.css" rel="stylesheet" />
+  <link href="/styles/dash.css" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="/images/favicon-16x16.png" sizes="16x16">
+</head>
+
+<body>
+  <a href="/" class="back-button">
+    <div class="back-button__icon"></div>
+  </a>
+  <h2>All outgoing pull requests</h2>
+  <div id="outgoing" class="pr-list"></div>
+
+  <footer>Bug? Feedback? File an
+    <a target="_blank" href="https://github.com/polymerlabs/project-health/issues/new">issue on GitHub</a>
+  </footer>
+</body>
+
+
+<!-- The crossorigin attribute sends credentials for requests to the same origin. -->
+<script nomodule src="/scripts/dash/outgoing.js" crossorigin></script>
+<script type="module" src="/scripts/dash/outgoing.mjs" crossorigin></script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-114703954-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'UA-114703954-1');
+</script>
+
+</html>
