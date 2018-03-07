@@ -67,3 +67,33 @@
 .profile-buttons .settings {
   mask-image: url('/images/settings.svg');
 }
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: calc(var(--padding) * 5);
+  height: calc(var(--padding) * 5);
+
+  border-radius: 100%;
+  overflow: hidden;
+
+  position: absolute;
+  margin-left: -80px;
+
+  background-color: hsl(203, 48%, 36%);
+}
+
+.back-button:hover {
+  background-color: hsl(203, 48%, 50%);
+}
+
+.back-button__icon {
+  mask-image: url('/images/back-icon.svg');
+  mask-repeat: no-repeat;
+  mask-size: 32px;
+  width: 32px;
+  height: 32px;
+  background: white;
+}
