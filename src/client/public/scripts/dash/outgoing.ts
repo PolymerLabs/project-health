@@ -1,8 +1,8 @@
 import {asyncAppend} from '../../../../../node_modules/lit-html/lib/async-append.js';
 import {html, render} from '../../../../../node_modules/lit-html/lit-html.js';
-import * as api from '../../../../types/api';
+import * as api from '../../../../types/api.js';
 
-import {prTemplate} from './prs';
+import {prTemplate} from './prs.js';
 
 /**
  * Async generator which yields lit-html TemplateResults. This fetches pages

@@ -1,5 +1,5 @@
 import {html} from '../../../../../node_modules/lit-html/lit-html.js';
-import * as api from '../../../../types/api';
+import * as api from '../../../../types/api.js';
 
 type EventDisplay = {
   time: number|null; text: string; url: string | null;
