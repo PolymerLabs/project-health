@@ -18,7 +18,10 @@
     "test": "gulp build && RECORD=false npm run test:ava -- --timeout=10sec && npm run check-coverage",
     "test:record": "gulp build && RECORD=true npm run test:ava -- --timeout=1min",
     "test:rebaseline": "gulp build && REBASELINE=true npm run test:ava -- --timeout=1min",
-    "test:ava": "nyc --reporter=text --reporter=html ava 'build/**/*-test.js' --verbose"
+    "test:ava": "nyc --reporter=text --reporter=html ava 'build/**/*-test.js' --verbose",
+    "typescript:node": "tsc -p ./tsconfigs/node.json",
+    "typescript:browser": "tsc -p ./tsconfigs/browser.json",
+    "typescript:sw": "tsc -p ./tsconfigs/sw.json"
   },
   "repository": {
     "type": "git",

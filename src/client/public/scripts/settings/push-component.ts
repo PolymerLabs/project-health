@@ -1,5 +1,5 @@
-import {applicationServerKey} from './application-server-key';
-import {addSubscriptionToBackend, removeSubscriptionFromBackend} from './push-backend';
+import {applicationServerKey} from './application-server-key.js';
+import {addSubscriptionToBackend, removeSubscriptionFromBackend} from './push-backend.js';
 
 interface PushComponentState {
   isSupported: boolean;

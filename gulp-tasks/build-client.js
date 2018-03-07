@@ -1,16 +1,19 @@
 const path = require('path');
-const {buildBrowserTypescript} = require('./utils/build-browser-typescript');
 
-function buildClient() {
-  const srcDir = path.join(global.__buildConfig.src, 'client');
-  const tsConfigPath = path.join(srcDir, 'tsconfig.json');
+const {npmRunScript} = require('./utils/npm-run-script');
+const {moduleToBundle} = require('./utils/module-to-bundle');
+
+async function buildClient() {
   const destDir = path.join(global.__buildConfig.dest, 'client');
 
-  return buildBrowserTypescript(srcDir, tsConfigPath, destDir);
+  await npmRunScript('typescript:browser');
+  await moduleToBundle(destDir);
 };
 buildClient.displayName = `build-client`;
 
 module.exports = {
   build: buildClient,
-  watchGlobs: `${global.__buildConfig.src}/client/**/*.{ts,d.ts}`
+  watchGlobs: [
+    `${global.__buildConfig.src}/client/**/*.{ts,d.ts}`,
+  ],
 }

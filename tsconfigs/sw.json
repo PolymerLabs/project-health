@@ -7,12 +7,16 @@
     "noUnusedParameters": true,
     "pretty": true,
     "skipLibCheck": true,
-    "rootDir": ".",
     "sourceMap": true,
     "lib": [
       "es2017",
       "esnext.asynciterable",
-      "dom"
-    ]
-  }
+      "webworker"
+    ],
+    "rootDir": "../src",
+    "outDir": "../build"
+  },
+  "include": [
+    "../src/sw/**/*"
+  ]
 }

@@ -11,16 +11,18 @@
     "lib": [
       "es2017",
       "esnext.asynciterable"
-    ]
+    ],
+    "rootDir": "../src",
+    "outDir": "../build"
   },
   "include": [
-    "**/*.ts",
-    "**/*.d.ts",
+    "../src/**/*.ts",
+    "../src/**/*.d.ts"
   ],
   "exclude": [
-    "client/*",
-    "client/**/*",
-    "sw/*",
-    "sw/**/*"
+    "../src/client/*",
+    "../src/client/**/*",
+    "../src/sw/*",
+    "../src/sw/**/*"
   ]
 }
