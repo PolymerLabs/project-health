@@ -1,7 +1,6 @@
 import {render} from '../../../../../node_modules/lit-html/lit-html.js';
-import * as api from '../../../../types/api';
-
-import {prListTemplate, profileTemplate, statusToDisplay} from './prs';
+import * as api from '../../../../types/api.js';
+import {prListTemplate, profileTemplate, statusToDisplay} from './prs.js';
 
 // Poll every 5 minutes
 const LONG_POLL_INTERVAL = 5 * 60 * 1000;
