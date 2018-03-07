@@ -1,7 +1,10 @@
 {
   "editor.formatOnSave": true,
   "editor.formatOnType": true,
+  "search.useIgnoreFiles": false,
   "search.exclude": {
-    "node_modules/": true
+    "node_modules/": true,
+    ".nyc_output/": true,
+    "coverage/": true
   }
 }
