@@ -36,7 +36,7 @@ async function handleLoginRequest(request: express.Request):
   const loginResponseBody = await loginResponse.json();
   if (loginResponseBody['error']) {
     return {
-      statusCode: 500,
+      statusCode: 400,
       error: {
         code: 'github-auth-failed',
         message: `Unable to authenticate with GitHub: ${
