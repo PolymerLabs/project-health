@@ -2,7 +2,7 @@ import {firestore} from '../../utils/firestore';
 
 const HOOK_COLLECTION_NAME = 'github-event-deliveries';
 
-export const HOOK_MAX_AGE = 60 * 1000;
+export const HOOK_MAX_AGE = 10 * 60 * 1000;
 
 class HooksModel {
   async isNewHook(hookDelivery: string): Promise<boolean> {
@@ -16,7 +16,7 @@ class HooksModel {
   async logHook(hookDelivery: string): Promise<void> {
     const hookDoc =
         await firestore().collection(HOOK_COLLECTION_NAME).doc(hookDelivery);
-    await hookDoc.create({received: true, timestamp: Date.now()});
+    await hookDoc.set({received: true, timestamp: Date.now()});
   }
 
   async cleanHooks() {
