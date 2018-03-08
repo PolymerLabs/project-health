@@ -80,11 +80,7 @@ export async function testScreenshot(
     // Write out a combined image of actual, expected, diff for easy viewing.
     if (!matches) {
       const img: jimp = await mergeImg([actualPath, expectedPath, diffPath]);
-      if (process.env.TRAVIS === 'true') {
-        console.log(await jimpBase64(img));
-      } else {
-        await writeJimp(img, previewPath);
-      }
+      await writeJimp(img, previewPath);
     }
 
     // Bypass pixel tests on Travis due to font mismatching.
@@ -108,16 +104,5 @@ export async function testScreenshot(
 function writeJimp(img: jimp, imgPath: string): Promise<void> {
   return new Promise((resolve) => {
     img.write(imgPath, () => resolve());
-  });
-}
-
-// This any is required since typings for this function are not yet released.
-// tslint:disable-next-line:no-any
-function jimpBase64(img: any): Promise<string> {
-  return new Promise((resolve) => {
-    // tslint:disable-next-line:no-any
-    img.getBase64('image/png', (_error: any, src: any) => {
-      resolve(src);
-    });
   });
 }
