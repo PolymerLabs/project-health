@@ -80,11 +80,7 @@ export async function testScreenshot(
     // Write out a combined image of actual, expected, diff for easy viewing.
     if (!matches) {
       const img: jimp = await mergeImg([actualPath, expectedPath, diffPath]);
-      if (process.env.TRAVIS === 'true') {
-        console.log(await jimpBase64(img));
-      } else {
-        await writeJimp(img, previewPath);
-      }
+      await writeJimp(img, previewPath);
     }
 
     // Bypass pixel tests on Travis due to font mismatching.
