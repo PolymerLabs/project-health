@@ -330,6 +330,8 @@ export async function fetchIncomingData(
           url,
         });
       }
+
+      reviewedPr.events = sortEvents(reviewedPr.events);
     }
 
     prsShown.push(pr.id);
@@ -358,6 +360,33 @@ export async function fetchIncomingData(
     // Sort newest first.
     prs: sortIncomingPRs(incomingPrs),
   };
+}
+
+/**
+ * Ensures events are ordered correctly.
+ */
+function sortEvents(events: api.PullRequestEvent[]): api.PullRequestEvent[] {
+  const eventTime = (event: api.PullRequestEvent) => {
+    if (event.type === 'MentionedEvent') {
+      return event.mentionedAt;
+    } else if (event.type === 'NewCommitsEvent') {
+      return event.lastPushedAt;
+    } else if (event.type === 'MyReviewEvent') {
+      return event.review.createdAt;
+    } else {
+      return 0;
+    }
+  };
+  const compareEvents =
+      (a: api.PullRequestEvent, b: api.PullRequestEvent): number => {
+        const aTime = eventTime(a);
+        const bTime = eventTime(b);
+        if (aTime === 0 || bTime === 0) {
+          return 0;
+        }
+        return aTime - bTime;
+      };
+  return events.sort(compareEvents);
 }
 
 /**

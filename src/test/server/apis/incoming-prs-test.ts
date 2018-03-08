@@ -39,7 +39,27 @@ test.beforeEach(async (t) => {
 test('dashincoming: sane output', (t) => {
   const data = t.context.data;
   // Make sure a test is added each time these numbers are changed.
-  t.is(data.prs.length, 5);
+  t.is(data.prs.length, 6);
+});
+
+test('dashincoming: events are always sorted correctly', (t) => {
+  const data = t.context.data;
+  for (const pr of data.prs) {
+    let lastTime = 0;
+    for (const event of pr.events) {
+      if (event.type === 'MentionedEvent') {
+        t.true(event.mentionedAt > lastTime, 'Event not ordered correctly');
+        lastTime = event.mentionedAt;
+      } else if (event.type === 'NewCommitsEvent') {
+        t.true(event.lastPushedAt > lastTime, 'Event not ordered correctly');
+        lastTime = event.lastPushedAt;
+      } else if (event.type === 'MyReviewEvent') {
+        t.true(
+            event.review.createdAt > lastTime, 'Event not ordered correctly');
+        lastTime = event.review.createdAt;
+      }
+    }
+  }
 });
 
 test('dashincoming: incoming PRs are ordered', (t) => {
@@ -235,5 +255,44 @@ test('dashincoming: Incoming review request', (t) => {
     url: 'https://github.com/project-health1/repo/pull/4',
     status: {type: 'ReviewRequired'},
     events: [],
+  });
+});
+
+test('dashincoming: incoming with mention, new commits', (t) => {
+  t.deepEqual(t.context.prsById.get('13'), {
+    author: 'project-health2',
+    avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
+    createdAt: 1520468329000,
+    repository: 'project-health1/repo',
+    title: 'My changes to readme',
+    url: 'https://github.com/project-health1/repo/pull/13',
+    status: {type: 'ApprovalRequired'},
+    events: [
+      {
+        review: {
+          author: 'project-health1',
+          createdAt: 1520468376000,
+          reviewState: 'COMMENTED',
+        },
+        type: 'MyReviewEvent',
+      },
+      {
+        additions: 1,
+        changedFiles: 1,
+        count: 1,
+        deletions: 1,
+        lastPushedAt: 1520468416000,
+        type: 'NewCommitsEvent',
+        url:
+            'https://github.com/project-health1/repo/pull/13/files/6b48b7f4a73de3bd5e6f91541941eaec816f2990..6879c9013521c45431a7ac42bf38374510cf5fce',
+      },
+      {
+        mentionedAt: 1520468480000,
+        text: '@project-health1 PTAL',
+        type: 'MentionedEvent',
+        url:
+            'https://github.com/project-health1/repo/pull/13#issuecomment-371333354',
+      },
+    ],
   });
 });
