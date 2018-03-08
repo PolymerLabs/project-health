@@ -19,6 +19,7 @@ export interface RepoDetails {
 export interface OutgoingPullRequest extends PullRequest {
   repoDetails: RepoDetails;
   mergeable: 'MERGEABLE'|'CONFLICTING'|'UNKNOWN';
+  automergeOpts: AutomergeOpts|null;
 }
 
 export interface PullRequest {

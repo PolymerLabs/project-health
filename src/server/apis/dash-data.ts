@@ -4,6 +4,7 @@ import gql from 'graphql-tag';
 import * as api from '../../types/api';
 import {IncomingPullRequestsQuery, mentionedFieldsFragment, OutgoingPullRequestsQuery, prFieldsFragment, PullRequestReviewState, reviewFieldsFragment} from '../../types/gql-types';
 import {github} from '../../utils/github';
+import {pullRequestsModel} from '../models/pullRequestsModel';
 import {repositoryModel} from '../models/repositoryModel';
 import {LoginDetails, userModel} from '../models/userModel';
 
@@ -142,14 +143,22 @@ export async function fetchOutgoingData(
             ]));
           }
 
-          const repoDetails = await repositoryModel.getRepositoryDetails(
-              loginDetails,
-              pr.repository.owner.login,
-              pr.repository.name,
-          );
+          const results = await Promise.all([
+            await repositoryModel.getRepositoryDetails(
+                loginDetails,
+                pr.repository.owner.login,
+                pr.repository.name,
+                ),
+            pullRequestsModel.getAutomergeOpts(pr.id),
+          ]);
+
+          const repoDetails = results[0];
+          const automergeOpts = results[1];
+
           return {
             ...outgoingPr,
             repoDetails,
+            automergeOpts,
             mergeable: pr.mergeable,
           };
         });

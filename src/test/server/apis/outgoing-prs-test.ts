@@ -92,6 +92,7 @@ test('dashoutgoing: outgoing PR, review with my own replies', (t) => {
       allow_merge_commit: true,
     },
     mergeable: MergeableState.MERGEABLE,
+    automergeOpts: null,
   });
 });
 
@@ -113,6 +114,7 @@ test('dashoutgoing: Outgoing PR, no reviewers', (t) => {
       allow_merge_commit: true,
     },
     mergeable: MergeableState.MERGEABLE,
+    automergeOpts: null,
   });
 });
 
@@ -139,6 +141,7 @@ test('dashoutgoing: Outgoing PR, changes requested', (t) => {
       allow_merge_commit: true,
     },
     mergeable: MergeableState.MERGEABLE,
+    automergeOpts: null,
   });
 });
 
@@ -165,6 +168,7 @@ test('dashoutgoing: Outgoing PR, approved, ready to merge', (t) => {
       allow_merge_commit: true,
     },
     mergeable: MergeableState.MERGEABLE,
+    automergeOpts: null,
   });
 });
 
@@ -193,6 +197,7 @@ test('dashoutgoing: Outgoing PR, has 1 commented review', (t) => {
       allow_merge_commit: true,
     },
     mergeable: MergeableState.MERGEABLE,
+    automergeOpts: null,
   });
 });
 
@@ -212,6 +217,7 @@ test('dashoutgoing: Outgoing PR, requested reviews, no reviews', (t) => {
       allow_merge_commit: true,
     },
     mergeable: MergeableState.MERGEABLE,
+    automergeOpts: null,
   });
 });
 
@@ -239,5 +245,6 @@ test('dashoutgoing: review requested changes then approved', (t) => {
       allow_merge_commit: true,
     },
     mergeable: MergeableState.MERGEABLE,
+    automergeOpts: null,
   });
 });
