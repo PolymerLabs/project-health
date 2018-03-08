@@ -55,28 +55,12 @@ async function updateDashClients() {
 }
 
 async function showNotification(data: NotificationPayload) {
-  const windowClients = await getWindowClients();
+  await self.registration.showNotification(
+      data.title,
+      data,
+  );
 
-  let mustShowNotification = true;
-  for (const windowClient of windowClients) {
-    if (windowClient.visibilityState === 'visible') {
-      mustShowNotification = false;
-      break;
-    }
-  }
-
-  // If the user is focused - we don't need to show a notification and simply
-  // update the page (Done via updateDashClients)
-  if (mustShowNotification) {
-    await self.registration.showNotification(
-        data.title,
-        data,
-    );
-  }
-
-  const eventValue =
-      mustShowNotification ? 'notification-shown' : 'page-visible';
-  await pingAnalytics('push-event', eventValue);
+  await pingAnalytics('push-event', 'notification-shown');
 }
 
 // This is an "EventListener"
