@@ -1,5 +1,5 @@
 import {asyncAppend} from '../../../../../node_modules/lit-html/lib/async-append.js';
-import {html, render} from '../../../../../node_modules/lit-html/lit-html.js';
+import {html, render} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import * as api from '../../../../types/api.js';
 
 import {prTemplate} from './prs.js';

@@ -138,6 +138,7 @@ test('dashincoming: incoming PRs are ordered', (t) => {
 
 test('dashincoming: Incoming PR with old @mention before I reviewed', (t) => {
   t.deepEqual(t.context.prsById.get('11'), {
+    id: 'MDExOlB1bGxSZXF1ZXN0MTY3ODI2Mzk1',
     author: 'project-health2',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1518042329000,
@@ -162,6 +163,7 @@ test('dashincoming: Incoming PR with old @mention before I reviewed', (t) => {
 
 test('dashincoming: Incoming PR with new @mention after I reviewed', (t) => {
   t.deepEqual(t.context.prsById.get('10'), {
+    id: 'MDExOlB1bGxSZXF1ZXN0MTY3Nzg1NjAw',
     author: 'project-health2',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1518031465000,
@@ -193,6 +195,7 @@ test('dashincoming: Incoming PR with new @mention after I reviewed', (t) => {
 
 test('dashincoming: Incoming PR that I reviewed. New commit since', (t) => {
   t.deepEqual(t.context.prsById.get('9'), {
+    id: 'MDExOlB1bGxSZXF1ZXN0MTY2MzUxNTky',
     author: 'project-health2',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1517426339000,
@@ -227,6 +230,7 @@ test('dashincoming: Incoming PR that I reviewed. New commit since', (t) => {
 
 test('dashincoming: Incoming PR, I requested changes', (t) => {
   t.deepEqual(t.context.prsById.get('3'), {
+    id: 'MDExOlB1bGxSZXF1ZXN0MTY0NzE5MzU4',
     author: 'project-health2',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1516750523000,
@@ -247,6 +251,7 @@ test('dashincoming: Incoming PR, I requested changes', (t) => {
 
 test('dashincoming: Incoming review request', (t) => {
   t.deepEqual(t.context.prsById.get('4'), {
+    id: 'MDExOlB1bGxSZXF1ZXN0MTY0NzI1NzUw',
     author: 'project-health2',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1516753159000,

@@ -1,6 +1,8 @@
-import {render} from '../../../../../node_modules/lit-html/lit-html.js';
+import {render} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import * as api from '../../../../types/api.js';
-import {prListTemplate, profileTemplate, statusToDisplay} from './prs.js';
+
+import {profileTemplate} from './profile.js';
+import {prListTemplate, statusToDisplay} from './prs.js';
 
 // Poll every 5 minutes
 const LONG_POLL_INTERVAL = 5 * 60 * 1000;
@@ -321,6 +323,21 @@ async function start() {
       }
     });
   }
+
+  window.addEventListener('message', (event) => {
+    if (!event.data || !event.data.type) {
+      return;
+    }
+
+    if (event.data.type === 'render-request') {
+      if (lastPolledOutgoing) {
+        renderOutgoing(lastPolledOutgoing, []);
+      }
+      if (lastPolledIncoming) {
+        renderIncoming(lastPolledIncoming, []);
+      }
+    }
+  });
 
   startPolling(userLogin);
 }
