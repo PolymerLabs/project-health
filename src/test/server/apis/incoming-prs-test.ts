@@ -265,6 +265,7 @@ test('dashincoming: Incoming review request', (t) => {
 
 test('dashincoming: incoming with mention, new commits', (t) => {
   t.deepEqual(t.context.prsById.get('13'), {
+    id: 'MDExOlB1bGxSZXF1ZXN0MTczNjExNzIw',
     author: 'project-health2',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1520468329000,
