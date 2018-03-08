@@ -106,14 +106,3 @@ function writeJimp(img: jimp, imgPath: string): Promise<void> {
     img.write(imgPath, () => resolve());
   });
 }
-
-// This any is required since typings for this function are not yet released.
-// tslint:disable-next-line:no-any
-function jimpBase64(img: any): Promise<string> {
-  return new Promise((resolve) => {
-    // tslint:disable-next-line:no-any
-    img.getBase64('image/png', (_error: any, src: any) => {
-      resolve(src);
-    });
-  });
-}

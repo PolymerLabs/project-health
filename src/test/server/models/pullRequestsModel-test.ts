@@ -95,11 +95,10 @@ test.serial('[pullRequestsModel] should update commit details', async (t) => {
   t.deepEqual(value.status, 'error');
 });
 
-test.serial(
-    '[pullRequestsModel] should return null for no PR', async (t) => {
-      const value = await pullRequestsModel.getAutomergeOpts(TEST_PR_ID);
-      t.deepEqual(value, null);
-    });
+test.serial('[pullRequestsModel] should return null for no PR', async (t) => {
+  const value = await pullRequestsModel.getAutomergeOpts(TEST_PR_ID);
+  t.deepEqual(value, null);
+});
 
 test.serial(
     '[pullRequestsModel] should return null for PR with no automerge opts',
