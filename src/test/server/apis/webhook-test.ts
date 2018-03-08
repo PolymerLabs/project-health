@@ -7,7 +7,9 @@ import {SinonSandbox} from 'sinon';
 
 import {startTestReplayServer} from '../../../replay-server';
 import * as notificationController from '../../../server/controllers/notifications';
-import {handlePullRequest, handlePullRequestReview, handleStatus} from '../../../server/controllers/webhook-events';
+import {handlePullRequest} from '../../../server/controllers/webhook-events/pull-request';
+import {handlePullRequestReview} from '../../../server/controllers/webhook-events/pull-request-review';
+import {handleStatus} from '../../../server/controllers/webhook-events/status';
 import {pullRequestsModel} from '../../../server/models/pullRequestsModel';
 import {userModel} from '../../../server/models/userModel';
 import {initFirestore} from '../../../utils/firestore';
@@ -62,8 +64,8 @@ test.serial(
           hookJsonDir,
           'pull_request_review',
           'submitted-state-changes_requested.json'));
-      const handled = await handlePullRequestReview(eventContent);
-      t.deepEqual(handled, true);
+      const response = await handlePullRequestReview(eventContent);
+      t.deepEqual(response.handled, true);
 
       t.deepEqual(sendStub.callCount, 1);
       t.deepEqual(sendStub.args[0], [
@@ -87,8 +89,8 @@ test.serial(
 
       const eventContent = await fs.readJSON(path.join(
           hookJsonDir, 'pull_request_review', 'submitted-state-approved.json'));
-      const handled = await handlePullRequestReview(eventContent);
-      t.deepEqual(handled, true);
+      const response = await handlePullRequestReview(eventContent);
+      t.deepEqual(response.handled, true);
 
       t.deepEqual(sendStub.callCount, 1);
       t.deepEqual(sendStub.args[0], [
@@ -115,8 +117,8 @@ test.serial(
           hookJsonDir,
           'pull_request_review',
           'submitted-state-commented.json'));
-      const handled = await handlePullRequestReview(eventContent);
-      t.deepEqual(handled, true);
+      const response = await handlePullRequestReview(eventContent);
+      t.deepEqual(response.handled, true);
 
       t.deepEqual(sendStub.callCount, 1);
       t.deepEqual(sendStub.args[0], [
@@ -143,8 +145,8 @@ test.serial(
           hookJsonDir,
           'pull_request_review',
           'submitted-state-self-commented.json'));
-      const handled = await handlePullRequestReview(eventContent);
-      t.deepEqual(handled, true);
+      const response = await handlePullRequestReview(eventContent);
+      t.deepEqual(response.handled, true);
 
       t.deepEqual(sendStub.callCount, 0);
     });
@@ -162,8 +164,8 @@ test.serial(
 
       const eventContent = await fs.readJSON(
           path.join(hookJsonDir, 'status', 'error-travis.json'));
-      const handled = await handleStatus(eventContent);
-      t.deepEqual(handled, false);
+      const response = await handleStatus(eventContent);
+      t.deepEqual(response.handled, false);
       t.deepEqual(sendStub.callCount, 0);
     });
 
@@ -171,7 +173,7 @@ test.serial('Webhook pull_request_review: unknown action', async (t) => {
   const sendStub =
       t.context.sandbox.stub(notificationController, 'sendNotification');
 
-  const handled = await handlePullRequestReview({
+  const response = await handlePullRequestReview({
     action: 'unknown',
     review: {
       state: 'approved',
@@ -190,7 +192,7 @@ test.serial('Webhook pull_request_review: unknown action', async (t) => {
       name: '',
     },
   });
-  t.deepEqual(handled, false);
+  t.deepEqual(response.handled, false);
   t.deepEqual(sendStub.callCount, 0);
 });
 
@@ -198,7 +200,7 @@ test.serial('Webhook pull_request_review: unknown review state', async (t) => {
   const sendStub =
       t.context.sandbox.stub(notificationController, 'sendNotification');
 
-  const handled = await handlePullRequestReview({
+  const response = await handlePullRequestReview({
     action: 'submitted',
     review: {
       state: 'unknown',
@@ -217,7 +219,7 @@ test.serial('Webhook pull_request_review: unknown review state', async (t) => {
       name: '',
     },
   });
-  t.deepEqual(handled, true);
+  t.deepEqual(response.handled, true);
   t.deepEqual(sendStub.callCount, 0);
 });
 
@@ -244,8 +246,8 @@ test.serial(
 
       const eventContent = await fs.readJSON(
           path.join(hookJsonDir, 'status', 'error-travis.json'));
-      const handled = await handleStatus(eventContent);
-      t.deepEqual(handled, false);
+      const response = await handleStatus(eventContent);
+      t.deepEqual(response.handled, false);
       t.deepEqual(sendStub.callCount, 0);
     });
 
@@ -281,8 +283,8 @@ test.serial(
 
       const eventContent = await fs.readJSON(
           path.join(hookJsonDir, 'status', 'error-travis.json'));
-      const handled = await handleStatus(eventContent);
-      t.deepEqual(handled, false);
+      const response = await handleStatus(eventContent);
+      t.deepEqual(response.handled, false);
       t.deepEqual(sendStub.callCount, 0);
     });
 
@@ -318,8 +320,8 @@ test.serial(
 
       const eventContent = await fs.readJSON(
           path.join(hookJsonDir, 'status', 'error-travis.json'));
-      const handled = await handleStatus(eventContent);
-      t.deepEqual(handled, false);
+      const response = await handleStatus(eventContent);
+      t.deepEqual(response.handled, false);
       t.deepEqual(sendStub.callCount, 0);
     });
 
@@ -357,8 +359,8 @@ test.serial(
 
       const eventContent = await fs.readJSON(
           path.join(hookJsonDir, 'status', 'error-travis.json'));
-      const handled = await handleStatus(eventContent);
-      t.deepEqual(handled, false);
+      const response = await handleStatus(eventContent);
+      t.deepEqual(response.handled, false);
       t.deepEqual(sendStub.callCount, 0);
     });
 
@@ -399,8 +401,8 @@ test.serial(
             };
           });
 
-      const handled = await handleStatus(eventContent);
-      t.deepEqual(handled, false);
+      const response = await handleStatus(eventContent);
+      t.deepEqual(response.handled, false);
       t.deepEqual(sendStub.callCount, 0);
     });
 
@@ -445,8 +447,8 @@ test.serial(
             };
           });
 
-      const handled = await handleStatus(eventContent);
-      t.deepEqual(handled, false);
+      const response = await handleStatus(eventContent);
+      t.deepEqual(response.handled, false);
       t.deepEqual(sendStub.callCount, 0);
     });
 
@@ -494,8 +496,8 @@ test.serial(
             };
           });
 
-      let handled = await handleStatus(eventContent);
-      t.deepEqual(handled, true);
+      let response = await handleStatus(eventContent);
+      t.deepEqual(response.handled, true);
       t.deepEqual(sendStub.callCount, 1);
       t.deepEqual(sendStub.args[0], [
         'injected-pr-author',
@@ -512,8 +514,8 @@ test.serial(
 
       // Sending a second hook (i.e. travis fail on pr and fail on push) should
       // send no notification
-      handled = await handleStatus(eventContent);
-      t.deepEqual(handled, false);
+      response = await handleStatus(eventContent);
+      t.deepEqual(response.handled, false);
       t.deepEqual(sendStub.callCount, 0);
     });
 
@@ -523,8 +525,8 @@ test.serial('Webhook status: pending-travis.json', async (t) => {
 
   const eventContent = await fs.readJSON(
       path.join(hookJsonDir, 'status', 'pending-travis.json'));
-  const handled = await handleStatus(eventContent);
-  t.deepEqual(handled, false);
+  const response = await handleStatus(eventContent);
+  t.deepEqual(response.handled, false);
   t.deepEqual(sendStub.callCount, 0);
 });
 
@@ -533,8 +535,8 @@ test.serial('Webhook status: success-travis.json', async (t) => {
       t.context.sandbox.stub(notificationController, 'sendNotification');
   const eventContent = await fs.readJSON(
       path.join(hookJsonDir, 'status', 'success-travis.json'));
-  const handled = await handleStatus(eventContent);
-  t.deepEqual(handled, false);
+  const response = await handleStatus(eventContent);
+  t.deepEqual(response.handled, false);
   t.deepEqual(sendStub.callCount, 0);
 });
 
@@ -544,8 +546,8 @@ test.serial('Webhook pull_request: review_requested.json', async (t) => {
 
   const eventContent = await fs.readJSON(
       path.join(hookJsonDir, 'pull_request', 'review_requested.json'));
-  const handled = await handlePullRequest(eventContent);
-  t.deepEqual(handled, true);
+  const response = await handlePullRequest(eventContent);
+  t.deepEqual(response.handled, true);
   t.deepEqual(sendStub.callCount, 1);
   t.deepEqual(sendStub.args[0], [
     'samuelli',
@@ -565,8 +567,8 @@ test.serial('Webhook pull_request: edited-open.json', async (t) => {
 
   const eventContent = await fs.readJSON(
       path.join(hookJsonDir, 'pull_request', 'edited-open.json'));
-  const handled = await handlePullRequest(eventContent);
+  const response = await handlePullRequest(eventContent);
 
-  t.deepEqual(handled, false);
+  t.deepEqual(response.handled, false);
   t.deepEqual(sendStub.callCount, 0);
 });

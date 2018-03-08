@@ -1,0 +1,161 @@
+import anyTest, {TestInterface} from 'ava';
+import * as sinon from 'sinon';
+import {SinonSandbox} from 'sinon';
+import * as webpush from 'web-push';
+
+import {sendNotification} from '../../../server/controllers/notifications';
+import {getSubscriptionModel} from '../../../server/models/pushSubscriptionModel';
+import {initSecrets} from '../../../utils/secrets';
+
+type TestContext = {
+  sandbox: SinonSandbox,
+};
+const test = anyTest as TestInterface<TestContext>;
+
+const TEST_SECRETS = {
+  GITHUB_CLIENT_ID: 'ClientID',
+  GITHUB_CLIENT_SECRET: 'ClientSecret',
+  PUBLIC_VAPID_KEY:
+      'BPtJjYprRvU3TOb0tw3FrVbLww3bp7ssGjX99PFlqIOb3b8uOH4_Q21GYhwsDRwcfToaFVVeOxWOq5XaXD1MGdw',
+  PRIVATE_VAPID_KEY: 'o1P9aXm-QPZezF_8b7aQabivhv3QqaB0yg5zoFs6-qc',
+};
+
+const SAMPLE_DATA = {
+  title: 'title',
+  body: 'body',
+  requireInteraction: true,
+  icon: '',
+  data: undefined,
+};
+
+test.before(() => {
+  initSecrets(TEST_SECRETS);
+});
+
+test.beforeEach(async (t) => {
+  t.context = {
+    sandbox: sinon.sandbox.create(),
+  };
+});
+
+test.afterEach.always(async (t) => {
+  t.context.sandbox.restore();
+});
+
+test.serial('[notifications] should handle no subscriptions', async (t) => {
+  const model = getSubscriptionModel();
+  t.context.sandbox.stub(model, 'getSubscriptionsForUser')
+      .callsFake(async () => {
+        return [];
+      });
+  const results = await sendNotification('no-user', SAMPLE_DATA);
+  t.deepEqual(results, {
+    errors: [],
+    recipient: 'no-user',
+    sent: {
+      success: 0,
+      failed: 0,
+      removed: 0,
+    }
+  });
+});
+
+test.serial('[notifications] should send to a subscriptions', async (t) => {
+  const userSubscriptions = [
+    {
+      subscription: {
+        endpoint: 'http://example.com/123',
+      }
+    },
+  ];
+  const model = getSubscriptionModel();
+  t.context.sandbox.stub(model, 'getSubscriptionsForUser')
+      .callsFake(async () => {
+        return userSubscriptions;
+      });
+  const webpushStub = t.context.sandbox.stub(webpush, 'sendNotification')
+                          .callsFake(async () => {});
+
+  const results = await sendNotification('valid-user', SAMPLE_DATA);
+  t.deepEqual(results, {
+    errors: [],
+    recipient: 'valid-user',
+    sent: {
+      success: 1,
+      failed: 0,
+      removed: 0,
+    }
+  });
+
+  t.deepEqual(webpushStub.callCount, 1);
+  t.deepEqual(webpushStub.args[0][0], userSubscriptions[0].subscription);
+  t.deepEqual(webpushStub.args[0][1], JSON.stringify(SAMPLE_DATA));
+  t.deepEqual(webpushStub.args[0][2], {
+    TTL: 12 * 60 * 60,
+  });
+});
+
+test.serial('[notifications] should return errored sends', async (t) => {
+  const userSubscriptions = [
+    {
+      subscription: {
+        endpoint: 'http://example.com/123',
+      }
+    },
+  ];
+  const model = getSubscriptionModel();
+  t.context.sandbox.stub(model, 'getSubscriptionsForUser')
+      .callsFake(async () => {
+        return userSubscriptions;
+      });
+  t.context.sandbox.stub(webpush, 'sendNotification').callsFake(async () => {
+    throw new Error('Injected throw');
+  });
+
+  const results = await sendNotification('valid-user', SAMPLE_DATA);
+  t.deepEqual(results, {
+    errors: ['Injected throw'],
+    recipient: 'valid-user',
+    sent: {
+      success: 0,
+      failed: 1,
+      removed: 0,
+    }
+  });
+});
+
+test.serial('[notifications] should handle push deletion', async (t) => {
+  const userSubscriptions = [
+    {
+      subscription: {
+        endpoint: 'http://example.com/123',
+      }
+    },
+  ];
+  const model = getSubscriptionModel();
+  t.context.sandbox.stub(model, 'getSubscriptionsForUser')
+      .callsFake(async () => {
+        return userSubscriptions;
+      });
+  const removeStub = t.context.sandbox.stub(model, 'removePushSubscription')
+                         .callsFake(async () => {});
+  t.context.sandbox.stub(webpush, 'sendNotification').callsFake(async () => {
+    throw {
+      statusCode: 410,
+    };
+  });
+
+  const results = await sendNotification('valid-user', SAMPLE_DATA);
+  t.deepEqual(results, {
+    errors: [],
+    recipient: 'valid-user',
+    sent: {
+      success: 0,
+      failed: 0,
+      removed: 1,
+    }
+  });
+  t.deepEqual(removeStub.callCount, 1);
+  t.deepEqual(removeStub.args[0][0], 'valid-user');
+  t.deepEqual(removeStub.args[0][1], userSubscriptions[0].subscription);
+});

@@ -1,7 +1,15 @@
 import * as express from 'express';
 
-import * as webhookEvents from '../controllers/webhook-events';
+import {NotificationsSent} from '../controllers/notifications';
+import {handlePullRequest} from '../controllers/webhook-events/pull-request';
+import {handlePullRequestReview} from '../controllers/webhook-events/pull-request-review';
+import {handleStatus} from '../controllers/webhook-events/status';
 import {hooksModel} from '../models/hooksModel';
+
+export interface WebHookHandleResponse {
+  handled: boolean;
+  notifications: NotificationsSent|null;
+}
 
 function getRouter(): express.Router {
   const githubHookRouter = express.Router();
@@ -37,19 +45,18 @@ function getRouter(): express.Router {
             return;
           }
 
-          let handled = false;
+          let handled = null;
           // List of these events available here:
           // https://developer.github.com/webhooks/
           switch (eventName) {
             case 'status':
-              handled = await webhookEvents.handleStatus(request.body);
+              handled = await handleStatus(request.body);
               break;
             case 'pull_request':
-              handled = await webhookEvents.handlePullRequest(request.body);
+              handled = await handlePullRequest(request.body);
               break;
             case 'pull_request_review':
-              handled =
-                  await webhookEvents.handlePullRequestReview(request.body);
+              handled = await handlePullRequestReview(request.body);
               break;
             default:
               console.warn(`Unsupported event type received: ${eventName}`);
@@ -57,7 +64,7 @@ function getRouter(): express.Router {
               break;
           }
 
-          response.status(handled ? 200 : 202).send();
+          response.status(handled ? 200 : 202).json(handled);
         } catch (err) {
           console.error(err);
           response.status(500).send(err.message);

@@ -4,8 +4,23 @@ import {NotificationPayload} from '../../types/api';
 import {secrets} from '../../utils/secrets';
 import {getSubscriptionModel} from '../models/pushSubscriptionModel';
 
-export const sendNotification =
-    async (recipient: string, data: NotificationPayload) => {
+export interface NotificationsSent {
+  recipient: string;
+  sent: {success: number; failed: number; removed: number;};
+  errors: string[];
+}
+
+export async function sendNotification(
+    recipient: string, data: NotificationPayload): Promise<NotificationsSent> {
+  const sendDetails: NotificationsSent = {
+    recipient,
+    sent: {
+      success: 0,
+      failed: 0,
+      removed: 0,
+    },
+    errors: [],
+  };
   const pushSubscriptionModel = getSubscriptionModel();
   const userSubscriptionDetails =
       await pushSubscriptionModel.getSubscriptionsForUser(recipient);
@@ -16,28 +31,30 @@ export const sendNotification =
       secrets().PRIVATE_VAPID_KEY,
   );
 
-  if (process.env.NODE_ENV === 'test') {
-    return;
-  }
-
-  return Promise.all(userSubscriptionDetails.map((subDetails) => {
+  await Promise.all(userSubscriptionDetails.map(async (subDetails) => {
     const options = {
       // TTL in seconds (12 Hours). After which, notification will not
       // be delivered.
       TTL: 12 * 60 * 60,
     };
-    return webpush
-        .sendNotification(
-            subDetails.subscription, JSON.stringify(data), options)
-        .catch(async (err) => {
-          // 410 and 404 response from the Web Push module means
-          // the subscription is no longer usable.
-          if (err.statusCode === 410 || err.statusCode === 404) {
-            await pushSubscriptionModel.removePushSubscription(
-                recipient, subDetails.subscription);
-          } else {
-            console.error('Failed to send notification: ', err);
-          }
-        });
+    try {
+      await webpush.sendNotification(
+          subDetails.subscription, JSON.stringify(data), options);
+      sendDetails.sent.success++;
+    } catch (err) {
+      // 410 and 404 response from the Web Push module means
+      // the subscription is no longer usable.
+      if (err.statusCode === 410 || err.statusCode === 404) {
+        await pushSubscriptionModel.removePushSubscription(
+            recipient, subDetails.subscription);
+        sendDetails.sent.removed++;
+      } else {
+        console.error('Failed to send notification: ', err);
+        sendDetails.sent.failed++;
+        sendDetails.errors.push(err.message);
+      }
+    }
   }));
-};
+
+  return sendDetails;
+}
