@@ -5,6 +5,7 @@ import {Express} from 'express';
 import {Server} from 'http';
 import * as path from 'path';
 
+import {getRouter as getAutomergeRouter} from './apis/auto-merge';
 import {getRouter as getDashRouter} from './apis/dash-data';
 import {getRouter as getGitHubHookRouter} from './apis/github-webhook';
 import {getRouter as getLoginRouter} from './apis/login';
@@ -83,6 +84,7 @@ export class DashServer {
     app.use('/api/manage-webhook/', getManageWebhookRouter());
     app.use('/api/settings/', getSettingsRouter());
     app.use('/api/updates/', getUpdatesRouter());
+    app.use('/api/auto-merge/', getAutomergeRouter());
   }
 
   listen(): Promise<string> {

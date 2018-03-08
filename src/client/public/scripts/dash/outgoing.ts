@@ -1,8 +1,8 @@
 import {asyncAppend} from '../../../../../node_modules/lit-html/lib/async-append.js';
-import {html, render} from '../../../../../node_modules/lit-html/lit-html.js';
+import {html, render} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import * as api from '../../../../types/api.js';
 
-import {prTemplate} from './prs.js';
+import {outgoingPrTemplate} from './prs.js';
 
 /**
  * Async generator which yields lit-html TemplateResults. This fetches pages
@@ -22,7 +22,7 @@ async function* getNextElement(userLogin: string|null) {
 
     // Render each PR and yield each result so they can be added to the DOM.
     for (const pr of data.prs) {
-      yield prTemplate(pr);
+      yield outgoingPrTemplate(pr);
     }
   }
 }

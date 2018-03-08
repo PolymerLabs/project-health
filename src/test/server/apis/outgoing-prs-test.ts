@@ -66,6 +66,7 @@ test('dashoutgoing: outgoing PRs are sorted', (t) => {
 
 test('dashoutgoing: outgoing PR, review with my own replies', (t) => {
   t.deepEqual(t.context.prsById.get('8'), {
+    id: 'MDExOlB1bGxSZXF1ZXN0MTY2MTM2ODI5',
     author: 'project-health1',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
     createdAt: 1517359006000,
@@ -98,6 +99,7 @@ test('dashoutgoing: outgoing PR, review with my own replies', (t) => {
 
 test('dashoutgoing: Outgoing PR, no reviewers', (t) => {
   t.deepEqual(t.context.prsById.get('7'), {
+    id: 'MDExOlB1bGxSZXF1ZXN0MTY2MTIxMzYx',
     author: 'project-health1',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
     createdAt: 1517353063000,
@@ -120,6 +122,7 @@ test('dashoutgoing: Outgoing PR, no reviewers', (t) => {
 
 test('dashoutgoing: Outgoing PR, changes requested', (t) => {
   t.deepEqual(t.context.prsById.get('6'), {
+    id: 'MDExOlB1bGxSZXF1ZXN0MTY1NzkzODg3',
     author: 'project-health1',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
     createdAt: 1517253689000,
@@ -147,6 +150,7 @@ test('dashoutgoing: Outgoing PR, changes requested', (t) => {
 
 test('dashoutgoing: Outgoing PR, approved, ready to merge', (t) => {
   t.deepEqual(t.context.prsById.get('5'), {
+    id: 'MDExOlB1bGxSZXF1ZXN0MTY1NzkzNDcx',
     author: 'project-health1',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
     createdAt: 1517253583000,
@@ -174,6 +178,7 @@ test('dashoutgoing: Outgoing PR, approved, ready to merge', (t) => {
 
 test('dashoutgoing: Outgoing PR, has 1 commented review', (t) => {
   t.deepEqual(t.context.prsById.get('2'), {
+    id: 'MDExOlB1bGxSZXF1ZXN0MTYzODY0NTkz',
     author: 'project-health1',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
     createdAt: 1516324726000,
@@ -203,6 +208,7 @@ test('dashoutgoing: Outgoing PR, has 1 commented review', (t) => {
 
 test('dashoutgoing: Outgoing PR, requested reviews, no reviews', (t) => {
   t.deepEqual(t.context.prsById.get('1'), {
+    id: 'MDExOlB1bGxSZXF1ZXN0MTU4Njg4ODg0',
     author: 'project-health1',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
     createdAt: 1513370262000,
@@ -224,6 +230,7 @@ test('dashoutgoing: Outgoing PR, requested reviews, no reviews', (t) => {
 
 test('dashoutgoing: review requested changes then approved', (t) => {
   t.deepEqual(t.context.prsById.get('12'), {
+    id: 'MDExOlB1bGxSZXF1ZXN0MTcyMTEzODAz',
     author: 'project-health1',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
     createdAt: 1519864550000,
