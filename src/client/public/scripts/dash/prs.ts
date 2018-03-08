@@ -1,4 +1,5 @@
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
+import {TemplateResult} from '../../../../../node_modules/lit-html/lit-html.js';
 import * as api from '../../../../types/api.js';
 
 import {getAutoMergeOptions} from './auto-merge-events.js';
@@ -56,10 +57,14 @@ export function statusToDisplay(pr: api.PullRequest): StatusDisplay {
   }
 }
 
-export function prTemplate(pr: api.PullRequest, newlyActionablePRs?: string[]) {
+export function prTemplate(
+    pr: api.PullRequest,
+    newlyActionablePRs?: string[],
+    extraEvents?: TemplateResult[],
+) {
   const status = statusToDisplay(pr);
   const prClasses = ['pr'];
-  const autoMergEvents = getAutoMergeOptions(pr);
+
   if (newlyActionablePRs && newlyActionablePRs.indexOf(pr.url) !== -1) {
     prClasses.push('is-newly-actionable');
   }
@@ -89,6 +94,12 @@ export function prTemplate(pr: api.PullRequest, newlyActionablePRs?: string[]) {
           </a>
         </div>
         ${pr.events.map((event) => eventTemplate(parseAsEventModel(event)))}
-        ${autoMergEvents}
+        ${extraEvents}
       </div>`;
+}
+
+export function outgoingPrTemplate(
+    pr: api.OutgoingPullRequest, newlyActionablePRs?: string[]) {
+  const autoMergeEvents = getAutoMergeOptions(pr as api.OutgoingPullRequest);
+  return prTemplate(pr, newlyActionablePRs, autoMergeEvents);
 }

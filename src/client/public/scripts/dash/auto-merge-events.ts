@@ -54,28 +54,21 @@ function requestRender() {
   );
 }
 
-export function getAutoMergeOptions(pr: api.PullRequest): TemplateResult[] {
-  if (!('mergeable' in pr)) {
-    // This is not an outgoing PR
-    return [];
-  }
-
-  const outgoingPr = (pr as api.OutgoingPullRequest);
-
-  const isOpen = automergeOpenStates[outgoingPr.id] ?
-      automergeOpenStates[outgoingPr.id] :
-      false;
+export function getAutoMergeOptions(pr: api.OutgoingPullRequest):
+    TemplateResult[] {
+  const isOpen =
+      automergeOpenStates[pr.id] ? automergeOpenStates[pr.id] : false;
   const toggleCb = () => {
-    automergeOpenStates[outgoingPr.id] = !isOpen;
+    automergeOpenStates[pr.id] = !isOpen;
     requestRender();
   };
 
-  const statusType = outgoingPr.status.type;
+  const statusType = pr.status.type;
   if (statusType !== 'StatusChecksPending') {
     return [];
   }
 
-  if (outgoingPr.mergeable !== 'MERGEABLE') {
+  if (pr.mergeable !== 'MERGEABLE') {
     return [];
   }
 
@@ -88,13 +81,12 @@ export function getAutoMergeOptions(pr: api.PullRequest): TemplateResult[] {
 
   const mergeOptions = [];
 
-  const selectedOption =
-      outgoingPr.automergeOpts ? outgoingPr.automergeOpts.mergeType : null;
+  const selectedOption = pr.automergeOpts ? pr.automergeOpts.mergeType : null;
   const selectedOptionText =
       selectedOption ? optionText[selectedOption] : 'Auto merge available';
   const dotColor = selectedOption === 'manual' ? 'red-dot' : 'blue-dot';
   const classes = [dotColor];
-  if (!outgoingPr.automergeOpts) {
+  if (!pr.automergeOpts) {
     classes.push('disconnected');
   }
 
@@ -112,7 +104,7 @@ export function getAutoMergeOptions(pr: api.PullRequest): TemplateResult[] {
   }
 
   if (selectedOption !== 'manual') {
-    const manualClick = () => selectAutomergeOpt(outgoingPr, 'manual');
+    const manualClick = () => selectAutomergeOpt(pr, 'manual');
     const manualData: EventModel = {
       time: null,
       text: html`<button class="pr-event__option" on-click="${manualClick}">${
@@ -123,8 +115,8 @@ export function getAutoMergeOptions(pr: api.PullRequest): TemplateResult[] {
     mergeOptions.push(eventTemplate(manualData));
   }
 
-  if (outgoingPr.repoDetails.allow_merge_commit && selectedOption !== 'merge') {
-    const mergeClick = () => selectAutomergeOpt(outgoingPr, 'merge');
+  if (pr.repoDetails.allow_merge_commit && selectedOption !== 'merge') {
+    const mergeClick = () => selectAutomergeOpt(pr, 'merge');
     const mergeData: EventModel = {
       time: null,
       text: html`<button class="pr-event__option" on-click="${mergeClick}">${
@@ -135,9 +127,8 @@ export function getAutoMergeOptions(pr: api.PullRequest): TemplateResult[] {
     mergeOptions.push(eventTemplate(mergeData));
   }
 
-  if (outgoingPr.repoDetails.allow_squash_merge &&
-      selectedOption !== 'squash') {
-    const squashClick = () => selectAutomergeOpt(outgoingPr, 'squash');
+  if (pr.repoDetails.allow_squash_merge && selectedOption !== 'squash') {
+    const squashClick = () => selectAutomergeOpt(pr, 'squash');
     const rebaseData = {
       time: null,
       text: html`<button class="pr-event__option" on-click="${squashClick}">${
@@ -148,9 +139,8 @@ export function getAutoMergeOptions(pr: api.PullRequest): TemplateResult[] {
     mergeOptions.push(eventTemplate(rebaseData));
   }
 
-  if (outgoingPr.repoDetails.allow_rebase_merge &&
-      selectedOption !== 'rebase') {
-    const rebaseClick = () => selectAutomergeOpt(outgoingPr, 'rebase');
+  if (pr.repoDetails.allow_rebase_merge && selectedOption !== 'rebase') {
+    const rebaseClick = () => selectAutomergeOpt(pr, 'rebase');
     const rebaseData = {
       time: null,
       text: html`<button class="pr-event__option" on-click="${rebaseClick}">${
