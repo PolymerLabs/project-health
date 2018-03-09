@@ -28,7 +28,7 @@ async function handleLastKnownUpdate(request: express.Request):
         statusCode: 400,
         error: {
           code: 'bad-login-request',
-          message: 'Unable to complete request for provided details',
+          message: 'User wasn\'t found in user model.',
         },
       };
     }

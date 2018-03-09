@@ -22,7 +22,8 @@ async function* getNextElement(userLogin: string|null) {
 
     // Render each PR and yield each result so they can be added to the DOM.
     for (const pr of data.prs) {
-      yield outgoingPrTemplate(pr);
+      // Note: This will never flash due to flash here.
+      yield outgoingPrTemplate(pr, false);
     }
   }
 }

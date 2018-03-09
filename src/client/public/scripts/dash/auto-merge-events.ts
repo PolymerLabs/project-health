@@ -48,7 +48,7 @@ function selectAutomergeOpt(
 function requestRender() {
   window.postMessage(
       {
-        type: 'render-request',
+        action: 'render-outgoing-request',
       },
       window.location.origin,
   );
