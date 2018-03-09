@@ -2,6 +2,7 @@ import {dashData} from './dash-data.js';
 import {notifyUser} from './utils/notify-user.js';
 import {updateFavIcon} from './utils/update-fav-icon.js';
 
+// Update if an hour goes by with no user interaction
 const ACTIVITY_UPDATE_DURATION = 1 * 60 * 60 * 1000;
 
 class NotificationCenter {
