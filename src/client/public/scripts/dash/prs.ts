@@ -10,12 +10,32 @@ type StatusDisplay = {
   actionable: boolean; text: string;
 };
 
-export function prListTemplate(
+export function genericPrListTemplate(
     prList: api.PullRequest[],
     newlyActionablePRs: string[],
     emptyMessage: string) {
   if (prList.length) {
-    return html`${prList.map((pr) => prTemplate(pr, newlyActionablePRs))}`;
+    return html`${prList.map((pr) => {
+      const isNewlyActionable =
+          newlyActionablePRs && newlyActionablePRs.indexOf(pr.id) !== -1;
+      return genericPrTemplate(pr, isNewlyActionable);
+    })}`;
+  } else {
+    return html
+    `<div class="pr-list__empty-message">${emptyMessage}</div>`;
+  }
+}
+
+export function outgoingPrListTemplate(
+    prList: api.OutgoingPullRequest[],
+    newlyActionablePRs: string[],
+    emptyMessage: string) {
+  if (prList.length) {
+    return html`${prList.map((pr) => {
+      const isNewlyActionable =
+          newlyActionablePRs && newlyActionablePRs.indexOf(pr.id) !== -1;
+      return outgoingPrTemplate(pr, isNewlyActionable);
+    })}`;
   } else {
     return html
     `<div class="pr-list__empty-message">${emptyMessage}</div>`;
@@ -57,15 +77,15 @@ export function statusToDisplay(pr: api.PullRequest): StatusDisplay {
   }
 }
 
-export function prTemplate(
+export function genericPrTemplate(
     pr: api.PullRequest,
-    newlyActionablePRs?: string[],
+    isNewlyActionable: boolean,
     extraEvents?: TemplateResult[],
 ) {
   const status = statusToDisplay(pr);
   const prClasses = ['pr'];
 
-  if (newlyActionablePRs && newlyActionablePRs.indexOf(pr.url) !== -1) {
+  if (isNewlyActionable) {
     prClasses.push('is-newly-actionable');
   }
   return html`
@@ -99,7 +119,7 @@ export function prTemplate(
 }
 
 export function outgoingPrTemplate(
-    pr: api.OutgoingPullRequest, newlyActionablePRs?: string[]) {
+    pr: api.OutgoingPullRequest, newlyActionable: boolean) {
   const autoMergeEvents = getAutoMergeOptions(pr as api.OutgoingPullRequest);
-  return prTemplate(pr, newlyActionablePRs, autoMergeEvents);
+  return genericPrTemplate(pr, newlyActionable, autoMergeEvents);
 }
