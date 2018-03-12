@@ -40,7 +40,7 @@ test.beforeEach(async (t) => {
 test('dashincoming: sane output', (t) => {
   const data = t.context.data;
   // Make sure a test is added each time these numbers are changed.
-  t.is(data.prs.length, 6);
+  t.is(data.prs.length, 7);
 });
 
 test('dashincoming: events are always sorted correctly', (t) => {
@@ -301,5 +301,30 @@ test('dashincoming: incoming with mention, new commits', (t) => {
             'https://github.com/project-health1/repo/pull/13#issuecomment-371333354',
       },
     ],
+  });
+});
+
+test('dashincoming: Incoming PR with changes requested', (t) => {
+  t.deepEqual(t.context.prsById.get('14'), {
+    id: 'MDExOlB1bGxSZXF1ZXN0MTc0NDY2NTk5',
+    author: 'project-health2',
+    avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
+    createdAt: 1520881768000,
+    events: [
+      {
+        review: {
+          author: 'project-health1',
+          createdAt: 1520881784000,
+          reviewState: PullRequestReviewState.CHANGES_REQUESTED,
+        },
+        type: 'MyReviewEvent',
+      },
+    ],
+    repository: 'project-health1/repo',
+    status: {
+      type: 'ChangesRequested',
+    },
+    title: 'Modify readme description',
+    url: 'https://github.com/project-health1/repo/pull/14',
   });
 });

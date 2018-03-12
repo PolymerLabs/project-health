@@ -38,7 +38,7 @@ export interface PullRequest {
 export type PullRequestStatus =
     UnknownStatus|NoActionRequired|NewActivity|StatusChecksPending|
     WaitingReview|PendingChanges|PendingMerge|StatusChecksFailed|ReviewRequired|
-    ApprovalRequired|MergeRequired|NoReviewers;
+    ApprovalRequired|MergeRequired|NoReviewers|ChangesRequested;
 
 export type PullRequestEvent =
     OutgoingReviewEvent|MyReviewEvent|NewCommitsEvent|MentionedEvent;
@@ -140,6 +140,10 @@ interface NoReviewers {
 // Review required by viewer
 interface ReviewRequired {
   type: 'ReviewRequired';
+}
+
+interface ChangesRequested {
+  type: 'ChangesRequested';
 }
 
 // Viewer has reviewed but not approved
