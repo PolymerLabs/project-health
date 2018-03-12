@@ -49,13 +49,16 @@ export interface DashboardUser {
   avatarUrl: string|null;
 }
 
-export interface OutgoingDashResponse {
-  timestamp: string;
-  user: DashboardUser;
+export interface OutgoingPullRequestInfo {
   prs: OutgoingPullRequest[];
   totalCount: number;
   hasMore: boolean;
   cursor: string|null;
+}
+
+export interface OutgoingDashResponse extends OutgoingPullRequestInfo {
+  timestamp: string;
+  user: DashboardUser;
 }
 
 export interface IncomingDashResponse {
