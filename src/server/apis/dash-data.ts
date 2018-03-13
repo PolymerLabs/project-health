@@ -2,11 +2,10 @@ import * as express from 'express';
 import gql from 'graphql-tag';
 
 import * as api from '../../types/api';
-import {IncomingPullRequestsQuery, mentionedFieldsFragment, OutgoingPullRequestsQuery, prFieldsFragment, PullRequestReviewState, reviewFieldsFragment} from '../../types/gql-types';
+import {IncomingPullRequestsQuery, mentionedFieldsFragment, prFieldsFragment, PullRequestReviewState, reviewFieldsFragment} from '../../types/gql-types';
 import {github} from '../../utils/github';
-import {pullRequestsModel} from '../models/pullRequestsModel';
-import {repositoryModel} from '../models/repositoryModel';
-import {LoginDetails, userModel} from '../models/userModel';
+import {userModel} from '../models/userModel';
+import {fetchOutgoingData} from './dash-data/fetch-outgoing-data';
 
 /**
  * Router for the dash component.
@@ -33,152 +32,10 @@ async function outgoingHandler(req: express.Request, res: express.Response) {
   const userData = await fetchOutgoingData(
       loginDetails,
       req.query.login || loginDetails.username,
-      loginDetails.githubToken,
       req.query.cursor,
   );
 
   res.json(userData);
-}
-
-/**
- * Fetches outgoing pull requests for user.
- */
-export async function fetchOutgoingData(
-    loginDetails: LoginDetails,
-    dashboardLogin: string,
-    token: string,
-    startCursor?: string): Promise<api.OutgoingDashResponse> {
-  const openPrQuery = 'is:open is:pr archived:false';
-  const reviewedQueryString =
-      `reviewed-by:${dashboardLogin} ${openPrQuery} -author:${dashboardLogin}`;
-  const reviewRequestsQueryString =
-      `review-requested:${dashboardLogin} ${openPrQuery}`;
-  const mentionsQueryString =
-      `${reviewedQueryString} mentions:${dashboardLogin}`;
-
-  const viewerPrsResult = await github().query<OutgoingPullRequestsQuery>({
-    query: outgoingPrsQuery,
-    variables: {
-      login: dashboardLogin,
-      reviewRequestsQueryString,
-      reviewedQueryString,
-      mentionsQueryString,
-      startCursor
-    },
-    fetchPolicy: 'network-only',
-    context: {token}
-  });
-
-  const user: api.DashboardUser = {
-    login: dashboardLogin,
-    isCurrentUser: loginDetails.username === dashboardLogin,
-    name: null,
-    avatarUrl: null,
-  };
-  if (viewerPrsResult.data.user) {
-    user.name = viewerPrsResult.data.user.name;
-    user.avatarUrl = viewerPrsResult.data.user.avatarUrl;
-  }
-  const outgoingPrs: api.OutgoingPullRequest[] = [];
-  let totalCount = 0;
-  let hasMore = false;
-  let cursor = null;
-  if (viewerPrsResult.data.user) {
-    const prConnection = viewerPrsResult.data.user.pullRequests;
-
-    // Set pagination info.
-    totalCount = prConnection.totalCount;
-    hasMore = prConnection.pageInfo.hasPreviousPage;
-    cursor = prConnection.pageInfo.startCursor;
-
-    const requestPrs = prConnection.nodes || [];
-    const outgoingPrPromises =
-        requestPrs.map(async(pr): Promise<api.OutgoingPullRequest|null> => {
-          if (!pr) {
-            return null;
-          }
-
-          if (pr.viewerSubscription === 'IGNORED') {
-            return null;
-          }
-
-          const outgoingPr: api.PullRequest = {
-            ...convertPrFields(pr),
-            status: {type: 'WaitingReview', reviewers: []},
-          };
-
-          if (pr.author && pr.author.__typename === 'User') {
-            outgoingPr.author = pr.author.login;
-            outgoingPr.avatarUrl = pr.author.avatarUrl;
-          }
-
-          const reviewRequests = [];
-          if (pr.reviewRequests) {
-            for (const request of pr.reviewRequests.nodes || []) {
-              if (!request || !request.requestedReviewer ||
-                  request.requestedReviewer.__typename !== 'User') {
-                continue;
-              }
-              reviewRequests.push(request.requestedReviewer.login);
-            }
-          }
-
-          let reviews: api.Review[] = [];
-          if (pr.reviews && pr.reviews.nodes) {
-            // Filter out reviews from the viewer.
-            const prReviews = pr.reviews.nodes.filter(
-                (review) => review && review.author &&
-                    review.author.login !== dashboardLogin);
-            reviews = reviewsForOutgoingPrs(prReviews, outgoingPr);
-          }
-
-          const reviewersCount = reviewRequests.length + reviews.length;
-          if (outgoingPr.status.type === 'WaitingReview' &&
-              reviewersCount === 0) {
-            outgoingPr.status = {type: 'NoReviewers'};
-          } else if (outgoingPr.status.type === 'WaitingReview') {
-            outgoingPr.status.reviewers = Array.from(new Set([
-              ...reviewRequests,
-              ...reviews.map((review) => review.author),
-            ]));
-          }
-
-          const results = await Promise.all([
-            await repositoryModel.getRepositoryDetails(
-                loginDetails,
-                pr.repository.owner.login,
-                pr.repository.name,
-                ),
-            pullRequestsModel.getAutomergeOpts(pr.id),
-          ]);
-
-          const repoDetails = results[0];
-          const automergeOpts = results[1];
-
-          return {
-            ...outgoingPr,
-            repoDetails,
-            automergeOpts,
-            mergeable: pr.mergeable,
-          };
-        });
-
-    const prs = (await Promise.all(outgoingPrPromises));
-    prs.forEach((pr) => {
-      if (pr) {
-        outgoingPrs.push(pr);
-      }
-    });
-  }
-  return {
-    timestamp: new Date().toISOString(),
-    user,
-    // Sort newest first.
-    prs: outgoingPrs.sort((a, b) => b.createdAt - a.createdAt),
-    totalCount,
-    hasMore,
-    cursor,
-  };
 }
 
 /**
@@ -441,75 +298,7 @@ function sortIncomingPRs(prs: api.PullRequest[]): api.PullRequest[] {
   return actionable.concat(notActionable);
 }
 
-function reviewsForOutgoingPrs(
-    reviews: Array<reviewFieldsFragment|null>,
-    outgoingPr: api.PullRequest): api.Review[] {
-  // Get the latest important review by a reviewer.
-  const reviewerMap: Map<string, reviewFieldsFragment> = new Map();
-  for (const review of reviews) {
-    if (!review || !review.author) {
-      continue;
-    }
 
-    if (!reviewerMap.has(review.author.login)) {
-      reviewerMap.set(review.author.login, review);
-      continue;
-    }
-
-    const otherReview = reviewerMap.get(review.author.login)!;
-    const importantReviews = [
-      PullRequestReviewState.APPROVED,
-      PullRequestReviewState.CHANGES_REQUESTED
-    ];
-
-    // If the existing review is important and the incoming one isn't, ignore.
-    if (importantReviews.includes(otherReview.state) &&
-        !importantReviews.includes(review.state)) {
-      continue;
-    }
-
-    // Store if its newer.
-    if (review.createdAt > otherReview.createdAt) {
-      reviewerMap.set(review.author.login, review);
-    }
-  }
-
-  const result = [];
-  // Find the correct status for the PR and convert reviews.
-  for (const review of reviewerMap.values()) {
-    if (outgoingPr.status.type === 'WaitingReview' &&
-        review.state === PullRequestReviewState.APPROVED) {
-      outgoingPr.status = {type: 'PendingMerge'};
-    } else if (review.state === PullRequestReviewState.CHANGES_REQUESTED) {
-      outgoingPr.status = {type: 'PendingChanges'};
-    }
-
-    result.push(convertReviewFields(review));
-  }
-
-  const reviewsRequestingChanges = result.filter(
-      (review) =>
-          review.reviewState === PullRequestReviewState.CHANGES_REQUESTED);
-  const reviewsApproved = result.filter(
-      (review) => review.reviewState === PullRequestReviewState.APPROVED);
-  let eventReviews = null;
-
-  if (reviewsRequestingChanges.length) {
-    eventReviews = reviewsRequestingChanges;
-  } else if (reviewsApproved.length) {
-    eventReviews = reviewsApproved;
-  } else if (result.length) {
-    eventReviews = result;
-  }
-
-  if (eventReviews) {
-    outgoingPr.events.push({
-      type: 'OutgoingReviewEvent',
-      reviews: eventReviews,
-    });
-  }
-  return result;
-}
 
 type MyReviewFields = reviewFieldsFragment&{commit: {oid: string}};
 
@@ -538,7 +327,7 @@ function findMyRelevantReview(reviews: Array<MyReviewFields|null>):
 /**
  * Converts a pull request GraphQL object to an API object.
  */
-function convertPrFields(fields: prFieldsFragment): api.PullRequest {
+export function convertPrFields(fields: prFieldsFragment): api.PullRequest {
   const pr: api.PullRequest = {
     id: fields.id,
     repository: fields.repository.nameWithOwner,
@@ -562,7 +351,7 @@ function convertPrFields(fields: prFieldsFragment): api.PullRequest {
 /**
  * Converts a review GraphQL object to an API object.
  */
-function convertReviewFields(fields: reviewFieldsFragment): api.Review {
+export function convertReviewFields(fields: reviewFieldsFragment): api.Review {
   const review = {
     author: '',
     createdAt: Date.parse(fields.createdAt),
@@ -658,7 +447,7 @@ fragment prFields on PullRequest {
   }
 }`;
 
-const outgoingPrsQuery = gql`
+export const outgoingPrsQuery = gql`
 query OutgoingPullRequests($login: String!, $startCursor: String) {
 	user(login: $login) {
     name
