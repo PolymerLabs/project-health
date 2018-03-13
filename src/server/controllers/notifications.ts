@@ -49,7 +49,9 @@ export async function sendNotification(
             recipient, subDetails.subscription);
         sendDetails.sent.removed++;
       } else {
-        console.error('Failed to send notification: ', err);
+        if (process.env.NODE_ENV !== 'test') {
+          console.error('Failed to send notification: ', err);
+        }
         sendDetails.sent.failed++;
         sendDetails.errors.push(err.message);
       }
