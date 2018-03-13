@@ -12,31 +12,31 @@ import {initFirestore} from '../../utils/firestore';
 import {initGithub} from '../../utils/github';
 
 type TestContext = {
-  dashServer: DashServer,
-  dashAddress: string,
   replayServer: Server,
   replayAddress: string,
-  browser: puppeteer.Browser,
   sandbox: SinonSandbox,
 };
 const test = anyTest as TestInterface<TestContext>;
 
-test.before(async (t) => {
-  const {server, url} =
-      await startTestReplayServer(t, 'project-health1-dashboard');
-  const dashServer = new DashServer();
+let browser: puppeteer.Browser;
+let dashServer: DashServer;
+let dashAddress: string;
+test.before(async () => {
+  initFirestore();
+  browser = await puppeteer.launch({args: ['--no-sandbox']});
+
+  dashServer = new DashServer();
+  dashAddress = await dashServer.listen();
+});
+
+test.beforeEach(async (t) => {
+  const {server, url} = await startTestReplayServer(t);
 
   t.context = {
-    browser: await puppeteer.launch({args: ['--no-sandbox']}),
-    dashServer,
-    dashAddress: await dashServer.listen(),
     replayServer: server,
     replayAddress: url,
     sandbox: sinon.sandbox.create(),
   };
-
-  initFirestore();
-  initGithub(t.context.replayAddress, t.context.replayAddress);
 
   const getFakeLogin = (): LoginDetails => {
     return {
@@ -52,21 +52,26 @@ test.before(async (t) => {
   // Stub login to point to fake user.
   t.context.sandbox.stub(userModel, 'getLoginFromRequest')
       .callsFake(getFakeLogin);
+
+
+  initGithub(t.context.replayAddress, t.context.replayAddress);
 });
 
-test.afterEach.always((t) => {
+test.afterEach.always(async (t) => {
   t.context.sandbox.restore();
+  await new Promise((resolve) => {
+    t.context.replayServer.close(resolve);
+  });
 });
 
-test.after.always(async (t) => {
-  t.context.replayServer.close();
-  t.context.dashServer.close();
-  await t.context.browser.close();
+test.after.always(async () => {
+  await browser.close();
+  await dashServer.close();
 });
 
-test('project-health1 dashboard UI', async (t) => {
-  const page = await t.context.browser.newPage();
-  await page.goto(t.context.dashAddress, {waitUntil: 'networkidle0'});
+test.serial('[pixel-test] project-health1 dashboard UI', async (t) => {
+  const page = await browser.newPage();
+  await page.goto(dashAddress, {waitUntil: 'networkidle0'});
 
   // Hide time stamps from screenshots.
   await page.$$eval('time', /* istanbul ignore next */ (elements) => {
@@ -84,10 +89,9 @@ test('project-health1 dashboard UI', async (t) => {
 });
 
 
-test('project-health1 outgoing UI', async (t) => {
-  const page = await t.context.browser.newPage();
-  await page.goto(
-      `${t.context.dashAddress}/outgoing`, {waitUntil: 'networkidle0'});
+test.serial('[pixel-test] project-health1 outgoing UI', async (t) => {
+  const page = await browser.newPage();
+  await page.goto(`${dashAddress}/outgoing`, {waitUntil: 'networkidle0'});
 
   // Hide time stamps from screenshots.
   await page.$$eval('time', /* istanbul ignore next */ (elements) => {

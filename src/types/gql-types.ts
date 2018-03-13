@@ -1303,6 +1303,27 @@ export interface prFieldsFragment {
   ) | null,
 };
 
+export interface commitFieldsFragment {
+  __typename: "Commit",
+  // Status information for this commit
+  status:  {
+    __typename: string,
+    // The individual status contexts for this commit.
+    contexts:  Array< {
+      __typename: string,
+      id: string,
+      // The name of this status context.
+      context: string,
+      // The state of this status context.
+      state: StatusState,
+      // Identifies the date and time when the object was created.
+      createdAt: string,
+    } >,
+    // The combined commit status.
+    state: StatusState,
+  } | null,
+};
+
 export interface statusFieldsFragment {
   __typename: "PullRequest",
   // A list of commits present in this pull request's head branch not present in the base branch.

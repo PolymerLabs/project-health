@@ -95,6 +95,7 @@ export async function testScreenshot(
     // Generate new golden file.
     await page.screenshot({path: expectedPath, fullPage: true});
     console.info(`💾 Generated golden at ${expectedPath}`);
+    t.pass();
   }
 }
 
