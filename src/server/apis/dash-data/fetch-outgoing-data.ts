@@ -1,6 +1,6 @@
 import * as api from '../../../types/api';
 import {OutgoingPullRequestInfo} from '../../../types/api';
-import {OutgoingPullRequestsQuery, PullRequestReviewState, reviewFieldsFragment} from '../../../types/gql-types';
+import {commitFieldsFragment, OutgoingPullRequestsQuery, PullRequestReviewState, reviewFieldsFragment} from '../../../types/gql-types';
 import {github} from '../../../utils/github';
 import {pullRequestsModel} from '../../models/pullRequestsModel';
 import {repositoryModel} from '../../models/repositoryModel';
@@ -153,9 +153,28 @@ async function getAllPRInfo(
         });
       }
 
+      const commits: commitFieldsFragment[] = [];
+      if (pr.commits && pr.commits.nodes) {
+        for (const commitNode of pr.commits.nodes) {
+          if (commitNode && commitNode.commit) {
+            commits.push(commitNode.commit);
+          }
+        }
+      }
+      if (commits.length > 1) {
+        throw new Error(
+            'Commits are expected to contain *only* the latest ' +
+            'commit. This isn\'t the case and needs to be fixed.');
+      }
+
+      let latestCommit: commitFieldsFragment|null = null;
+      if (commits.length > 0) {
+        latestCommit = commits[0];
+      }
+
       // Get status
       const outgoingStatus: api.PullRequestStatus =
-          getStatus(reviewRequests, reviews);
+          getStatus(reviewRequests, reviews, latestCommit);
       outgoingPr.status = outgoingStatus;
 
       // Get repo details and automerge info
@@ -240,7 +259,9 @@ function reviewsForOutgoingPrs(reviews: reviewFieldsFragment[]): api.Review[] {
 }
 
 function getStatus(
-    reviewRequests: string[], reviews: api.Review[]): api.PullRequestStatus {
+    reviewRequests: string[],
+    reviews: api.Review[],
+    latestCommit: commitFieldsFragment|null): api.PullRequestStatus {
   let outgoingStatus: api.PullRequestStatus = {
     type: 'UnknownStatus',
   };
@@ -260,7 +281,19 @@ function getStatus(
     if (reviewsRequestingChanges.length > 0) {
       outgoingStatus = {type: 'PendingChanges'};
     } else if (reviewsApproved.length === reviewersCount) {
-      outgoingStatus = {type: 'PendingMerge'};
+      if (latestCommit && latestCommit.status) {
+        const state = latestCommit.status.state;
+        if (state === 'PENDING') {
+          outgoingStatus = {type: 'StatusChecksPending'};
+        } else if (state === 'ERROR' || state === 'FAILURE') {
+          outgoingStatus = {type: 'StatusChecksFailed'};
+        } else if (state === 'SUCCESS') {
+          outgoingStatus = {type: 'PendingMerge'};
+        }
+      } else {
+        // No status so treat as pending merge
+        outgoingStatus = {type: 'PendingMerge'};
+      }
     } else {
       outgoingStatus = {
         type: 'WaitingReview',

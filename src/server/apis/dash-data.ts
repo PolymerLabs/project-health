@@ -493,19 +493,23 @@ query OutgoingPullRequests($login: String!, $startCursor: String) {
 ${prFragment}
 ${reviewFragment}
 
+fragment commitFields on Commit {
+  status {
+    contexts {
+      id
+      context
+      state
+      createdAt
+    }
+    state
+  }
+}
+
 fragment statusFields on PullRequest {
 	commits(last: 1) {
     nodes {
       commit {
-        status {
-          contexts {
-            id
-            context
-            state
-            createdAt
-          }
-          state
-        }
+        ...commitFields
       }
     }
   }
