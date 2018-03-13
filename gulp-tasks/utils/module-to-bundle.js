@@ -21,6 +21,14 @@ const processScript = (scriptPath, relativePath, destDir) => {
              sourcemap: true,
              name: path.basename(scriptPath),
            },
+           onwarn: (warning) => {
+             if (warning.code === 'THIS_IS_UNDEFINED') {
+               // This warning occurs when using Rollup with Typescript
+               // generated code: https://github.com/rollup/rollup/issues/794
+               return;
+             }
+             console.warn(warning.message);
+           },
            plugins: [
              // This module enabled Rollup to *ingest* a sourcemap to apply
              // further manipulations
