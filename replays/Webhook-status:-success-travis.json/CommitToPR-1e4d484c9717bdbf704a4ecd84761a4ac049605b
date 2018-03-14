@@ -1,0 +1,46 @@
+{
+  "data": {
+    "pullRequests": {
+      "nodes": [
+        {
+          "id": "MDExOlB1bGxSZXF1ZXN0MTY2Njk1NzY1",
+          "number": 111,
+          "title": "Webhooks",
+          "bodyText": "Adds ability to remove hooks\nSets initial state correctly.",
+          "state": "MERGED",
+          "url": "https://github.com/PolymerLabs/project-health/pull/111",
+          "repository": {
+            "name": "project-health",
+            "owner": {
+              "login": "PolymerLabs",
+              "__typename": "Organization"
+            },
+            "__typename": "Repository"
+          },
+          "author": {
+            "login": "gauntface",
+            "__typename": "User"
+          },
+          "commits": {
+            "nodes": [
+              {
+                "commit": {
+                  "oid": "c3b7fd28b5d01edc39b5d890e93a44ab31397d3d",
+                  "status": {
+                    "state": "SUCCESS",
+                    "__typename": "Status"
+                  },
+                  "__typename": "Commit"
+                },
+                "__typename": "PullRequestCommit"
+              }
+            ],
+            "__typename": "PullRequestCommitConnection"
+          },
+          "__typename": "PullRequest"
+        }
+      ],
+      "__typename": "SearchResultItemConnection"
+    }
+  }
+}

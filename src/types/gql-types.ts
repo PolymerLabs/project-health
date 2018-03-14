@@ -38,6 +38,14 @@ export enum StatusState {
 }
 
 
+// The possible states of a pull request.
+export enum PullRequestState {
+  OPEN = "OPEN", // A pull request that is still open.
+  CLOSED = "CLOSED", // A pull request that has been closed without being merged.
+  MERGED = "MERGED", // A pull request that has been closed by being merged.
+}
+
+
 export interface OrgReposQueryVariables {
   login: string,
   cursor?: string | null,
@@ -1105,11 +1113,24 @@ export interface OrgDetailsQuery {
   },
 };
 
-export interface StatusToPRQueryVariables {
+export interface ViewerLoginQuery {
+  // The currently authenticated user.
+  viewer:  {
+    __typename: "User",
+    // The username used to login.
+    login: string,
+    // A URL pointing to the user's public avatar.
+    avatarUrl: string,
+    // The user's public profile name.
+    name: string | null,
+  },
+};
+
+export interface CommitToPRQueryVariables {
   query: string,
 };
 
-export interface StatusToPRQuery {
+export interface CommitToPRQuery {
   // Perform a search across resources.
   pullRequests:  {
     __typename: "SearchResultItemConnection",
@@ -1119,10 +1140,33 @@ export interface StatusToPRQuery {
       } | {
         __typename: "PullRequest",
         id: string,
+        // Identifies the pull request number.
+        number: number,
         // Identifies the pull request title.
         title: string,
+        // Identifies the body of the pull request rendered to text.
+        bodyText: string,
+        // Identifies the state of the pull request.
+        state: PullRequestState,
         // The HTTP URL for this pull request.
         url: string,
+        // The repository associated with this node.
+        repository:  {
+          __typename: string,
+          // The name of the repository.
+          name: string,
+          // The User owner of the repository.
+          owner: ( {
+              __typename: "Organization",
+              // The username used to login.
+              login: string,
+            } | {
+              __typename: "User",
+              // The username used to login.
+              login: string,
+            }
+          ),
+        },
         // The actor who authored the comment.
         author: ( {
             __typename: "Organization",
@@ -1149,6 +1193,12 @@ export interface StatusToPRQuery {
               __typename: string,
               // The Git object ID
               oid: string,
+              // Status information for this commit
+              status:  {
+                __typename: string,
+                // The combined commit status.
+                state: StatusState,
+              } | null,
             },
           } | null > | null,
         },
@@ -1162,19 +1212,6 @@ export interface StatusToPRQuery {
         __typename: "MarketplaceListing",
       }
     ) | null > | null,
-  },
-};
-
-export interface ViewerLoginQuery {
-  // The currently authenticated user.
-  viewer:  {
-    __typename: "User",
-    // The username used to login.
-    login: string,
-    // A URL pointing to the user's public avatar.
-    avatarUrl: string,
-    // The user's public profile name.
-    name: string | null,
   },
 };
 

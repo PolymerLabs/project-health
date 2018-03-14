@@ -496,27 +496,11 @@ test.serial(
             };
           });
 
-      let response = await handleStatus(eventContent);
-      t.deepEqual(response.handled, true);
-      t.deepEqual(sendStub.callCount, 1);
-      t.deepEqual(sendStub.args[0], [
-        'injected-pr-author',
-        {
-          title: 'The Travis CI build could not complete due to an error',
-          body: '[project-health] Injected title',
-          requireInteraction: false,
-          icon: '/images/notification-images/icon-192x192.png',
-          data: {url: 'https://example.com/pr/123'}
-        }
-      ]);
-
-      sendStub.reset();
-
-      // Sending a second hook (i.e. travis fail on pr and fail on push) should
-      // send no notification
-      response = await handleStatus(eventContent);
+      const response = await handleStatus(eventContent);
       t.deepEqual(response.handled, false);
       t.deepEqual(sendStub.callCount, 0);
+
+      sendStub.reset();
     });
 
 test.serial('Webhook status: pending-travis.json', async (t) => {
