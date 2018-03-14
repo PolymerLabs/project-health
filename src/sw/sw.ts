@@ -4,9 +4,17 @@ declare var self: ServiceWorkerGlobalScope;
 import {NotificationPayload, NotificationURLData, SWClientMessage} from '../types/api';
 import {Analytics} from './analytics';
 
-const analytics = new Analytics('UA-114703954-1');
+const STAGING_TRACKING_ID = 'UA-114703954-2';
+const PROD_TRACKING_ID = 'UA-114703954-1';
 
-async function pingAnalytics(eventAction: string, eventValue: string) {
+let trackingId = STAGING_TRACKING_ID;
+if (self.location.origin === 'https://github-health.appspot.com') {
+  trackingId = PROD_TRACKING_ID;
+}
+
+const analytics = new Analytics(trackingId);
+
+async function pingAnalytics(eventAction: string) {
   let clientID = 'unknown-client-id';
 
   if ('pushManager' in self.registration) {
@@ -16,7 +24,7 @@ async function pingAnalytics(eventAction: string, eventValue: string) {
     }
   }
 
-  await analytics.trackEvent(clientID, eventAction, eventValue);
+  await analytics.trackEvent(clientID, eventAction);
 }
 
 type CustomNotification = {
@@ -60,13 +68,13 @@ async function showNotification(data: NotificationPayload) {
       data,
   );
 
-  await pingAnalytics('push-event', 'notification-shown');
+  await pingAnalytics('notification-shown');
 }
 
 // This is an "EventListener"
 const pushEventHandler = {
   handleEvent: (event: PushEvent) => {
-    event.waitUntil(pingAnalytics('push-event', 'push-received'));
+    event.waitUntil(pingAnalytics('push-received'));
 
     let notificationData = DEFAULT_NOTIFICATION_OPTIONS;
     if (event.data) {
@@ -106,6 +114,7 @@ async function openWindow(url: string) {
 
 const clickEventHandler = {
   handleEvent: (event: NotificationEvent) => {
+    event.waitUntil(pingAnalytics('notification-click'));
     event.notification.close();
 
     // tslint:disable-next-line:no-any
