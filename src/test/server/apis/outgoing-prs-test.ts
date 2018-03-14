@@ -18,9 +18,9 @@ test.before(() => {
 });
 
 /**
- * Generates the test context object before each test.
+ * Generates the test context object before test.
  */
-test.beforeEach(async (t) => {
+test.before(async (t) => {
   const {server, url} =
       await startTestReplayServer(t, 'project-health1-dashboard outgoing');
   initGithub(url, url);
@@ -33,16 +33,25 @@ test.beforeEach(async (t) => {
     fullname: null,
     lastKnownUpdate: new Date().toISOString(),
   };
-  const data = await fetchOutgoingData(loginDetails, 'project-health1');
+
+  const result = await fetchOutgoingData(loginDetails, 'project-health1');
+  let page = result;
+
+  while (page.hasMore && page.cursor) {
+    page =
+        await fetchOutgoingData(loginDetails, 'project-health1', page.cursor);
+    result.prs = result.prs.concat(page.prs);
+  }
+
   server.close();
 
   const prsById = new Map();
-  for (const pr of data.prs) {
+  for (const pr of result.prs) {
     prsById.set(pr.url.replace(/https:\/\/github.com\//, ''), pr);
   }
 
   t.context = {
-    data,
+    data: result,
     prsById,
   };
 });
@@ -50,7 +59,7 @@ test.beforeEach(async (t) => {
 test('dashoutgoing: sane output', (t) => {
   const data = t.context.data;
   // Make sure a test is added each time these numbers are changed.
-  t.is(data.prs.length, 10);
+  t.is(data.prs.length, 11);
 });
 
 test('dashoutgoing: outgoing PRs are sorted', (t) => {
@@ -204,28 +213,26 @@ test('dashoutgoing: Outgoing PR, has 1 commented review', (t) => {
   });
 });
 
-// TODO: Switch to cursor in the before step to get all PR's.
-test.failing(
-    'dashoutgoing: Outgoing PR, requested reviews, no reviews', (t) => {
-      t.deepEqual(t.context.prsById.get('project-health1/repo/pull/1'), {
-        id: 'MDExOlB1bGxSZXF1ZXN0MTU4Njg4ODg0',
-        author: 'project-health1',
-        avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
-        createdAt: 1513370262000,
-        repository: 'project-health1/repo',
-        title: 'Update README.md',
-        url: 'https://github.com/project-health1/repo/pull/1',
-        status: {type: 'WaitingReview', reviewers: ['project-health2']},
-        events: [],
-        repoDetails: {
-          allow_rebase_merge: true,
-          allow_squash_merge: true,
-          allow_merge_commit: true,
-        },
-        mergeable: MergeableState.MERGEABLE,
-        automergeOpts: null,
-      });
-    });
+test('dashoutgoing: Outgoing PR, requested reviews, no reviews', (t) => {
+  t.deepEqual(t.context.prsById.get('project-health1/repo/pull/1'), {
+    id: 'MDExOlB1bGxSZXF1ZXN0MTU4Njg4ODg0',
+    author: 'project-health1',
+    avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
+    createdAt: 1513370262000,
+    repository: 'project-health1/repo',
+    title: 'Update README.md',
+    url: 'https://github.com/project-health1/repo/pull/1',
+    status: {type: 'WaitingReview', reviewers: ['project-health2']},
+    events: [],
+    repoDetails: {
+      allow_rebase_merge: true,
+      allow_squash_merge: true,
+      allow_merge_commit: true,
+    },
+    mergeable: MergeableState.MERGEABLE,
+    automergeOpts: null,
+  });
+});
 
 
 test('dashoutgoing: review requested changes then approved', (t) => {
