@@ -18,7 +18,7 @@ export class DashPollController {
 
   private async setupNextPoll(id: string) {
     this.clearTimeout(id);
-    window.setTimeout(
+    this.pollConfigs[id].timeoutId = window.setTimeout(
         () => this.runPollEvent(id),
         this.pollConfigs[id].duration,
     );
