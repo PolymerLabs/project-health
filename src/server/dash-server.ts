@@ -67,10 +67,6 @@ export class DashServer {
     // Enable public APIs
     app.use('/api/login/', getLoginRouter());
     app.use('/api/webhook/', getGitHubHookRouter());
-
-    if (process.env.NODE_ENV !== 'production') {
-      app.use('/', express.static(path.join(__dirname, '..', '..')));
-    }
   }
 
   private setupPrivateRoutes(app: Express) {
