@@ -68,7 +68,7 @@ async function handleLoginRequest(request: express.Request):
       [ID_COOKIE_NAME]: {
         value: newToken,
         options: {
-          httpOnly: true,
+            // httpOnly: true,
         },
       },
     },
