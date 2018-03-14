@@ -77,13 +77,9 @@ export interface JSONAPIResponse<T> {
   data?: T;
 }
 
-export interface LoginResponse {
-  status: string;
-}
+export interface LoginResponse { status: string; }
 
-export interface LastKnownResponse {
-  lastKnownUpdate: string|null;
-}
+export interface LastKnownResponse { lastKnownUpdate: string|null; }
 
 /** Not necessarily actionable. */
 
@@ -191,9 +187,7 @@ export interface ErrorPayload {
   message: string;
 }
 
-export interface NotificationURLData {
-  url: string;
-}
+export interface NotificationURLData { url: string; }
 
 export type SWClientMessage<T> = {
   action: 'push-received',
