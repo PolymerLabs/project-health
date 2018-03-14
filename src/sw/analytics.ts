@@ -1,3 +1,5 @@
+const DEBUG = false;
+
 // Make use of Google Analytics Measurement Protocol.
 // https://developers.google.com/analytics/devguides/collection/protocol/v1/reference
 export class Analytics {
@@ -7,11 +9,7 @@ export class Analytics {
     this.trackingId = trackingId;
   }
 
-  async trackEvent(
-      clientId: string,
-      eventAction: string,
-      eventValue: string,
-      optionalParams?: {}) {
+  async trackEvent(clientId: string, eventAction: string, optionalParams?: {}) {
     if (!this.trackingId) {
       console.error('You need to set a trackingId, for example:');
       console.error('self.analytics.trackingId = \'UA-XXXXXXXX-X\';');
@@ -21,11 +19,8 @@ export class Analytics {
       return;
     }
 
-    if (typeof eventAction === 'undefined' &&
-        typeof eventValue === 'undefined') {
-      console.warn(
-          'sendAnalyticsEvent() called with no eventAction or ' +
-          'eventValue.');
+    if (typeof eventAction === 'undefined') {
+      console.warn('sendAnalyticsEvent() called with no eventAction.');
       return;
     }
 
@@ -33,7 +28,7 @@ export class Analytics {
       // Version Number
       v: 1,
       // Client ID
-      cid: clientId,
+      cid: encodeURIComponent(clientId),
       // Tracking ID
       tid: this.trackingId,
       // Hit Type
@@ -44,8 +39,6 @@ export class Analytics {
       ec: 'serviceworker',
       // Event Action
       ea: eventAction,
-      // Event Value
-      ev: eventValue,
     };
 
     if (optionalParams) {
@@ -63,10 +56,11 @@ export class Analytics {
             })
             .join('&');
 
-    const response = await fetch('https://www.google-analytics.com/collect', {
-      method: 'post',
-      body: payloadString,
-    });
+    const response = await fetch(
+        `https://www.google-analytics.com/${DEBUG ? 'debug/' : ''}collect`, {
+          method: 'post',
+          body: payloadString,
+        });
 
     if (!response.ok) {
       const responseText = await response.text();
