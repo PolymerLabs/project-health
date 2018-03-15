@@ -60,7 +60,7 @@ async function handleOAuthFlow() {
 
   const properties: {[key: string]: string} = {
     client_id: CLIENT_ID,
-    scope: queryParams.get('scope') || '',
+    scope: queryParams.get('scope') || 'repo',
     redirect_uri: encodeURIComponent(
         `https://github-health.appspot.com/oauth.html?redirect-origin=${
             REDIRECT_ORIGIN}&final-redirect=${

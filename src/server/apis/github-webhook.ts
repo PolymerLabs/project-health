@@ -15,17 +15,6 @@ function getRouter(): express.Router {
   const githubHookRouter = express.Router();
   githubHookRouter.post(
       '/', async (request: express.Request, response: express.Response) => {
-        const eventDelivery = request.headers['x-github-delivery'];
-        if (!eventDelivery) {
-          response.status(400).send('No event delivery provided.');
-          return;
-        }
-
-        if (typeof eventDelivery !== 'string') {
-          response.status(400).send('Event delivery was not a string.');
-          return;
-        }
-
         const eventName = request.headers['x-github-event'];
         if (!eventName) {
           response.status(400).send('No event type provided.');
@@ -39,10 +28,23 @@ function getRouter(): express.Router {
         }
 
         try {
-          const loggedHook = await hooksModel.logHook(eventDelivery);
-          if (!loggedHook) {
-            response.status(202).send('Duplicate Event');
-            return;
+          if (process.env.NODE_ENV === 'production') {
+            const eventDelivery = request.headers['x-github-delivery'];
+            if (!eventDelivery) {
+              response.status(400).send('No event delivery provided.');
+              return;
+            }
+
+            if (typeof eventDelivery !== 'string') {
+              response.status(400).send('Event delivery was not a string.');
+              return;
+            }
+
+            const loggedHook = await hooksModel.logHook(eventDelivery);
+            if (!loggedHook) {
+              response.status(202).send('Duplicate Event');
+              return;
+            }
           }
 
           let handled = null;
