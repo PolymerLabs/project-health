@@ -74,7 +74,7 @@ test.serial(
       const commitToPRStub =
           t.context.sandbox.stub(commitPRUtil, 'getPRDetailsFromCommit')
               .callsFake(() => {
-                return [];
+                return null;
               });
 
       const response = await handleStatus({
@@ -113,11 +113,11 @@ test.serial(
       const commitToPRStub =
           t.context.sandbox.stub(commitPRUtil, 'getPRDetailsFromCommit')
               .callsFake(() => {
-                return [{
+                return {
                   commit: {
                     state: 'PENDING',
                   }
-                }];
+                };
               });
 
       const response = await handleStatus({
@@ -161,7 +161,7 @@ test.serial(
       };
       t.context.sandbox.stub(commitPRUtil, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            return [prDetails];
+            return prDetails;
           });
 
       const automergeStub =
@@ -214,7 +214,7 @@ test.serial(
       };
       t.context.sandbox.stub(commitPRUtil, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            return [prDetails];
+            return prDetails;
           });
 
       const automergeStub =
@@ -283,7 +283,7 @@ test.serial(
       };
       t.context.sandbox.stub(commitPRUtil, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            return [prDetails];
+            return prDetails;
           });
 
       const automergeStub =
