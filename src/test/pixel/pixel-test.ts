@@ -44,7 +44,7 @@ test.beforeEach(async (t) => {
       avatarUrl: null,
       fullname: null,
       githubToken: '',
-      scopes: null,
+      scopes: [],
       lastKnownUpdate: null,
     };
   };

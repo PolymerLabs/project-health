@@ -8,3 +8,4 @@ secrets.tar
 goldens/*-actual.png
 goldens/*-diff.png
 goldens/*-preview.png
+tokens.json

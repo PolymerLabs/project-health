@@ -38,8 +38,8 @@
               "nodes": [
                 {
                   "commit": {
-                    "status": null,
-                    "__typename": "Commit"
+                    "__typename": "Commit",
+                    "status": null
                   },
                   "__typename": "PullRequestCommit"
                 }
@@ -92,8 +92,8 @@
               "nodes": [
                 {
                   "commit": {
-                    "status": null,
-                    "__typename": "Commit"
+                    "__typename": "Commit",
+                    "status": null
                   },
                   "__typename": "PullRequestCommit"
                 }
@@ -148,8 +148,8 @@
               "nodes": [
                 {
                   "commit": {
-                    "status": null,
-                    "__typename": "Commit"
+                    "__typename": "Commit",
+                    "status": null
                   },
                   "__typename": "PullRequestCommit"
                 }
@@ -213,8 +213,8 @@
               "nodes": [
                 {
                   "commit": {
-                    "status": null,
-                    "__typename": "Commit"
+                    "__typename": "Commit",
+                    "status": null
                   },
                   "__typename": "PullRequestCommit"
                 }
@@ -286,8 +286,8 @@
               "nodes": [
                 {
                   "commit": {
-                    "status": null,
-                    "__typename": "Commit"
+                    "__typename": "Commit",
+                    "status": null
                   },
                   "__typename": "PullRequestCommit"
                 }
@@ -351,8 +351,8 @@
               "nodes": [
                 {
                   "commit": {
-                    "status": null,
-                    "__typename": "Commit"
+                    "__typename": "Commit",
+                    "status": null
                   },
                   "__typename": "PullRequestCommit"
                 }
@@ -407,8 +407,8 @@
               "nodes": [
                 {
                   "commit": {
-                    "status": null,
-                    "__typename": "Commit"
+                    "__typename": "Commit",
+                    "status": null
                   },
                   "__typename": "PullRequestCommit"
                 }
@@ -445,8 +445,8 @@
     "rateLimit": {
       "cost": 1,
       "limit": 5000,
-      "remaining": 4881,
-      "resetAt": "2018-03-12T22:49:44Z",
+      "remaining": 4999,
+      "resetAt": "2018-03-15T22:09:15Z",
       "nodeCount": 140,
       "__typename": "RateLimit"
     }

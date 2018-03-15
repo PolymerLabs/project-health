@@ -6,6 +6,7 @@ import {OutgoingDashResponse, OutgoingPullRequest} from '../../../types/api';
 import {PullRequestReviewState} from '../../../types/gql-types';
 import {initFirestore} from '../../../utils/firestore';
 import {initGithub} from '../../../utils/github';
+import {getTestTokens} from '../../get-test-tokens';
 
 type TestContext = {
   data: OutgoingDashResponse,
@@ -27,8 +28,8 @@ test.beforeEach(async (t) => {
 
   const loginDetails = {
     username: 'project-health2',
-    githubToken: process.env.GITHUB_TOKEN || 'test-token',
-    scopes: [],
+    githubToken: getTestTokens()['project-health1'],
+    scopes: null,
     avatarUrl: null,
     fullname: null,
     lastKnownUpdate: new Date().toISOString(),
@@ -95,7 +96,7 @@ test('dashoutgoing2: requested changes', (t) => {
   });
 });
 
-test('dashoutgoing2: review with comments', (t) => {
+test.only('dashoutgoing2: review with comments', (t) => {
   t.deepEqual(t.context.prsById.get('13'), {
     author: 'project-health2',
     automergeOpts: null,

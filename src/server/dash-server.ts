@@ -14,6 +14,7 @@ import {getRouter as getPushSubRouter} from './apis/push-subscription';
 import {getRouter as getSettingsRouter} from './apis/settings';
 import {getRouter as getUpdatesRouter} from './apis/updates';
 import {enforceHTTPS} from './utils/enforce-https';
+import {performGitHubRedirect} from './utils/perform-github-redirect';
 import {requireLogin} from './utils/require-login';
 
 const STATIC_EXT = ['html'];
@@ -63,6 +64,8 @@ export class DashServer {
     // in service workers.
     const swPath = path.join(__dirname, '..', 'sw', 'bundled');
     app.use('/', express.static(swPath));
+
+    app.get('/signin', performGitHubRedirect);
 
     // Enable public APIs
     app.use('/api/login/', getLoginRouter());

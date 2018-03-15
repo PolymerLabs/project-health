@@ -1,8 +1,5 @@
 import {JSONAPIResponse, LoginResponse} from '../../../../types/api';
 
-const CLIENT_ID = '23b7d82aec29a3a1a2a8';
-const REDIRECT_ORIGIN = window.location.origin;
-
 function handleOriginRedirect(
     redirectOrigin: string, queryParams: URLSearchParams) {
   // This redirect allows testing on localhost or on the remote server
@@ -57,20 +54,6 @@ async function handleOAuthFlow() {
     throw new Error(
         `Error returned by Github: '${queryParams.get('error_description')}'`);
   }
-
-  const properties: {[key: string]: string} = {
-    client_id: CLIENT_ID,
-    scope: queryParams.get('scope') || 'repo',
-    redirect_uri: encodeURIComponent(
-        `https://github-health.appspot.com/oauth.html?redirect-origin=${
-            REDIRECT_ORIGIN}&final-redirect=${
-            queryParams.get('final-redirect') || ''}`),
-  };
-  const searchValues = Object.keys(properties).map((keyName) => {
-    return `${keyName}=${properties[keyName]}`;
-  });
-  window.location.href =
-      `https://github.com/login/oauth/authorize?${searchValues.join('&')}`;
 }
 
 handleOAuthFlow();

@@ -40,23 +40,29 @@ class RepositoryModel {
     if (repoSnapshot.exists) {
       const details = repoSnapshot.data() as SavedRepoDetails;
       if (this.validateDetails(details)) {
-        return details;
+        return {
+          allow_rebase_merge: details.allow_rebase_merge,
+          allow_squash_merge: details.allow_squash_merge,
+          allow_merge_commit: details.allow_merge_commit,
+        };
       }
-    }
-
-    // Check the required scopes are available.
-    if (!loginDetails.scopes || loginDetails.scopes.indexOf('repo') === -1) {
-      return {
-        allow_rebase_merge: true,
-        allow_squash_merge: true,
-        allow_merge_commit: true,
-      };
     }
 
     const response =
         await github().get(`repos/${owner}/${repo}`, loginDetails.githubToken);
     if (response.error) {
       throw new Error(response.message);
+    }
+
+    const requiredKeys = [
+      'allow_rebase_merge',
+      'allow_squash_merge',
+      'allow_merge_commit',
+    ];
+    for (const key of requiredKeys) {
+      if (typeof response[key] === 'undefined') {
+        throw new Error(`Unable to retrieve '${key}' value for repo.`);
+      }
     }
 
     const prDetails: RepoDetails = {

@@ -6,6 +6,7 @@ import {OutgoingDashResponse, OutgoingPullRequest} from '../../../types/api';
 import {MergeableState, PullRequestReviewState} from '../../../types/gql-types';
 import {initFirestore} from '../../../utils/firestore';
 import {initGithub} from '../../../utils/github';
+import {getTestTokens} from '../../get-test-tokens';
 
 type TestContext = {
   data: OutgoingDashResponse,
@@ -27,7 +28,7 @@ test.before(async (t) => {
 
   const loginDetails = {
     username: 'project-health1',
-    githubToken: process.env.GITHUB_TOKEN || 'test-token',
+    githubToken: getTestTokens()['project-health1'],
     scopes: [],
     avatarUrl: null,
     fullname: null,

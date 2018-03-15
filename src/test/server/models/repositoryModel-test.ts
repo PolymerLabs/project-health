@@ -7,6 +7,7 @@ import {startTestReplayServer} from '../../../replay-server';
 import {MAX_CACHE_AGE, repositoryModel} from '../../../server/models/repositoryModel';
 import {initFirestore} from '../../../utils/firestore';
 import {github, initGithub} from '../../../utils/github';
+import {getTestTokens} from '../../get-test-tokens';
 
 type TestContext = {
   server: Server,
@@ -16,13 +17,11 @@ type TestContext = {
 const REPO_OWNER = 'polymerlabs';
 const REPO_NAME = 'project-health';
 
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
-
 const LOGIN_DETAILS = {
   username: 'gauntface',
   avatarUrl: null,
   fullname: null,
-  githubToken: GITHUB_TOKEN,
+  githubToken: getTestTokens()['project-health1'],
   scopes: ['repo'],
   lastKnownUpdate: null,
 };
