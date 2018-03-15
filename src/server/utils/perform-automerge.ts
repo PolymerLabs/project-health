@@ -1,10 +1,10 @@
 import {github} from '../../utils/github';
 import {pullRequestsModel} from '../models/pullRequestsModel';
 
-import {CommitToPR} from './commit-to-prs';
+import {PullRequestDetails} from './get-pr-from-commit';
 
 export async function performAutomerge(
-    githubToken: string, repoOwner: string, prDetails: CommitToPR) {
+    githubToken: string, repoFullName: string, prDetails: PullRequestDetails) {
   const automergeOpts = await pullRequestsModel.getAutomergeOpts(prDetails.id);
   if (!automergeOpts) {
     return;
@@ -16,7 +16,7 @@ export async function performAutomerge(
   }
 
   await github().put(
-      `repos/${repoOwner}/pulls/${prDetails.number}/merge`,
+      `repos/${repoFullName}/pulls/${prDetails.number}/merge`,
       githubToken,
       {
         commit_title: prDetails.title,

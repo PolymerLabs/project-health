@@ -5,7 +5,7 @@ import {SinonSandbox} from 'sinon';
 import * as notificationController from '../../../server/controllers/notifications';
 import {handleStatus} from '../../../server/controllers/webhook-events/status';
 import {userModel} from '../../../server/models/userModel';
-import * as commitPRUtil from '../../../server/utils/commit-to-prs';
+import * as commitPRUtil from '../../../server/utils/get-pr-from-commit';
 import * as automergeUtil from '../../../server/utils/perform-automerge';
 import {initFirestore} from '../../../utils/firestore';
 import {initSecrets} from '../../../utils/secrets';
@@ -72,9 +72,10 @@ test.serial(
             };
           });
       const commitToPRStub =
-          t.context.sandbox.stub(commitPRUtil, 'commitToPRs').callsFake(() => {
-            return [];
-          });
+          t.context.sandbox.stub(commitPRUtil, 'getPRDetailsFromCommit')
+              .callsFake(() => {
+                return [];
+              });
 
       const response = await handleStatus({
         sha: 'test-sha',
@@ -110,13 +111,14 @@ test.serial(
             };
           });
       const commitToPRStub =
-          t.context.sandbox.stub(commitPRUtil, 'commitToPRs').callsFake(() => {
-            return [{
-              commit: {
-                state: 'PENDING',
-              }
-            }];
-          });
+          t.context.sandbox.stub(commitPRUtil, 'getPRDetailsFromCommit')
+              .callsFake(() => {
+                return [{
+                  commit: {
+                    state: 'PENDING',
+                  }
+                }];
+              });
 
       const response = await handleStatus({
         sha: 'test-sha',
@@ -157,9 +159,10 @@ test.serial(
           state: 'SUCCESS',
         }
       };
-      t.context.sandbox.stub(commitPRUtil, 'commitToPRs').callsFake(() => {
-        return [prDetails];
-      });
+      t.context.sandbox.stub(commitPRUtil, 'getPRDetailsFromCommit')
+          .callsFake(() => {
+            return [prDetails];
+          });
 
       const automergeStub =
           t.context.sandbox.stub(automergeUtil, 'performAutomerge')
@@ -209,9 +212,10 @@ test.serial(
           state: 'SUCCESS',
         }
       };
-      t.context.sandbox.stub(commitPRUtil, 'commitToPRs').callsFake(() => {
-        return [prDetails];
-      });
+      t.context.sandbox.stub(commitPRUtil, 'getPRDetailsFromCommit')
+          .callsFake(() => {
+            return [prDetails];
+          });
 
       const automergeStub =
           t.context.sandbox.stub(automergeUtil, 'performAutomerge')
@@ -277,9 +281,10 @@ test.serial(
           state: 'SUCCESS',
         }
       };
-      t.context.sandbox.stub(commitPRUtil, 'commitToPRs').callsFake(() => {
-        return [prDetails];
-      });
+      t.context.sandbox.stub(commitPRUtil, 'getPRDetailsFromCommit')
+          .callsFake(() => {
+            return [prDetails];
+          });
 
       const automergeStub =
           t.context.sandbox.stub(automergeUtil, 'performAutomerge')

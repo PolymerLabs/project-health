@@ -4,7 +4,7 @@ import {CommitToPRQuery} from '../../types/gql-types';
 import {github} from '../../utils/github';
 
 // Used to clean the data from Apollo / GitHub API
-export interface CommitToPR {
+export interface PullRequestDetails {
   id: string;
   number: number;
   title: string;
@@ -21,30 +21,29 @@ interface CommitDetails {
   state: 'ERROR'|'EXPECTED'|'FAILURE'|'PENDING'|'SUCCESS'|null;
 }
 
-export async function commitToPRs(
-    githubToken: string, repoOwner: string, sha: string):
-    Promise<CommitToPR[]> {
+export async function getPRDetailsFromCommit(
+    githubToken: string, repoFullName: string, sha: string):
+    Promise<PullRequestDetails|null> {
   const statusPR = await github().query<CommitToPRQuery>({
     query: commitToPR,
     variables: {
-      query: `type:pr repo:${repoOwner} ${sha}`,
+      query: `type:pr repo:${repoFullName} ${sha}`,
     },
-    fetchPolicy: 'network-only',
     // We use the commit author's token for this request
     context: {token: githubToken}
   });
 
   if (!statusPR.data.pullRequests || !statusPR.data.pullRequests.nodes) {
-    return [];
+    return null;
   }
 
-  const prs = [];
+  let pr: PullRequestDetails|null = null;
   for (const prData of statusPR.data.pullRequests.nodes) {
     if (!prData || prData.__typename !== 'PullRequest') {
       continue;
     }
 
-    // We'll want to message the author
+    // We may want to send a notification to the author, so ensure it exists.
     if (!prData.author) {
       continue;
     }
@@ -76,7 +75,10 @@ export async function commitToPRs(
       continue;
     }
 
-    const prDetails: CommitToPR = {
+    // PR Query will only return 1
+    // Should be safe based on:
+    // https://stackoverflow.com/questions/9392365/how-would-git-handle-a-sha-1-collision-on-a-blob
+    pr = {
       id: prData.id,
       number: prData.number,
       title: prData.title,
@@ -87,19 +89,14 @@ export async function commitToPRs(
       author: prData.author.login,
       commit: commits[0],
     };
-    prs.push(prDetails);
   }
 
-  return prs;
+  return pr;
 }
 
 const commitToPR = gql`
 query CommitToPR($query: String!) {
-  pullRequests: search (
-    first: 10,
-    type: ISSUE,
-    query: $query
-  ) {
+  pullRequests: search (first: 1, type: ISSUE, query: $query) {
     nodes {
       ... on PullRequest {
         id,
