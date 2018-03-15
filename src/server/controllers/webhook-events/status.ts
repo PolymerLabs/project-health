@@ -63,7 +63,7 @@ async function handleSuccessStatus(
   if (!prDetails) {
     return webhookResponse;
   }
-  console.log('<----------------', prDetails);
+
   // If all commits state is success (all status checks passed) or
   if (prDetails.commit.state !== 'SUCCESS' && prDetails.commit.state !== null) {
     return webhookResponse;
