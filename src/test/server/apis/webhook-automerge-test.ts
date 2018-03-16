@@ -99,7 +99,7 @@ test.serial(
     });
 
 test.serial(
-    '[webhook to automerge]: Should not handle if PR has a non-success state',
+    '[webhook to automerge]: should not handle if PR has a non-success state',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getLoginDetails')
           .callsFake((username: string) => {
@@ -114,7 +114,9 @@ test.serial(
           t.context.sandbox.stub(commitPRUtil, 'getPRDetailsFromCommit')
               .callsFake(() => {
                 return {
+                  id: 'test-pr-id',
                   commit: {
+                    oid: 'test-commit',
                     state: 'PENDING',
                   }
                 };
@@ -155,7 +157,9 @@ test.serial(
           });
 
       const prDetails = {
+        id: 'test-pr-id',
         commit: {
+          oid: 'test-commit',
           state: 'SUCCESS',
         }
       };
@@ -205,10 +209,12 @@ test.serial(
           });
 
       const prDetails = {
+        id: 'test-pr-id',
         title: 'pr-title',
         url: 'http://inject-url.com',
         author: 'project-health1',
         commit: {
+          oid: 'test-commit',
           state: 'SUCCESS',
         }
       };
@@ -274,6 +280,7 @@ test.serial(
           });
 
       const prDetails = {
+        id: 'test-pr-id',
         title: 'pr-title',
         url: 'http://inject-url.com',
         author: 'project-health1',

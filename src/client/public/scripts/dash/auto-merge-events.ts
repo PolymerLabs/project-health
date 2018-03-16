@@ -56,6 +56,10 @@ function requestRender() {
 
 export function getAutoMergeOptions(pr: api.OutgoingPullRequest):
     TemplateResult[] {
+  if (!pr.automergeAvailable) {
+    return [];
+  }
+
   const isOpen =
       automergeOpenStates[pr.id] ? automergeOpenStates[pr.id] : false;
   const toggleCb = () => {

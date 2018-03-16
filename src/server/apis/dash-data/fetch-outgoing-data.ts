@@ -184,15 +184,28 @@ async function getAllPRInfo(
             pr.repository.owner.login,
             pr.repository.name,
             ),
-        pullRequestsModel.getAutomergeOpts(pr.id),
+        pullRequestsModel.getAllPRData(pr.id),
       ]);
 
       const repoDetails = results[0];
-      const automergeOpts = results[1];
+      const prDetails = results[1];
+
+      let automergeAvailable = false;
+      let automergeOpts = null;
+      if (prDetails) {
+        if (prDetails.commits && Object.keys(prDetails.commits).length > 0) {
+          // If we have commit data, then we have status hooks configured.
+          automergeAvailable = true;
+          if (prDetails.automerge) {
+            automergeOpts = prDetails.automerge;
+          }
+        }
+      }
 
       const fullPR: api.OutgoingPullRequest = {
         ...outgoingPr,
         repoDetails,
+        automergeAvailable,
         automergeOpts,
         mergeable: pr.mergeable,
       };

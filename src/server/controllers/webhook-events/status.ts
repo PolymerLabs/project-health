@@ -1,39 +1,23 @@
 import {WebHookHandleResponse} from '../../apis/github-webhook';
 import {sendNotification} from '../../controllers/notifications';
-import {pullRequestsModel} from '../../models/pullRequestsModel';
+import {CommitDetails, pullRequestsModel} from '../../models/pullRequestsModel';
 import {LoginDetails, userModel} from '../../models/userModel';
-import {getPRDetailsFromCommit} from '../../utils/get-pr-from-commit';
+import {getPRDetailsFromCommit, PullRequestDetails} from '../../utils/get-pr-from-commit';
 import {performAutomerge} from '../../utils/perform-automerge';
 
 import {StatusHook} from './types';
 
 async function handleFailingStatus(
-    loginDetails: LoginDetails,
-    hookData: StatusHook): Promise<WebHookHandleResponse> {
+    hookData: StatusHook,
+    prDetails: PullRequestDetails,
+    savedCommitDetails: CommitDetails|null): Promise<WebHookHandleResponse> {
   const webhookResponse: WebHookHandleResponse = {
     handled: false,
     notifications: null,
   };
 
-  const prDetails = await getPRDetailsFromCommit(
-      loginDetails.githubToken, hookData.name, hookData.sha);
-  if (!prDetails) {
-    return webhookResponse;
-  }
-
-  const commitDetails = await pullRequestsModel.getCommitDetails(
-      prDetails.id,
-      prDetails.commit.oid,
-  );
-
-  if (!commitDetails || commitDetails.status !== hookData.state) {
+  if (!savedCommitDetails || savedCommitDetails.status !== hookData.state) {
     webhookResponse.handled = true;
-
-    await pullRequestsModel.setCommitStatus(
-        prDetails.id,
-        prDetails.commit.oid,
-        hookData.state,
-    );
 
     const results = await sendNotification(prDetails.author, {
       title: hookData.description,
@@ -52,17 +36,12 @@ async function handleFailingStatus(
 
 async function handleSuccessStatus(
     loginDetails: LoginDetails,
-    hookData: StatusHook): Promise<WebHookHandleResponse> {
+    hookData: StatusHook,
+    prDetails: PullRequestDetails): Promise<WebHookHandleResponse> {
   const webhookResponse: WebHookHandleResponse = {
     handled: false,
     notifications: null,
   };
-
-  const prDetails = await getPRDetailsFromCommit(
-      loginDetails.githubToken, hookData.name, hookData.sha);
-  if (!prDetails) {
-    return webhookResponse;
-  }
 
   // If all commits state is success (all status checks passed) or
   if (prDetails.commit.state !== 'SUCCESS' && prDetails.commit.state !== null) {
@@ -112,10 +91,36 @@ export async function handleStatus(hookData: StatusHook):
     };
   }
 
+  const prDetails = await getPRDetailsFromCommit(
+      loginDetails.githubToken, hookData.name, hookData.sha);
+  if (!prDetails) {
+    return {
+      handled: false,
+      notifications: null,
+    };
+  }
+
+  // Get previous state
+  const savedCommitDetails = await pullRequestsModel.getCommitDetails(
+      prDetails.id,
+      prDetails.commit.oid,
+  );
+
+  // Save latest state
+  await pullRequestsModel.setCommitStatus(
+      prDetails.id,
+      prDetails.commit.oid,
+      hookData.state,
+  );
+
   if (hookData.state === 'error' || hookData.state === 'failure') {
-    return handleFailingStatus(loginDetails, hookData);
+    return handleFailingStatus(
+        hookData,
+        prDetails,
+        savedCommitDetails,
+    );
   } else if (hookData.state === 'success') {
-    return handleSuccessStatus(loginDetails, hookData);
+    return handleSuccessStatus(loginDetails, hookData, prDetails);
   }
   return {handled: false, notifications: null};
 }

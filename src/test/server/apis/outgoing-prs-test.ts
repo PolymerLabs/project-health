@@ -102,6 +102,7 @@ test('dashoutgoing: outgoing PR, review with my own replies', (t) => {
     },
     mergeable: MergeableState.MERGEABLE,
     automergeOpts: null,
+    automergeAvailable: false,
   });
 });
 
@@ -125,6 +126,7 @@ test('dashoutgoing: Outgoing PR, no reviewers', (t) => {
     },
     mergeable: MergeableState.MERGEABLE,
     automergeOpts: null,
+    automergeAvailable: false,
   });
 });
 
@@ -153,6 +155,7 @@ test('dashoutgoing: Outgoing PR, changes requested', (t) => {
     },
     mergeable: MergeableState.MERGEABLE,
     automergeOpts: null,
+    automergeAvailable: false,
   });
 });
 
@@ -181,6 +184,7 @@ test('dashoutgoing: Outgoing PR, approved, ready to merge', (t) => {
     },
     mergeable: MergeableState.MERGEABLE,
     automergeOpts: null,
+    automergeAvailable: false,
   });
 });
 
@@ -211,6 +215,7 @@ test('dashoutgoing: Outgoing PR, has 1 commented review', (t) => {
     },
     mergeable: MergeableState.MERGEABLE,
     automergeOpts: null,
+    automergeAvailable: false,
   });
 });
 
@@ -232,6 +237,7 @@ test('dashoutgoing: Outgoing PR, requested reviews, no reviews', (t) => {
     },
     mergeable: MergeableState.MERGEABLE,
     automergeOpts: null,
+    automergeAvailable: false,
   });
 });
 
@@ -261,6 +267,7 @@ test('dashoutgoing: review requested changes then approved', (t) => {
     },
     mergeable: MergeableState.MERGEABLE,
     automergeOpts: null,
+    automergeAvailable: false,
   });
 });
 
@@ -289,6 +296,7 @@ test('dashoutgoing: with success status', (t) => {
     },
     mergeable: MergeableState.MERGEABLE,
     automergeOpts: null,
+    automergeAvailable: false,
   });
 });
 
@@ -317,6 +325,7 @@ test('dashoutgoing: with pending status', (t) => {
     },
     mergeable: MergeableState.MERGEABLE,
     automergeOpts: null,
+    automergeAvailable: true,
   });
 });
 
@@ -345,6 +354,7 @@ test('dashoutgoing: with error status', (t) => {
     },
     mergeable: MergeableState.MERGEABLE,
     automergeOpts: null,
+    automergeAvailable: true,
   });
 });
 
@@ -373,5 +383,6 @@ test('dashoutgoing: with failing status', (t) => {
     },
     mergeable: MergeableState.MERGEABLE,
     automergeOpts: null,
+    automergeAvailable: true,
   });
 });

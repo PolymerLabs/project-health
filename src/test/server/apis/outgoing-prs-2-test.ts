@@ -68,6 +68,7 @@ test('dashoutgoing2: requested changes', (t) => {
   t.deepEqual(t.context.prsById.get('14'), {
     author: 'project-health2',
     automergeOpts: null,
+    automergeAvailable: false,
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1520881768000,
     events: [
@@ -100,6 +101,7 @@ test('dashoutgoing2: review with comments', (t) => {
   t.deepEqual(t.context.prsById.get('13'), {
     author: 'project-health2',
     automergeOpts: null,
+    automergeAvailable: false,
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1520468329000,
     events: [
@@ -135,6 +137,7 @@ test('dashoutgoing2: review with comments2', (t) => {
   t.deepEqual(t.context.prsById.get('11'), {
     author: 'project-health2',
     automergeOpts: null,
+    automergeAvailable: false,
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1518042329000,
     events: [
@@ -170,6 +173,7 @@ test('dashoutgoing2: ready to merge', (t) => {
   t.deepEqual(t.context.prsById.get('10'), {
     author: 'project-health2',
     automergeOpts: null,
+    automergeAvailable: false,
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1518031465000,
     events: [
@@ -204,6 +208,7 @@ test.failing('dashoutgoing2: changes requested, new commit', (t) => {
   t.deepEqual(t.context.prsById.get('9'), {
     author: 'project-health2',
     automergeOpts: null,
+    automergeAvailable: false,
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1517426339000,
     events: [
@@ -237,6 +242,7 @@ test('dashoutgoing2: no review', (t) => {
   t.deepEqual(t.context.prsById.get('4'), {
     author: 'project-health2',
     automergeOpts: null,
+    automergeAvailable: false,
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1516753159000,
     events: [],
@@ -261,6 +267,7 @@ test('dashoutgoing2: basic requested changes', (t) => {
   t.deepEqual(t.context.prsById.get('3'), {
     author: 'project-health2',
     automergeOpts: null,
+    automergeAvailable: false,
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1516750523000,
     events: [
