@@ -6,7 +6,6 @@ export function getTestTokens() {
   try {
     return fs.readJSONSync(filePath);
   } catch (err) {
-    console.log('Unable to read tokens.json file, using empty strings.');
     return {
       'project-health1': '',
     };

@@ -96,7 +96,7 @@ test('dashoutgoing2: requested changes', (t) => {
   });
 });
 
-test.only('dashoutgoing2: review with comments', (t) => {
+test('dashoutgoing2: review with comments', (t) => {
   t.deepEqual(t.context.prsById.get('13'), {
     author: 'project-health2',
     automergeOpts: null,
