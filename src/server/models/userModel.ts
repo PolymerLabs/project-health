@@ -11,6 +11,8 @@ export const ID_COOKIE_NAME = 'health-id';
 export const USERS_COLLECTION_NAME = 'users';
 export const TOKEN_COLLECTION_NAME = 'user-tokens';
 
+export const REQUIRED_SCOPES = ['repo'];
+
 export interface LoginDetails {
   username: string;
   avatarUrl: string|null;
@@ -47,8 +49,14 @@ class UserModel {
       return false;
     }
 
-    if (typeof loginDetails.scopes === 'undefined') {
+    if (!loginDetails.scopes) {
       return false;
+    }
+
+    for (const scope of REQUIRED_SCOPES) {
+      if (loginDetails.scopes.indexOf(scope) === -1) {
+        return false;
+      }
     }
 
     if (!loginDetails.username) {
@@ -127,12 +135,16 @@ class UserModel {
       lastKnownUpdate: null,
     };
 
+    if (!this.validateDetails(details)) {
+      throw new Error('New user info is invalid.');
+    }
+
     await userDocument.set(details);
 
     const userToken = crypto.randomBytes(20).toString('hex');
     const tokenDocument =
         await firestore().collection(TOKEN_COLLECTION_NAME).doc(userToken);
-    tokenDocument.set({
+    await tokenDocument.set({
       username,
       creationTime: FieldValue.serverTimestamp(),
     });
@@ -147,6 +159,11 @@ class UserModel {
     await firestore().collection(USERS_COLLECTION_NAME).doc(username).delete();
   }
 
+  /**
+   * This is used by last known update to inform dashboard clients that
+   * there is an update in Github.
+   * @param username
+   */
   async markUserForUpdate(username: string) {
     const doc =
         await firestore().collection(USERS_COLLECTION_NAME).doc(username);

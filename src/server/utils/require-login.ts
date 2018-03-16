@@ -13,8 +13,7 @@ export async function requireLogin(
   if (request.method === 'GET') {
     response.redirect(
         302,
-        `/oauth.html?final-redirect=${
-            encodeURIComponent(request.originalUrl)}`);
+        `/signin?final-redirect=${encodeURIComponent(request.originalUrl)}`);
   } else {
     response.status(401).send();
   }

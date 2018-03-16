@@ -37,9 +37,6 @@ export async function startTestReplayServer(
   const replayDir = path.join(replayRoot, testTitle.replace(/\s+/g, '-'));
 
   if (record) {
-    if (!process.env.GITHUB_TOKEN) {
-      throw new Error('GITHUB_TOKEN env var must be set when recording.');
-    }
     if (!recordingLogged) {
       console.info('RECORDING 🔴  💾\n');
       recordingLogged = true;

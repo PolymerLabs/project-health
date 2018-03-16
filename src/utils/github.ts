@@ -31,7 +31,7 @@ class GitHub {
         {introspectionQueryResultData: schema.data});
 
     const authLink = setContext((_request, previousContext) => {
-      const token = previousContext.token || process.env.GITHUB_TOKEN;
+      const token = previousContext.token;
       return {
         headers: {
           ...previousContext.headers,
@@ -114,8 +114,7 @@ class GitHub {
   }
 
   // tslint:disable-next-line:no-any
-  async get(path: string, userToken: string, parseJSON = true): Promise<any> {
-    const token = userToken || process.env.GITHUB_TOKEN;
+  async get(path: string, token: string, parseJSON = true): Promise<any> {
     const query = {
       url: this.jsonUrl + '/' + path,
       headers: {
@@ -160,10 +159,9 @@ class GitHub {
     return await request.put(query);
   }
 
-  async post(path: string, userToken: string, body: {}, parseJSON = true):
+  async post(path: string, token: string, body: {}, parseJSON = true):
       // tslint:disable-next-line:no-any
       Promise<any> {
-    const token = userToken || process.env.GITHUB_TOKEN;
     const query = {
       url: this.jsonUrl + '/' + path,
       headers: {
@@ -185,8 +183,7 @@ class GitHub {
     return await request.post(query);
   }
 
-  async delete(path: string, userToken: string): Promise<void> {
-    const token = userToken || process.env.GITHUB_TOKEN;
+  async delete(path: string, token: string): Promise<void> {
     const query = {
       url: this.jsonUrl + '/' + path,
       headers: {

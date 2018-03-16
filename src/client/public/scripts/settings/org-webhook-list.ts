@@ -75,7 +75,7 @@ function hookTemplate(org: OrgWebHookState) {
 function requestPermissionTemplate() {
   const readOrgsClick = () => {
     window.location.href =
-        `/oauth.html?scope=read:org admin:org_hook&final-redirect=${
+        `/signin?scope=read:org admin:org_hook&final-redirect=${
             window.location.href}`;
   };
   const requestPermissionTemplate = html`<p><button on-click="${

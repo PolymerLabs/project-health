@@ -5,6 +5,7 @@ import {fetchIncomingData} from '../../../server/apis/dash-data';
 import {IncomingDashResponse, PullRequest} from '../../../types/api';
 import {PullRequestReviewState} from '../../../types/gql-types';
 import {initGithub} from '../../../utils/github';
+import {getTestTokens} from '../../get-test-tokens';
 
 type TestContext = {
   data: IncomingDashResponse,
@@ -21,7 +22,7 @@ test.beforeEach(async (t) => {
   initGithub(url, url);
 
   const data = await fetchIncomingData(
-      'project-health1', process.env.GITHUB_TOKEN || '');
+      'project-health1', getTestTokens()['project-health1']);
   server.close();
 
   const prsById = new Map();

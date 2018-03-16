@@ -14,10 +14,6 @@ function genGQLTypes() {
 };
 genGQLTypes.displayName = 'gen-gql-types';
 
-function lint() {
-  return npmRunScript('lint');
-};
-
 function build(done) {
   const buildTasks = [];
   const taskFiles = getTaskFilepaths();
@@ -32,7 +28,6 @@ function build(done) {
     cleanDestDir,
     genGQLTypes,
     gulp.parallel(buildTasks),
-    lint,
   ])(done);
 };
 
