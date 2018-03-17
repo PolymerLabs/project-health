@@ -53,6 +53,16 @@ class PullRequestsModel {
     return prData.commits[commitId];
   }
 
+  async getAllPRData(prId: string): Promise<null|PRDetails> {
+    const prSnapshot =
+        await firestore().collection(PR_COLLECTION_NAME).doc(prId).get();
+    if (!prSnapshot.exists) {
+      return null;
+    }
+
+    return prSnapshot.data() as PRDetails;
+  }
+
   async getAutomergeOpts(prId: string): Promise<null|AutomergeOpts> {
     const prSnapshot =
         await firestore().collection(PR_COLLECTION_NAME).doc(prId).get();
