@@ -68,6 +68,7 @@ test('dashincoming: incoming PRs are ordered', (t) => {
 
   // Actionable status items appear before non actionable ones.
   const notActionable = [
+    'ChangesRequested',
     'UnknownStatus',
     'NoActionRequired',
     'NewActivity',
@@ -238,7 +239,7 @@ test('dashincoming: Incoming PR, I requested changes', (t) => {
     repository: 'project-health1/repo',
     title: 'A couple minor changes for browserify compatibility',
     url: 'https://github.com/project-health1/repo/pull/3',
-    status: {type: 'ApprovalRequired'},
+    status: {type: 'ChangesRequested'},
     events: [{
       type: 'MyReviewEvent',
       review: {

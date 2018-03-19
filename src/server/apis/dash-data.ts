@@ -119,26 +119,20 @@ export async function fetchIncomingData(
     }
 
     let myReview: api.Review|null = null;
-    let status: api.PullRequestStatus = {type: 'NoActionRequired'};
     if (relevantReview) {
       // Cast because inner type has less strict type for __typename.
       myReview = convertReviewFields(relevantReview as reviewFieldsFragment);
-
-      if (relevantReview.state !== PullRequestReviewState.APPROVED) {
-        status = {type: 'ApprovalRequired'};
-      }
     }
 
     const reviewedPr: api.PullRequest = {
       ...convertPrFields(pr),
-      status,
+      status: {type: 'NoActionRequired'},
     };
 
     const prMention = mentioned.get(pr.id);
     if (myReview) {
       reviewedPr.events.push({type: 'MyReviewEvent', review: myReview});
 
-      // TODO: this could be in the wrong order with the new commits below.
       if (prMention && prMention.mentionedAt > myReview.createdAt) {
         reviewedPr.events.push(prMention);
       }
@@ -147,6 +141,7 @@ export async function fetchIncomingData(
     }
 
     // Check if there are new commits to the pull request.
+    let hasNewCommits = false;
     if (pr.commits.nodes) {
       const newCommits = [];
       let additions = 0;
@@ -186,9 +181,20 @@ export async function fetchIncomingData(
           lastPushedAt,
           url,
         });
+        hasNewCommits = true;
       }
 
       reviewedPr.events = sortEvents(reviewedPr.events);
+    }
+
+    if (relevantReview &&
+        relevantReview.state === PullRequestReviewState.CHANGES_REQUESTED &&
+        !hasNewCommits) {
+      reviewedPr.status = {type: 'ChangesRequested'};
+    } else if (
+        relevantReview &&
+        relevantReview.state !== PullRequestReviewState.APPROVED) {
+      reviewedPr.status = {type: 'ApprovalRequired'};
     }
 
     prsShown.push(pr.id);
@@ -281,6 +287,7 @@ function sortIncomingPRs(prs: api.PullRequest[]): api.PullRequest[] {
 
   const notActionableStatuses = [
     'UnknownStatus',
+    'ChangesRequested',
     'NoActionRequired',
     'NewActivity',
     'StatusChecksPending'

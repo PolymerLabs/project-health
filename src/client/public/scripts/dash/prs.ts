@@ -58,7 +58,7 @@ export function statusToDisplay(pr: api.PullRequest): StatusDisplay {
         actionable: false
       };
     case 'ChangesRequested':
-      return {text: 'Waiting on requested changes', actionable: false};
+      return {text: 'Changes requested', actionable: false};
     case 'PendingChanges':
       return {text: 'Waiting on you', actionable: true};
     case 'PendingMerge':
