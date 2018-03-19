@@ -57,6 +57,8 @@ export function statusToDisplay(pr: api.PullRequest): StatusDisplay {
         text: `Waiting on ${pr.status.reviewers.join(', ')}`,
         actionable: false
       };
+    case 'ChangesRequested':
+      return {text: 'Changes requested', actionable: false};
     case 'PendingChanges':
       return {text: 'Waiting on you', actionable: true};
     case 'PendingMerge':

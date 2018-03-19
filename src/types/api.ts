@@ -38,7 +38,7 @@ export interface PullRequest {
 export type PullRequestStatus =
     UnknownStatus|NoActionRequired|NewActivity|StatusChecksPending|
     WaitingReview|PendingChanges|PendingMerge|StatusChecksFailed|ReviewRequired|
-    ApprovalRequired|MergeRequired|NoReviewers;
+    ApprovalRequired|MergeRequired|NoReviewers|ChangesRequested;
 
 export type PullRequestEvent =
     OutgoingReviewEvent|MyReviewEvent|NewCommitsEvent|MentionedEvent;
@@ -78,13 +78,9 @@ export interface JSONAPIResponse<T> {
   data?: T;
 }
 
-export interface LoginResponse {
-  status: string;
-}
+export interface LoginResponse { status: string; }
 
-export interface LastKnownResponse {
-  lastKnownUpdate: string|null;
-}
+export interface LastKnownResponse { lastKnownUpdate: string|null; }
 
 /** Not necessarily actionable. */
 
@@ -142,6 +138,10 @@ interface ReviewRequired {
   type: 'ReviewRequired';
 }
 
+interface ChangesRequested {
+  type: 'ChangesRequested';
+}
+
 // Viewer has reviewed but not approved
 interface ApprovalRequired {
   type: 'ApprovalRequired';
@@ -192,9 +192,7 @@ export interface ErrorPayload {
   message: string;
 }
 
-export interface NotificationURLData {
-  url: string;
-}
+export interface NotificationURLData { url: string; }
 
 export type SWClientMessage<T> = {
   action: 'push-received',
