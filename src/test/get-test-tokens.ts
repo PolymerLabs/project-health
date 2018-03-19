@@ -6,6 +6,12 @@ export function getTestTokens() {
   try {
     return fs.readJSONSync(filePath);
   } catch (err) {
+    if (process.env.RECORD === 'true') {
+      throw new Error(
+          'Unable to find tokens.json, which is required ' +
+          'for recording.');
+    }
+
     return {
       'project-health1': '',
     };

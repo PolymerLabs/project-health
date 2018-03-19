@@ -14,6 +14,7 @@ export interface PullRequestDetails {
   repo: string;
   author: string;
   commit: CommitDetails;
+  state: 'OPEN'|'CLOSED'|'MERGED';
 }
 
 interface CommitDetails {
@@ -45,11 +46,6 @@ export async function getPRDetailsFromCommit(
 
     // We may want to send a notification to the author, so ensure it exists.
     if (!prData.author) {
-      continue;
-    }
-
-    // Ensure the PR is open
-    if (prData.state !== 'OPEN') {
       continue;
     }
 
@@ -87,6 +83,7 @@ export async function getPRDetailsFromCommit(
       repo: prData.repository.name,
       url: prData.url,
       author: prData.author.login,
+      state: prData.state,
       commit: commits[0],
     };
   }
