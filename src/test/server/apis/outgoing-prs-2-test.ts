@@ -202,9 +202,7 @@ test('dashoutgoing2: ready to merge', (t) => {
   });
 });
 
-// TODO: we currently do not factor in commits for outgoing PRs. See
-// https://github.com/PolymerLabs/project-health/issues/226
-test.failing('dashoutgoing2: changes requested, new commit', (t) => {
+test('dashoutgoing2: changes requested, new commit', (t) => {
   t.deepEqual(t.context.prsById.get('9'), {
     author: 'project-health2',
     automergeOpts: null,

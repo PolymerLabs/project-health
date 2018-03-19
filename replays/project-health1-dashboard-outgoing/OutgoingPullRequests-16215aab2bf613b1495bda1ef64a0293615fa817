@@ -37,7 +37,8 @@
                 {
                   "commit": {
                     "__typename": "Commit",
-                    "status": null
+                    "status": null,
+                    "pushedDate": "2017-12-15T20:37:39Z"
                   },
                   "__typename": "PullRequestCommit"
                 }
@@ -74,8 +75,8 @@
     "rateLimit": {
       "cost": 1,
       "limit": 5000,
-      "remaining": 4998,
-      "resetAt": "2018-03-15T22:31:10Z",
+      "remaining": 4997,
+      "resetAt": "2018-03-19T23:08:40Z",
       "nodeCount": 140,
       "__typename": "RateLimit"
     }

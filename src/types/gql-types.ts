@@ -727,6 +727,8 @@ export interface OutgoingPullRequestsQuery {
                 // The combined commit status.
                 state: StatusState,
               } | null,
+              // The datetime when this commit was pushed.
+              pushedDate: string | null,
             },
           } | null > | null,
         },
@@ -1359,6 +1361,8 @@ export interface commitFieldsFragment {
     // The combined commit status.
     state: StatusState,
   } | null,
+  // The datetime when this commit was pushed.
+  pushedDate: string | null,
 };
 
 export interface statusFieldsFragment {
@@ -1389,6 +1393,8 @@ export interface statusFieldsFragment {
           // The combined commit status.
           state: StatusState,
         } | null,
+        // The datetime when this commit was pushed.
+        pushedDate: string | null,
       },
     } | null > | null,
   },
