@@ -292,7 +292,17 @@ function getStatus(
         (review) => review.reviewState === PullRequestReviewState.APPROVED);
 
     if (reviewsRequestingChanges.length > 0) {
-      outgoingStatus = {type: 'PendingChanges'};
+      let requiresChanges = false;
+      if (latestCommit && latestCommit.pushedDate) {
+        for (const review of reviewsRequestingChanges) {
+          if (review.createdAt > Date.parse(latestCommit.pushedDate)) {
+            requiresChanges = true;
+          }
+        }
+      }
+      if (requiresChanges) {
+        outgoingStatus = {type: 'PendingChanges'};
+      }
     } else if (reviewsApproved.length === reviewersCount) {
       if (latestCommit && latestCommit.status) {
         const state = latestCommit.status.state;
@@ -307,7 +317,9 @@ function getStatus(
         // No status so treat as pending merge
         outgoingStatus = {type: 'PendingMerge'};
       }
-    } else {
+    }
+
+    if (outgoingStatus.type == 'UnknownStatus') {
       outgoingStatus = {
         type: 'WaitingReview',
         reviewers: Array.from(new Set([

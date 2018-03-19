@@ -510,6 +510,7 @@ fragment commitFields on Commit {
     }
     state
   }
+  pushedDate
 }
 
 fragment statusFields on PullRequest {
