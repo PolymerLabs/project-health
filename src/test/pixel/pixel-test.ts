@@ -10,6 +10,7 @@ import {DashServer} from '../../server/dash-server';
 import {LoginDetails, userModel} from '../../server/models/userModel';
 import {initFirestore} from '../../utils/firestore';
 import {initGithub} from '../../utils/github';
+import {getTestTokens} from '../get-test-tokens';
 
 type TestContext = {
   replayServer: Server,
@@ -43,7 +44,7 @@ test.beforeEach(async (t) => {
       username: 'project-health1',
       avatarUrl: null,
       fullname: null,
-      githubToken: '',
+      githubToken: getTestTokens()['project-health1'],
       scopes: [],
       lastKnownUpdate: null,
     };

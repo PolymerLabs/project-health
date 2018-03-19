@@ -37,7 +37,8 @@
                 {
                   "commit": {
                     "__typename": "Commit",
-                    "status": null
+                    "status": null,
+                    "pushedDate": "2017-12-15T20:37:39Z"
                   },
                   "__typename": "PullRequestCommit"
                 }
@@ -58,7 +59,7 @@
             "id": "MDExOlB1bGxSZXF1ZXN0MTU4Njg4ODg0",
             "mergeable": "MERGEABLE",
             "createdAt": "2017-12-15T20:37:42Z",
-            "viewerSubscription": "UNSUBSCRIBED",
+            "viewerSubscription": "SUBSCRIBED",
             "author": {
               "avatarUrl": "https://avatars3.githubusercontent.com/u/34584679?v=4",
               "login": "project-health1",
@@ -74,8 +75,8 @@
     "rateLimit": {
       "cost": 1,
       "limit": 5000,
-      "remaining": 4980,
-      "resetAt": "2018-03-14T00:15:35Z",
+      "remaining": 4991,
+      "resetAt": "2018-03-19T23:08:40Z",
       "nodeCount": 140,
       "__typename": "RateLimit"
     }

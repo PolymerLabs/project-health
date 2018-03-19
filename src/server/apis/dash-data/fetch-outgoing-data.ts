@@ -319,7 +319,7 @@ function getStatus(
       }
     }
 
-    if (outgoingStatus.type == 'UnknownStatus') {
+    if (outgoingStatus.type === 'UnknownStatus') {
       outgoingStatus = {
         type: 'WaitingReview',
         reviewers: Array.from(new Set([

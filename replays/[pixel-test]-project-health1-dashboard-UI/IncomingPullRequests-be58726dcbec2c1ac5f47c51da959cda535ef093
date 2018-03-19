@@ -18,7 +18,7 @@
           "id": "MDExOlB1bGxSZXF1ZXN0MTY3ODI2Mzk1",
           "mergeable": "MERGEABLE",
           "createdAt": "2018-02-07T22:25:29Z",
-          "viewerSubscription": "UNSUBSCRIBED",
+          "viewerSubscription": "SUBSCRIBED",
           "author": {
             "avatarUrl": "https://avatars3.githubusercontent.com/u/34584974?v=4",
             "login": "project-health2",
@@ -42,7 +42,7 @@
           "id": "MDExOlB1bGxSZXF1ZXN0MTY0NzI1NzUw",
           "mergeable": "MERGEABLE",
           "createdAt": "2018-01-24T00:19:19Z",
-          "viewerSubscription": "UNSUBSCRIBED",
+          "viewerSubscription": "SUBSCRIBED",
           "author": {
             "avatarUrl": "https://avatars3.githubusercontent.com/u/34584974?v=4",
             "login": "project-health2",
@@ -105,7 +105,7 @@
           "id": "MDExOlB1bGxSZXF1ZXN0MTc0NDY2NTk5",
           "mergeable": "MERGEABLE",
           "createdAt": "2018-03-12T19:09:28Z",
-          "viewerSubscription": "UNSUBSCRIBED",
+          "viewerSubscription": "SUBSCRIBED",
           "author": {
             "avatarUrl": "https://avatars3.githubusercontent.com/u/34584974?v=4",
             "login": "project-health2",
@@ -174,7 +174,7 @@
           "id": "MDExOlB1bGxSZXF1ZXN0MTczNjExNzIw",
           "mergeable": "MERGEABLE",
           "createdAt": "2018-03-08T00:18:49Z",
-          "viewerSubscription": "UNSUBSCRIBED",
+          "viewerSubscription": "SUBSCRIBED",
           "author": {
             "avatarUrl": "https://avatars3.githubusercontent.com/u/34584974?v=4",
             "login": "project-health2",
@@ -232,7 +232,7 @@
           "id": "MDExOlB1bGxSZXF1ZXN0MTY3ODI2Mzk1",
           "mergeable": "MERGEABLE",
           "createdAt": "2018-02-07T22:25:29Z",
-          "viewerSubscription": "UNSUBSCRIBED",
+          "viewerSubscription": "SUBSCRIBED",
           "author": {
             "avatarUrl": "https://avatars3.githubusercontent.com/u/34584974?v=4",
             "login": "project-health2",
@@ -290,7 +290,7 @@
           "id": "MDExOlB1bGxSZXF1ZXN0MTY3Nzg1NjAw",
           "mergeable": "MERGEABLE",
           "createdAt": "2018-02-07T19:24:25Z",
-          "viewerSubscription": "UNSUBSCRIBED",
+          "viewerSubscription": "SUBSCRIBED",
           "author": {
             "avatarUrl": "https://avatars3.githubusercontent.com/u/34584974?v=4",
             "login": "project-health2",
@@ -359,7 +359,7 @@
           "id": "MDExOlB1bGxSZXF1ZXN0MTY2MzUxNTky",
           "mergeable": "MERGEABLE",
           "createdAt": "2018-01-31T19:18:59Z",
-          "viewerSubscription": "UNSUBSCRIBED",
+          "viewerSubscription": "SUBSCRIBED",
           "author": {
             "avatarUrl": "https://avatars3.githubusercontent.com/u/34584974?v=4",
             "login": "project-health2",
@@ -417,7 +417,7 @@
           "id": "MDExOlB1bGxSZXF1ZXN0MTY0NzE5MzU4",
           "mergeable": "MERGEABLE",
           "createdAt": "2018-01-23T23:35:23Z",
-          "viewerSubscription": "UNSUBSCRIBED",
+          "viewerSubscription": "SUBSCRIBED",
           "author": {
             "avatarUrl": "https://avatars3.githubusercontent.com/u/34584974?v=4",
             "login": "project-health2",
@@ -584,8 +584,8 @@
     "rateLimit": {
       "cost": 1,
       "limit": 5000,
-      "remaining": 4982,
-      "resetAt": "2018-03-14T00:15:35Z",
+      "remaining": 4994,
+      "resetAt": "2018-03-19T23:08:40Z",
       "nodeCount": 3060,
       "__typename": "RateLimit"
     }

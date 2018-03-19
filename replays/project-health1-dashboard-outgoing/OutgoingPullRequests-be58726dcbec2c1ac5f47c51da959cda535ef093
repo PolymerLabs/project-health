@@ -39,7 +39,8 @@
                 {
                   "commit": {
                     "__typename": "Commit",
-                    "status": null
+                    "status": null,
+                    "pushedDate": "2018-01-19T01:18:32Z"
                   },
                   "__typename": "PullRequestCommit"
                 }
@@ -95,7 +96,8 @@
                 {
                   "commit": {
                     "__typename": "Commit",
-                    "status": null
+                    "status": null,
+                    "pushedDate": "2018-01-29T19:19:35Z"
                   },
                   "__typename": "PullRequestCommit"
                 }
@@ -151,7 +153,8 @@
                 {
                   "commit": {
                     "__typename": "Commit",
-                    "status": null
+                    "status": null,
+                    "pushedDate": "2018-01-29T19:21:24Z"
                   },
                   "__typename": "PullRequestCommit"
                 }
@@ -197,7 +200,8 @@
                 {
                   "commit": {
                     "__typename": "Commit",
-                    "status": null
+                    "status": null,
+                    "pushedDate": "2018-01-30T22:57:39Z"
                   },
                   "__typename": "PullRequestCommit"
                 }
@@ -271,7 +275,8 @@
                 {
                   "commit": {
                     "__typename": "Commit",
-                    "status": null
+                    "status": null,
+                    "pushedDate": "2018-01-31T00:36:31Z"
                   },
                   "__typename": "PullRequestCommit"
                 }
@@ -336,7 +341,8 @@
                 {
                   "commit": {
                     "__typename": "Commit",
-                    "status": null
+                    "status": null,
+                    "pushedDate": "2018-03-01T00:35:43Z"
                   },
                   "__typename": "PullRequestCommit"
                 }
@@ -395,16 +401,17 @@
                     "status": {
                       "contexts": [
                         {
-                          "id": "MDEzOlN0YXR1c0NvbnRleHQ0NzEyMzEyMzU2",
+                          "id": "MDEzOlN0YXR1c0NvbnRleHQ0NzIzNDg5NzI3",
                           "context": "Project Health Testing",
                           "state": "SUCCESS",
-                          "createdAt": "2018-03-14T18:26:25Z",
+                          "createdAt": "2018-03-16T22:50:51Z",
                           "__typename": "StatusContext"
                         }
                       ],
                       "state": "SUCCESS",
                       "__typename": "Status"
-                    }
+                    },
+                    "pushedDate": "2018-03-12T17:53:18Z"
                   },
                   "__typename": "PullRequestCommit"
                 }
@@ -463,16 +470,17 @@
                     "status": {
                       "contexts": [
                         {
-                          "id": "MDEzOlN0YXR1c0NvbnRleHQ0NzEyMzEyMzEy",
+                          "id": "MDEzOlN0YXR1c0NvbnRleHQ0NzIzNDg5Njg3",
                           "context": "Project Health Testing",
                           "state": "PENDING",
-                          "createdAt": "2018-03-14T18:26:25Z",
+                          "createdAt": "2018-03-16T22:50:50Z",
                           "__typename": "StatusContext"
                         }
                       ],
                       "state": "PENDING",
                       "__typename": "Status"
-                    }
+                    },
+                    "pushedDate": "2018-03-12T17:52:20Z"
                   },
                   "__typename": "PullRequestCommit"
                 }
@@ -531,16 +539,17 @@
                     "status": {
                       "contexts": [
                         {
-                          "id": "MDEzOlN0YXR1c0NvbnRleHQ0NzEyMzEyMjcy",
+                          "id": "MDEzOlN0YXR1c0NvbnRleHQ0NzIzNDg5NjU5",
                           "context": "Project Health Testing",
                           "state": "ERROR",
-                          "createdAt": "2018-03-14T18:26:24Z",
+                          "createdAt": "2018-03-16T22:50:50Z",
                           "__typename": "StatusContext"
                         }
                       ],
                       "state": "FAILURE",
                       "__typename": "Status"
-                    }
+                    },
+                    "pushedDate": "2018-03-12T17:53:51Z"
                   },
                   "__typename": "PullRequestCommit"
                 }
@@ -599,16 +608,17 @@
                     "status": {
                       "contexts": [
                         {
-                          "id": "MDEzOlN0YXR1c0NvbnRleHQ0NzEyMzEyMjAy",
+                          "id": "MDEzOlN0YXR1c0NvbnRleHQ0NzIzNDg5NjI0",
                           "context": "Project Health Testing",
                           "state": "FAILURE",
-                          "createdAt": "2018-03-14T18:26:23Z",
+                          "createdAt": "2018-03-16T22:50:49Z",
                           "__typename": "StatusContext"
                         }
                       ],
                       "state": "FAILURE",
                       "__typename": "Status"
-                    }
+                    },
+                    "pushedDate": "2018-03-12T17:54:28Z"
                   },
                   "__typename": "PullRequestCommit"
                 }
@@ -645,8 +655,8 @@
     "rateLimit": {
       "cost": 1,
       "limit": 5000,
-      "remaining": 4999,
-      "resetAt": "2018-03-15T22:31:09Z",
+      "remaining": 4998,
+      "resetAt": "2018-03-19T23:08:40Z",
       "nodeCount": 140,
       "__typename": "RateLimit"
     }
