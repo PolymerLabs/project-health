@@ -9,6 +9,7 @@ import {hooksModel} from '../models/hooksModel';
 export interface WebHookHandleResponse {
   handled: boolean;
   notifications: NotificationsSent|null;
+  message: string|null;
 }
 
 function getRouter(): express.Router {

@@ -6,6 +6,7 @@ import * as notificationController from '../../../server/controllers/notificatio
 import {handleStatus} from '../../../server/controllers/webhook-events/status';
 import {userModel} from '../../../server/models/userModel';
 import * as commitPRUtil from '../../../server/utils/get-pr-from-commit';
+import {PullRequestDetails} from '../../../server/utils/get-pr-from-commit';
 import * as automergeUtil from '../../../server/utils/perform-automerge';
 import {initFirestore} from '../../../utils/firestore';
 import {initSecrets} from '../../../utils/secrets';
@@ -137,10 +138,13 @@ test.serial(
         },
       });
       t.deepEqual(response.handled, false);
-      t.deepEqual(commitToPRStub.callCount, 1);
+      t.deepEqual(commitToPRStub.callCount, 2);
       t.deepEqual(commitToPRStub.args[0][0], 'injected-fake-token');
       t.deepEqual(commitToPRStub.args[0][1], 'project-health/status-test');
       t.deepEqual(commitToPRStub.args[0][2], 'test-sha');
+      t.deepEqual(commitToPRStub.args[1][0], 'injected-fake-token');
+      t.deepEqual(commitToPRStub.args[1][1], 'project-health/status-test');
+      t.deepEqual(commitToPRStub.args[1][2], 'test-sha');
     });
 
 test.serial(
@@ -156,8 +160,16 @@ test.serial(
             };
           });
 
-      const prDetails = {
+      const prDetails: PullRequestDetails = {
         id: 'test-pr-id',
+        number: 1,
+        title: '',
+        body: '',
+        url: '',
+        owner: '',
+        repo: '',
+        author: '',
+        state: 'OPEN',
         commit: {
           oid: 'test-commit',
           state: 'SUCCESS',
@@ -188,6 +200,7 @@ test.serial(
           },
         },
       });
+
       t.deepEqual(response.handled, true);
       t.deepEqual(automergeStub.callCount, 1);
       t.deepEqual(automergeStub.args[0][0], 'injected-fake-token');
@@ -208,9 +221,14 @@ test.serial(
             };
           });
 
-      const prDetails = {
+      const prDetails: PullRequestDetails = {
         id: 'test-pr-id',
+        number: 1,
         title: 'pr-title',
+        body: '',
+        owner: '',
+        repo: '',
+        state: 'OPEN',
         url: 'http://inject-url.com',
         author: 'project-health1',
         commit: {
@@ -267,7 +285,7 @@ test.serial(
     });
 
 test.serial(
-    '[webhook to automerge]: Should send notification (with github error) if automerge fails',
+    '[webhook to automerge]: should send notification (with github error) if automerge fails',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getLoginDetails')
           .callsFake((username: string) => {
@@ -279,12 +297,18 @@ test.serial(
             };
           });
 
-      const prDetails = {
+      const prDetails: PullRequestDetails = {
         id: 'test-pr-id',
         title: 'pr-title',
         url: 'http://inject-url.com',
         author: 'project-health1',
+        repo: '',
+        number: 1,
+        body: '',
+        owner: '',
+        state: 'OPEN',
         commit: {
+          oid: '123',
           state: 'SUCCESS',
         }
       };

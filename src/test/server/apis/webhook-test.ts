@@ -433,7 +433,13 @@ test.serial(
                 pullRequests: {
                   nodes: [{
                     __typename: 'PullRequest',
+                    id: 'test-id',
                     author: {login: 'injected-pr-author'},
+                    repository: {
+                      owner: {
+                        login: '',
+                      }
+                    },
                     commits: {
                       nodes: [{
                         commit: {
@@ -462,7 +468,7 @@ test.serial(
           t.context.sandbox.stub(notificationController, 'sendNotification');
       t.context.sandbox.stub(userModel, 'getLoginDetails')
           .callsFake((username: string) => {
-            // Return some fake details to ensure
+            // Return some fake details
             return {
               githubToken: 'inject-fake-token',
               username,
@@ -483,6 +489,7 @@ test.serial(
                     title: 'Injected title',
                     url: 'https://example.com/pr/123',
                     author: {login: 'injected-pr-author'},
+                    repository: {owner: {login: ''}},
                     commits: {
                       nodes: [{
                         commit: {
@@ -497,8 +504,8 @@ test.serial(
           });
 
       const response = await handleStatus(eventContent);
-      t.deepEqual(response.handled, false);
-      t.deepEqual(sendStub.callCount, 0);
+      t.deepEqual(response.handled, true);
+      t.deepEqual(sendStub.callCount, 1);
 
       sendStub.reset();
     });

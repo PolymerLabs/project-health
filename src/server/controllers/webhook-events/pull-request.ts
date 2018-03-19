@@ -6,7 +6,11 @@ import {PullRequestHook} from './types';
 export async function handlePullRequest(hookBody: PullRequestHook):
     Promise<WebHookHandleResponse> {
   if (hookBody.action !== 'review_requested') {
-    return {handled: false, notifications: null};
+    return {
+      handled: false,
+      notifications: null,
+      message: `The PR action is not a handled action: '${hookBody.action}'`
+    };
   }
 
   const pullRequest = hookBody.pull_request;
@@ -32,5 +36,5 @@ export async function handlePullRequest(hookBody: PullRequestHook):
   const notificationStats =
       await sendNotification(reviewer.login, notification);
 
-  return {handled: true, notifications: notificationStats};
+  return {handled: true, notifications: notificationStats, message: null};
 }
