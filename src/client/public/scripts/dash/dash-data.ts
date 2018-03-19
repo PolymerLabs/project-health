@@ -10,11 +10,14 @@ class DashData {
   private lastViewedOutgoing: api.OutgoingDashResponse|null;
   private lastViewedIncoming: api.IncomingDashResponse|null;
 
+  private lastKnownVersion: string|null;
+
   constructor() {
     this.lastPolledOutgoing = null;
     this.lastPolledIncoming = null;
     this.lastViewedOutgoing = null;
     this.lastViewedIncoming = null;
+    this.lastKnownVersion = null;
   }
 
   async updateData() {
@@ -93,6 +96,14 @@ class DashData {
 
   async areServerUpdatesAvailable(): Promise<boolean> {
     const response = await getLastKnownUpdate();
+    if (response.version && this.lastKnownVersion) {
+      if (response.version !== this.lastKnownVersion) {
+        window.location.reload();
+      }
+    }
+
+    this.lastKnownVersion = response.version;
+
     if (!response.lastKnownUpdate || !this.lastPolledIncoming) {
       return false;
     }

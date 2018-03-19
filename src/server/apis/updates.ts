@@ -1,4 +1,6 @@
 import * as express from 'express';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 
 import {LastKnownResponse} from '../../types/api';
 import {userModel} from '../models/userModel';
@@ -36,10 +38,20 @@ async function handleLastKnownUpdate(request: express.Request):
     lastKnownUpdate = userDetails.lastKnownUpdate;
   }
 
+  let version = null;
+  try {
+    const pkg = await fs.readJSON(
+        path.join(__dirname, '..', '..', '..', 'package.json'));
+    version = pkg.version;
+  } catch (err) {
+    console.warn('Unable to read package.json');
+  }
+
   return {
     statusCode: 200,
     data: {
       lastKnownUpdate,
+      version,
     },
   };
 }
