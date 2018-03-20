@@ -76,6 +76,10 @@
   color: var(--non-actionable-color);
 }
 
+.pr-status__msg.pr-status__merge {
+  color: var(--merge-text-color);
+}
+
 .pr-body:hover .pr-info, .pr-event__url:hover {
   text-decoration: underline;
   text-decoration-color: var(--non-actionable-color);
