@@ -2,6 +2,7 @@ import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
 import {Express} from 'express';
+import * as fsExtra from 'fs-extra';
 import {Server} from 'http';
 import * as path from 'path';
 
@@ -37,10 +38,6 @@ export class DashServer {
     app.use(bodyParser.json());
 
     this.setupPublicRoutes(app);
-
-    // Add login middleware
-    app.use(requireLogin);
-
     this.setupPrivateRoutes(app);
 
     this.app = app;
@@ -73,21 +70,47 @@ export class DashServer {
   }
 
   private setupPrivateRoutes(app: Express) {
+    /**
+     * This mounts the given path & handler behind the login middleware.
+     */
+    function useRoute(path: string, handler: express.Handler) {
+      app.use(path, requireLogin, handler);
+    }
+
+    /**
+     * For each file in the provided directory, the file will be mounted on the
+     * filename path excluding static extensions.
+     */
+    async function serveStatic(dirPath: string) {
+      const indexPath = path.join(dirPath, 'index.html');
+      if (await fsExtra.pathExists(indexPath)) {
+        // Only match / without any trailing bits.
+        useRoute('/$', express.static(indexPath));
+      }
+
+      for (const filename of await fsExtra.readdir(dirPath)) {
+        let basename = filename;
+        for (const extension of STATIC_EXT) {
+          basename = path.basename(basename, `.${extension}`);
+        }
+        useRoute(`/${basename}`, express.static(path.join(dirPath, filename)));
+      }
+    }
+
     // Enable /* to serve /client/require-login
     // Enable /bundled.* to serve /client/bundled/require-login
     const clientPath = path.join(__dirname, '..', 'client');
     const privatePath = path.join(clientPath, 'require-login');
-    const bundledPath = path.join(clientPath, 'bundled', 'require-login');
-    app.use('/', express.static(privatePath, {extensions: STATIC_EXT}));
-    app.use('/bundled/', express.static(bundledPath, {extensions: STATIC_EXT}));
+
+    serveStatic(privatePath);
 
     // Enable private APIs
-    app.use('/api/dash/', getDashRouter());
-    app.use('/api/push-subscription/', getPushSubRouter());
-    app.use('/api/manage-webhook/', getManageWebhookRouter());
-    app.use('/api/settings/', getSettingsRouter());
-    app.use('/api/updates/', getUpdatesRouter());
-    app.use('/api/auto-merge/', getAutomergeRouter());
+    useRoute('/api/dash/', getDashRouter());
+    useRoute('/api/push-subscription/', getPushSubRouter());
+    useRoute('/api/manage-webhook/', getManageWebhookRouter());
+    useRoute('/api/settings/', getSettingsRouter());
+    useRoute('/api/updates/', getUpdatesRouter());
+    useRoute('/api/auto-merge/', getAutomergeRouter());
   }
 
   listen(): Promise<string> {
