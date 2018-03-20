@@ -32,7 +32,7 @@ class RepositoryModel {
   async getRepositoryDetails(
       loginDetails: LoginDetails,
       owner: string,
-      repo: string): Promise<RepoDetails> {
+      repo: string): Promise<RepoDetails|null> {
     const repoDoc = await firestore()
                         .collection(REPO_COLLECTION_NAME)
                         .doc(this.getDocName(owner, repo));
@@ -51,7 +51,8 @@ class RepositoryModel {
     const response =
         await github().get(`repos/${owner}/${repo}`, loginDetails.githubToken);
     if (response.error) {
-      throw new Error(response.message);
+      console.error(response.message);
+      return null;
     }
 
     const requiredKeys = [
@@ -61,7 +62,7 @@ class RepositoryModel {
     ];
     for (const key of requiredKeys) {
       if (typeof response[key] === 'undefined') {
-        throw new Error(`Unable to retrieve '${key}' value for repo.`);
+        return null;
       }
     }
 

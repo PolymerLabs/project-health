@@ -50,7 +50,9 @@ test.afterEach.always(async (t) => {
 test.serial('getRepositoryDetails when not in Firestore', async (t) => {
   const repoDetails = await repositoryModel.getRepositoryDetails(
       LOGIN_DETAILS, REPO_OWNER, REPO_NAME);
-
+  if (!repoDetails) {
+    throw new Error('repoDetails must exist');
+  }
   t.true(repoDetails.allow_rebase_merge);
   t.true(repoDetails.allow_squash_merge);
   t.false(repoDetails.allow_merge_commit);
@@ -62,12 +64,18 @@ test.serial('getRepositoryDetails when stashed in Firestore', async (t) => {
 
   let repoDetails = await repositoryModel.getRepositoryDetails(
       LOGIN_DETAILS, REPO_OWNER, REPO_NAME);
+  if (!repoDetails) {
+    throw new Error('repoDetails must exist');
+  }
   t.true(repoDetails.allow_rebase_merge);
   t.true(repoDetails.allow_squash_merge);
   t.false(repoDetails.allow_merge_commit);
 
   repoDetails = await repositoryModel.getRepositoryDetails(
       LOGIN_DETAILS, REPO_OWNER, REPO_NAME);
+  if (!repoDetails) {
+    throw new Error('repoDetails must exist');
+  }
   t.true(repoDetails.allow_rebase_merge);
   t.true(repoDetails.allow_squash_merge);
   t.false(repoDetails.allow_merge_commit);
@@ -85,6 +93,9 @@ test.serial('getRepositoryDetails should not use old data', async (t) => {
 
   let repoDetails = await repositoryModel.getRepositoryDetails(
       LOGIN_DETAILS, REPO_OWNER, REPO_NAME);
+  if (!repoDetails) {
+    throw new Error('repoDetails must exist');
+  }
   t.true(repoDetails.allow_rebase_merge);
   t.true(repoDetails.allow_squash_merge);
   t.false(repoDetails.allow_merge_commit);
@@ -93,6 +104,9 @@ test.serial('getRepositoryDetails should not use old data', async (t) => {
 
   repoDetails = await repositoryModel.getRepositoryDetails(
       LOGIN_DETAILS, REPO_OWNER, REPO_NAME);
+  if (!repoDetails) {
+    throw new Error('repoDetails must exist');
+  }
   t.true(repoDetails.allow_rebase_merge);
   t.true(repoDetails.allow_squash_merge);
   t.false(repoDetails.allow_merge_commit);
