@@ -1,5 +1,5 @@
 import {WebHookHandleResponse} from '../../apis/github-webhook';
-import {sendNotification} from '../../controllers/notifications';
+import {getPRTag, sendNotification} from '../../controllers/notifications';
 import {CommitDetails, pullRequestsModel} from '../../models/pullRequestsModel';
 import {LoginDetails, userModel} from '../../models/userModel';
 import {getPRDetailsFromCommit, PullRequestDetails} from '../../utils/get-pr-from-commit';
@@ -22,14 +22,16 @@ async function handleFailingStatus(
   if (!savedCommitDetails || savedCommitDetails.status !== hookData.state) {
     webhookResponse.handled = true;
 
+    const repo = hookData.repository;
+
     const results = await sendNotification(prDetails.author, {
       title: hookData.description,
       body: `[${hookData.repository.name}] ${prDetails.title}`,
       requireInteraction: false,
-      icon: '/images/notification-images/icon-192x192.png',
       data: {
         url: prDetails.url,
-      }
+      },
+      tag: getPRTag(repo.owner.login, repo.name, prDetails.number),
     });
     webhookResponse.notifications = results;
   } else {
@@ -87,14 +89,16 @@ async function handleSuccessStatus(
       msg = err.error.message;
     }
 
+    const repo = hookData.repository;
+
     const results = await sendNotification(prDetails.author, {
       title: `Auto-merge failed: '${msg}'`,
       body: `[${hookData.repository.name}] ${prDetails.title}`,
       requireInteraction: false,
-      icon: '/images/notification-images/icon-192x192.png',
       data: {
         url: prDetails.url,
-      }
+      },
+      tag: getPRTag(repo.owner.login, repo.name, prDetails.number),
     });
 
     webhookResponse.notifications = results;

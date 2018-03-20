@@ -51,6 +51,9 @@ test.serial(
         description: '',
         repository: {
           name: 'status-test',
+          owner: {
+            login: '',
+          }
         },
         commit: {
           author: {
@@ -85,6 +88,9 @@ test.serial(
         description: '',
         repository: {
           name: 'status-test',
+          owner: {
+            login: '',
+          }
         },
         commit: {
           author: {
@@ -130,12 +136,15 @@ test.serial(
         description: '',
         repository: {
           name: 'status-test',
+          owner: {
+            login: '',
+          }
         },
         commit: {
           author: {
             login: 'project-health1',
           },
-        },
+        }
       });
       t.deepEqual(response.handled, false);
       t.deepEqual(commitToPRStub.callCount, 2);
@@ -193,6 +202,9 @@ test.serial(
         description: '',
         repository: {
           name: 'status-test',
+          owner: {
+            login: '',
+          }
         },
         commit: {
           author: {
@@ -257,12 +269,15 @@ test.serial(
         description: '',
         repository: {
           name: 'status-test',
+          owner: {
+            login: '',
+          }
         },
         commit: {
           author: {
             login: 'project-health1',
           },
-        },
+        }
       });
 
       t.deepEqual(response.handled, true);
@@ -277,7 +292,7 @@ test.serial(
         title: 'Auto-merge failed: \'injected-error\'',
         body: '[status-test] pr-title',
         requireInteraction: false,
-        icon: '/images/notification-images/icon-192x192.png',
+        tag: 'pr-/status-test/1',
         data: {
           url: 'http://inject-url.com',
         }
@@ -337,6 +352,9 @@ test.serial(
         description: '',
         repository: {
           name: 'status-test',
+          owner: {
+            login: '',
+          }
         },
         commit: {
           author: {
@@ -357,7 +375,7 @@ test.serial(
         title: 'Auto-merge failed: \'injected-error\'',
         body: '[status-test] pr-title',
         requireInteraction: false,
-        icon: '/images/notification-images/icon-192x192.png',
+        tag: 'pr-/status-test/1',
         data: {
           url: 'http://inject-url.com',
         }

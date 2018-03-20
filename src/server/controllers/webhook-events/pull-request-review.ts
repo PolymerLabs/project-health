@@ -1,6 +1,7 @@
 import {WebHookHandleResponse} from '../../apis/github-webhook';
-import {sendNotification} from '../../controllers/notifications';
+import {getPRTag, sendNotification} from '../../controllers/notifications';
 import {userModel} from '../../models/userModel';
+
 import {PullRequestReviewHook} from './types';
 
 export async function handlePullRequestReview(hookData: PullRequestReviewHook):
@@ -42,10 +43,10 @@ export async function handlePullRequestReview(hookData: PullRequestReviewHook):
       title: notificationTitle,
       body: `[${repo.name}] ${pullReq.title}`,
       requireInteraction: true,
-      icon: '/images/notification-images/icon-192x192.png',
       data: {
         url: pullReq.html_url,
       },
+      tag: getPRTag(repo.owner.login, repo.name, pullReq.number),
     });
   }
 
