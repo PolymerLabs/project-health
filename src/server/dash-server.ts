@@ -81,7 +81,7 @@ export class DashServer {
      * For each file in the provided directory, the file will be mounted on the
      * filename path excluding static extensions.
      *
-     * Note: this currently doesn't recurse and support subdirectories.
+     * Note: this currently doesn't recurse and doesn't support subdirectories.
      */
     async function serveStatic(dirPath: string) {
       const indexPath = path.join(dirPath, 'index.html');
