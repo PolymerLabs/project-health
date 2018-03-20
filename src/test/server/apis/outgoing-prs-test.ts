@@ -405,6 +405,6 @@ test('dashoutgoing: with failing status', (t) => {
     },
     mergeable: MergeableState.MERGEABLE,
     automergeOpts: null,
-    automergeAvailable: true,
+    automergeAvailable: false,
   });
 });

@@ -30,6 +30,7 @@ export async function getPRDetailsFromCommit(
     variables: {
       query: `type:pr repo:${repoFullName} ${sha}`,
     },
+    fetchPolicy: 'network-only',
     // We use the commit author's token for this request
     context: {token: githubToken}
   });
