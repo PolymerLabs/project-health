@@ -78,6 +78,10 @@ export function getAutoMergeOptions(pr: api.OutgoingPullRequest):
     return [];
   }
 
+  if (!pr.repoDetails) {
+    return [];
+  }
+
   const optionText = {
     manual: 'Manual merge',
     merge: html`Auto <i>merge</i> when status checks pass`,
