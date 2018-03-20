@@ -22,19 +22,32 @@ function getRouter(): express.Router {
             return;
           }
 
-          const prId = request.body.prId;
+          const owner = request.body.owner;
+          const repo = request.body.repo;
+          const num = request.body.number;
           const automergeOption = request.body.automergeOption;
           if (!automergeOption) {
             response.status(400).send('No automergeOption.');
             return;
           }
 
-          if (!prId) {
-            response.status(400).send('No prId.');
+          if (!owner) {
+            response.status(400).send('No owner.');
             return;
           }
 
-          await pullRequestsModel.setAutomergeOptions(prId, automergeOption);
+          if (!repo) {
+            response.status(400).send('No repo.');
+            return;
+          }
+
+          if (typeof num !== 'number') {
+            response.status(400).send('Invalid number.');
+            return;
+          }
+
+          await pullRequestsModel.setAutomergeOptions(
+              owner, repo, num, automergeOption);
 
           response.send();
         } catch (err) {

@@ -18,7 +18,9 @@ function selectAutomergeOpt(
     method: 'POST',
     credentials: 'include',
     body: JSON.stringify({
-      prId: pr.id,
+      owner: pr.owner,
+      repo: pr.repo,
+      number: pr.number,
       automergeOption: optionSelected,
     }),
     headers: {

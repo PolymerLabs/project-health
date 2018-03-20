@@ -337,7 +337,9 @@ function findMyRelevantReview(reviews: Array<MyReviewFields|null>):
 export function convertPrFields(fields: prFieldsFragment): api.PullRequest {
   const pr: api.PullRequest = {
     id: fields.id,
-    repository: fields.repository.nameWithOwner,
+    owner: fields.repository.owner.login,
+    repo: fields.repository.name,
+    number: fields.number,
     title: fields.title,
     createdAt: Date.parse(fields.createdAt),
     url: fields.url,
@@ -443,6 +445,7 @@ fragment prFields on PullRequest {
   }
   title
   url
+  number
   id
   mergeable
   createdAt

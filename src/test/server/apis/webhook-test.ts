@@ -27,6 +27,9 @@ const TEST_SECRETS = {
 };
 
 const TEST_PR_ID = '2';
+const TEST_PR_OWNER = 'test-owner';
+const TEST_PR_REPO = 'test-repo';
+const TEST_PR_NUMBER = -2;
 
 type TestContext = {
   server: Server,
@@ -45,13 +48,13 @@ test.beforeEach(async (t) => {
   t.context.sandbox = sinon.sandbox.create();
   initGithub(url, url);
 
-  await pullRequestsModel.deletePR(TEST_PR_ID);
+  await pullRequestsModel.deletePR(TEST_PR_OWNER, TEST_PR_REPO, TEST_PR_NUMBER);
 });
 
 test.afterEach.always(async (t) => {
   t.context.sandbox.restore();
   await new Promise((resolve) => t.context.server.close(resolve));
-  await pullRequestsModel.deletePR(TEST_PR_ID);
+  await pullRequestsModel.deletePR(TEST_PR_OWNER, TEST_PR_REPO, TEST_PR_NUMBER);
 });
 
 test.serial(
@@ -190,9 +193,9 @@ test.serial('Webhook pull_request_review: unknown action', async (t) => {
       html_url: '',
     },
     repository: {
-      name: '',
+      name: 'test-repo',
       owner: {
-        login: '',
+        login: 'test-owner',
       }
     },
   });
@@ -221,9 +224,9 @@ test.serial('Webhook pull_request_review: unknown review state', async (t) => {
       html_url: '',
     },
     repository: {
-      name: '',
+      name: 'test-repo',
       owner: {
-        login: '',
+        login: 'test-owner',
       }
     },
   });
@@ -442,10 +445,12 @@ test.serial(
                   nodes: [{
                     __typename: 'PullRequest',
                     id: 'test-id',
+                    number: 1,
                     author: {login: 'injected-pr-author'},
                     repository: {
+                      name: 'test-repo',
                       owner: {
-                        login: '',
+                        login: 'test-owner',
                       }
                     },
                     commits: {
@@ -494,10 +499,16 @@ test.serial(
                   nodes: [{
                     __typename: 'PullRequest',
                     id: TEST_PR_ID,
+                    number: 1,
                     title: 'Injected title',
                     url: 'https://example.com/pr/123',
                     author: {login: 'injected-pr-author'},
-                    repository: {owner: {login: ''}},
+                    repository: {
+                      name: 'test-repo',
+                      owner: {
+                        login: 'test-owner',
+                      }
+                    },
                     commits: {
                       nodes: [{
                         commit: {
@@ -505,9 +516,6 @@ test.serial(
                         },
                       }],
                     },
-                    pull_request: {
-                      number: 1,
-                    }
                   }]
                 }
               }
@@ -515,8 +523,8 @@ test.serial(
           });
 
       const response = await handleStatus(eventContent);
-      t.deepEqual(response.handled, true);
-      t.deepEqual(sendStub.callCount, 1);
+      t.deepEqual(response.handled, false);
+      t.deepEqual(sendStub.callCount, 0);
 
       sendStub.reset();
     });

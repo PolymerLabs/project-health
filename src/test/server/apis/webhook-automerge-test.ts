@@ -120,13 +120,22 @@ test.serial(
       const commitToPRStub =
           t.context.sandbox.stub(commitPRUtil, 'getPRDetailsFromCommit')
               .callsFake(() => {
-                return {
+                const details: PullRequestDetails = {
                   id: 'test-pr-id',
+                  number: 1,
+                  title: 'test-title',
+                  body: '',
+                  url: '',
+                  owner: 'test-owner',
+                  repo: 'test-repo',
+                  author: 'test-login',
+                  state: 'OPEN',
                   commit: {
                     oid: 'test-commit',
                     state: 'PENDING',
                   }
                 };
+                return details;
               });
 
       const response = await handleStatus({
@@ -135,9 +144,9 @@ test.serial(
         state: 'success',
         description: '',
         repository: {
-          name: 'status-test',
+          name: 'test-repo',
           owner: {
-            login: '',
+            login: 'test-owner',
           }
         },
         commit: {
@@ -175,8 +184,8 @@ test.serial(
         title: '',
         body: '',
         url: '',
-        owner: '',
-        repo: '',
+        owner: 'test-owner',
+        repo: 'test-repo',
         author: '',
         state: 'OPEN',
         commit: {
@@ -238,8 +247,8 @@ test.serial(
         number: 1,
         title: 'pr-title',
         body: '',
-        owner: '',
-        repo: '',
+        owner: 'test-owner',
+        repo: 'test-repo',
         state: 'OPEN',
         url: 'http://inject-url.com',
         author: 'project-health1',
@@ -317,10 +326,10 @@ test.serial(
         title: 'pr-title',
         url: 'http://inject-url.com',
         author: 'project-health1',
-        repo: '',
+        repo: 'test-repo',
         number: 1,
         body: '',
-        owner: '',
+        owner: 'test-owner',
         state: 'OPEN',
         commit: {
           oid: '123',
@@ -351,9 +360,9 @@ test.serial(
         state: 'success',
         description: '',
         repository: {
-          name: 'status-test',
+          name: 'test-repo',
           owner: {
-            login: '',
+            login: 'test-owner',
           }
         },
         commit: {
@@ -373,9 +382,9 @@ test.serial(
       t.deepEqual(sendStub.args[0][0], 'project-health1');
       t.deepEqual(sendStub.args[0][1], {
         title: 'Auto-merge failed: \'injected-error\'',
-        body: '[status-test] pr-title',
+        body: '[test-repo] pr-title',
         requireInteraction: false,
-        tag: 'pr-/status-test/1',
+        tag: 'pr-test-owner/test-repo/1',
         data: {
           url: 'http://inject-url.com',
         }
