@@ -1,4 +1,3 @@
-import {PullRequest} from '../../../types/api';
 import {WebHookHandleResponse} from '../../apis/github-webhook';
 import {getPRTag, sendNotification} from '../../controllers/notifications';
 import {pullRequestsModel} from '../../models/pullRequestsModel';
