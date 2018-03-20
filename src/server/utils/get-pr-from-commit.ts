@@ -34,23 +34,29 @@ export async function getPRDetailsFromCommit(
     context: {token: githubToken}
   });
 
+  console.log('[get-pr-from-commit] statusPR: ' + JSON.stringify(statusPR));
+
   if (!statusPR.data.pullRequests || !statusPR.data.pullRequests.nodes) {
+    console.log('[get-pr-from-commit] Get PR from commit');
     return null;
   }
 
   let pr: PullRequestDetails|null = null;
   for (const prData of statusPR.data.pullRequests.nodes) {
     if (!prData || prData.__typename !== 'PullRequest') {
+      console.log('[get-pr-from-commit] not a pull request type');
       continue;
     }
 
     // We may want to send a notification to the author, so ensure it exists.
     if (!prData.author) {
+      console.log('[get-pr-from-commit] no author');
       continue;
     }
 
     // If we can't confirm that the PR commit === the status commit - return;
     if (!prData.commits.nodes || prData.commits.nodes.length === 0) {
+      console.log('[get-pr-from-commit] no commits');
       continue;
     }
 
@@ -68,6 +74,7 @@ export async function getPRDetailsFromCommit(
     }
 
     if (!commits.length) {
+      console.log('[get-pr-from-commit] no commits');
       continue;
     }
 
@@ -87,6 +94,8 @@ export async function getPRDetailsFromCommit(
       commit: commits[0],
     };
   }
+
+  console.log('[get-pr-from-commit] finalPR: ' + JSON.stringify(pr));
 
   return pr;
 }
