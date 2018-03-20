@@ -406,7 +406,7 @@ test.serial(
       t.deepEqual(sendStub.callCount, 0);
     });
 
-test.failing(
+test.serial(
     'Webhook status: error-travis.json with user token, incorrect commit',
     async (t) => {
       const eventContent = await fs.readJSON(
