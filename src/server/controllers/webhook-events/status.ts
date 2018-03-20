@@ -7,8 +7,6 @@ import {performAutomerge} from '../../utils/perform-automerge';
 
 import {StatusHook} from './types';
 
-const STATE_SETTLING_TIMOUT = 5 * 1000;
-
 async function handleFailingStatus(
     hookData: StatusHook,
     prDetails: PullRequestDetails,
@@ -44,43 +42,46 @@ async function handleFailingStatus(
 
 async function handleSuccessStatus(
     loginDetails: LoginDetails,
-    hookData: StatusHook): Promise<WebHookHandleResponse> {
-  // We must add a delay to ensure that GitHub's API returns the most
-  // up-to-date value, otherwise the status may be marked as 'pending' even
-  // though the hook we have received is 'success' and it's the only status.
-  await new Promise((resolve) => setTimeout(resolve, STATE_SETTLING_TIMOUT));
-
+    hookData: StatusHook,
+    oldPRDetails: PullRequestDetails): Promise<WebHookHandleResponse> {
   const webhookResponse: WebHookHandleResponse = {
-    handled: false,
+    handled: true,
     notifications: null,
     message: null,
   };
 
-  const prDetails = await getPRDetailsFromCommit(
-      loginDetails.githubToken, hookData.name, hookData.sha);
-  if (!prDetails) {
-    webhookResponse.message = 'Unable to find PR Details.';
+  const automergeOpts = await pullRequestsModel.getAutomergeOpts(
+      oldPRDetails.owner, oldPRDetails.repo, oldPRDetails.number);
+  if (!automergeOpts) {
+    webhookResponse.message = 'No automerge options configured.';
     return webhookResponse;
   }
 
-  // Ensure the PR is open
-  if (prDetails.state !== 'OPEN') {
-    webhookResponse.message = `PR is not open: '${prDetails.state}'`;
+  const mergeType = automergeOpts.mergeType;
+  if (!mergeType || mergeType === 'manual') {
+    webhookResponse.message = `A non-automerge type selected: ${mergeType}`;
     return webhookResponse;
   }
 
-  // If all commits state is success (all status checks passed) or
-  if (prDetails.commit.state !== 'SUCCESS' && prDetails.commit.state !== null) {
-    webhookResponse.message =
-        `Status of the PR's commit is not 'SUCCESS' or 'null': '${
-            prDetails.commit.state}'`;
-    return webhookResponse;
-  }
-
-  webhookResponse.handled = true;
-
+  const repo = hookData.repository;
   try {
-    await performAutomerge(loginDetails.githubToken, hookData.name, prDetails);
+    const mergeSucessful =
+        await performAutomerge(loginDetails.githubToken, hookData, mergeType);
+    if (mergeSucessful) {
+      const results = await sendNotification(oldPRDetails.author, {
+        title: `Automerge complete for '${oldPRDetails.title}'`,
+        body: `[${hookData.repository.name}] ${oldPRDetails.title}`,
+        requireInteraction: false,
+        data: {
+          url: oldPRDetails.url,
+        },
+        tag: getPRTag(repo.owner.login, repo.name, oldPRDetails.number),
+      });
+      webhookResponse.notifications = results;
+      webhookResponse.message = 'Automerge successful';
+    } else {
+      webhookResponse.message = 'Automerge not performed';
+    }
   } catch (err) {
     // Githubs response will have a slightly more helpful message
     // under err.error.message.
@@ -89,16 +90,14 @@ async function handleSuccessStatus(
       msg = err.error.message;
     }
 
-    const repo = hookData.repository;
-
-    const results = await sendNotification(prDetails.author, {
+    const results = await sendNotification(oldPRDetails.author, {
       title: `Auto-merge failed: '${msg}'`,
-      body: `[${hookData.repository.name}] ${prDetails.title}`,
+      body: `[${hookData.repository.name}] ${oldPRDetails.title}`,
       requireInteraction: false,
       data: {
-        url: prDetails.url,
+        url: oldPRDetails.url,
       },
-      tag: getPRTag(repo.owner.login, repo.name, prDetails.number),
+      tag: getPRTag(repo.owner.login, repo.name, oldPRDetails.number),
     });
 
     webhookResponse.notifications = results;
@@ -129,7 +128,7 @@ export async function handleStatus(hookData: StatusHook):
     return {
       handled: false,
       notifications: null,
-      message: 'Unable to find PR Details for commit.',
+      message: 'Unable to find PR Details for commit to store state.',
     };
   }
 
@@ -157,12 +156,12 @@ export async function handleStatus(hookData: StatusHook):
         savedCommitDetails,
     );
   } else if (hookData.state === 'success') {
-    return handleSuccessStatus(loginDetails, hookData);
+    return handleSuccessStatus(loginDetails, hookData, prDetails);
   }
 
   return {
     handled: false,
     notifications: null,
-    message: `Unexpected status state: '${hookData.state}'`,
+    message: `Unhandled state: '${hookData.state}'`,
   };
 }

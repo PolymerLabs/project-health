@@ -546,7 +546,7 @@ test.serial('Webhook status: success-travis.json', async (t) => {
   const eventContent = await fs.readJSON(
       path.join(hookJsonDir, 'status', 'success-travis.json'));
   const response = await handleStatus(eventContent);
-  t.deepEqual(response.handled, false);
+  t.deepEqual(response.handled, true);
   t.deepEqual(sendStub.callCount, 0);
 });
 

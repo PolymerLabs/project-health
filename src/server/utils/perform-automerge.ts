@@ -1,29 +1,45 @@
 import {github} from '../../utils/github';
-import {pullRequestsModel} from '../models/pullRequestsModel';
+import {StatusHook} from '../controllers/webhook-events/types';
 
-import {PullRequestDetails} from './get-pr-from-commit';
+import {getPRDetailsFromCommit} from './get-pr-from-commit';
 
 export async function performAutomerge(
-    githubToken: string, repoFullName: string, prDetails: PullRequestDetails) {
-  const automergeOpts = await pullRequestsModel.getAutomergeOpts(
-      prDetails.owner, prDetails.repo, prDetails.number);
-  if (!automergeOpts) {
-    return;
+    githubToken: string,
+    hookData: StatusHook,
+    mergeType: 'squash'|'rebase'|'merge'): Promise<boolean> {
+  const prDetails =
+      await getPRDetailsFromCommit(githubToken, hookData.name, hookData.sha);
+  if (!prDetails) {
+    console.log(`${hookData.name}) Unable to find PR Details.`);
+    return false;
   }
 
-  const mergeType = automergeOpts.mergeType;
-  if (!mergeType || mergeType === 'manual') {
-    return;
+  // Ensure the PR is open
+  if (prDetails.state !== 'OPEN') {
+    console.log(`(${hookData.name}) PR is not open: '${prDetails.state}'`);
+    return false;
+  }
+
+  // If all commits state is success (all status checks passed) or
+  if (prDetails.commit.state !== 'SUCCESS' && prDetails.commit.state !== null) {
+    console.log(`(${
+        hookData
+            .name}) Status of the PR's commit is not 'SUCCESS' or 'null': '${
+        prDetails.commit.state}'`);
+    return false;
   }
 
   await github().put(
-      `repos/${repoFullName}/pulls/${prDetails.number}/merge`,
+      `repos/${prDetails.owner}/${prDetails.repo}/pulls/${
+          prDetails.number}/merge`,
       githubToken,
       {
         commit_title: prDetails.title,
         commit_message: prDetails.body,
         sha: prDetails.commit.oid,
-        merge_method: automergeOpts.mergeType,
+        merge_method: mergeType,
       },
   );
+
+  return true;
 }
