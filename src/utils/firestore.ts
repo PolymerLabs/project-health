@@ -11,7 +11,16 @@ export function firestore(): Firestore {
   return firestoreSingleton;
 }
 
-export function initFirestore() {
+export function initFirestore(firestoreMock?: any) {
+  if (firestoreMock) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('You cannot use a firestore mock in production.');
+    }
+
+    firestoreSingleton = firestoreMock;
+    return;
+  }
+
   if (firestoreSingleton) {
     throw new Error('Firestore is already initialised.');
   }

@@ -2,14 +2,16 @@ import test from 'ava';
 
 import {pullRequestsModel} from '../../../server/models/pullRequestsModel';
 import {initFirestore} from '../../../utils/firestore';
+import {getFirestoreMock} from '../../fake-firestore';
 
 const TEST_PR_OWNER = 'test-owner';
 const TEST_PR_REPO = 'test-repo';
 const TEST_PR_NUMBER = -1;
 const TEST_COMMIT_ID = 123456;
+const firestoreMock = getFirestoreMock();
 
 test.before(() => {
-  initFirestore();
+  initFirestore(firestoreMock);
 });
 
 test.beforeEach(async () => {
@@ -48,6 +50,7 @@ test.serial(
           TEST_PR_NUMBER,
           TEST_COMMIT_ID.toString(),
       );
+      console.log(firestoreMock._data);
       if (!value) {
         throw new Error('Value must exist.');
       }

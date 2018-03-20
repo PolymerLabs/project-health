@@ -106,7 +106,8 @@ class PullRequestsModel {
     }
 
     const prData = prSnapshot.data() as PRDetails;
-    if (!prData.commits || !prData.commits[commitId]) {
+    console.log('prData: ', prData);
+    if (!prData || !prData.commits || !prData.commits[commitId]) {
       return null;
     }
 
