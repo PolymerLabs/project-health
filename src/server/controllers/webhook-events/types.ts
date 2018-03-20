@@ -5,7 +5,7 @@ type User = {
 };
 
 type PullRequest = {
-  title: string; user: User; html_url: string;
+  number: number; title: string; user: User; html_url: string;
 };
 
 type ReviewHook = {
@@ -13,7 +13,7 @@ type ReviewHook = {
 };
 
 type Repository = {
-  name: string;
+  name: string; owner: {login: string;};
 };
 
 export type PullRequestReviewHook = {

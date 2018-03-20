@@ -35,11 +35,11 @@ type CustomNotification = {
 const DEFAULT_NOTIFICATION_OPTIONS: NotificationPayload = {
   title: 'New Github Health Updates',
   body: 'Click the notification to view updates',
-  icon: '/images/notification-images/icon-192x192.png',
   requireInteraction: false,
   data: {
     url: new URL('/', self.location.origin).toString(),
   },
+  tag: 'default-notification',
 };
 
 async function getWindowClients(): Promise<WindowClient[]> {

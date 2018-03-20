@@ -35,7 +35,6 @@ class NotificationCenter {
     const title = `New activity on ${totalUpdates} PRs`;
     const options = {
       body: `${bodyMessages.join(' and ')} require your attention`,
-      icon: '/images/notification-images/icon-192x192.png',
       data: {
         url: window.location.href,
       },

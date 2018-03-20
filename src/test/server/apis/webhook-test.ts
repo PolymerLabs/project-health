@@ -74,7 +74,7 @@ test.serial(
           title: 'gauntface requested changes',
           body: '[project-health] Add favicon',
           requireInteraction: true,
-          icon: '/images/notification-images/icon-192x192.png',
+          tag: 'pr-PolymerLabs/project-health/112',
           data: {
             url: 'https://github.com/PolymerLabs/project-health/pull/112'
           }
@@ -99,7 +99,7 @@ test.serial(
           title: 'gauntface approved your PR',
           body: '[project-health] Add favicon',
           requireInteraction: true,
-          icon: '/images/notification-images/icon-192x192.png',
+          tag: 'pr-PolymerLabs/project-health/112',
           data: {
             url: 'https://github.com/PolymerLabs/project-health/pull/112'
           }
@@ -128,7 +128,7 @@ test.serial(
           body:
               '[project-health] Demonstrate end-to-end firestore integration.',
           requireInteraction: true,
-          icon: '/images/notification-images/icon-192x192.png',
+          tag: 'pr-PolymerLabs/project-health/65',
           data:
               {url: 'https://github.com/PolymerLabs/project-health/pull/65'}
         }
@@ -182,6 +182,7 @@ test.serial('Webhook pull_request_review: unknown action', async (t) => {
       },
     },
     pull_request: {
+      number: 1,
       title: '',
       user: {
         login: '',
@@ -190,6 +191,9 @@ test.serial('Webhook pull_request_review: unknown action', async (t) => {
     },
     repository: {
       name: '',
+      owner: {
+        login: '',
+      }
     },
   });
   t.deepEqual(response.handled, false);
@@ -209,6 +213,7 @@ test.serial('Webhook pull_request_review: unknown review state', async (t) => {
       },
     },
     pull_request: {
+      number: 1,
       title: '',
       user: {
         login: 'example-pr-login',
@@ -217,6 +222,9 @@ test.serial('Webhook pull_request_review: unknown review state', async (t) => {
     },
     repository: {
       name: '',
+      owner: {
+        login: '',
+      }
     },
   });
   t.deepEqual(response.handled, true);
@@ -496,6 +504,9 @@ test.serial(
                           oid: eventContent.sha,
                         },
                       }],
+                    },
+                    pull_request: {
+                      number: 1,
                     }
                   }]
                 }
@@ -546,7 +557,7 @@ test.serial('Webhook pull_request: review_requested.json', async (t) => {
       title: 'gauntface requested a review',
       body: '[project-health] Add icon to notification and correcting URL link',
       requireInteraction: true,
-      icon: '/images/notification-images/icon-192x192.png',
+      tag: 'pr-PolymerLabs/project-health/146',
       data: {url: 'https://github.com/PolymerLabs/project-health/pull/146'}
     }
   ]);

@@ -1,6 +1,7 @@
 import {WebHookHandleResponse} from '../../apis/github-webhook';
-import {sendNotification} from '../../controllers/notifications';
+import {getPRTag, sendNotification} from '../../controllers/notifications';
 import {userModel} from '../../models/userModel';
+
 import {PullRequestHook} from './types';
 
 export async function handlePullRequest(hookBody: PullRequestHook):
@@ -27,10 +28,10 @@ export async function handlePullRequest(hookBody: PullRequestHook):
     title: `${user.login} requested a review`,
     body: `[${repo.name}] ${pullRequest.title}`,
     requireInteraction: true,
-    icon: '/images/notification-images/icon-192x192.png',
     data: {
       url: pullRequest.html_url,
-    }
+    },
+    tag: getPRTag(repo.owner.login, repo.name, pullRequest.number),
   };
 
   const notificationStats =

@@ -24,8 +24,8 @@ const SAMPLE_DATA = {
   title: 'title',
   body: 'body',
   requireInteraction: true,
-  icon: '',
   data: undefined,
+  tag: '',
 };
 
 test.before(() => {
@@ -89,7 +89,15 @@ test.serial('[notifications] should send to a subscriptions', async (t) => {
 
   t.deepEqual(webpushStub.callCount, 1);
   t.deepEqual(webpushStub.args[0][0], userSubscriptions[0].subscription);
-  t.deepEqual(webpushStub.args[0][1], JSON.stringify(SAMPLE_DATA));
+  t.deepEqual(webpushStub.args[0][1], JSON.stringify({
+    icon: '/images/notification-images/icon-192x192.png',
+    badge: '/images/notification-images/badge-128x128.png',
+    title: 'title',
+    body: 'body',
+    requireInteraction: true,
+    data: undefined,
+    tag: '',
+  }));
   t.deepEqual(webpushStub.args[0][2], {
     TTL: 12 * 60 * 60,
   });
