@@ -88,7 +88,9 @@ test('dashoutgoing: outgoing PR, review with my own replies', (t) => {
         type: 'OutgoingReviewEvent',
       },
     ],
-    repository: 'project-health1/repo',
+    number: 8,
+    owner: 'project-health1',
+    repo: 'repo',
     status: {
       reviewers: ['project-health2'],
       type: 'WaitingReview',
@@ -113,7 +115,9 @@ test('dashoutgoing: Outgoing PR, no reviewers', (t) => {
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
     createdAt: 1517353063000,
     events: [],
-    repository: 'project-health1/repo',
+    number: 7,
+    owner: 'project-health1',
+    repo: 'repo',
     status: {
       type: 'NoReviewers',
     },
@@ -136,7 +140,9 @@ test('dashoutgoing: Outgoing PR, changes requested', (t) => {
     author: 'project-health1',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
     createdAt: 1517253689000,
-    repository: 'project-health1/repo',
+    number: 6,
+    owner: 'project-health1',
+    repo: 'repo',
     status: {type: 'PendingChanges'},
     title: 'Adding an oauth page',
     url: 'https://github.com/project-health1/repo/pull/6',
@@ -165,7 +171,9 @@ test('dashoutgoing: Outgoing PR, approved, ready to merge', (t) => {
     author: 'project-health1',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
     createdAt: 1517253583000,
-    repository: 'project-health1/repo',
+    number: 5,
+    owner: 'project-health1',
+    repo: 'repo',
     status: {type: 'PendingMerge'},
     title: 'Add lint for TS files',
     url: 'https://github.com/project-health1/repo/pull/5',
@@ -194,7 +202,9 @@ test('dashoutgoing: Outgoing PR, has 1 commented review', (t) => {
     author: 'project-health1',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
     createdAt: 1516324726000,
-    repository: 'project-health1/repo',
+    number: 2,
+    owner: 'project-health1',
+    repo: 'repo',
     title: 'Update all the things',
     url: 'https://github.com/project-health1/repo/pull/2',
     status: {type: 'WaitingReview', reviewers: ['project-health2']},
@@ -225,7 +235,9 @@ test('dashoutgoing: Outgoing PR, requested reviews, no reviews', (t) => {
     author: 'project-health1',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
     createdAt: 1513370262000,
-    repository: 'project-health1/repo',
+    number: 1,
+    owner: 'project-health1',
+    repo: 'repo',
     title: 'Update README.md',
     url: 'https://github.com/project-health1/repo/pull/1',
     status: {type: 'WaitingReview', reviewers: ['project-health2']},
@@ -248,7 +260,9 @@ test('dashoutgoing: review requested changes then approved', (t) => {
     author: 'project-health1',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
     createdAt: 1519864550000,
-    repository: 'project-health1/repo',
+    number: 12,
+    owner: 'project-health1',
+    repo: 'repo',
     title: 'Controversial changes',
     url: 'https://github.com/project-health1/repo/pull/12',
     status: {type: 'PendingMerge'},
@@ -277,7 +291,9 @@ test('dashoutgoing: with success status', (t) => {
     author: 'project-health1',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
     createdAt: 1520877290000,
-    repository: 'project-health1/status-repo',
+    number: 3,
+    owner: 'project-health1',
+    repo: 'status-repo',
     title: 'Success [status::success]',
     url: 'https://github.com/project-health1/status-repo/pull/3',
     status: {type: 'PendingMerge'},
@@ -300,13 +316,15 @@ test('dashoutgoing: with success status', (t) => {
   });
 });
 
-test.failing('dashoutgoing: with pending status', (t) => {
+test('dashoutgoing: with pending status', (t) => {
   t.deepEqual(t.context.prsById.get('project-health1/status-repo/pull/4'), {
     id: 'MDExOlB1bGxSZXF1ZXN0MTc0NDQ3NDYz',
     author: 'project-health1',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
     createdAt: 1520877301000,
-    repository: 'project-health1/status-repo',
+    number: 4,
+    owner: 'project-health1',
+    repo: 'status-repo',
     title: 'Pending [status::pending]',
     url: 'https://github.com/project-health1/status-repo/pull/4',
     status: {type: 'StatusChecksPending'},
@@ -329,13 +347,15 @@ test.failing('dashoutgoing: with pending status', (t) => {
   });
 });
 
-test.failing('dashoutgoing: with error status', (t) => {
+test('dashoutgoing: with error status', (t) => {
   t.deepEqual(t.context.prsById.get('project-health1/status-repo/pull/5'), {
     id: 'MDExOlB1bGxSZXF1ZXN0MTc0NDQ3NTc1',
     author: 'project-health1',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
     createdAt: 1520877324000,
-    repository: 'project-health1/status-repo',
+    number: 5,
+    owner: 'project-health1',
+    repo: 'status-repo',
     title: 'Error [status::error]',
     url: 'https://github.com/project-health1/status-repo/pull/5',
     status: {type: 'StatusChecksFailed'},
@@ -354,17 +374,19 @@ test.failing('dashoutgoing: with error status', (t) => {
     },
     mergeable: MergeableState.MERGEABLE,
     automergeOpts: null,
-    automergeAvailable: true,
+    automergeAvailable: false,
   });
 });
 
-test.failing('dashoutgoing: with failing status', (t) => {
+test('dashoutgoing: with failing status', (t) => {
   t.deepEqual(t.context.prsById.get('project-health1/status-repo/pull/6'), {
     id: 'MDExOlB1bGxSZXF1ZXN0MTc0NDQ3Njk2',
     author: 'project-health1',
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
     createdAt: 1520877353000,
-    repository: 'project-health1/status-repo',
+    number: 6,
+    owner: 'project-health1',
+    repo: 'status-repo',
     title: 'Failure [status::failure]',
     url: 'https://github.com/project-health1/status-repo/pull/6',
     status: {type: 'StatusChecksFailed'},

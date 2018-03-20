@@ -110,7 +110,7 @@ export function genericPrTemplate(
       status.actionable ? 'actionable' : ''}">${status.text}</span>
             </div>
             <div class="pr-info">
-              <span class="pr-info__repo-name">${pr.repository}</span>
+              <span class="pr-info__repo-name">${pr.owner}/${pr.repo}</span>
               <span class="pr-info__title">${pr.title}</span>
             </div>
           </a>

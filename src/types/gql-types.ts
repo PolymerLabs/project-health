@@ -667,6 +667,8 @@ export interface OutgoingPullRequestsQuery {
         title: string,
         // The HTTP URL for this pull request.
         url: string,
+        // Identifies the pull request number.
+        number: number,
         id: string,
         // Whether or not the pull request can be merged based on the existence of merge conflicts.
         mergeable: MergeableState,
@@ -838,6 +840,8 @@ export interface IncomingPullRequestsQuery {
         title: string,
         // The HTTP URL for this pull request.
         url: string,
+        // Identifies the pull request number.
+        number: number,
         id: string,
         // Whether or not the pull request can be merged based on the existence of merge conflicts.
         mergeable: MergeableState,
@@ -914,6 +918,8 @@ export interface IncomingPullRequestsQuery {
         title: string,
         // The HTTP URL for this pull request.
         url: string,
+        // Identifies the pull request number.
+        number: number,
         id: string,
         // Whether or not the pull request can be merged based on the existence of merge conflicts.
         mergeable: MergeableState,
@@ -1306,6 +1312,8 @@ export interface prFieldsFragment {
   title: string,
   // The HTTP URL for this pull request.
   url: string,
+  // Identifies the pull request number.
+  number: number,
   id: string,
   // Whether or not the pull request can be merged based on the existence of merge conflicts.
   mergeable: MergeableState,

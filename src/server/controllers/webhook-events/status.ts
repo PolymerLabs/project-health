@@ -135,13 +135,17 @@ export async function handleStatus(hookData: StatusHook):
 
   // Get previous state
   const savedCommitDetails = await pullRequestsModel.getCommitDetails(
-      prDetails.id,
+      prDetails.owner,
+      prDetails.repo,
+      prDetails.number,
       prDetails.commit.oid,
   );
 
   // Save latest state
   await pullRequestsModel.setCommitStatus(
-      prDetails.id,
+      prDetails.owner,
+      prDetails.repo,
+      prDetails.number,
       prDetails.commit.oid,
       hookData.state,
   );

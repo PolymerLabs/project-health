@@ -88,7 +88,9 @@ test('dashoutgoing2: requested changes', (t) => {
       allow_squash_merge: true,
       allow_merge_commit: true,
     },
-    repository: 'project-health1/repo',
+    number: 14,
+    owner: 'project-health1',
+    repo: 'repo',
     status: {
       type: 'PendingChanges',
     },
@@ -121,7 +123,9 @@ test('dashoutgoing2: review with comments', (t) => {
       allow_squash_merge: true,
       allow_merge_commit: true,
     },
-    repository: 'project-health1/repo',
+    number: 13,
+    owner: 'project-health1',
+    repo: 'repo',
     status: {
       reviewers: [
         'project-health1',
@@ -157,7 +161,9 @@ test('dashoutgoing2: review with comments2', (t) => {
       allow_squash_merge: true,
       allow_merge_commit: true,
     },
-    repository: 'project-health1/repo',
+    number: 11,
+    owner: 'project-health1',
+    repo: 'repo',
     status: {
       reviewers: [
         'project-health1',
@@ -193,7 +199,9 @@ test('dashoutgoing2: ready to merge', (t) => {
       allow_squash_merge: true,
       allow_merge_commit: true,
     },
-    repository: 'project-health1/repo',
+    number: 10,
+    owner: 'project-health1',
+    repo: 'repo',
     status: {
       type: 'PendingMerge',
     },
@@ -226,7 +234,9 @@ test('dashoutgoing2: changes requested, new commit', (t) => {
       allow_squash_merge: true,
       allow_merge_commit: true,
     },
-    repository: 'project-health1/repo',
+    number: 9,
+    owner: 'project-health1',
+    repo: 'repo',
     status: {
       reviewers: ['project-health1'],
       type: 'WaitingReview',
@@ -251,7 +261,9 @@ test('dashoutgoing2: no review', (t) => {
       allow_squash_merge: true,
       allow_merge_commit: true,
     },
-    repository: 'project-health1/repo',
+    number: 4,
+    owner: 'project-health1',
+    repo: 'repo',
     status: {
       reviewers: ['project-health1'],
       type: 'WaitingReview',
@@ -285,7 +297,9 @@ test('dashoutgoing2: basic requested changes', (t) => {
       allow_squash_merge: true,
       allow_merge_commit: true,
     },
-    repository: 'project-health1/repo',
+    number: 3,
+    owner: 'project-health1',
+    repo: 'repo',
     status: {
       type: 'PendingChanges',
     },

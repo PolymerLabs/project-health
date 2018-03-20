@@ -25,7 +25,9 @@ export interface OutgoingPullRequest extends PullRequest {
 
 export interface PullRequest {
   id: string;
-  repository: string;
+  repo: string;
+  owner: string;
+  number: number;
   title: string;
   url: string;
   author: string;

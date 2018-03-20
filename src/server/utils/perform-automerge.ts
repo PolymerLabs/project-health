@@ -5,7 +5,8 @@ import {PullRequestDetails} from './get-pr-from-commit';
 
 export async function performAutomerge(
     githubToken: string, repoFullName: string, prDetails: PullRequestDetails) {
-  const automergeOpts = await pullRequestsModel.getAutomergeOpts(prDetails.id);
+  const automergeOpts = await pullRequestsModel.getAutomergeOpts(
+      prDetails.owner, prDetails.repo, prDetails.number);
   if (!automergeOpts) {
     return;
   }

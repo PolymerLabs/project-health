@@ -184,7 +184,8 @@ async function getAllPRInfo(
             pr.repository.owner.login,
             pr.repository.name,
             ),
-        pullRequestsModel.getAllPRData(pr.id),
+        pullRequestsModel.getPRData(
+            pr.repository.owner.login, pr.repository.name, pr.number),
       ]);
 
       const repoDetails = results[0];
@@ -193,12 +194,10 @@ async function getAllPRInfo(
       let automergeAvailable = false;
       let automergeOpts = null;
       if (prDetails) {
-        if (prDetails.commits && Object.keys(prDetails.commits).length > 0) {
-          // If we have commit data, then we have status hooks configured.
-          automergeAvailable = true;
-          if (prDetails.automerge) {
-            automergeOpts = prDetails.automerge;
-          }
+        // If we have commit data, then we have status hooks configured.
+        automergeAvailable = true;
+        if (prDetails.automerge) {
+          automergeOpts = prDetails.automerge;
         }
       }
 
