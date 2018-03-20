@@ -12,7 +12,6 @@ import {PullRequestDetails} from '../../../server/utils/get-pr-from-commit';
 import * as automergeUtil from '../../../server/utils/perform-automerge';
 import {initFirestore} from '../../../utils/firestore';
 import {initSecrets} from '../../../utils/secrets';
-import {getFirestoreMock} from '../../fake-firestore';
 
 const TEST_SECRETS = {
   GITHUB_CLIENT_ID: 'ClientID',
@@ -28,7 +27,7 @@ type TestContext = {
 const test = anyTest as TestInterface<TestContext>;
 
 test.before(() => {
-  initFirestore(getFirestoreMock());
+  initFirestore();
   initSecrets(TEST_SECRETS);
 });
 

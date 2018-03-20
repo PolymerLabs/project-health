@@ -31,7 +31,6 @@ class FakeDoc {
   }
 
   async get() {
-    console.log('Getting data: ', this.data);
     return new FakeSnapshot(this.data);
   }
 
@@ -57,11 +56,9 @@ class FakeCollection {
 
   doc(name: string) {
     if (this.docs[name]) {
-      console.log('Using existing doc', name);
       return this.docs[name];
     }
 
-    console.log('Creating new doc.', name);
     this.docs[name] = new FakeDoc(this, name);
     return this.docs[name];
   }
@@ -80,6 +77,10 @@ export function getFirestoreMock() {
 
   const firestoreMock: any = {
     collection: (collectionName: string) => {
+      if (mockFirstoreData[collectionName]) {
+        return mockFirstoreData[collectionName];
+      }
+
       mockFirstoreData[collectionName] = new FakeCollection();
       return mockFirstoreData[collectionName];
     },
