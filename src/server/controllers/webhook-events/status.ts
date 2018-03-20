@@ -65,10 +65,9 @@ async function handleSuccessStatus(
 
   const repo = hookData.repository;
   try {
-    const mergeComplete =
-        await performAutomerge(loginDetails, hookData, mergeType);
-
-    if (mergeComplete) {
+    const mergeSucessful =
+        await performAutomerge(loginDetails.githubToken, hookData, mergeType);
+    if (mergeSucessful) {
       const results = await sendNotification(oldPRDetails.author, {
         title: `Automerge complete for '${oldPRDetails.title}'`,
         body: `[${hookData.repository.name}] ${oldPRDetails.title}`,
@@ -78,10 +77,10 @@ async function handleSuccessStatus(
         },
         tag: getPRTag(repo.owner.login, repo.name, oldPRDetails.number),
       });
-
       webhookResponse.notifications = results;
       webhookResponse.message = 'Automerge successful';
     } else {
+      webhookResponse.message = 'Automerge not performed';
     }
   } catch (err) {
     // Githubs response will have a slightly more helpful message

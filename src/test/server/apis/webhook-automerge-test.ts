@@ -4,6 +4,8 @@ import {SinonSandbox} from 'sinon';
 
 import * as notificationController from '../../../server/controllers/notifications';
 import {handleStatus} from '../../../server/controllers/webhook-events/status';
+import {StatusHook} from '../../../server/controllers/webhook-events/types';
+import {pullRequestsModel} from '../../../server/models/pullRequestsModel';
 import {userModel} from '../../../server/models/userModel';
 import * as commitPRUtil from '../../../server/utils/get-pr-from-commit';
 import {PullRequestDetails} from '../../../server/utils/get-pr-from-commit';
@@ -155,14 +157,11 @@ test.serial(
           },
         }
       });
-      t.deepEqual(response.handled, false);
-      t.deepEqual(commitToPRStub.callCount, 2);
+      t.deepEqual(response.handled, true);
+      t.deepEqual(commitToPRStub.callCount, 1);
       t.deepEqual(commitToPRStub.args[0][0], 'injected-fake-token');
       t.deepEqual(commitToPRStub.args[0][1], 'project-health/status-test');
       t.deepEqual(commitToPRStub.args[0][2], 'test-sha');
-      t.deepEqual(commitToPRStub.args[1][0], 'injected-fake-token');
-      t.deepEqual(commitToPRStub.args[1][1], 'project-health/status-test');
-      t.deepEqual(commitToPRStub.args[1][2], 'test-sha');
     });
 
 test.serial(
@@ -175,6 +174,13 @@ test.serial(
               githubToken: 'injected-fake-token',
               username,
               scopes: null,
+            };
+          });
+
+      t.context.sandbox.stub(pullRequestsModel, 'getAutomergeOpts')
+          .callsFake(async () => {
+            return {
+              mergeType: 'squash',
             };
           });
 
@@ -204,7 +210,7 @@ test.serial(
                 return Promise.resolve();
               });
 
-      const response = await handleStatus({
+      const hookData: StatusHook = {
         sha: 'test-sha',
         name: 'project-health/status-test',
         state: 'success',
@@ -220,13 +226,14 @@ test.serial(
             login: 'project-health1',
           },
         },
-      });
+      };
+      const response = await handleStatus(hookData);
 
       t.deepEqual(response.handled, true);
       t.deepEqual(automergeStub.callCount, 1);
       t.deepEqual(automergeStub.args[0][0], 'injected-fake-token');
-      t.deepEqual(automergeStub.args[0][1], 'project-health/status-test');
-      t.deepEqual(automergeStub.args[0][2], prDetails);
+      t.deepEqual(automergeStub.args[0][1], hookData);
+      t.deepEqual(automergeStub.args[0][2], 'squash');
     });
 
 test.serial(
@@ -239,6 +246,13 @@ test.serial(
               githubToken: 'injected-fake-token',
               username,
               scopes: null,
+            };
+          });
+
+      t.context.sandbox.stub(pullRequestsModel, 'getAutomergeOpts')
+          .callsFake(async () => {
+            return {
+              mergeType: 'squash',
             };
           });
 
@@ -271,7 +285,7 @@ test.serial(
       const sendStub =
           t.context.sandbox.stub(notificationController, 'sendNotification');
 
-      const response = await handleStatus({
+      const hookData: StatusHook = {
         sha: 'test-sha',
         name: 'project-health/status-test',
         state: 'success',
@@ -287,13 +301,15 @@ test.serial(
             login: 'project-health1',
           },
         }
-      });
+      };
+
+      const response = await handleStatus(hookData);
 
       t.deepEqual(response.handled, true);
       t.deepEqual(automergeStub.callCount, 1);
       t.deepEqual(automergeStub.args[0][0], 'injected-fake-token');
-      t.deepEqual(automergeStub.args[0][1], 'project-health/status-test');
-      t.deepEqual(automergeStub.args[0][2], prDetails);
+      t.deepEqual(automergeStub.args[0][1], hookData);
+      t.deepEqual(automergeStub.args[0][2], 'squash');
 
       t.deepEqual(sendStub.callCount, 1);
       t.deepEqual(sendStub.args[0][0], 'project-health1');
@@ -318,6 +334,13 @@ test.serial(
               githubToken: 'injected-fake-token',
               username,
               scopes: null,
+            };
+          });
+
+      t.context.sandbox.stub(pullRequestsModel, 'getAutomergeOpts')
+          .callsFake(async () => {
+            return {
+              mergeType: 'squash',
             };
           });
 
@@ -354,7 +377,7 @@ test.serial(
       const sendStub =
           t.context.sandbox.stub(notificationController, 'sendNotification');
 
-      const response = await handleStatus({
+      const hookData: StatusHook = {
         sha: 'test-sha',
         name: 'project-health/status-test',
         state: 'success',
@@ -370,13 +393,15 @@ test.serial(
             login: 'project-health1',
           },
         },
-      });
+      };
+
+      const response = await handleStatus(hookData);
 
       t.deepEqual(response.handled, true);
       t.deepEqual(automergeStub.callCount, 1);
       t.deepEqual(automergeStub.args[0][0], 'injected-fake-token');
-      t.deepEqual(automergeStub.args[0][1], 'project-health/status-test');
-      t.deepEqual(automergeStub.args[0][2], prDetails);
+      t.deepEqual(automergeStub.args[0][1], hookData);
+      t.deepEqual(automergeStub.args[0][2], 'squash');
 
       t.deepEqual(sendStub.callCount, 1);
       t.deepEqual(sendStub.args[0][0], 'project-health1');
