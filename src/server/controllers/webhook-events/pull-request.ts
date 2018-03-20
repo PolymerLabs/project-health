@@ -42,12 +42,22 @@ async function handlePROpened(hookBody: PullRequestHook):
   return {handled: true, notifications: null, message: null};
 }
 
+async function handlePRClosed(hookBody: PullRequestHook) {
+  const owner = hookBody.repository.owner.login;
+  const repo = hookBody.repository.name;
+  const num = hookBody.pull_request.number;
+  await pullRequestsModel.deletePR(owner, repo, num);
+  return {handled: true, notifications: null, message: null};
+}
+
 export async function handlePullRequest(hookBody: PullRequestHook):
     Promise<WebHookHandleResponse> {
   if (hookBody.action === 'review_requested') {
     return handleReviewRequested(hookBody);
   } else if (hookBody.action === 'opened') {
     return handlePROpened(hookBody);
+  } else if (hookBody.action === 'closed') {
+    return handlePRClosed(hookBody);
   }
 
   return {
