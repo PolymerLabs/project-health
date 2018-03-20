@@ -8,6 +8,7 @@ import {timeToString} from './utils/time-to-string.js';
 
 type StatusDisplay = {
   actionable: boolean; text: string;
+  className?: string;
 };
 
 export function genericPrListTemplate(
@@ -62,7 +63,11 @@ export function statusToDisplay(pr: api.PullRequest): StatusDisplay {
     case 'PendingChanges':
       return {text: 'Waiting on you', actionable: true};
     case 'PendingMerge':
-      return {text: 'Ready to merge', actionable: true};
+      return {
+        text: 'Ready to merge',
+        actionable: true,
+        className: 'pr-status__merge',
+      };
     case 'StatusChecksFailed':
       return {text: 'Status checks failed', actionable: true};
     case 'NoReviewers':
@@ -107,7 +112,9 @@ export function genericPrTemplate(
           <a class="pr-body" href="${pr.url}" target="_blank">
             <div class="small-heading pr-status">
               <span class$="pr-status__msg ${
-      status.actionable ? 'actionable' : ''}">${status.text}</span>
+      status.actionable ?
+          'actionable' :
+          ''} ${status.className ? status.className : ''}">${status.text}</span>
             </div>
             <div class="pr-info">
               <span class="pr-info__repo-name">${pr.owner}/${pr.repo}</span>

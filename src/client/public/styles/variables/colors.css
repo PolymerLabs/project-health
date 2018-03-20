@@ -1,6 +1,7 @@
 :root {
   --light-grey: hsl(0, 0%, 80%);
 
+  --merge-text-color: hsl(119, 53%, 35%);
   --actionable-color: hsl(37, 93%, 48%);
   --actionable-highlight-color: hsl(37, 93%, 92%);
   --non-actionable-color: #4a90e2;
