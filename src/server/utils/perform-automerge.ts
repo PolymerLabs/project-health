@@ -8,11 +8,6 @@ export async function performAutomerge(
     loginDetails: LoginDetails,
     hookData: StatusHook,
     mergeType: 'squash'|'rebase'|'merge'): Promise<string> {
-  // We must add a delay to ensure that GitHub's API returns the most
-  // up-to-date value, otherwise the status may be marked as 'pending' even
-  // though the hook we have received is 'success' and it's the only status.
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
   const prDetails = await getPRDetailsFromCommit(
       loginDetails.githubToken, hookData.name, hookData.sha);
   if (!prDetails) {
