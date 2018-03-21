@@ -40,14 +40,14 @@ test('should skip all top level directories', async (t) => {
 test('should have up-to-date secrets', async (t) => {
   const secretsPath = path.join(__dirname, '..', '..', 'secrets.json');
   try {
-    await fs.access(secretsPath);
+    await fsExtra.access(secretsPath);
   } catch (err) {
     // Error thrown meaning either the file doesn't exist or we can't read it
     t.pass();
     return;
   }
 
-  const fileBuffer = await fs.readFile(secretsPath);
+  const fileBuffer = await fsExtra.readFile(secretsPath);
   const hash = crypto.createHash('md5').update(fileBuffer).digest('hex');
   t.deepEqual(hash, '6b9bc61e46a73a91a6e2901a242e7dc9');
 });
