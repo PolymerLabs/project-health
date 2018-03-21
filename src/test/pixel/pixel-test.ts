@@ -26,6 +26,7 @@ let dashAddress: string;
 test.before(async () => {
   initFirestore();
 
+  // This allows automerge to be visible for a specific PR.
   pullRequestsModel.pullRequestOpened('project-health1', 'status-repo', 4);
 
   browser = await puppeteer.launch({args: ['--no-sandbox']});

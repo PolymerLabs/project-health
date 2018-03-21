@@ -161,8 +161,6 @@ class FakeCollection {
   }
 }
 
-
-
 export function getFirestoreMock() {
   const mockFirstoreData: any = {};
 
