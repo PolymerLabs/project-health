@@ -105,7 +105,10 @@ class GitHub {
     variables = Object.assign({}, variables);
     let hasNextPage = true;
     while (hasNextPage) {
-      const result = await this.query<Q>({query, variables});
+      // TODO: this shouldn't be using environment variables and is currently
+      // only used by the CLI.
+      const result = await this.query<Q>(
+          {query, variables, context: {token: process.env.GITHUB_TOKEN}});
       const pageInfo = getPageInfo(result.data);
       hasNextPage = !!pageInfo && pageInfo.pageInfo.hasNextPage;
       variables.cursor = pageInfo && pageInfo.pageInfo.endCursor;
