@@ -49,16 +49,18 @@ class NotificationCenter {
     return (this.userViewedOrUpdated <= Date.now() - ACTIVITY_UPDATE_DURATION);
   }
 
-  async updateState() {
-    if (document.hasFocus()) {
-      this.userViewedOrUpdated = Date.now();
-    }
-
+  async updateState(focused: boolean) {
     const outgoingUpdates = dashData.getOutgoingUpdates();
     const incomingUpdates = dashData.getIncomingUpdates();
     const newActionableItems =
         outgoingUpdates.length > 0 || incomingUpdates.length > 0;
-    updateFavIcon(newActionableItems);
+
+    if (focused) {
+      this.userViewedOrUpdated = Date.now();
+      updateFavIcon(false);
+    } else {
+      updateFavIcon(newActionableItems);
+    }
 
     if (this.shouldNotifyUser()) {
       await this.updateUser();
