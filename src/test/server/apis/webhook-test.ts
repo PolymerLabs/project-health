@@ -446,7 +446,9 @@ test.serial(
                     __typename: 'PullRequest',
                     id: 'test-id',
                     number: 1,
+                    title: 'test-title',
                     author: {login: 'injected-pr-author'},
+                    url: 'http://example-url.com/',
                     repository: {
                       name: 'test-repo',
                       owner: {
@@ -467,8 +469,18 @@ test.serial(
           });
 
       const response = await handleStatus(eventContent);
-      t.deepEqual(response.handled, false);
-      t.deepEqual(sendStub.callCount, 0);
+      t.deepEqual(response.handled, true, 'Status should be handled');
+      t.deepEqual(sendStub.callCount, 1, 'Notification count should be 1');
+      t.deepEqual(sendStub.args[0][0], 'injected-pr-author');
+      t.deepEqual(sendStub.args[0][1], {
+        title: 'The Travis CI build could not complete due to an error',
+        body: '[project-health] test-title',
+        requireInteraction: false,
+        data: {
+          url: 'http://example-url.com/',
+        },
+        tag: 'pr-PolymerLabs/project-health/1'
+      });
     });
 
 test.serial(
@@ -523,8 +535,18 @@ test.serial(
           });
 
       const response = await handleStatus(eventContent);
-      t.deepEqual(response.handled, false);
-      t.deepEqual(sendStub.callCount, 0);
+      t.deepEqual(response.handled, true, 'Status should be handled');
+      t.deepEqual(sendStub.callCount, 1, 'Notification count should be 1');
+      t.deepEqual(sendStub.args[0][0], 'injected-pr-author');
+      t.deepEqual(sendStub.args[0][1], {
+        title: 'The Travis CI build could not complete due to an error',
+        body: '[project-health] Injected title',
+        requireInteraction: false,
+        data: {
+          url: 'https://example.com/pr/123',
+        },
+        tag: 'pr-PolymerLabs/project-health/1'
+      });
 
       sendStub.reset();
     });
@@ -546,7 +568,7 @@ test.serial('Webhook status: success-travis.json', async (t) => {
   const eventContent = await fs.readJSON(
       path.join(hookJsonDir, 'status', 'success-travis.json'));
   const response = await handleStatus(eventContent);
-  t.deepEqual(response.handled, true);
+  t.deepEqual(response.handled, false);
   t.deepEqual(sendStub.callCount, 0);
 });
 

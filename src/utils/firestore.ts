@@ -1,6 +1,7 @@
 import {Firestore} from '@google-cloud/firestore';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import {getFirestoreMock} from '../test/fake-firestore';
 
 let firestoreSingleton: Firestore|null = null;
 
@@ -11,9 +12,15 @@ export function firestore(): Firestore {
   return firestoreSingleton;
 }
 
+// tslint:disable:no-any
 export function initFirestore() {
   if (firestoreSingleton) {
     throw new Error('Firestore is already initialised.');
+  }
+
+  if (process.env.NODE_ENV === 'test') {
+    firestoreSingleton = getFirestoreMock();
+    return firestoreSingleton;
   }
 
   if (process.env.NODE_ENV !== 'production') {
