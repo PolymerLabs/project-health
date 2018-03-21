@@ -55,11 +55,15 @@ class NotificationCenter {
     const newActionableItems =
         outgoingUpdates.length > 0 || incomingUpdates.length > 0;
 
-    if (focused) {
-      this.userViewedOrUpdated = Date.now();
-      updateFavIcon(false);
+    if (dashData.didUpdatesError()) {
+      updateFavIcon('error');
     } else {
-      updateFavIcon(newActionableItems);
+      if (focused) {
+        this.userViewedOrUpdated = Date.now();
+        updateFavIcon(null);
+      } else {
+        updateFavIcon(newActionableItems ? 'actionable' : null);
+      }
     }
 
     if (this.shouldNotifyUser()) {
