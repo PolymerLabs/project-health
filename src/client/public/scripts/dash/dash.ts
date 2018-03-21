@@ -78,6 +78,9 @@ async function performFullUpdate() {
 
 async function checkServerForUpdates() {
   const updatesAvailable = await dashData.areServerUpdatesAvailable();
+
+  await notificationCenter.updateState(false);
+
   if (updatesAvailable) {
     console.log('[Server has Updates]');
     updateController.triggerPoll(FULL_UPDATE_ID);

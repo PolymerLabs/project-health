@@ -10,6 +10,7 @@ class DashData {
   private lastViewedOutgoing: api.OutgoingDashResponse|null;
   private lastViewedIncoming: api.IncomingDashResponse|null;
 
+  private lastUpdateFailed: boolean;
   private lastKnownVersion: string|null;
 
   constructor() {
@@ -18,17 +19,24 @@ class DashData {
     this.lastViewedOutgoing = null;
     this.lastViewedIncoming = null;
     this.lastKnownVersion = null;
+    this.lastUpdateFailed = false;
   }
 
   async updateData() {
-    // Execute these requests in parallel.
-    const results = await Promise.all([
-      getOutgoingData(),
-      getIncomingData(),
-    ]);
+    try {
+      // Execute these requests in parallel.
+      const results = await Promise.all([
+        getOutgoingData(),
+        getIncomingData(),
+      ]);
 
-    this.lastPolledOutgoing = results[0];
-    this.lastPolledIncoming = results[1];
+      this.lastUpdateFailed = false;
+
+      this.lastPolledOutgoing = results[0];
+      this.lastPolledIncoming = results[1];
+    } catch (err) {
+      this.lastUpdateFailed = true;
+    }
   }
 
   async markDataViewed() {
@@ -91,22 +99,34 @@ class DashData {
   }
 
   async areServerUpdatesAvailable(): Promise<boolean> {
-    const response = await getLastKnownUpdate();
-    if (response.version && this.lastKnownVersion) {
-      if (response.version !== this.lastKnownVersion) {
-        window.location.reload();
+    try {
+      const response = await getLastKnownUpdate();
+
+      this.lastUpdateFailed = false;
+
+      if (response.version && this.lastKnownVersion) {
+        if (response.version !== this.lastKnownVersion) {
+          window.location.reload();
+        }
       }
-    }
 
-    this.lastKnownVersion = response.version;
+      this.lastKnownVersion = response.version;
 
-    if (!response.lastKnownUpdate || !this.lastPolledIncoming) {
+      if (!response.lastKnownUpdate || !this.lastPolledIncoming) {
+        return false;
+      }
+
+      const lastKnownUpdate = new Date(response.lastKnownUpdate);
+      const lastDashUpdate = new Date(this.lastPolledIncoming.timestamp);
+      return (lastKnownUpdate > lastDashUpdate);
+    } catch (err) {
+      this.lastUpdateFailed = true;
       return false;
     }
+  }
 
-    const lastKnownUpdate = new Date(response.lastKnownUpdate);
-    const lastDashUpdate = new Date(this.lastPolledIncoming.timestamp);
-    return (lastKnownUpdate > lastDashUpdate);
+  didUpdatesError(): boolean {
+    return this.lastUpdateFailed;
   }
 }
 
