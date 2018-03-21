@@ -17,7 +17,7 @@ class HooksModel {
       if (hookDoc.exists) {
         return false;
       }
-      await transaction.create(
+      await transaction.set(
           hookDocRef, {received: true, timestamp: Date.now()});
       return true;
     });

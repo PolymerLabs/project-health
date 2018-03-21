@@ -310,7 +310,7 @@ test('dashoutgoing: with success status', (t) => {
       allow_squash_merge: true,
       allow_merge_commit: true,
     },
-    mergeable: MergeableState.MERGEABLE,
+    mergeable: MergeableState.UNKNOWN,
     automergeOpts: null,
     automergeAvailable: false,
   });
@@ -341,9 +341,9 @@ test('dashoutgoing: with pending status', (t) => {
       allow_squash_merge: true,
       allow_merge_commit: true,
     },
-    mergeable: MergeableState.MERGEABLE,
+    mergeable: MergeableState.UNKNOWN,
     automergeOpts: null,
-    automergeAvailable: true,
+    automergeAvailable: false,
   });
 });
 
@@ -372,7 +372,7 @@ test('dashoutgoing: with error status', (t) => {
       allow_squash_merge: true,
       allow_merge_commit: true,
     },
-    mergeable: MergeableState.MERGEABLE,
+    mergeable: MergeableState.UNKNOWN,
     automergeOpts: null,
     automergeAvailable: false,
   });
@@ -403,8 +403,8 @@ test('dashoutgoing: with failing status', (t) => {
       allow_squash_merge: true,
       allow_merge_commit: true,
     },
-    mergeable: MergeableState.MERGEABLE,
+    mergeable: MergeableState.UNKNOWN,
     automergeOpts: null,
-    automergeAvailable: true,
+    automergeAvailable: false,
   });
 });

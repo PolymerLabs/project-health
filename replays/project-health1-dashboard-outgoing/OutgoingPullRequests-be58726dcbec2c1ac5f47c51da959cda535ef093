@@ -437,7 +437,7 @@
             "url": "https://github.com/project-health1/status-repo/pull/3",
             "number": 3,
             "id": "MDExOlB1bGxSZXF1ZXN0MTc0NDQ3NDAw",
-            "mergeable": "MERGEABLE",
+            "mergeable": "UNKNOWN",
             "createdAt": "2018-03-12T17:54:50Z",
             "viewerSubscription": "SUBSCRIBED",
             "author": {
@@ -477,10 +477,10 @@
                     "status": {
                       "contexts": [
                         {
-                          "id": "MDEzOlN0YXR1c0NvbnRleHQ0NzIzNDg5Njg3",
+                          "id": "MDEzOlN0YXR1c0NvbnRleHQ0NzMxNjU1OTYx",
                           "context": "Project Health Testing",
                           "state": "PENDING",
-                          "createdAt": "2018-03-16T22:50:50Z",
+                          "createdAt": "2018-03-20T03:30:55Z",
                           "__typename": "StatusContext"
                         }
                       ],
@@ -507,7 +507,7 @@
             "url": "https://github.com/project-health1/status-repo/pull/4",
             "number": 4,
             "id": "MDExOlB1bGxSZXF1ZXN0MTc0NDQ3NDYz",
-            "mergeable": "MERGEABLE",
+            "mergeable": "UNKNOWN",
             "createdAt": "2018-03-12T17:55:01Z",
             "viewerSubscription": "SUBSCRIBED",
             "author": {
@@ -577,7 +577,7 @@
             "url": "https://github.com/project-health1/status-repo/pull/5",
             "number": 5,
             "id": "MDExOlB1bGxSZXF1ZXN0MTc0NDQ3NTc1",
-            "mergeable": "MERGEABLE",
+            "mergeable": "UNKNOWN",
             "createdAt": "2018-03-12T17:55:24Z",
             "viewerSubscription": "SUBSCRIBED",
             "author": {
@@ -617,10 +617,10 @@
                     "status": {
                       "contexts": [
                         {
-                          "id": "MDEzOlN0YXR1c0NvbnRleHQ0NzIzNDg5NjI0",
+                          "id": "MDEzOlN0YXR1c0NvbnRleHQ0NzMxODczMDE3",
                           "context": "Project Health Testing",
                           "state": "FAILURE",
-                          "createdAt": "2018-03-16T22:50:49Z",
+                          "createdAt": "2018-03-20T05:36:10Z",
                           "__typename": "StatusContext"
                         }
                       ],
@@ -647,7 +647,7 @@
             "url": "https://github.com/project-health1/status-repo/pull/6",
             "number": 6,
             "id": "MDExOlB1bGxSZXF1ZXN0MTc0NDQ3Njk2",
-            "mergeable": "MERGEABLE",
+            "mergeable": "UNKNOWN",
             "createdAt": "2018-03-12T17:55:53Z",
             "viewerSubscription": "SUBSCRIBED",
             "author": {
@@ -665,8 +665,8 @@
     "rateLimit": {
       "cost": 1,
       "limit": 5000,
-      "remaining": 4987,
-      "resetAt": "2018-03-20T04:19:06Z",
+      "remaining": 4998,
+      "resetAt": "2018-03-21T01:24:29Z",
       "nodeCount": 140,
       "__typename": "RateLimit"
     }

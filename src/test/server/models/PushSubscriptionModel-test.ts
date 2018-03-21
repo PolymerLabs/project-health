@@ -37,14 +37,14 @@ test.beforeEach(async () => {
 });
 
 test(
-    'getSubscriptionsForUser, addPushSubscription and removeSubscriptionForUser test',
+    '[PushSubscriptionModel] getSubscriptionsForUser, addPushSubscription and removeSubscriptionForUser test',
     async (t) => {
       const pushSubscriptionModel = getSubscriptionModel();
 
       // Ensure no subscriptions at first
       const subscriptions =
           await pushSubscriptionModel.getSubscriptionsForUser(USER_LOGIN);
-      t.deepEqual(subscriptions, []);
+      t.deepEqual(subscriptions, [], 'Initally have no subscriptions');
 
       await pushSubscriptionModel.addPushSubscription(
           USER_LOGIN, PUSH_SUBSCRIPTION, CONTENT_ENCODINGS);
@@ -53,16 +53,19 @@ test(
 
       const subscriptionsAfterAdd =
           await pushSubscriptionModel.getSubscriptionsForUser(USER_LOGIN);
-      t.deepEqual(subscriptionsAfterAdd, [
-        {
-          subscription: PUSH_SUBSCRIPTION,
-          supportedContentEncodings: CONTENT_ENCODINGS,
-        },
-        {
-          subscription: PUSH_SUBSCRIPTION_2,
-          supportedContentEncodings: [],
-        },
-      ]);
+      t.deepEqual(
+          subscriptionsAfterAdd,
+          [
+            {
+              subscription: PUSH_SUBSCRIPTION,
+              supportedContentEncodings: CONTENT_ENCODINGS,
+            },
+            {
+              subscription: PUSH_SUBSCRIPTION_2,
+              supportedContentEncodings: [],
+            },
+          ],
+          'The subscriptions added to the model');
 
       await pushSubscriptionModel.removePushSubscription(
           USER_LOGIN, PUSH_SUBSCRIPTION_2);

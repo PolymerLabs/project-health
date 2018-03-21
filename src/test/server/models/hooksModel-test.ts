@@ -29,44 +29,46 @@ test.afterEach.always(async (t) => {
   await hooksModel.deleteHook(TEST_HOOK_STRING_2);
 });
 
-test.serial('should return true for new', async (t) => {
+test.serial('[hookModel] should return true for new', async (t) => {
   const value = await hooksModel.logHook(TEST_HOOK_STRING);
   t.deepEqual(value, true);
 });
 
-test.serial('should set, get and delete hook details correctly', async (t) => {
-  let value = await hooksModel.logHook(TEST_HOOK_STRING);
-  t.deepEqual(value, true);
+test.serial(
+    '[hookModel] should set, get and delete hook details correctly',
+    async (t) => {
+      let value = await hooksModel.logHook(TEST_HOOK_STRING);
+      t.deepEqual(value, true);
 
-  value = await hooksModel.logHook(TEST_HOOK_STRING);
-  t.deepEqual(value, false);
+      value = await hooksModel.logHook(TEST_HOOK_STRING);
+      t.deepEqual(value, false);
 
-  await hooksModel.deleteHook(TEST_HOOK_STRING);
+      await hooksModel.deleteHook(TEST_HOOK_STRING);
 
-  value = await hooksModel.logHook(TEST_HOOK_STRING);
-  t.deepEqual(value, true);
-});
+      value = await hooksModel.logHook(TEST_HOOK_STRING);
+      t.deepEqual(value, true);
+    });
 
-test.serial('should clean old hook details', async (t) => {
+test.serial('[hookModel] should clean old hook details', async (t) => {
   let fakeTime = 0;
   sinon.stub(Date, 'now').callsFake(() => {
     return fakeTime;
   });
 
   let value = await hooksModel.logHook(TEST_HOOK_STRING);
-  t.deepEqual(value, true);
+  t.deepEqual(value, true, 'Hook 1 should be logged');
 
   fakeTime += HOOK_MAX_AGE + 1;
   value = await hooksModel.logHook(TEST_HOOK_STRING_2);
-  t.deepEqual(value, true);
+  t.deepEqual(value, true, 'Hook 2 should be logged');
 
   await hooksModel.cleanHooks();
 
   // This should be treated as "old" and removed
   value = await hooksModel.logHook(TEST_HOOK_STRING);
-  t.deepEqual(value, true);
+  t.deepEqual(value, true, 'Hook 1 should not be logged after cleaning');
 
   // This should be treated as new enough to avoid cleaning
   value = await hooksModel.logHook(TEST_HOOK_STRING_2);
-  t.deepEqual(value, false);
+  t.deepEqual(value, false, 'Hook 2 should be logged after cleaning');
 });

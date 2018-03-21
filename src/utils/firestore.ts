@@ -18,7 +18,7 @@ export function initFirestore() {
     throw new Error('Firestore is already initialised.');
   }
 
-  if (process.env.TEST === 'true') {
+  if (process.env.NODE_ENV === 'test') {
     firestoreSingleton = getFirestoreMock();
     return firestoreSingleton;
   }
