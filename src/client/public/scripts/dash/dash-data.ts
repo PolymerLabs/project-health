@@ -29,15 +29,11 @@ class DashData {
 
     this.lastPolledOutgoing = results[0];
     this.lastPolledIncoming = results[1];
-
-    this.updateState();
   }
 
-  async updateState() {
-    if (document.hasFocus()) {
-      this.lastViewedOutgoing = this.lastPolledOutgoing;
-      this.lastViewedIncoming = this.lastPolledIncoming;
-    }
+  async markDataViewed() {
+    this.lastViewedOutgoing = this.lastPolledOutgoing;
+    this.lastViewedIncoming = this.lastPolledIncoming;
   }
 
   getProfileData(): api.DashboardUser|null {

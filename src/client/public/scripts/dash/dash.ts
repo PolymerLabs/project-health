@@ -87,10 +87,13 @@ async function checkServerForUpdates() {
 async function updateApplicationState() {
   console.log('[Update Application State]');
 
-  await notificationCenter.updateState();
-  await dashData.updateState();
+  const focused = document.hasFocus();
 
-  if (document.hasFocus()) {
+  await notificationCenter.updateState(focused);
+
+  if (focused) {
+    await dashData.markDataViewed();
+
     // When an element is marked as 'is-newly-actionable' we need to apply the
     // flash keyframe animation (achieved by adding the 'actionable-flash'
     // class).
