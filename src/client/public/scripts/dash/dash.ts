@@ -84,10 +84,18 @@ async function checkServerForUpdates() {
   }
 }
 
-async function updateApplicationState() {
+/**
+ * Handler for when the document is focused.
+ */
+async function documentFocused() {
+  updateApplicationState(true);
+}
+
+async function updateApplicationState(focused?: boolean) {
   console.log('[Update Application State]');
 
-  const focused = document.hasFocus();
+  // Ensure its a boolean.
+  focused = focused ? true : false;
 
   await notificationCenter.updateState(focused);
 
@@ -141,7 +149,7 @@ async function start() {
   );
 
   // Setup events
-  window.addEventListener('focus', updateApplicationState);
+  window.addEventListener('focus', documentFocused);
   window.addEventListener('message', onMessage);
   if (navigator.serviceWorker) {
     navigator.serviceWorker.addEventListener(
