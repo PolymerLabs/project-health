@@ -1,0 +1,22 @@
+# Files ending in ~
+*~
+
+# Dot directories
+.gcloudignore
+.git/
+.github/
+.nyc/
+.nyc_output/
+.vscode/
+
+# Source, testing directories
+coverage/
+goldens/
+gulp-tasks/
+node_modules/
+replays/
+src/
+tsconfigs/
+
+# GCloud token files used in testing
+github-health-.*\.json

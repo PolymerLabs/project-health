@@ -1,21 +1,6 @@
 runtime: nodejs8
 threadsafe: true
 
-skip_files:
-- .git/
-- .github/
-- .nyc/
-- .nyc_output/
-- .vscode/
-- coverage/
-- gulp-tasks/
-- node_modules/
-- replays/
-- goldens/
-- tsconfigs/
-- src/
-- github-health-.*\.json
-
 handlers:
 - url: /.*
   script: server.js
