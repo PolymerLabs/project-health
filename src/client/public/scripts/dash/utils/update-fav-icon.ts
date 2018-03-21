@@ -3,7 +3,7 @@ export function updateFavIcon(state: 'error'|'actionable'|null) {
   if (state === 'error') {
     faviconFile = 'favicon-error';
   } else if (state === 'actionable') {
-    faviconFile = 'favicon-actionable';
+    faviconFile = 'favicon-action';
   }
 
   const iconElements =
