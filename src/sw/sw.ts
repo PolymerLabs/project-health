@@ -3,6 +3,7 @@ declare var self: ServiceWorkerGlobalScope;
 
 import {NotificationPayload, NotificationURLData, SWClientMessage} from '../types/api';
 import {Analytics} from './analytics';
+import {ClientIDModel} from '../client/public/scripts/models/client-id';
 
 const STAGING_TRACKING_ID = 'UA-114703954-2';
 const PROD_TRACKING_ID = 'UA-114703954-1';
@@ -15,7 +16,11 @@ if (self.location.origin === 'https://github-health.appspot.com') {
 const analytics = new Analytics(trackingId);
 
 async function pingAnalytics(eventAction: string) {
-  let clientID = 'unknown-client-id';
+  const model = new ClientIDModel();
+  let clientID = await model.getId();
+  if (!clientID) {
+    clientID = 'unknown-client-id';
+  }
 
   if ('pushManager' in self.registration) {
     const subscription = await self.registration.pushManager.getSubscription();
