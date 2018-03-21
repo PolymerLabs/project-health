@@ -96,7 +96,8 @@ class PullRequestsModel {
       owner: string,
       repo: string,
       num: number,
-      commitId: string): Promise<null|CommitDetails> {
+      commitId: string,
+      ): Promise<null|CommitDetails> {
     const prSnapshot = await firestore()
                            .collection(PR_COLLECTION_NAME)
                            .doc(this.getDocID(owner, repo, num))
