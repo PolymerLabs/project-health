@@ -59,7 +59,6 @@ test.beforeEach(async (t) => {
   t.context.sandbox.stub(userModel, 'getLoginFromRequest')
       .callsFake(getFakeLogin);
 
-
   initGithub(t.context.replayAddress, t.context.replayAddress);
 });
 
