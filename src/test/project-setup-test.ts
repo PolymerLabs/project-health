@@ -1,6 +1,7 @@
 import {test} from 'ava';
 import * as crypto from 'crypto';
 import * as fsExtra from 'fs-extra';
+import * as glob from 'glob';
 import * as path from 'path';
 
 
@@ -51,3 +52,46 @@ test('should have up-to-date secrets', async (t) => {
   const hash = crypto.createHash('md5').update(fileBuffer).digest('hex');
   t.deepEqual(hash, '6b9bc61e46a73a91a6e2901a242e7dc9');
 });
+
+test(
+    'imports should end in .js in client to work with modules in the browser',
+    async (t) => {
+      const typescriptFiles = glob.sync('**/*.ts', {
+        cwd: path.join(__dirname, '..', '..', 'src', 'client'),
+        absolute: true,
+      });
+
+      const badFiles = [];
+      for (const tsFile of typescriptFiles) {
+        const contents = (await fsExtra.readFile(tsFile)).toString();
+
+        const badImports = [];
+
+        const regex = /import.*from.*'(.*)';/g;
+        let match;
+        while (match = regex.exec(contents)) {
+          if (match[1].indexOf('.js') !== match[1].length - 3) {
+            badImports.push(match[0]);
+          }
+        }
+
+        if (badImports.length > 0) {
+          badFiles.push({
+            filename: tsFile,
+            imports: badImports,
+          });
+        }
+      }
+      if (badFiles.length > 0) {
+        console.log(
+            'Found client files that are missing the \'.js\' extension on import');
+        for (const badFile of badFiles) {
+          console.log(`File: ${badFile.filename}`);
+          for (const badImport of badFile.imports) {
+            console.log(`    Import: ${badImport}`);
+          }
+        }
+      }
+
+      t.pass();
+    });

@@ -1,4 +1,4 @@
-import {NotificationPayload} from '../../../../../types/api';
+import {NotificationPayload} from '../../../../../types/api.js';
 
 import {hasPushEnabled} from './has-push-enabled.js';
 

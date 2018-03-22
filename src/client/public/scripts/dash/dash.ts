@@ -5,7 +5,7 @@ import {DashPollController} from './dash-poll-controller.js';
 import {notificationCenter} from './notification-center.js';
 import {profileTemplate} from './profile.js';
 import {genericPrListTemplate, outgoingPrListTemplate} from './prs.js';
-import {getLoginParam} from './utils/get-data';
+import {getLoginParam} from './utils/get-data.js';
 
 // Full update - poll every 5 minutes
 const FULL_UPDATE_ID = 'full-update';

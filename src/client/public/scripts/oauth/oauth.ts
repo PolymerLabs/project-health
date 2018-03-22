@@ -1,4 +1,4 @@
-import {JSONAPIResponse, LoginResponse} from '../../../../types/api';
+import {JSONAPIResponse, LoginResponse} from '../../../../types/api.js';
 
 function handleOriginRedirect(
     redirectOrigin: string, queryParams: URLSearchParams) {
