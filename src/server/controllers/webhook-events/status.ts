@@ -17,10 +17,6 @@ async function handleFailingStatus(
     message: null,
   };
 
-  if (prDetails.state !== 'OPEN') {
-    return webhookResponse;
-  }
-
   if (!savedCommitDetails || savedCommitDetails.status !== hookData.state) {
     webhookResponse.handled = true;
 
@@ -47,7 +43,7 @@ async function handleFailingStatus(
 async function handleSuccessStatus(
     loginDetails: LoginDetails,
     hookData: StatusHook,
-    oldPRDetails: PullRequestDetails): Promise<WebHookHandleResponse> {
+    prDetails: PullRequestDetails): Promise<WebHookHandleResponse> {
   const webhookResponse: WebHookHandleResponse = {
     handled: true,
     notifications: null,
@@ -55,7 +51,7 @@ async function handleSuccessStatus(
   };
 
   const automergeOpts = await pullRequestsModel.getAutomergeOpts(
-      oldPRDetails.owner, oldPRDetails.repo, oldPRDetails.number);
+      prDetails.owner, prDetails.repo, prDetails.number);
   if (!automergeOpts) {
     webhookResponse.message = 'No automerge options configured.';
     return webhookResponse;
@@ -69,17 +65,17 @@ async function handleSuccessStatus(
 
   const repo = hookData.repository;
   try {
-    const mergeSucessful =
-        await performAutomerge(loginDetails.githubToken, hookData, mergeType);
+    const mergeSucessful = await performAutomerge(
+        loginDetails.githubToken, hookData, prDetails, mergeType);
     if (mergeSucessful) {
-      const results = await sendNotification(oldPRDetails.author, {
-        title: `Automerge complete for '${oldPRDetails.title}'`,
-        body: `[${hookData.repository.name}] ${oldPRDetails.title}`,
+      const results = await sendNotification(prDetails.author, {
+        title: `Automerge complete for '${prDetails.title}'`,
+        body: `[${hookData.repository.name}] ${prDetails.title}`,
         requireInteraction: false,
         data: {
-          url: oldPRDetails.url,
+          url: prDetails.url,
         },
-        tag: getPRTag(repo.owner.login, repo.name, oldPRDetails.number),
+        tag: getPRTag(repo.owner.login, repo.name, prDetails.number),
       });
       webhookResponse.notifications = results;
       webhookResponse.message = 'Automerge successful';
@@ -94,14 +90,14 @@ async function handleSuccessStatus(
       msg = err.error.message;
     }
 
-    const results = await sendNotification(oldPRDetails.author, {
+    const results = await sendNotification(prDetails.author, {
       title: `Auto-merge failed: '${msg}'`,
-      body: `[${hookData.repository.name}] ${oldPRDetails.title}`,
+      body: `[${hookData.repository.name}] ${prDetails.title}`,
       requireInteraction: false,
       data: {
-        url: oldPRDetails.url,
+        url: prDetails.url,
       },
-      tag: getPRTag(repo.owner.login, repo.name, oldPRDetails.number),
+      tag: getPRTag(repo.owner.login, repo.name, prDetails.number),
     });
 
     webhookResponse.notifications = results;
@@ -126,14 +122,18 @@ export async function handleStatus(hookData: StatusHook):
     };
   }
 
+  const webhookResponse: WebHookHandleResponse = {
+    handled: false,
+    notifications: null,
+    message: null,
+  };
+
   const prDetails = await getPRDetailsFromCommit(
       loginDetails.githubToken, hookData.name, hookData.sha);
   if (!prDetails) {
-    return {
-      handled: false,
-      notifications: null,
-      message: 'Unable to find PR Details for commit to store state.',
-    };
+    webhookResponse.message =
+        'Unable to find PR Details for commit to store state.';
+    return webhookResponse;
   }
 
   // Get previous state
@@ -152,6 +152,19 @@ export async function handleStatus(hookData: StatusHook):
       prDetails.commit.oid,
       hookData.state,
   );
+
+  // If the PR is not open, don't process the event
+  if (prDetails.state !== 'OPEN') {
+    webhookResponse.message = 'The PR is no longer open.';
+    return webhookResponse;
+  }
+
+  // If the hooks SHA is not the latest commit in the PR, don't process the
+  // event
+  if (prDetails.commit.oid !== hookData.sha) {
+    webhookResponse.message = 'The hooks payload has an outdated commit SHA.';
+    return webhookResponse;
+  }
 
   if (hookData.state === 'error' || hookData.state === 'failure') {
     return handleFailingStatus(

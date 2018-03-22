@@ -1,19 +1,13 @@
 import {github} from '../../utils/github';
 import {StatusHook} from '../controllers/webhook-events/types';
 
-import {getPRDetailsFromCommit} from './get-pr-from-commit';
+import {PullRequestDetails} from './get-pr-from-commit';
 
 export async function performAutomerge(
     githubToken: string,
     hookData: StatusHook,
+    prDetails: PullRequestDetails,
     mergeType: 'squash'|'rebase'|'merge'): Promise<boolean> {
-  const prDetails =
-      await getPRDetailsFromCommit(githubToken, hookData.name, hookData.sha);
-  if (!prDetails) {
-    console.log(`${hookData.name}) Unable to find PR Details.`);
-    return false;
-  }
-
   // Ensure the PR is open
   if (prDetails.state !== 'OPEN') {
     console.log(`(${hookData.name}) PR is not open: '${prDetails.state}'`);
