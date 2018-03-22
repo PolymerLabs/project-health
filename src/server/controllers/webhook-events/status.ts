@@ -159,6 +159,8 @@ export async function handleStatus(hookData: StatusHook):
     return webhookResponse;
   }
 
+  // If the hooks SHA is not the latest commit in the PR, don't process the
+  // event
   if (prDetails.commit.oid !== hookData.sha) {
     webhookResponse.message = 'The hooks payload has an outdated commit SHA.';
     return webhookResponse;
