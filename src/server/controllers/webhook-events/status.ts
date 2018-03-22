@@ -17,6 +17,10 @@ async function handleFailingStatus(
     message: null,
   };
 
+  if (prDetails.state !== 'OPEN') {
+    return webhookResponse;
+  }
+
   if (!savedCommitDetails || savedCommitDetails.status !== hookData.state) {
     webhookResponse.handled = true;
 
