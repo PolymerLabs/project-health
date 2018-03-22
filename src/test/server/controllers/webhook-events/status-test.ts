@@ -102,8 +102,7 @@ const PENDING_HOOK: StatusHook = {
 };
 
 function newFakePRDetails(extraDetails: {}) {
-  const clone = Object.assign({}, PR_DETAILS);
-  return Object.assign(clone, extraDetails);
+  return Object.assign({}, PR_DETAILS, extraDetails);
 }
 
 type TestContext = {
