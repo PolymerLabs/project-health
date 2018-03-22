@@ -256,6 +256,62 @@ test.serial(
     });
 
 test.serial(
+    '[handleStatus]: error status but commit is not latest', async (t) => {
+      const eventContent = await fs.readJSON(
+          path.join(hookJsonDir, 'status', 'error-travis.json'));
+
+      const sendStub =
+          t.context.sandbox.stub(notificationController, 'sendNotification');
+      t.context.sandbox.stub(userModel, 'getLoginDetails')
+          .callsFake((username: string) => {
+            // Return some fake details to ensure
+            return {
+              githubToken: 'inject-fake-token',
+              username,
+              scopes: null,
+            };
+          });
+      const githubInstance = github();
+      t.context.sandbox.stub(githubInstance, 'query')
+          .callsFake(({context}: {context: {token: string}}) => {
+            t.deepEqual(context.token, 'inject-fake-token');
+
+            return {
+              data: {
+                pullRequests: {
+                  nodes: [{
+                    __typename: 'PullRequest',
+                    id: TEST_PR_ID,
+                    number: 1,
+                    title: 'Injected title',
+                    url: 'https://example.com/pr/123',
+                    author: {login: 'injected-pr-author'},
+                    state: 'OPEN',
+                    repository: {
+                      name: 'test-repo',
+                      owner: {
+                        login: 'test-owner',
+                      }
+                    },
+                    commits: {
+                      nodes: [{
+                        commit: {
+                          oid: 'incorrect-commit-sha',
+                        },
+                      }],
+                    },
+                  }]
+                }
+              }
+            };
+          });
+
+      const response = await handleStatus(eventContent);
+      t.deepEqual(response.handled, false);
+      t.deepEqual(sendStub.callCount, 0);
+    });
+
+test.serial(
     '[handleStatus]: error status with all required info', async (t) => {
       const eventContent = await fs.readJSON(
           path.join(hookJsonDir, 'status', 'error-travis.json'));

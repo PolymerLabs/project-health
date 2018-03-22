@@ -133,7 +133,7 @@ test.serial(
                   author: 'test-login',
                   state: 'OPEN',
                   commit: {
-                    oid: 'test-commit',
+                    oid: 'test-commit-SHA',
                     state: 'PENDING',
                   }
                 };
@@ -141,7 +141,7 @@ test.serial(
               });
 
       const response = await handleStatus({
-        sha: 'test-sha',
+        sha: 'test-commit-SHA',
         name: 'project-health/status-test',
         state: 'success',
         description: '',
@@ -161,7 +161,7 @@ test.serial(
       t.deepEqual(commitToPRStub.callCount, 1);
       t.deepEqual(commitToPRStub.args[0][0], 'injected-fake-token');
       t.deepEqual(commitToPRStub.args[0][1], 'project-health/status-test');
-      t.deepEqual(commitToPRStub.args[0][2], 'test-sha');
+      t.deepEqual(commitToPRStub.args[0][2], 'test-commit-SHA');
     });
 
 test.serial(
@@ -195,7 +195,7 @@ test.serial(
         author: '',
         state: 'OPEN',
         commit: {
-          oid: 'test-commit',
+          oid: 'test-commit-SHA',
           state: 'SUCCESS',
         }
       };
@@ -211,7 +211,7 @@ test.serial(
               });
 
       const hookData: StatusHook = {
-        sha: 'test-sha',
+        sha: 'test-commit-SHA',
         name: 'project-health/status-test',
         state: 'success',
         description: '',
@@ -233,7 +233,8 @@ test.serial(
       t.deepEqual(automergeStub.callCount, 1);
       t.deepEqual(automergeStub.args[0][0], 'injected-fake-token');
       t.deepEqual(automergeStub.args[0][1], hookData);
-      t.deepEqual(automergeStub.args[0][2], 'squash');
+      t.deepEqual(automergeStub.args[0][2], prDetails);
+      t.deepEqual(automergeStub.args[0][3], 'squash');
     });
 
 test.serial(
@@ -267,7 +268,7 @@ test.serial(
         url: 'http://inject-url.com',
         author: 'project-health1',
         commit: {
-          oid: 'test-commit',
+          oid: 'test-commit-SHA',
           state: 'SUCCESS',
         }
       };
@@ -286,7 +287,7 @@ test.serial(
           t.context.sandbox.stub(notificationController, 'sendNotification');
 
       const hookData: StatusHook = {
-        sha: 'test-sha',
+        sha: 'test-commit-SHA',
         name: 'project-health/status-test',
         state: 'success',
         description: '',
@@ -309,7 +310,8 @@ test.serial(
       t.deepEqual(automergeStub.callCount, 1);
       t.deepEqual(automergeStub.args[0][0], 'injected-fake-token');
       t.deepEqual(automergeStub.args[0][1], hookData);
-      t.deepEqual(automergeStub.args[0][2], 'squash');
+      t.deepEqual(automergeStub.args[0][2], prDetails);
+      t.deepEqual(automergeStub.args[0][3], 'squash');
 
       t.deepEqual(sendStub.callCount, 1);
       t.deepEqual(sendStub.args[0][0], 'project-health1');
@@ -355,7 +357,7 @@ test.serial(
         owner: 'test-owner',
         state: 'OPEN',
         commit: {
-          oid: '123',
+          oid: 'test-commit-SHA',
           state: 'SUCCESS',
         }
       };
@@ -378,7 +380,7 @@ test.serial(
           t.context.sandbox.stub(notificationController, 'sendNotification');
 
       const hookData: StatusHook = {
-        sha: 'test-sha',
+        sha: 'test-commit-SHA',
         name: 'project-health/status-test',
         state: 'success',
         description: '',
@@ -401,7 +403,8 @@ test.serial(
       t.deepEqual(automergeStub.callCount, 1);
       t.deepEqual(automergeStub.args[0][0], 'injected-fake-token');
       t.deepEqual(automergeStub.args[0][1], hookData);
-      t.deepEqual(automergeStub.args[0][2], 'squash');
+      t.deepEqual(automergeStub.args[0][2], prDetails);
+      t.deepEqual(automergeStub.args[0][3], 'squash');
 
       t.deepEqual(sendStub.callCount, 1);
       t.deepEqual(sendStub.args[0][0], 'project-health1');
@@ -414,4 +417,251 @@ test.serial(
           url: 'http://inject-url.com',
         }
       });
+    });
+
+test.serial(
+    '[webhook to automerge]: Should send notification if automerge succeeds',
+    async (t) => {
+      t.context.sandbox.stub(userModel, 'getLoginDetails')
+          .callsFake((username: string) => {
+            // Return some fake details to ensure
+            return {
+              githubToken: 'injected-fake-token',
+              username,
+              scopes: null,
+            };
+          });
+
+      t.context.sandbox.stub(pullRequestsModel, 'getAutomergeOpts')
+          .callsFake(async () => {
+            return {
+              mergeType: 'squash',
+            };
+          });
+
+      const prDetails: PullRequestDetails = {
+        id: 'test-pr-id',
+        number: 1,
+        title: 'pr-title',
+        body: '',
+        owner: 'test-owner',
+        repo: 'test-repo',
+        state: 'OPEN',
+        url: 'http://inject-url.com',
+        author: 'project-health1',
+        commit: {
+          oid: 'test-commit-SHA',
+          state: 'SUCCESS',
+        }
+      };
+      t.context.sandbox.stub(commitPRUtil, 'getPRDetailsFromCommit')
+          .callsFake(() => {
+            return prDetails;
+          });
+
+      const automergeStub =
+          t.context.sandbox.stub(automergeUtil, 'performAutomerge')
+              .callsFake(() => {
+                return Promise.resolve(true);
+              });
+
+      const sendStub =
+          t.context.sandbox.stub(notificationController, 'sendNotification');
+
+      const hookData: StatusHook = {
+        sha: 'test-commit-SHA',
+        name: 'project-health/status-test',
+        state: 'success',
+        description: '',
+        repository: {
+          name: 'status-test',
+          owner: {
+            login: '',
+          }
+        },
+        commit: {
+          author: {
+            login: 'project-health1',
+          },
+        }
+      };
+
+      const response = await handleStatus(hookData);
+
+      t.deepEqual(response.handled, true);
+      t.deepEqual(automergeStub.callCount, 1);
+      t.deepEqual(automergeStub.args[0][0], 'injected-fake-token');
+      t.deepEqual(automergeStub.args[0][1], hookData);
+      t.deepEqual(automergeStub.args[0][2], prDetails);
+      t.deepEqual(automergeStub.args[0][3], 'squash');
+
+      t.deepEqual(sendStub.callCount, 1);
+      t.deepEqual(sendStub.args[0][0], 'project-health1');
+      t.deepEqual(sendStub.args[0][1], {
+        title: 'Automerge complete for \'pr-title\'',
+        body: '[status-test] pr-title',
+        requireInteraction: false,
+        tag: 'pr-/status-test/1',
+        data: {
+          url: 'http://inject-url.com',
+        }
+      });
+    });
+
+test.serial(
+    '[webhook to automerge]: Should not automerge if the status is success for an outdated commit',
+    async (t) => {
+      t.context.sandbox.stub(userModel, 'getLoginDetails')
+          .callsFake((username: string) => {
+            // Return some fake details to ensure
+            return {
+              githubToken: 'injected-fake-token',
+              username,
+              scopes: null,
+            };
+          });
+
+      t.context.sandbox.stub(pullRequestsModel, 'getAutomergeOpts')
+          .callsFake(async () => {
+            return {
+              mergeType: 'squash',
+            };
+          });
+
+      const prDetails: PullRequestDetails = {
+        id: 'test-pr-id',
+        number: 1,
+        title: 'pr-title',
+        body: '',
+        owner: 'test-owner',
+        repo: 'test-repo',
+        state: 'OPEN',
+        url: 'http://inject-url.com',
+        author: 'project-health1',
+        commit: {
+          oid: 'different-commit-SHA',
+          state: 'SUCCESS',
+        }
+      };
+      t.context.sandbox.stub(commitPRUtil, 'getPRDetailsFromCommit')
+          .callsFake(() => {
+            return prDetails;
+          });
+
+      const automergeStub =
+          t.context.sandbox.stub(automergeUtil, 'performAutomerge')
+              .callsFake(() => {
+                return Promise.resolve(true);
+              });
+
+      const sendStub =
+          t.context.sandbox.stub(notificationController, 'sendNotification');
+
+      const hookData: StatusHook = {
+        sha: 'test-commit-SHA',
+        name: 'project-health/status-test',
+        state: 'success',
+        description: '',
+        repository: {
+          name: 'status-test',
+          owner: {
+            login: '',
+          }
+        },
+        commit: {
+          author: {
+            login: 'project-health1',
+          },
+        }
+      };
+
+      const response = await handleStatus(hookData);
+
+      t.deepEqual(
+          response.handled, false, 'Webhook handled value should be false');
+      t.deepEqual(
+          automergeStub.callCount, 0, 'Automerge method should not be called');
+      t.deepEqual(
+          sendStub.callCount,
+          0,
+          'Send notifications method should not be called');
+    });
+
+test.serial(
+    '[webhook to automerge]: Should NOT send notification if automerge doesnt throw but cant merge',
+    async (t) => {
+      t.context.sandbox.stub(userModel, 'getLoginDetails')
+          .callsFake((username: string) => {
+            // Return some fake details to ensure
+            return {
+              githubToken: 'injected-fake-token',
+              username,
+              scopes: null,
+            };
+          });
+
+      t.context.sandbox.stub(pullRequestsModel, 'getAutomergeOpts')
+          .callsFake(async () => {
+            return {
+              mergeType: 'squash',
+            };
+          });
+
+      const prDetails: PullRequestDetails = {
+        id: 'test-pr-id',
+        number: 1,
+        title: 'pr-title',
+        body: '',
+        owner: 'test-owner',
+        repo: 'test-repo',
+        state: 'OPEN',
+        url: 'http://inject-url.com',
+        author: 'project-health1',
+        commit: {
+          oid: 'test-commit-SHA',
+          state: 'SUCCESS',
+        }
+      };
+      t.context.sandbox.stub(commitPRUtil, 'getPRDetailsFromCommit')
+          .callsFake(() => {
+            return prDetails;
+          });
+
+      const automergeStub =
+          t.context.sandbox.stub(automergeUtil, 'performAutomerge')
+              .callsFake(() => {
+                return Promise.resolve(false);
+              });
+
+      const sendStub =
+          t.context.sandbox.stub(notificationController, 'sendNotification');
+
+      const hookData: StatusHook = {
+        sha: 'test-commit-SHA',
+        name: 'project-health/status-test',
+        state: 'success',
+        description: '',
+        repository: {
+          name: 'status-test',
+          owner: {
+            login: '',
+          }
+        },
+        commit: {
+          author: {
+            login: 'project-health1',
+          },
+        }
+      };
+
+      const response = await handleStatus(hookData);
+
+      t.deepEqual(response.handled, true);
+      t.deepEqual(automergeStub.callCount, 1);
+      t.deepEqual(automergeStub.args[0][0], 'injected-fake-token');
+      t.deepEqual(automergeStub.args[0][1], hookData);
+      t.deepEqual(automergeStub.args[0][2], prDetails);
+      t.deepEqual(automergeStub.args[0][3], 'squash');
+
+      t.deepEqual(sendStub.callCount, 0);
     });
