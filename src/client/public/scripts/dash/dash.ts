@@ -5,6 +5,7 @@ import {DashPollController} from './dash-poll-controller.js';
 import {notificationCenter} from './notification-center.js';
 import {profileTemplate} from './profile.js';
 import {genericPrListTemplate, outgoingPrListTemplate} from './prs.js';
+import {getLoginParam} from './utils/get-data';
 
 // Full update - poll every 5 minutes
 const FULL_UPDATE_ID = 'full-update';
@@ -139,17 +140,21 @@ async function start() {
   // Initialise the dashbaord with data
   await performFullUpdate();
 
-  // This up polling
-  updateController.startPoll(
-      FULL_UPDATE_ID,
-      performFullUpdate,
-      LONG_POLL_INTERVAL,
-  );
-  updateController.startPoll(
-      CHECK_SERVER_ID,
-      checkServerForUpdates,
-      SHORT_POLL_INTERVAL,
-  );
+  // Setup polling if we aren't emulating a different user.
+  if (getLoginParam() === null) {
+    updateController.startPoll(
+        FULL_UPDATE_ID,
+        performFullUpdate,
+        LONG_POLL_INTERVAL,
+    );
+    updateController.startPoll(
+        CHECK_SERVER_ID,
+        checkServerForUpdates,
+        SHORT_POLL_INTERVAL,
+    );
+  } else {
+    console.log('Polling disabled due to login parameter being used.');
+  }
 
   // Setup events
   window.addEventListener('focus', documentFocused);
