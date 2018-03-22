@@ -2,9 +2,13 @@ import * as api from '../../../../../types/api.js';
 
 function getUserLoginParam() {
   // This allows you to see another users dashboard.
-  const queryParams = new URLSearchParams(window.location.search);
-  const userLogin = queryParams.get('login');
+  const userLogin = getLoginParam();
   return userLogin ? `?login=${userLogin}` : '';
+}
+
+export function getLoginParam() {
+  const queryParams = new URLSearchParams(window.location.search);
+  return queryParams.get('login');
 }
 
 export async function getOutgoingData(): Promise<api.OutgoingDashResponse> {
