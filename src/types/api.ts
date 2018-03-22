@@ -188,7 +188,7 @@ export interface NotificationPayload {
   title: string;
   body: string;
   requireInteraction: boolean;
-  data?: NotificationURLData;
+  data?: NotificationData;
   tag: string;
   icon?: string;
   badge?: string;
@@ -199,7 +199,15 @@ export interface ErrorPayload {
   message: string;
 }
 
-export interface NotificationURLData { url: string; }
+export interface NotificationPullRequestData {
+  gqlId: string;
+  state?: 'CLOSED'|'MERGED'|'OPEN';
+}
+
+export interface NotificationData {
+  url: string;
+  pullRequest?: NotificationPullRequestData;
+}
 
 export type SWClientMessage<T> = {
   action: 'push-received',
@@ -208,4 +216,8 @@ export type SWClientMessage<T> = {
 
 export type AutomergeOpts = {
   mergeType: 'manual'|'merge'|'squash'|'rebase',
+};
+
+export type CheckPRPayload = {
+  pullRequests: NotificationPullRequestData[],
 };

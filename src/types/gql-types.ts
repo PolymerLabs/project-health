@@ -1,6 +1,14 @@
 /* tslint:disable */
 //  This file was automatically generated and should not be edited.
 
+// The possible states of a pull request.
+export enum PullRequestState {
+  OPEN = "OPEN", // A pull request that is still open.
+  CLOSED = "CLOSED", // A pull request that has been closed without being merged.
+  MERGED = "MERGED", // A pull request that has been closed by being merged.
+}
+
+
 // The possible states of a pull request review.
 export enum PullRequestReviewState {
   PENDING = "PENDING", // A review that has not yet been submitted.
@@ -35,14 +43,6 @@ export enum StatusState {
   FAILURE = "FAILURE", // Status is failing.
   PENDING = "PENDING", // Status is pending.
   SUCCESS = "SUCCESS", // Status is successful.
-}
-
-
-// The possible states of a pull request.
-export enum PullRequestState {
-  OPEN = "OPEN", // A pull request that is still open.
-  CLOSED = "CLOSED", // A pull request that has been closed without being merged.
-  MERGED = "MERGED", // A pull request that has been closed by being merged.
 }
 
 
@@ -613,6 +613,177 @@ export interface StarsQuery {
   } | null,
 };
 
+export interface PRStateQueryVariables {
+  prIds: Array< string >,
+};
+
+export interface PRStateQuery {
+  // Lookup nodes by a list of IDs.
+  nodes:  Array<( {
+      __typename: "MarketplaceListing",
+    } | {
+      __typename: "Organization",
+    } | {
+      __typename: "Project",
+    } | {
+      __typename: "ProjectColumn",
+    } | {
+      __typename: "ProjectCard",
+    } | {
+      __typename: "Issue",
+    } | {
+      __typename: "User",
+    } | {
+      __typename: "Repository",
+    } | {
+      __typename: "CommitComment",
+    } | {
+      __typename: "UserContentEdit",
+    } | {
+      __typename: "Reaction",
+    } | {
+      __typename: "Commit",
+    } | {
+      __typename: "Status",
+    } | {
+      __typename: "StatusContext",
+    } | {
+      __typename: "Tree",
+    } | {
+      __typename: "Ref",
+    } | {
+      __typename: "PullRequest",
+      id: string,
+      // Identifies the state of the pull request.
+      state: PullRequestState,
+    } | {
+      __typename: "Label",
+    } | {
+      __typename: "IssueComment",
+    } | {
+      __typename: "PullRequestCommit",
+    } | {
+      __typename: "Milestone",
+    } | {
+      __typename: "ReviewRequest",
+    } | {
+      __typename: "Team",
+    } | {
+      __typename: "OrganizationInvitation",
+    } | {
+      __typename: "PullRequestReview",
+    } | {
+      __typename: "PullRequestReviewComment",
+    } | {
+      __typename: "CommitCommentThread",
+    } | {
+      __typename: "PullRequestReviewThread",
+    } | {
+      __typename: "ClosedEvent",
+    } | {
+      __typename: "ReopenedEvent",
+    } | {
+      __typename: "SubscribedEvent",
+    } | {
+      __typename: "UnsubscribedEvent",
+    } | {
+      __typename: "MergedEvent",
+    } | {
+      __typename: "ReferencedEvent",
+    } | {
+      __typename: "CrossReferencedEvent",
+    } | {
+      __typename: "AssignedEvent",
+    } | {
+      __typename: "UnassignedEvent",
+    } | {
+      __typename: "LabeledEvent",
+    } | {
+      __typename: "UnlabeledEvent",
+    } | {
+      __typename: "MilestonedEvent",
+    } | {
+      __typename: "DemilestonedEvent",
+    } | {
+      __typename: "RenamedTitleEvent",
+    } | {
+      __typename: "LockedEvent",
+    } | {
+      __typename: "UnlockedEvent",
+    } | {
+      __typename: "DeployedEvent",
+    } | {
+      __typename: "Deployment",
+    } | {
+      __typename: "DeploymentStatus",
+    } | {
+      __typename: "HeadRefDeletedEvent",
+    } | {
+      __typename: "HeadRefRestoredEvent",
+    } | {
+      __typename: "HeadRefForcePushedEvent",
+    } | {
+      __typename: "BaseRefForcePushedEvent",
+    } | {
+      __typename: "ReviewRequestedEvent",
+    } | {
+      __typename: "ReviewRequestRemovedEvent",
+    } | {
+      __typename: "ReviewDismissedEvent",
+    } | {
+      __typename: "DeployKey",
+    } | {
+      __typename: "Language",
+    } | {
+      __typename: "ProtectedBranch",
+    } | {
+      __typename: "PushAllowance",
+    } | {
+      __typename: "ReviewDismissalAllowance",
+    } | {
+      __typename: "Release",
+    } | {
+      __typename: "ReleaseAsset",
+    } | {
+      __typename: "RepositoryTopic",
+    } | {
+      __typename: "Topic",
+    } | {
+      __typename: "Gist",
+    } | {
+      __typename: "GistComment",
+    } | {
+      __typename: "PublicKey",
+    } | {
+      __typename: "OrganizationIdentityProvider",
+    } | {
+      __typename: "ExternalIdentity",
+    } | {
+      __typename: "Blob",
+    } | {
+      __typename: "Bot",
+    } | {
+      __typename: "BaseRefChangedEvent",
+    } | {
+      __typename: "AddedToProjectEvent",
+    } | {
+      __typename: "CommentDeletedEvent",
+    } | {
+      __typename: "ConvertedNoteToIssueEvent",
+    } | {
+      __typename: "MentionedEvent",
+    } | {
+      __typename: "MovedColumnsInProjectEvent",
+    } | {
+      __typename: "RemovedFromProjectEvent",
+    } | {
+      __typename: "RepositoryInvitation",
+    } | {
+      __typename: "Tag",
+    }
+  ) | null >,
+};
+
 export interface OutgoingPullRequestsQueryVariables {
   login: string,
   startCursor?: string | null,
@@ -1132,6 +1303,24 @@ export interface ViewerLoginQuery {
     // The user's public profile name.
     name: string | null,
   },
+};
+
+export interface GraphQLPRIDQueryVariables {
+  name: string,
+  owner: string,
+  num: number,
+};
+
+export interface GraphQLPRIDQuery {
+  // Lookup a given repository by the owner and repository name.
+  repository:  {
+    __typename: "Repository",
+    // Returns a single pull request from the current repository by number.
+    pullRequest:  {
+      __typename: "PullRequest",
+      id: string,
+    } | null,
+  } | null,
 };
 
 export interface CommitToPRQueryVariables {

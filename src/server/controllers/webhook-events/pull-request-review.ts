@@ -1,6 +1,7 @@
 import {WebHookHandleResponse} from '../../apis/github-webhook';
 import {getPRTag, sendNotification} from '../../controllers/notifications';
 import {userModel} from '../../models/userModel';
+import {getPRID} from '../../utils/get-gql-pr-id';
 
 import {PullRequestReviewHook} from './types';
 
@@ -37,6 +38,26 @@ export async function handlePullRequestReview(hookData: PullRequestReviewHook):
     }
   }
 
+  const loginDetails = await userModel.getLoginDetails(pullReq.user.login);
+  if (!loginDetails) {
+    return {
+      handled: false,
+      notifications: null,
+      message: 'Unable to find login details to retrieve PR ID'
+    };
+  }
+
+  const prGqlId = await getPRID(
+      loginDetails.githubToken, repo.owner.login, repo.name, pullReq.number);
+
+  if (!prGqlId) {
+    return {
+      handled: false,
+      notifications: null,
+      message: 'Unable to retrieve the PR ID'
+    };
+  }
+
   let notificationStats = null;
   if (notificationTitle) {
     notificationStats = await sendNotification(pullReq.user.login, {
@@ -45,6 +66,9 @@ export async function handlePullRequestReview(hookData: PullRequestReviewHook):
       requireInteraction: true,
       data: {
         url: pullReq.html_url,
+        pullRequest: {
+          gqlId: prGqlId,
+        },
       },
       tag: getPRTag(repo.owner.login, repo.name, pullReq.number),
     });

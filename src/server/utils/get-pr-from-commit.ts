@@ -5,7 +5,7 @@ import {github} from '../../utils/github';
 
 // Used to clean the data from Apollo / GitHub API
 export interface PullRequestDetails {
-  id: string;
+  gqlId: string;
   number: number;
   title: string;
   body: string;
@@ -76,7 +76,7 @@ export async function getPRDetailsFromCommit(
     // Should be safe based on:
     // https://stackoverflow.com/questions/9392365/how-would-git-handle-a-sha-1-collision-on-a-blob
     pr = {
-      id: prData.id,
+      gqlId: prData.id,
       number: prData.number,
       title: prData.title,
       body: prData.bodyText,
