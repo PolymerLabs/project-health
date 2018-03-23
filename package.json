@@ -1,6 +1,6 @@
 {
   "name": "project-health",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A tool to help Polymer team manage repos.",
   "private": true,
   "scripts": {
