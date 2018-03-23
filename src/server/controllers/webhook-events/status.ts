@@ -28,6 +28,9 @@ async function handleFailingStatus(
       requireInteraction: false,
       data: {
         url: prDetails.url,
+        pullRequest: {
+          gqlId: prDetails.gqlId,
+        },
       },
       tag: getPRTag(repo.owner.login, repo.name, prDetails.number),
     });
@@ -74,6 +77,9 @@ async function handleSuccessStatus(
         requireInteraction: false,
         data: {
           url: prDetails.url,
+          pullRequest: {
+            gqlId: prDetails.gqlId,
+          },
         },
         tag: getPRTag(repo.owner.login, repo.name, prDetails.number),
       });
@@ -96,6 +102,7 @@ async function handleSuccessStatus(
       requireInteraction: false,
       data: {
         url: prDetails.url,
+        pullRequest: {gqlId: prDetails.gqlId},
       },
       tag: getPRTag(repo.owner.login, repo.name, prDetails.number),
     });

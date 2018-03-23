@@ -2,6 +2,7 @@ import {WebHookHandleResponse} from '../../apis/github-webhook';
 import {getPRTag, sendNotification} from '../../controllers/notifications';
 import {pullRequestsModel} from '../../models/pullRequestsModel';
 import {userModel} from '../../models/userModel';
+import {getPRID} from '../../utils/get-gql-pr-id';
 
 import {PullRequestHook} from './types';
 
@@ -17,12 +18,38 @@ async function handleReviewRequested(hookBody: PullRequestHook):
   // The PR owner's dash should update with an incoming entry
   await userModel.markUserForUpdate(user.login);
 
+  const loginDetails = await userModel.getLoginDetails(user.login);
+  if (!loginDetails) {
+    return {
+      handled: false,
+      notifications: null,
+      message: 'Unable to find login details to retrieve PR ID'
+    };
+  }
+
+  const prGqlId = await getPRID(
+      loginDetails.githubToken,
+      repo.owner.login,
+      repo.name,
+      pullRequest.number);
+
+  if (!prGqlId) {
+    return {
+      handled: false,
+      notifications: null,
+      message: 'Unable to retrieve the PR ID'
+    };
+  }
+
   const notification = {
     title: `${user.login} requested a review`,
     body: `[${repo.name}] ${pullRequest.title}`,
     requireInteraction: true,
     data: {
       url: pullRequest.html_url,
+      pullRequest: {
+        gqlId: prGqlId,
+      },
     },
     tag: getPRTag(repo.owner.login, repo.name, pullRequest.number),
   };

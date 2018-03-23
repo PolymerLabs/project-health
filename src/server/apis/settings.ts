@@ -8,7 +8,7 @@ import {userModel} from '../models/userModel';
 
 import {getHookUrl} from './manage-webhook';
 
-function getRouter(): express.Router {
+export function getRouter(): express.Router {
   const settingsRouter = express.Router();
   settingsRouter.post(
       '/orgs.json',
@@ -128,8 +128,6 @@ function getRouter(): express.Router {
 
   return settingsRouter;
 }
-
-export {getRouter};
 
 const orgsDetailsQuery = gql`
   query OrgDetails {

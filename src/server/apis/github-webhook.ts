@@ -12,7 +12,7 @@ export interface WebHookHandleResponse {
   message: string|null;
 }
 
-function getRouter(): express.Router {
+export function getRouter(): express.Router {
   const githubHookRouter = express.Router();
   githubHookRouter.post(
       '/', async (request: express.Request, response: express.Response) => {
@@ -77,5 +77,3 @@ function getRouter(): express.Router {
       });
   return githubHookRouter;
 }
-
-export {getRouter};

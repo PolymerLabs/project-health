@@ -33,7 +33,7 @@ const FAKE_LOGIN_DETAILS = {
 };
 
 const PR_DETAILS: PullRequestDetails = {
-  id: 'test-pr-id',
+  gqlId: 'test-pr-id',
   number: 1,
   title: 'test-title',
   body: 'test-body',
@@ -474,6 +474,9 @@ test.serial(
             title: 'Automerge complete for \'test-title\'',
             body: '[status-test] test-title',
             data: {
+              pullRequest: {
+                gqlId: 'test-pr-id',
+              },
               url: 'http://test-url.com',
             },
             requireInteraction: false,
@@ -521,6 +524,9 @@ test.serial(
             title: 'Auto-merge failed: \'Injected Error\'',
             body: '[status-test] test-title',
             data: {
+              pullRequest: {
+                gqlId: 'test-pr-id',
+              },
               url: 'http://test-url.com',
             },
             requireInteraction: false,
@@ -572,6 +578,9 @@ test.serial(
             title: 'Auto-merge failed: \'Injected Error\'',
             body: '[status-test] test-title',
             data: {
+              pullRequest: {
+                gqlId: 'test-pr-id',
+              },
               url: 'http://test-url.com',
             },
             requireInteraction: false,
@@ -607,6 +616,9 @@ test.serial(
             title: 'test-description',
             body: '[status-test] test-title',
             data: {
+              pullRequest: {
+                gqlId: 'test-pr-id',
+              },
               url: 'http://test-url.com',
             },
             requireInteraction: false,
@@ -645,6 +657,9 @@ test.serial(
             title: 'test-description',
             body: '[status-test] test-title',
             data: {
+              pullRequest: {
+                gqlId: 'test-pr-id',
+              },
               url: 'http://test-url.com',
             },
             requireInteraction: false,

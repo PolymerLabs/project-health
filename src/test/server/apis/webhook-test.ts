@@ -10,11 +10,19 @@ import * as notificationController from '../../../server/controllers/notificatio
 import {handlePullRequest} from '../../../server/controllers/webhook-events/pull-request';
 import {handlePullRequestReview} from '../../../server/controllers/webhook-events/pull-request-review';
 import {pullRequestsModel} from '../../../server/models/pullRequestsModel';
+import {userModel} from '../../../server/models/userModel';
+import * as getPRIDModule from '../../../server/utils/get-gql-pr-id';
 import {initFirestore} from '../../../utils/firestore';
 import {initGithub} from '../../../utils/github';
 import {initSecrets} from '../../../utils/secrets';
 
 const hookJsonDir = path.join(__dirname, '..', '..', 'static', 'webhook-data');
+
+const FAKE_LOGIN_DETAILS = {
+  githubToken: 'injected-fake-token',
+  username: 'test-username',
+  scopes: null,
+};
 
 const TEST_SECRETS = {
   GITHUB_CLIENT_ID: 'ClientID',
@@ -60,6 +68,14 @@ test.serial(
       const sendStub =
           t.context.sandbox.stub(notificationController, 'sendNotification');
 
+      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+        return FAKE_LOGIN_DETAILS;
+      });
+
+      t.context.sandbox.stub(getPRIDModule, 'getPRID').callsFake(() => {
+        return 'injected-pr-id';
+      });
+
       const eventContent = await fs.readJSON(path.join(
           hookJsonDir,
           'pull_request_review',
@@ -76,6 +92,9 @@ test.serial(
           requireInteraction: true,
           tag: 'pr-PolymerLabs/project-health/112',
           data: {
+            pullRequest: {
+              gqlId: 'injected-pr-id',
+            },
             url: 'https://github.com/PolymerLabs/project-health/pull/112'
           }
         }
@@ -86,6 +105,14 @@ test.serial(
     'Webhook pull_request_review: submitted-state-approved.json', async (t) => {
       const sendStub =
           t.context.sandbox.stub(notificationController, 'sendNotification');
+
+      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+        return FAKE_LOGIN_DETAILS;
+      });
+
+      t.context.sandbox.stub(getPRIDModule, 'getPRID').callsFake(() => {
+        return 'injected-pr-id';
+      });
 
       const eventContent = await fs.readJSON(path.join(
           hookJsonDir, 'pull_request_review', 'submitted-state-approved.json'));
@@ -101,6 +128,9 @@ test.serial(
           requireInteraction: true,
           tag: 'pr-PolymerLabs/project-health/112',
           data: {
+            pullRequest: {
+              gqlId: 'injected-pr-id',
+            },
             url: 'https://github.com/PolymerLabs/project-health/pull/112'
           }
         }
@@ -112,6 +142,14 @@ test.serial(
     async (t) => {
       const sendStub =
           t.context.sandbox.stub(notificationController, 'sendNotification');
+
+      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+        return FAKE_LOGIN_DETAILS;
+      });
+
+      t.context.sandbox.stub(getPRIDModule, 'getPRID').callsFake(() => {
+        return 'injected-pr-id';
+      });
 
       const eventContent = await fs.readJSON(path.join(
           hookJsonDir,
@@ -129,8 +167,12 @@ test.serial(
               '[project-health] Demonstrate end-to-end firestore integration.',
           requireInteraction: true,
           tag: 'pr-PolymerLabs/project-health/65',
-          data:
-              {url: 'https://github.com/PolymerLabs/project-health/pull/65'}
+          data: {
+            pullRequest: {
+              gqlId: 'injected-pr-id',
+            },
+            url: 'https://github.com/PolymerLabs/project-health/pull/65',
+          }
         }
       ]);
     });
@@ -140,6 +182,14 @@ test.serial(
     async (t) => {
       const sendStub =
           t.context.sandbox.stub(notificationController, 'sendNotification');
+
+      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+        return FAKE_LOGIN_DETAILS;
+      });
+
+      t.context.sandbox.stub(getPRIDModule, 'getPRID').callsFake(() => {
+        return 'injected-pr-id';
+      });
 
       const eventContent = await fs.readJSON(path.join(
           hookJsonDir,
@@ -186,6 +236,14 @@ test.serial('Webhook pull_request_review: unknown review state', async (t) => {
   const sendStub =
       t.context.sandbox.stub(notificationController, 'sendNotification');
 
+  t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+    return FAKE_LOGIN_DETAILS;
+  });
+
+  t.context.sandbox.stub(getPRIDModule, 'getPRID').callsFake(() => {
+    return 'injected-pr-id';
+  });
+
   const response = await handlePullRequestReview({
     action: 'submitted',
     review: {
@@ -217,10 +275,18 @@ test.serial('Webhook pull_request: review_requested.json', async (t) => {
   const sendStub =
       t.context.sandbox.stub(notificationController, 'sendNotification');
 
+  t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+    return FAKE_LOGIN_DETAILS;
+  });
+
+  t.context.sandbox.stub(getPRIDModule, 'getPRID').callsFake(() => {
+    return 'injected-pr-id';
+  });
+
   const eventContent = await fs.readJSON(
       path.join(hookJsonDir, 'pull_request', 'review_requested.json'));
   const response = await handlePullRequest(eventContent);
-  t.deepEqual(response.handled, true);
+  t.deepEqual(response.handled, true, 'should be handled');
   t.deepEqual(sendStub.callCount, 1);
   t.deepEqual(sendStub.args[0], [
     'samuelli',
@@ -229,7 +295,12 @@ test.serial('Webhook pull_request: review_requested.json', async (t) => {
       body: '[project-health] Add icon to notification and correcting URL link',
       requireInteraction: true,
       tag: 'pr-PolymerLabs/project-health/146',
-      data: {url: 'https://github.com/PolymerLabs/project-health/pull/146'}
+      data: {
+        pullRequest: {
+          gqlId: 'injected-pr-id',
+        },
+        url: 'https://github.com/PolymerLabs/project-health/pull/146',
+      }
     }
   ]);
 });
