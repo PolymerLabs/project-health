@@ -56,18 +56,22 @@ export class ClientIDModel {
            }) as Promise<void>;
   }
 
-  async getId(): Promise<string|null> {
+  async getId(): Promise<string> {
     const db = await this.getDB();
     const transaction = db.transaction(CLIENT_ID_STORENAME);
     const objectStore = transaction.objectStore(CLIENT_ID_STORENAME);
-    return new Promise((resolve, reject) => {
-             const request = objectStore.get(CLIENT_ID_KEY);
-             request.onerror = () => {
-               reject(request.error);
-             };
-             request.onsuccess = () => {
-               resolve(request.result);
-             };
-           }) as Promise<string>;
+    let clientId = await (new Promise((resolve, reject) => {
+                            const request = objectStore.get(CLIENT_ID_KEY);
+                            request.onerror = () => {
+                              reject(request.error);
+                            };
+                            request.onsuccess = () => {
+                              resolve(request.result);
+                            };
+                          }) as Promise<string>);
+    if (!clientId) {
+      clientId = 'unknown-client-id';
+    }
+    return clientId;
   }
 }
