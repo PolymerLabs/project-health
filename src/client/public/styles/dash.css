@@ -2,6 +2,8 @@
 @import "./variables/colors.css";
 @import "./variables/z-index.css";
 @import "./components/profile.css";
+@import "./components/dashboard-row.css";
+@import "./components/empty-message.css";
 
 .pr-list a {
   text-decoration: none;
@@ -17,132 +19,15 @@
   color: var(--secondary-text-color);
 }
 
-.pr {
-  position: relative;
-  overflow: hidden;
-}
-
-.pr::before {
-  position: absolute;
-  top: calc((var(--padding) / 3) + 1px);
-  bottom: calc(var(--padding) / 3);
-  left: calc(var(--time-width) + var(--padding) + var(--avatar-size) / 2 - 1px);
-  display: block;
-  width: 3px;
-  content: "";
-  background-color: var(--timeline-color);
-  z-index: var(--z-index-pr-line);
-}
-
-.pr-header, .pr-event {
-  display: flex;
-  flex-shrink: 0;
-}
-
-.pr-author {
-  width: var(--time-width);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: right;
-  font-size: var(--small-text);
-  font-weight: normal;
-  flex-shrink: 0;
-}
-
-.pr-author__creation-time {
-  color: var(--secondary-text-color);
-}
-
-.pr-avatar {
-  height: var(--avatar-size);
-  width: var(--avatar-size);
-  min-width: var(--avatar-size);
-  margin: calc(var(--padding) / 3) var(--padding);
-}
-
-.pr-avatar__img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  position: absolute;
-  background: white;
-}
-
-.pr-status {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  color: var(--non-actionable-color);
-}
-
-.pr-status__msg.pr-status__merge {
+.dashboard-row-status__msg.pr-status__merge {
   color: var(--merge-text-color);
-}
-
-.pr-body:hover .pr-info, .pr-event__url:hover {
-  text-decoration: underline;
-  text-decoration-color: var(--non-actionable-color);
-}
-
-.pr-info {
-  font-weight: bold;
-}
-
-.pr-info__repo-name {
-  color: var(--secondary-text-color);
-  margin-right: calc(var(--padding) / 2);
 }
 
 .actionable {
   color: var(--actionable-color);
 }
 
-.pr-event {
-  line-height: 18px;
-}
-
-.pr-event__bullet {
-  min-height: 26px;
-  width: var(--avatar-size);
-  min-width: var(--avatar-size);
-  margin: 0 var(--padding);
-  position: relative; /* Allow SVG to size to this container */
-}
-
-.pr-event__time, .pr-event__title {
-  margin: 4px 0px;
-}
-
-.pr-event__time {
-  text-align: right;
-  font-size: var(--small-text);
-  color: var(--secondary-text-color);
-  width: var(--time-width);
-  min-width: var(--time-width);
-  line-height: 18px;
-}
-
-.pr-event__title {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.pr-event__bullet svg {
-  margin-top: 8px;
-  stroke: var(--timeline-color);
-  fill: white;
-  stroke-width: 3px;
-  position: absolute; /* Don't factor in SVG in layout */
-  z-index: var(--z-index-pr-dot);
-}
-
-/* Hide the timeline line after the last event  */
-.pr, .pr > .pr-event:last-child > .pr-event__bullet svg {
-  background-color: var(--page-bg-color);
-}
-
+/* Actionable Flash */
 @keyframes flash {
   0% {
     background-color: var(--actionable-highlight-color);
@@ -152,80 +37,9 @@
   }
 }
 
-.pr.actionable-flash, .pr.actionable-flash > .pr-event:last-child > .pr-event__bullet svg {
+.dashboard-row.actionable-flash, .dashboard-row.actionable-flash > .dashboard-row-event:last-child > .dashboard-row-event__bullet svg {
   animation-fill-mode: backwards;
   animation-delay: 200ms;
   animation-duration: 500ms;
   animation-name: flash;
-}
-
-.pr-event__url {
-  display: inline-block;
-}
-
-.pr-event__option, .pr-event__action {
-  background: none;
-  border: none;
-  padding: 0;
-  font-size: inherit;
-  font-weight: inherit;
-  cursor: pointer;
-  text-align: left;
-}
-
-.pr-event__action {
-  text-decoration: underline;
-}
-
-.pr-event.blue-dot .pr-event__bullet svg {
-  stroke: var(--non-actionable-color);
-}
-
-.pr-event.red-dot .pr-event__bullet svg {
-  stroke: var(--red-color);
-}
-
-.pr-event.disconnected .pr-event__bullet::before {
-  content: '';
-  display: block;
-  position: absolute;
-  background-color: var(--page-bg-color);
-  width: 100%;
-  height: 100%;
-  top: -8px;
-  z-index: var(--z-index-pr-line-cover);
-}
-
-.empty-message {
-  display: flex;
-}
-
-.empty-message__avatar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 50%;
-  height: var(--avatar-size);
-  width: var(--avatar-size);
-  background: var(--non-actionable-color);
-
-  margin: calc(var(--padding) / 3) var(--padding);
-}
-
-.empty-message__sun {
-  mask-image: url('/images/sun.svg');
-  mask-repeat: no-repeat;
-  mask-size: 20px;
-  width: 20px;
-  height: 20px;
-  background: white;
-}
-
-.empty-message .pr-status {
-  color: black;
-}
-
-.empty-message__description {
-  color: var(--secondary-text-color);
 }

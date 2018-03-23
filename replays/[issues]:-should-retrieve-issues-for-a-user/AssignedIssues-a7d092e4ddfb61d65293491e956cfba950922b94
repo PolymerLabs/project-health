@@ -1,0 +1,49 @@
+{
+  "data": {
+    "search": {
+      "nodes": [
+        {
+          "id": "MDU6SXNzdWUzMDgyMTA0Njc=",
+          "title": "I found a bug.",
+          "createdAt": "2018-03-24T00:04:16Z",
+          "url": "https://github.com/project-health1/repo/issues/16",
+          "author": {
+            "login": "project-health2",
+            "avatarUrl": "https://avatars3.githubusercontent.com/u/34584974?v=4",
+            "__typename": "User"
+          },
+          "repository": {
+            "name": "repo",
+            "owner": {
+              "login": "project-health1",
+              "__typename": "User"
+            },
+            "__typename": "Repository"
+          },
+          "__typename": "Issue"
+        },
+        {
+          "id": "MDU6SXNzdWUzMDgyMTAyNzM=",
+          "title": "Self Assigned Issue",
+          "createdAt": "2018-03-24T00:02:42Z",
+          "url": "https://github.com/project-health1/repo/issues/15",
+          "author": {
+            "login": "project-health1",
+            "avatarUrl": "https://avatars3.githubusercontent.com/u/34584679?v=4",
+            "__typename": "User"
+          },
+          "repository": {
+            "name": "repo",
+            "owner": {
+              "login": "project-health1",
+              "__typename": "User"
+            },
+            "__typename": "Repository"
+          },
+          "__typename": "Issue"
+        }
+      ],
+      "__typename": "SearchResultItemConnection"
+    }
+  }
+}

@@ -1269,6 +1269,77 @@ export interface IncomingPullRequestsQuery {
   } | null,
 };
 
+export interface AssignedIssuesQueryVariables {
+  query: string,
+};
+
+export interface AssignedIssuesQuery {
+  // Perform a search across resources.
+  search:  {
+    __typename: "SearchResultItemConnection",
+    // A list of nodes.
+    nodes:  Array<( {
+        __typename: "Issue",
+        id: string,
+        // Identifies the issue title.
+        title: string,
+        // Identifies the date and time when the object was created.
+        createdAt: string,
+        // The HTTP URL for this issue
+        url: string,
+        // The actor who authored the comment.
+        author: ( {
+            __typename: "Organization",
+            // The username of the actor.
+            login: string,
+            // A URL pointing to the actor's public avatar.
+            avatarUrl: string,
+          } | {
+            __typename: "User",
+            // The username of the actor.
+            login: string,
+            // A URL pointing to the actor's public avatar.
+            avatarUrl: string,
+          } | {
+            __typename: "Bot",
+            // The username of the actor.
+            login: string,
+            // A URL pointing to the actor's public avatar.
+            avatarUrl: string,
+          }
+        ) | null,
+        // The repository associated with this node.
+        repository:  {
+          __typename: string,
+          // The name of the repository.
+          name: string,
+          // The User owner of the repository.
+          owner: ( {
+              __typename: "Organization",
+              // The username used to login.
+              login: string,
+            } | {
+              __typename: "User",
+              // The username used to login.
+              login: string,
+            }
+          ),
+        },
+      } | {
+        __typename: "PullRequest",
+      } | {
+        __typename: "Repository",
+      } | {
+        __typename: "User",
+      } | {
+        __typename: "Organization",
+      } | {
+        __typename: "MarketplaceListing",
+      }
+    ) | null > | null,
+  },
+};
+
 export interface OrgDetailsQuery {
   // The currently authenticated user.
   viewer:  {

@@ -1,0 +1,32 @@
+@import "../variables/dimens.css";
+@import "../variables/colors.css";
+
+.empty-message {
+  display: flex;
+}
+
+.empty-message__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  height: var(--avatar-size);
+  width: var(--avatar-size);
+  background: var(--non-actionable-color);
+
+  margin: calc(var(--padding) / 3) var(--padding);
+}
+
+.empty-message__sun {
+  mask-image: url('/images/sun.svg');
+  mask-repeat: no-repeat;
+  mask-size: 20px;
+  width: 20px;
+  height: 20px;
+  background: white;
+}
+
+.empty-message__description {
+  color: var(--secondary-text-color);
+}
