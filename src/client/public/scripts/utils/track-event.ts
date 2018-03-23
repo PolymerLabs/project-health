@@ -2,6 +2,8 @@ import {EventAnalytics} from '../event-analytics.js';
 import {ClientIDModel} from '../models/client-id.js';
 import {getTrackingId} from '../models/tracking-id.js';
 
+type NOTIFICATION_CATEGORIES = 'automerge'|'notification'|'push';
+
 let clientIdModel: ClientIDModel = new ClientIDModel();
 let analytics: EventAnalytics|null = null;
 async function getAnalytics() {
@@ -12,15 +14,16 @@ async function getAnalytics() {
   return analytics;
 }
 
-export async function trackEvent(eventAction: string, dataSource: string) {
+export async function trackEvent(
+    category: NOTIFICATION_CATEGORIES, action: string, label?: string) {
   try {
     const clientId = await clientIdModel.getId();
     const analytics = await getAnalytics();
     return analytics.trackEvent({
       clientId,
-      eventAction,
-      eventCategory: dataSource,
-      dataSource,
+      eventAction: action,
+      eventCategory: category,
+      eventLabel: label,
     });
   } catch (err) {
     console.warn('Unable to track event');

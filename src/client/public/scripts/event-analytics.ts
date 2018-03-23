@@ -1,8 +1,8 @@
 interface EventOpts {
   clientId: string;
-  eventAction: string;
-  dataSource: string;
   eventCategory: string;
+  eventAction: string;
+  eventLabel?: string;
 }
 
 const DEBUG = false;
@@ -11,9 +11,11 @@ const DEBUG = false;
 // https://developers.google.com/analytics/devguides/collection/protocol/v1/reference
 export class EventAnalytics {
   private trackingId: string;
+  private dataSource: string;
 
   constructor(trackingId: string) {
     this.trackingId = trackingId;
+    this.dataSource = 'Project Health Client';
   }
 
   async trackEvent(opts: EventOpts) {
@@ -39,12 +41,16 @@ export class EventAnalytics {
       // Hit Type
       t: 'event',
       // Data Source
-      ds: opts.dataSource,
+      ds: this.dataSource,
       // Event Category
       ec: opts.eventCategory,
       // Event Action
       ea: opts.eventAction,
     };
+
+    if (opts.eventLabel) {
+      payloadData.el = opts.eventLabel;
+    }
 
     const payloadString =
         Object.keys(payloadData)

@@ -14,7 +14,7 @@ function selectAutomergeOpt(
     optionSelected: 'manual'|'merge'|'squash'|'rebase',
 ) {
   // Async tracking of an event
-  trackEvent(`automerge-selection-${optionSelected}`, 'window');
+  trackEvent('automerge', 'selection', optionSelected);
 
   // TODO: Would be good to mark this change as disabled until the network
   // request has finished.

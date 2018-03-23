@@ -119,7 +119,7 @@ async function showNotification(data: NotificationPayload) {
   );
 
   await Promise.all([
-    trackEvent('notification-shown', 'serviceworker'),
+    trackEvent('notification', 'shown'),
     cleanupNotifications(
         // tslint:disable-next-line: no-any
         (previousNotifications as any) as CustomNotification[]),
@@ -129,7 +129,7 @@ async function showNotification(data: NotificationPayload) {
 // This is an "EventListener"
 const pushEventHandler = {
   handleEvent: (event: PushEvent) => {
-    event.waitUntil(trackEvent('push-received', 'serviceworker'));
+    event.waitUntil(trackEvent('push', 'received'));
 
     let notificationData = DEFAULT_NOTIFICATION_OPTIONS;
     if (event.data) {
@@ -169,7 +169,7 @@ async function openWindow(url: string) {
 
 const clickEventHandler = {
   handleEvent: (event: NotificationEvent) => {
-    event.waitUntil(trackEvent('notification-click', 'serviceworker'));
+    event.waitUntil(trackEvent('notification', 'click'));
     event.notification.close();
 
     // tslint:disable-next-line:no-any
