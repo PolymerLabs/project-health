@@ -1,10 +1,10 @@
 :root {
   --light-grey: hsl(0, 0%, 80%);
 
-  --merge-text-color: hsl(119, 53%, 35%);
-  --actionable-color: hsl(37, 93%, 48%);
+  --merge-text-color: hsl(119, 53%, 35%); /* 4.5 contrast ratio on white */
+  --actionable-color: hsl(24, 97%, 40%); /* 4.5 contrast ratio on white */
   --actionable-highlight-color: hsl(37, 93%, 92%);
-  --non-actionable-color: #4a90e2;
+  --non-actionable-color: hsl(211, 100%, 46%); /* 4.6 contrast ratio on white */
   --secondary-text-color: hsl(0, 0%, 40%); /* 5.7 contrast ratio on white */
   --timeline-color: hsl(0, 0%, 75%);
   --profile-border-color: var(--light-grey);
