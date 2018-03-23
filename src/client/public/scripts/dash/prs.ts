@@ -11,10 +11,29 @@ type StatusDisplay = {
   className?: string;
 };
 
+type EmptyMessage = {
+  title: string; description: string;
+};
+
+function emptyTemplate(message: EmptyMessage) {
+  return html`
+  <div class="empty-message">
+    <div class="empty-message__avatar">
+      <div class="empty-message__sun"></div>
+    </div>
+
+    <div>
+      <div class="small-heading">${message.title}</div>
+      <div class="empty-message__description">${message.description}</div>
+    </div>
+  </div>
+  `;
+}
+
 export function genericPrListTemplate(
     prList: api.PullRequest[],
     newlyActionablePRs: string[],
-    emptyMessage: string) {
+    emptyMessage: EmptyMessage) {
   if (prList.length) {
     return html`${prList.map((pr) => {
       const isNewlyActionable =
@@ -22,15 +41,14 @@ export function genericPrListTemplate(
       return genericPrTemplate(pr, isNewlyActionable);
     })}`;
   } else {
-    return html
-    `<div class="pr-list__empty-message">${emptyMessage}</div>`;
+    return emptyTemplate(emptyMessage);
   }
 }
 
 export function outgoingPrListTemplate(
     prList: api.OutgoingPullRequest[],
     newlyActionablePRs: string[],
-    emptyMessage: string) {
+    emptyMessage: EmptyMessage) {
   if (prList.length) {
     return html`${prList.map((pr) => {
       const isNewlyActionable =
@@ -38,8 +56,7 @@ export function outgoingPrListTemplate(
       return outgoingPrTemplate(pr, isNewlyActionable);
     })}`;
   } else {
-    return html
-    `<div class="pr-list__empty-message">${emptyMessage}</div>`;
+    return emptyTemplate(emptyMessage);
   }
 }
 
