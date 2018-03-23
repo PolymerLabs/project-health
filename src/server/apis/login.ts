@@ -78,10 +78,8 @@ async function handleLoginRequest(request: express.Request):
   };
 }
 
-function getRouter(): express.Router {
+export function getRouter(): express.Router {
   const loginRouter = express.Router();
   loginRouter.post('/', createAPIRoute(handleLoginRequest));
   return loginRouter;
 }
-
-export {getRouter};

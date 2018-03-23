@@ -4,7 +4,7 @@ import * as express from 'express';
 import {getSubscriptionModel} from '../models/pushSubscriptionModel';
 import {userModel} from '../models/userModel';
 
-function getRouter(): express.Router {
+export function getRouter(): express.Router {
   const pushSubscriptionRouter = express.Router();
   pushSubscriptionRouter.post(
       '/:action',
@@ -46,5 +46,3 @@ function getRouter(): express.Router {
 
   return pushSubscriptionRouter;
 }
-
-export {getRouter};

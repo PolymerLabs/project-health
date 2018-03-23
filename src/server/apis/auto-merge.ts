@@ -4,7 +4,7 @@ import * as express from 'express';
 import {pullRequestsModel} from '../models/pullRequestsModel';
 import {userModel} from '../models/userModel';
 
-function getRouter(): express.Router {
+export function getRouter(): express.Router {
   const automergeRouter = express.Router();
   automergeRouter.post(
       '/set-merge-option/',
@@ -58,5 +58,3 @@ function getRouter(): express.Router {
 
   return automergeRouter;
 }
-
-export {getRouter};

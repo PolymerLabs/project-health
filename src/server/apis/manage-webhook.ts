@@ -87,7 +87,7 @@ async function removeWebHook(
   }
 }
 
-function getRouter(): express.Router {
+export function getRouter(): express.Router {
   const webhookRouter = express.Router();
   webhookRouter.post(
       '/:action',
@@ -114,5 +114,3 @@ function getRouter(): express.Router {
 
   return webhookRouter;
 }
-
-export {getRouter};

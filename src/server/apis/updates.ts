@@ -56,10 +56,8 @@ async function handleLastKnownUpdate(request: express.Request):
   };
 }
 
-function getRouter(): express.Router {
+export function getRouter(): express.Router {
   const loginRouter = express.Router();
   loginRouter.get('/last-known.json', createAPIRoute(handleLastKnownUpdate));
   return loginRouter;
 }
-
-export {getRouter};

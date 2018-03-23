@@ -4,10 +4,9 @@ import gql from 'graphql-tag';
 import {CheckPRPayload, NotificationPullRequestData} from '../../types/api';
 import {PRStateQuery} from '../../types/gql-types';
 import {github} from '../../utils/github';
-// import {github} from '../../utils/github';
 import {userModel} from '../models/userModel';
 
-function getRouter(): express.Router {
+export function getRouter(): express.Router {
   const checkPRStateRouter = express.Router();
   checkPRStateRouter.post(
       '/', async (request: express.Request, response: express.Response) => {
@@ -23,21 +22,10 @@ function getRouter(): express.Router {
             return;
           }
 
-          const pullRequests = request.body;
-
-          const prIds: string[] = [];
-          for (const pullRequest of pullRequests) {
-            if (!pullRequest.gqlId) {
-              response.status(400).send('No gqlId.');
-              return;
-            }
-
-            prIds.push(pullRequest.gqlId);
-          }
+          const prIds = request.body;
 
           const pullRequestData: NotificationPullRequestData[] = [];
           if (prIds.length > 0) {
-            // tslint:disable-next-line:no-any
             const results = await github().query<PRStateQuery>({
               query: prStateQuery,
               variables: {
@@ -67,7 +55,6 @@ function getRouter(): express.Router {
             }
           }
 
-
           const payload: CheckPRPayload = {
             pullRequests: pullRequestData,
           };
@@ -80,8 +67,6 @@ function getRouter(): express.Router {
 
   return checkPRStateRouter;
 }
-
-export {getRouter};
 
 const prStateQuery = gql`
 query PRState($prIds: [ID!]!) {
