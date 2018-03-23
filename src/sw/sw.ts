@@ -1,11 +1,7 @@
 import {} from '.';
 declare var self: ServiceWorkerGlobalScope;
 
-<<<<<<< HEAD
 import {NotificationPayload, NotificationData, SWClientMessage} from '../types/api';
-=======
-import {NotificationPayload, SWClientMessage, NotificationData} from '../types/api';
->>>>>>> 0226b5c... Fixing bad merge
 import {trackEvent} from '../client/public/scripts/utils/track-event';
 
 type CustomNotification = {
