@@ -1,5 +1,5 @@
 import {html, render} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
-import {OrgWebHookState} from '../../../../types/api';
+import {OrgWebHookState} from '../../../../types/api.js';
 
 let orgListContainer: Element;
 
