@@ -14,11 +14,6 @@ const LONG_POLL_INTERVAL = 5 * 60 * 1000;
 const CHECK_SERVER_ID = 'check-server-updates';
 const SHORT_POLL_INTERVAL = 15 * 1000;
 
-const NO_OUTGOING_PRS_MESSAGE =
-    'You have no outgoing pull requests. When you open new pull requests, they\'ll appear here';
-const NO_INCOMING_PRS_MESSAGE =
-    '🎉 No incoming pull requests! When you\'re added as a reviewer to a pull request, it\'ll appear here.';
-
 const updateController = new DashPollController();
 
 function renderProfile() {
