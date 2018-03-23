@@ -1,49 +1,50 @@
+interface EventOpts {
+  clientId: string;
+  eventAction: string;
+  dataSource: string;
+  eventCategory: string;
+}
+
 const DEBUG = false;
 
 // Make use of Google Analytics Measurement Protocol.
 // https://developers.google.com/analytics/devguides/collection/protocol/v1/reference
-export class Analytics {
+export class EventAnalytics {
   private trackingId: string;
 
   constructor(trackingId: string) {
     this.trackingId = trackingId;
   }
 
-  async trackEvent(clientId: string, eventAction: string, optionalParams?: {}) {
+  async trackEvent(opts: EventOpts) {
+    // We want this to be a safe method, so avoid throwing Unless
+    // It's absolutely necessary.
     if (!this.trackingId) {
-      console.error('You need to set a trackingId, for example:');
-      console.error('self.analytics.trackingId = \'UA-XXXXXXXX-X\';');
-
-      // We want this to be a safe method, so avoid throwing Unless
-      // It's absolutely necessary.
+      console.error('You need to set a trackingId');
       return;
     }
 
-    if (typeof eventAction === 'undefined') {
+    if (typeof opts.eventAction === 'undefined') {
       console.warn('sendAnalyticsEvent() called with no eventAction.');
       return;
     }
 
-    let payloadData: {[key: string]: string|number} = {
+    const payloadData: {[key: string]: string|number} = {
       // Version Number
       v: 1,
       // Client ID
-      cid: encodeURIComponent(clientId),
+      cid: encodeURIComponent(opts.clientId),
       // Tracking ID
       tid: this.trackingId,
       // Hit Type
       t: 'event',
       // Data Source
-      ds: 'serviceworker',
+      ds: opts.dataSource,
       // Event Category
-      ec: 'serviceworker',
+      ec: opts.eventCategory,
       // Event Action
-      ea: eventAction,
+      ea: opts.eventAction,
     };
-
-    if (optionalParams) {
-      payloadData = Object.assign(payloadData, optionalParams);
-    }
 
     const payloadString =
         Object.keys(payloadData)

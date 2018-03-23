@@ -2,35 +2,7 @@ import {} from '.';
 declare var self: ServiceWorkerGlobalScope;
 
 import {NotificationPayload, NotificationData, SWClientMessage} from '../types/api';
-import {Analytics} from './analytics';
-import {ClientIDModel} from '../client/public/scripts/models/client-id';
-
-const STAGING_TRACKING_ID = 'UA-114703954-2';
-const PROD_TRACKING_ID = 'UA-114703954-1';
-
-let trackingId = STAGING_TRACKING_ID;
-if (self.location.origin === 'https://github-health.appspot.com') {
-  trackingId = PROD_TRACKING_ID;
-}
-
-const analytics = new Analytics(trackingId);
-
-async function pingAnalytics(eventAction: string) {
-  const model = new ClientIDModel();
-  let clientID = await model.getId();
-  if (!clientID) {
-    clientID = 'unknown-client-id';
-  }
-
-  if ('pushManager' in self.registration) {
-    const subscription = await self.registration.pushManager.getSubscription();
-    if (subscription) {
-      clientID = subscription.endpoint;
-    }
-  }
-
-  await analytics.trackEvent(clientID, eventAction);
-}
+import {trackEvent} from '../client/public/scripts/utils/track-event';
 
 type CustomNotification = {
   data: NotificationData|void; close: () => Promise<void>;
@@ -147,7 +119,7 @@ async function showNotification(data: NotificationPayload) {
   );
 
   await Promise.all([
-    pingAnalytics('notification-shown'),
+    trackEvent('notification-shown', 'serviceworker'),
     cleanupNotifications(
         // tslint:disable-next-line: no-any
         (previousNotifications as any) as CustomNotification[]),
@@ -157,7 +129,7 @@ async function showNotification(data: NotificationPayload) {
 // This is an "EventListener"
 const pushEventHandler = {
   handleEvent: (event: PushEvent) => {
-    event.waitUntil(pingAnalytics('push-received'));
+    event.waitUntil(trackEvent('push-received', 'serviceworker'));
 
     let notificationData = DEFAULT_NOTIFICATION_OPTIONS;
     if (event.data) {
@@ -197,7 +169,7 @@ async function openWindow(url: string) {
 
 const clickEventHandler = {
   handleEvent: (event: NotificationEvent) => {
-    event.waitUntil(pingAnalytics('notification-click'));
+    event.waitUntil(trackEvent('notification-click', 'serviceworker'));
     event.notification.close();
 
     // tslint:disable-next-line:no-any

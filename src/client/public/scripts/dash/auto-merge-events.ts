@@ -1,6 +1,7 @@
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import {TemplateResult} from '../../../../../node_modules/lit-html/lit-html.js';
 import * as api from '../../../../types/api.js';
+import {trackEvent} from '../utils/track-event.js';
 
 import {EventModel, eventTemplate} from './pr-event.js';
 
@@ -12,6 +13,9 @@ function selectAutomergeOpt(
     pr: api.OutgoingPullRequest,
     optionSelected: 'manual'|'merge'|'squash'|'rebase',
 ) {
+  // Async tracking of an event
+  trackEvent(`automerge-selection-${optionSelected}`, 'window');
+
   // TODO: Would be good to mark this change as disabled until the network
   // request has finished.
   fetch('/api/auto-merge/set-merge-option/', {
