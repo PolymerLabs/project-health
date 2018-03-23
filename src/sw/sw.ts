@@ -1,7 +1,11 @@
 import {} from '.';
 declare var self: ServiceWorkerGlobalScope;
 
+<<<<<<< HEAD
 import {NotificationPayload, NotificationData, SWClientMessage} from '../types/api';
+=======
+import {NotificationPayload, SWClientMessage, NotificationData} from '../types/api';
+>>>>>>> 0226b5c... Fixing bad merge
 import {trackEvent} from '../client/public/scripts/utils/track-event';
 
 type CustomNotification = {
@@ -122,7 +126,8 @@ async function showNotification(data: NotificationPayload) {
     trackEvent('notification', 'shown'),
     cleanupNotifications(
         // tslint:disable-next-line: no-any
-        (previousNotifications as any) as CustomNotification[]),
+        (previousNotifications as any) as CustomNotification[],
+        )
   ]);
 }
 
