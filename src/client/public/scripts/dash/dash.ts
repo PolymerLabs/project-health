@@ -47,8 +47,10 @@ function renderOutgoing() {
   const actionableIds = dashData.getOutgoingUpdates();
 
   render(
-      outgoingPrListTemplate(
-          outgoingPrs, actionableIds, NO_OUTGOING_PRS_MESSAGE),
+      outgoingPrListTemplate(outgoingPrs, actionableIds, {
+        title: 'No outgoing pull requests',
+        description: 'When you open new pull requests, they\'ll appear here.'
+      }),
       (document.querySelector('#outgoing') as Element));
 }
 
@@ -61,8 +63,11 @@ function renderIncoming() {
   const actionableIds = dashData.getIncomingUpdates();
 
   render(
-      genericPrListTemplate(
-          incomingPrs, actionableIds, NO_INCOMING_PRS_MESSAGE),
+      genericPrListTemplate(incomingPrs, actionableIds, {
+        title: 'No incoming pull requests',
+        description:
+            'When you\'re added as a reviewer to a pull request, they\'ll appear here.'
+      }),
       (document.querySelector('#incoming') as Element));
 }
 
