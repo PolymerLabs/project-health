@@ -2,6 +2,7 @@ import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
 import {Express} from 'express';
+import * as fsExtra from 'fs-extra';
 import {Server} from 'http';
 import * as path from 'path';
 
@@ -39,9 +40,6 @@ export class DashServer {
 
     this.setupPublicRoutes(app);
 
-    // Add login middleware
-    app.use(requireLogin);
-
     this.setupPrivateRoutes(app);
 
     this.app = app;
@@ -73,14 +71,28 @@ export class DashServer {
     app.use('/api/webhook/', getGitHubHookRouter());
   }
 
-  private setupPrivateRoutes(app: Express) {
+  private async setupPrivateRoutes(app: Express) {
     // Enable /* to serve /client/require-login
     // Enable /bundled.* to serve /client/bundled/require-login
-    const clientPath = path.join(__dirname, '..', 'client');
-    const privatePath = path.join(clientPath, 'require-login');
-    const bundledPath = path.join(clientPath, 'bundled', 'require-login');
-    app.use('/', express.static(privatePath, {extensions: STATIC_EXT}));
-    app.use('/bundled/', express.static(bundledPath, {extensions: STATIC_EXT}));
+    const privatePath = path.join(__dirname, '..', 'client', 'private-pages');
+    const privateFiles = await fsExtra.readdir(privatePath);
+    for (const privateFile of privateFiles) {
+      let shortName = path.basename(privateFile, path.extname(privateFile));
+      if (shortName === 'index') {
+        shortName = '';
+      }
+      app.get(
+          `/${shortName}`,
+          requireLogin(true),
+          (_request: express.Request, response: express.Response) => {
+            response.sendFile(privateFile, {
+              root: privatePath,
+            });
+          });
+    }
+
+    // Add login middleware
+    app.use(requireLogin());
 
     // Enable private APIs
     app.use('/api/dash/', getDashRouter());
