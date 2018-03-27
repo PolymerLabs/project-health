@@ -77,6 +77,12 @@ export class DashServer {
     const privatePath = path.join(__dirname, '..', 'client', 'private-pages');
     const privateFiles = await fsExtra.readdir(privatePath);
     for (const privateFile of privateFiles) {
+      if (path.extname(privateFile) !== '.html') {
+        console.warn(`Not serving private page as it does not end in .html: '${
+            privateFile}'. Subdirectories are not supported.`);
+        continue;
+      }
+
       let shortName = path.basename(privateFile, path.extname(privateFile));
       if (shortName === 'index') {
         shortName = '';
