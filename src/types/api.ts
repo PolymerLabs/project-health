@@ -69,6 +69,8 @@ export interface IncomingDashResponse {
   prs: PullRequest[];
 }
 
+export interface IssuesResponse { issues: Issue[]; }
+
 export interface Review {
   author: string;
   createdAt: number;
@@ -221,3 +223,14 @@ export type AutomergeOpts = {
 export type CheckPRPayload = {
   pullRequests: NotificationPullRequestData[],
 };
+
+export interface Issue {
+  id: string;
+  repo: string;
+  owner: string;
+  title: string;
+  author: string;
+  avatarUrl: string;
+  createdAt: number;
+  url: string;
+}

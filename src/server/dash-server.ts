@@ -10,6 +10,7 @@ import {getRouter as getAutomergeRouter} from './apis/auto-merge';
 import {getRouter as getCheckPRStateRouter} from './apis/check-pr-state';
 import {getRouter as getDashRouter} from './apis/dash-data';
 import {getRouter as getGitHubHookRouter} from './apis/github-webhook';
+import {getRouter as getIssuesRouter} from './apis/issues';
 import {getRouter as getLoginRouter} from './apis/login';
 import {getRouter as getManageWebhookRouter} from './apis/manage-webhook';
 import {getRouter as getPushSubRouter} from './apis/push-subscription';
@@ -108,6 +109,7 @@ export class DashServer {
     app.use('/api/updates/', getUpdatesRouter());
     app.use('/api/auto-merge/', getAutomergeRouter());
     app.use('/api/check-pr-state/', getCheckPRStateRouter());
+    app.use('/api/issues/', getIssuesRouter());
   }
 
   listen(): Promise<string> {

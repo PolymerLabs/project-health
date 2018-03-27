@@ -2,6 +2,7 @@ import {render} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 
 import {dashData} from './dash-data.js';
 import {DashPollController} from './dash-poll-controller.js';
+import {genericIssueListTemplate} from './issues.js';
 import {notificationCenter} from './notification-center.js';
 import {profileTemplate} from './profile.js';
 import {genericPrListTemplate, outgoingPrListTemplate} from './prs.js';
@@ -66,6 +67,18 @@ function renderIncoming() {
       (document.querySelector('#incoming') as Element));
 }
 
+async function renderIssues() {
+  const issues = await dashData.getIssues();
+
+  const actionableIds = dashData.getIssueUpdates();
+  render(
+      genericIssueListTemplate(issues, actionableIds, {
+        title: 'No issues assigned to you',
+        description: 'When you\'re assigned issues, they\'ll appear here.'
+      }),
+      (document.querySelector('#your-issues') as Element));
+}
+
 async function performFullUpdate() {
   console.log('[Performing Full Update]');
   await dashData.updateData();
@@ -73,6 +86,7 @@ async function performFullUpdate() {
   renderProfile();
   renderOutgoing();
   renderIncoming();
+  renderIssues();
 
   await updateApplicationState();
 }

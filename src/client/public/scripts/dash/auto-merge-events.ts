@@ -1,9 +1,9 @@
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import {TemplateResult} from '../../../../../node_modules/lit-html/lit-html.js';
 import * as api from '../../../../types/api.js';
+import {DashboardRowEventData, genericDashboardRowEventTemplate} from '../components/dashboard-row.js';
 import {trackEvent} from '../utils/track-event.js';
 
-import {EventModel, eventTemplate} from './pr-event.js';
 
 // TODO: This should be self contained to each auto-merge instance, not
 // a global for all auto-merge instances
@@ -104,14 +104,12 @@ export function getAutoMergeOptions(pr: api.OutgoingPullRequest):
     classes.push('disconnected');
   }
 
-  const titleOption: EventModel = {
-    time: null,
-    text: html`<button class="pr-event__action" on-click="${
+  const titleOption: DashboardRowEventData = {
+    text: html`<button class="dashboard-row-event__action" on-click="${
         () => toggleCb()}">${selectedOptionText}</button>`,
-    url: null,
     classes,
   };
-  mergeOptions.push(eventTemplate(titleOption));
+  mergeOptions.push(genericDashboardRowEventTemplate(titleOption));
 
   if (!isOpen) {
     return mergeOptions;
@@ -119,50 +117,42 @@ export function getAutoMergeOptions(pr: api.OutgoingPullRequest):
 
   if (selectedOption !== 'manual') {
     const manualClick = () => selectAutomergeOpt(pr, 'manual');
-    const manualData: EventModel = {
-      time: null,
-      text: html`<button class="pr-event__option" on-click="${manualClick}">${
-          optionText.manual}</button>`,
-      url: null,
+    const manualData: DashboardRowEventData = {
+      text: html`<button class="dashboard-row-event__option" on-click="${
+          manualClick}">${optionText.manual}</button>`,
       classes: ['disconnected', 'red-dot']
     };
-    mergeOptions.push(eventTemplate(manualData));
+    mergeOptions.push(genericDashboardRowEventTemplate(manualData));
   }
 
   if (pr.repoDetails.allow_merge_commit && selectedOption !== 'merge') {
     const mergeClick = () => selectAutomergeOpt(pr, 'merge');
-    const mergeData: EventModel = {
-      time: null,
-      text: html`<button class="pr-event__option" on-click="${mergeClick}">${
-          optionText.merge}</button>`,
-      url: null,
+    const mergeData: DashboardRowEventData = {
+      text: html`<button class="dashboard-row-event__option" on-click="${
+          mergeClick}">${optionText.merge}</button>`,
       classes: ['disconnected', 'blue-dot']
     };
-    mergeOptions.push(eventTemplate(mergeData));
+    mergeOptions.push(genericDashboardRowEventTemplate(mergeData));
   }
 
   if (pr.repoDetails.allow_squash_merge && selectedOption !== 'squash') {
     const squashClick = () => selectAutomergeOpt(pr, 'squash');
-    const rebaseData = {
-      time: null,
-      text: html`<button class="pr-event__option" on-click="${squashClick}">${
-          optionText.squash}</button>`,
-      url: null,
+    const rebaseData: DashboardRowEventData = {
+      text: html`<button class="dashboard-row-event__option" on-click="${
+          squashClick}">${optionText.squash}</button>`,
       classes: ['disconnected', 'blue-dot']
     };
-    mergeOptions.push(eventTemplate(rebaseData));
+    mergeOptions.push(genericDashboardRowEventTemplate(rebaseData));
   }
 
   if (pr.repoDetails.allow_rebase_merge && selectedOption !== 'rebase') {
     const rebaseClick = () => selectAutomergeOpt(pr, 'rebase');
-    const rebaseData = {
-      time: null,
-      text: html`<button class="pr-event__option" on-click="${rebaseClick}">${
-          optionText.rebase}</button>`,
-      url: null,
+    const rebaseData: DashboardRowEventData = {
+      text: html`<button class="dashboard-row-event__option" on-click="${
+          rebaseClick}">${optionText.rebase}</button>`,
       classes: ['disconnected', 'blue-dot']
     };
-    mergeOptions.push(eventTemplate(rebaseData));
+    mergeOptions.push(genericDashboardRowEventTemplate(rebaseData));
   }
 
   return mergeOptions;

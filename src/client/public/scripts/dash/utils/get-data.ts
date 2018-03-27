@@ -1,6 +1,6 @@
 import * as api from '../../../../../types/api.js';
 
-function getUserLoginParam() {
+export function getUserLoginParam() {
   // This allows you to see another users dashboard.
   const userLogin = getLoginParam();
   return userLogin ? `?login=${userLogin}` : '';
@@ -43,4 +43,11 @@ export async function getLastKnownUpdate(): Promise<api.LastKnownResponse> {
   }
 
   return fullResponse.data;
+}
+
+export async function getAssignedIssues(): Promise<api.IssuesResponse> {
+  const response = await fetch(`/api/issues/assigned${getUserLoginParam()}`, {
+    credentials: 'include',
+  });
+  return await response.json() as api.IssuesResponse;
 }

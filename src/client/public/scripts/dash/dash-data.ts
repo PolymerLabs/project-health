@@ -1,14 +1,19 @@
 import * as api from '../../../../types/api.js';
-import {getIncomingData, getLastKnownUpdate, getOutgoingData} from './utils/get-data.js';
+
+import {getAssignedIssues, getIncomingData, getLastKnownUpdate, getOutgoingData} from './utils/get-data.js';
+import {newlyActionableIssues} from './utils/newly-actionable-issues.js';
 import {newlyActionablePrs} from './utils/newly-actionable-prs.js';
 
 class DashData {
   // This is the latest data received from the server and rendered to the page
   private lastPolledOutgoing: api.OutgoingDashResponse|null;
   private lastPolledIncoming: api.IncomingDashResponse|null;
+  private lastPolledIssues: api.IssuesResponse|null;
+
   // This is the data that the user view the last time they were on the page
   private lastViewedOutgoing: api.OutgoingDashResponse|null;
   private lastViewedIncoming: api.IncomingDashResponse|null;
+  private lastViewedIssues: api.IssuesResponse|null;
 
   private lastUpdateFailed: boolean;
   private lastKnownVersion: string|null;
@@ -16,8 +21,12 @@ class DashData {
   constructor() {
     this.lastPolledOutgoing = null;
     this.lastPolledIncoming = null;
+    this.lastPolledIssues = null;
+
     this.lastViewedOutgoing = null;
     this.lastViewedIncoming = null;
+    this.lastViewedIssues = null;
+
     this.lastKnownVersion = null;
     this.lastUpdateFailed = false;
   }
@@ -28,12 +37,14 @@ class DashData {
       const results = await Promise.all([
         getOutgoingData(),
         getIncomingData(),
+        getAssignedIssues(),
       ]);
 
       this.lastUpdateFailed = false;
 
       this.lastPolledOutgoing = results[0];
       this.lastPolledIncoming = results[1];
+      this.lastPolledIssues = results[2];
     } catch (err) {
       this.lastUpdateFailed = true;
     }
@@ -42,6 +53,7 @@ class DashData {
   async markDataViewed() {
     this.lastViewedOutgoing = this.lastPolledOutgoing;
     this.lastViewedIncoming = this.lastPolledIncoming;
+    this.lastViewedIssues = this.lastPolledIssues;
   }
 
   getProfileData(): api.DashboardUser|null {
@@ -96,6 +108,29 @@ class DashData {
     }
 
     return this.lastPolledIncoming.prs;
+  }
+
+  getIssues(): api.Issue[] {
+    if (!this.lastPolledIssues) {
+      return [];
+    }
+
+    return this.lastPolledIssues.issues;
+  }
+
+  getIssueUpdates(): string[] {
+    if (!this.lastPolledIssues) {
+      return [];
+    }
+
+    if (!this.lastViewedIssues) {
+      return [];
+    }
+
+    const newIssues = this.lastPolledIssues.issues;
+    const oldIssues = this.lastViewedIssues.issues;
+
+    return newlyActionableIssues(newIssues, oldIssues);
   }
 
   async areServerUpdatesAvailable(): Promise<boolean> {

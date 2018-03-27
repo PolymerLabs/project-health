@@ -1,12 +1,5 @@
-import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
-import {TemplateResult} from '../../../../../node_modules/lit-html/lit-html.js';
 import * as api from '../../../../types/api.js';
-import {timeToString} from './utils/time-to-string.js';
-
-export type EventModel = {
-  time: number|null; text: string | TemplateResult; url: string | null;
-  classes?: string[];
-};
+import {DashboardRowEventData} from '../components/dashboard-row.js';
 
 function reviewStateToString(state: api.Review['reviewState']) {
   if (state === 'APPROVED') {
@@ -21,7 +14,8 @@ function reviewStateToString(state: api.Review['reviewState']) {
   return '';
 }
 
-export function parseAsEventModel(event: api.PullRequestEvent): EventModel {
+export function parseAsEventModel(event: api.PullRequestEvent):
+    DashboardRowEventData {
   switch (event.type) {
     case 'OutgoingReviewEvent':
       const authors = event.reviews.map((review) => review.author);
@@ -37,12 +31,11 @@ export function parseAsEventModel(event: api.PullRequestEvent): EventModel {
       } else {
         text += `${authors.join(', ')} reviewed changes`;
       }
-      return {text, time: latest, url: null};
+      return {text, time: latest};
     case 'MyReviewEvent':
       return {
         text: `You ${reviewStateToString(event.review.reviewState)}`,
         time: event.review.createdAt,
-        url: null,
       };
     case 'NewCommitsEvent':
       return {
@@ -61,29 +54,4 @@ export function parseAsEventModel(event: api.PullRequestEvent): EventModel {
       const unknown: never = event;
       throw new Error(`Unknown PullRequestEvent: ${unknown}`);
   }
-}
-
-export function eventTemplate(event: EventModel) {
-  const timeTemplate = (time: number) =>
-      html`<time class="pr-event__time" datetime="${
-          new Date(time).toISOString()}">${timeToString(time)}</time>`;
-
-  const linkTemplate = (url: string, text: string|TemplateResult) =>
-      html`<a class="pr-event__url" href="${url}" target="_blank">${text}</a>`;
-
-  return html`
-      <div class$="pr-event ${event.classes ? event.classes.join(' ') : ''}">
-        ${
-      event.time ? timeTemplate(event.time) :
-                   html`<div class="pr-event__time"></div>`}
-
-        <div class="pr-event__bullet">
-          <svg width="40" height="100%">
-            <circle cx="20.5" cy="6" r="4.5" />
-          </svg>
-        </div>
-        <div class="pr-event__title">
-          ${event.url ? linkTemplate(event.url, event.text) : event.text}
-        </div>
-      </div>`;
 }

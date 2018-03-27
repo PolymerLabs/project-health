@@ -3,7 +3,7 @@ import {statusToDisplay} from '../prs.js';
 
 export function newlyActionablePrs(
     newList: PullRequest[], oldList: PullRequest[]): string[] {
-  const result = [];
+  const result: string[] = [];
 
   const oldActionablePRs: {[prId: string]: PullRequest} = {};
   for (const oldPr of oldList) {

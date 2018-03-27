@@ -1,34 +1,11 @@
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import {TemplateResult} from '../../../../../node_modules/lit-html/lit-html.js';
 import * as api from '../../../../types/api.js';
+import {genericDashboardRowEventTemplate, genericDashboardRowTemplate, StatusDisplay} from '../components/dashboard-row.js';
+import {EmptyMessage, emptyTemplate} from '../components/empty-message.js';
 
 import {getAutoMergeOptions} from './auto-merge-events.js';
-import {eventTemplate, parseAsEventModel} from './pr-event.js';
-import {timeToString} from './utils/time-to-string.js';
-
-type StatusDisplay = {
-  actionable: boolean; text: string;
-  className?: string;
-};
-
-type EmptyMessage = {
-  title: string; description: string;
-};
-
-function emptyTemplate(message: EmptyMessage) {
-  return html`
-  <div class="empty-message">
-    <div class="empty-message__avatar">
-      <div class="empty-message__sun"></div>
-    </div>
-
-    <div>
-      <div class="small-heading">${message.title}</div>
-      <div class="empty-message__description">${message.description}</div>
-    </div>
-  </div>
-  `;
-}
+import {parseAsEventModel} from './pr-event.js';
 
 export function genericPrListTemplate(
     prList: api.PullRequest[],
@@ -38,7 +15,7 @@ export function genericPrListTemplate(
     return html`${prList.map((pr) => {
       const isNewlyActionable =
           newlyActionablePRs && newlyActionablePRs.indexOf(pr.id) !== -1;
-      return genericPrTemplate(pr, isNewlyActionable);
+      return getPRRowTemplate(pr, isNewlyActionable);
     })}`;
   } else {
     return emptyTemplate(emptyMessage);
@@ -101,51 +78,35 @@ export function statusToDisplay(pr: api.PullRequest): StatusDisplay {
   }
 }
 
-export function genericPrTemplate(
-    pr: api.PullRequest,
-    isNewlyActionable: boolean,
-    extraEvents?: TemplateResult[],
-) {
-  const status = statusToDisplay(pr);
-  const prClasses = ['pr'];
-
-  if (isNewlyActionable) {
-    prClasses.push('is-newly-actionable');
-  }
-  return html`
-      <div class$="${prClasses.join(' ')}">
-        <div class="pr-header">
-          <div class="pr-author">
-            <div class="pr-author__name">${pr.author}</div>
-            <time class="pr-author__creation-time" datetime="${
-      new Date(pr.createdAt).toISOString()}">${
-      timeToString(pr.createdAt)}</time>
-          </div>
-
-          <div class="pr-avatar">
-            <img class="pr-avatar__img" src="${pr.avatarUrl}">
-          </div>
-
-          <a class="pr-body" href="${pr.url}" target="_blank">
-            <div class="small-heading pr-status">
-              <span class$="pr-status__msg ${
-      status.actionable ?
-          'actionable' :
-          ''} ${status.className ? status.className : ''}">${status.text}</span>
-            </div>
-            <div class="pr-info">
-              <span class="pr-info__repo-name">${pr.owner}/${pr.repo}</span>
-              <span class="pr-info__title">${pr.title}</span>
-            </div>
-          </a>
-        </div>
-        ${pr.events.map((event) => eventTemplate(parseAsEventModel(event)))}
-        ${extraEvents}
-      </div>`;
-}
-
 export function outgoingPrTemplate(
     pr: api.OutgoingPullRequest, newlyActionable: boolean) {
   const autoMergeEvents = getAutoMergeOptions(pr as api.OutgoingPullRequest);
-  return genericPrTemplate(pr, newlyActionable, autoMergeEvents);
+  return getPRRowTemplate(pr, newlyActionable, autoMergeEvents);
+}
+
+function getPRRowTemplate(
+    pr: api.PullRequest,
+    newlyActionable: boolean,
+    automergeEvents?: TemplateResult[]) {
+  const prEvents = pr.events.map(
+      (event) => genericDashboardRowEventTemplate(parseAsEventModel(event)));
+
+  let events = prEvents;
+  if (automergeEvents) {
+    events = events.concat(automergeEvents);
+  }
+
+  return genericDashboardRowTemplate(
+      {
+        createdAt: pr.createdAt,
+        author: pr.author,
+        avatarUrl: pr.avatarUrl,
+        url: pr.url,
+        title: pr.title,
+        owner: pr.owner,
+        repo: pr.repo,
+        status: statusToDisplay(pr),
+      },
+      newlyActionable,
+      events);
 }
