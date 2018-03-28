@@ -57,7 +57,8 @@ const SUCCESS_HOOK: StatusHook = {
     name: 'status-test',
     owner: {
       login: 'status-owner-login',
-    }
+    },
+    full_name: 'status-owner-login/status-test',
   },
   commit: {
     author: {
@@ -74,7 +75,8 @@ const ERROR_HOOK: StatusHook = {
     name: 'status-test',
     owner: {
       login: 'status-owner-login',
-    }
+    },
+    full_name: 'status-owner-login/status-test',
   },
   commit: {
     author: {
@@ -92,7 +94,8 @@ const PENDING_HOOK: StatusHook = {
     name: 'status-test',
     owner: {
       login: 'status-owner-login',
-    }
+    },
+    full_name: 'status-owner-login/status-test',
   },
   commit: {
     author: {
@@ -311,13 +314,13 @@ test.serial('[handleStatus]: should not handle pending hooks', async (t) => {
       });
 
   const response = await handleStatus(PENDING_HOOK);
-  t.deepEqual(response.handled, false, 'webhook should not be handled.');
   t.deepEqual(response.message, 'Unhandled state: \'pending\'');
+  t.deepEqual(response.handled, false, 'webhook should not be handled.');
   t.deepEqual(sendStub.callCount, 0, 'sendNotification should not be called');
 });
 
 test.serial(
-    '[handleStatus]: should handle success hook but not automerge if its not configured for PR',
+    '[handleStatus]: should handle success hook but not do anything is commit isn\'t success',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
@@ -334,14 +337,64 @@ test.serial(
           });
 
       const response = await handleStatus(SUCCESS_HOOK);
+      t.deepEqual(
+          response.message,
+          'Status of the PR\'s commit is not \'SUCCESS\' or \'null\': \'PENDING\'');
       t.deepEqual(response.handled, true, 'webhook should be handled.');
-      t.deepEqual(response.message, 'No automerge options configured.');
       t.deepEqual(
           performAutomergeStub.callCount,
           0,
           'No automerge should be attempted');
       t.deepEqual(
           sendStub.callCount, 0, 'sendNotification should not be called');
+    });
+
+test.serial(
+    '[handleStatus]: should handle success hook but not automerge if its not configured for PR',
+    async (t) => {
+      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+        return FAKE_LOGIN_DETAILS;
+      });
+
+      t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
+          .callsFake(() => {
+            const detailsClone = Object.assign({}, PR_DETAILS);
+            detailsClone.commit.state = 'SUCCESS';
+            return detailsClone;
+          });
+
+      t.context.sandbox.stub(pullRequestsModel, 'getAutomergeOpts')
+          .callsFake(async () => {
+            return null;
+          });
+
+      const response = await handleStatus(SUCCESS_HOOK);
+      t.deepEqual(
+          response.message, 'PR is ready to merge, automerge is not setup');
+      t.deepEqual(response.handled, true, 'webhook should be handled.');
+      t.deepEqual(
+          performAutomergeStub.callCount,
+          0,
+          'No automerge should be attempted');
+      t.deepEqual(sendStub.callCount, 1, 'sendNotification should be called');
+      t.deepEqual(
+          sendStub.args[0][0], 'test-pr-author', 'Notification receiver');
+      t.deepEqual(
+          sendStub.args[0][1],
+          {
+            title: 'PR is ready to merge',
+            body: '[status-test] test-title',
+            icon: '/images/notification-images/icon-completed-192x192.png',
+            data: {
+              pullRequest: {
+                gqlId: 'test-pr-id',
+              },
+              url: 'http://test-url.com',
+            },
+            requireInteraction: false,
+            tag: 'pr-status-owner-login/status-test/1',
+          },
+          'Notification options');
     });
 
 test.serial(
@@ -353,7 +406,9 @@ test.serial(
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            return PR_DETAILS;
+            const detailsClone = Object.assign({}, PR_DETAILS);
+            detailsClone.commit.state = 'SUCCESS';
+            return detailsClone;
           });
 
       t.context.sandbox.stub(pullRequestsModel, 'getAutomergeOpts')
@@ -364,14 +419,32 @@ test.serial(
           });
 
       const response = await handleStatus(SUCCESS_HOOK);
+      t.deepEqual(
+          response.message, 'PR is ready to merge, automerge is not setup');
       t.deepEqual(response.handled, true, 'webhook should be handled.');
-      t.deepEqual(response.message, 'A non-automerge type selected: null');
       t.deepEqual(
           performAutomergeStub.callCount,
           0,
           'No automerge should be attempted');
+      t.deepEqual(sendStub.callCount, 1, 'sendNotification should be called');
       t.deepEqual(
-          sendStub.callCount, 0, 'sendNotification should not be called');
+          sendStub.args[0][0], 'test-pr-author', 'Notification receiver');
+      t.deepEqual(
+          sendStub.args[0][1],
+          {
+            title: 'PR is ready to merge',
+            body: '[status-test] test-title',
+            icon: '/images/notification-images/icon-completed-192x192.png',
+            data: {
+              pullRequest: {
+                gqlId: 'test-pr-id',
+              },
+              url: 'http://test-url.com',
+            },
+            requireInteraction: false,
+            tag: 'pr-status-owner-login/status-test/1',
+          },
+          'Notification options');
     });
 
 test.serial(
@@ -383,7 +456,9 @@ test.serial(
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            return PR_DETAILS;
+            const detailsClone = Object.assign({}, PR_DETAILS);
+            detailsClone.commit.state = 'SUCCESS';
+            return detailsClone;
           });
 
       t.context.sandbox.stub(pullRequestsModel, 'getAutomergeOpts')
@@ -394,46 +469,32 @@ test.serial(
           });
 
       const response = await handleStatus(SUCCESS_HOOK);
+      t.deepEqual(
+          response.message, 'PR is ready to merge, automerge is not setup');
       t.deepEqual(response.handled, true, 'webhook should be handled.');
-      t.deepEqual(response.message, 'A non-automerge type selected: manual');
       t.deepEqual(
           performAutomergeStub.callCount,
           0,
           'No automerge should be attempted');
+      t.deepEqual(sendStub.callCount, 1, 'sendNotification should be called');
       t.deepEqual(
-          sendStub.callCount, 0, 'sendNotification should not be called');
-    });
-
-test.serial(
-    '[handleStatus]: should handle success hook and support an automerge failing to be performed',
-    async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
-      });
-
-      t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
-          .callsFake(() => {
-            return PR_DETAILS;
-          });
-
-      t.context.sandbox.stub(pullRequestsModel, 'getAutomergeOpts')
-          .callsFake(async () => {
-            return {
-              mergeType: 'merge',
-            };
-          });
-
-      performAutomergeStub.callsFake(() => {
-        return Promise.resolve(false);
-      });
-
-      const response = await handleStatus(SUCCESS_HOOK);
-      t.deepEqual(response.handled, true, 'webhook should be handled.');
-      t.deepEqual(response.message, 'Automerge not performed');
+          sendStub.args[0][0], 'test-pr-author', 'Notification receiver');
       t.deepEqual(
-          performAutomergeStub.callCount, 1, 'Automerge should be attempted');
-      t.deepEqual(
-          sendStub.callCount, 0, 'sendNotification should not be called');
+          sendStub.args[0][1],
+          {
+            title: 'PR is ready to merge',
+            body: '[status-test] test-title',
+            icon: '/images/notification-images/icon-completed-192x192.png',
+            data: {
+              pullRequest: {
+                gqlId: 'test-pr-id',
+              },
+              url: 'http://test-url.com',
+            },
+            requireInteraction: false,
+            tag: 'pr-status-owner-login/status-test/1',
+          },
+          'Notification options');
     });
 
 test.serial(
@@ -473,6 +534,7 @@ test.serial(
           {
             title: 'Automerge complete for \'test-title\'',
             body: '[status-test] test-title',
+            icon: '/images/notification-images/icon-completed-192x192.png',
             data: {
               pullRequest: {
                 gqlId: 'test-pr-id',
@@ -486,7 +548,7 @@ test.serial(
     });
 
 test.serial(
-    '[handleStatus]: should handle success hook and notify users of an errored automerge',
+    '[handleStatus]: should handle success hook and notify users of an errored automerge *without* Githubs error response msg',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
@@ -494,7 +556,9 @@ test.serial(
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            return PR_DETAILS;
+            const detailsClone = Object.assign({}, PR_DETAILS);
+            detailsClone.commit.state = 'SUCCESS';
+            return detailsClone;
           });
 
       t.context.sandbox.stub(pullRequestsModel, 'getAutomergeOpts')
@@ -509,9 +573,9 @@ test.serial(
       });
 
       const response = await handleStatus(SUCCESS_HOOK);
-      t.deepEqual(response.handled, true, 'webhook should be handled.');
       t.deepEqual(
           response.message, 'Unable to perform automerge: \'Injected Error\'');
+      t.deepEqual(response.handled, true, 'webhook should be handled.');
       t.deepEqual(
           performAutomergeStub.callCount, 1, 'Automerge should be attempted');
       t.deepEqual(
@@ -521,8 +585,9 @@ test.serial(
       t.deepEqual(
           sendStub.args[0][1],
           {
-            title: 'Auto-merge failed: \'Injected Error\'',
+            title: 'Automerge failed but the PR is ready to merge',
             body: '[status-test] test-title',
+            icon: '/images/notification-images/icon-error-192x192.png',
             data: {
               pullRequest: {
                 gqlId: 'test-pr-id',
@@ -544,7 +609,9 @@ test.serial(
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            return PR_DETAILS;
+            const detailsClone = Object.assign({}, PR_DETAILS);
+            detailsClone.commit.state = 'SUCCESS';
+            return detailsClone;
           });
 
       t.context.sandbox.stub(pullRequestsModel, 'getAutomergeOpts')
@@ -563,9 +630,9 @@ test.serial(
       });
 
       const response = await handleStatus(SUCCESS_HOOK);
-      t.deepEqual(response.handled, true, 'webhook should be handled.');
       t.deepEqual(
           response.message, 'Unable to perform automerge: \'Injected Error\'');
+      t.deepEqual(response.handled, true, 'webhook should be handled.');
       t.deepEqual(
           performAutomergeStub.callCount, 1, 'Automerge should be attempted');
       t.deepEqual(
@@ -575,8 +642,9 @@ test.serial(
       t.deepEqual(
           sendStub.args[0][1],
           {
-            title: 'Auto-merge failed: \'Injected Error\'',
+            title: 'Automerge failed but the PR is ready to merge',
             body: '[status-test] test-title',
+            icon: '/images/notification-images/icon-error-192x192.png',
             data: {
               pullRequest: {
                 gqlId: 'test-pr-id',
@@ -615,6 +683,7 @@ test.serial(
           {
             title: 'test-description',
             body: '[status-test] test-title',
+            icon: '/images/notification-images/icon-error-192x192.png',
             data: {
               pullRequest: {
                 gqlId: 'test-pr-id',
@@ -628,7 +697,7 @@ test.serial(
     });
 
 test.serial(
-    '[handleStatus]: should notify author for error hook is state is different from previous state',
+    '[handleStatus]: should notify author for error hook if new state is different from previous state',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
@@ -656,6 +725,7 @@ test.serial(
           {
             title: 'test-description',
             body: '[status-test] test-title',
+            icon: '/images/notification-images/icon-error-192x192.png',
             data: {
               pullRequest: {
                 gqlId: 'test-pr-id',

@@ -9,11 +9,11 @@ type PullRequest = {
 };
 
 type ReviewHook = {
-  state: string, user: User;
+  state: string, user: User; commit_id: string;
 };
 
 type Repository = {
-  name: string; owner: {login: string;};
+  name: string; owner: {login: string;}; full_name: string;
 };
 
 export type PullRequestReviewHook = {

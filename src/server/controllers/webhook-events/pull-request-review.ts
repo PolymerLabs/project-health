@@ -2,6 +2,7 @@ import {WebHookHandleResponse} from '../../apis/github-webhook';
 import {getPRTag, sendNotification} from '../../controllers/notifications';
 import {userModel} from '../../models/userModel';
 import {getPRID} from '../../utils/get-gql-pr-id';
+import {getPRDetailsFromCommit} from '../../utils/get-pr-from-commit';
 
 import {PullRequestReviewHook} from './types';
 
@@ -20,6 +21,15 @@ export async function handlePullRequestReview(hookData: PullRequestReviewHook):
   const repo = hookData.repository;
   const pullReq = hookData.pull_request;
 
+  const loginDetails = await userModel.getLoginDetails(pullReq.user.login);
+  if (!loginDetails) {
+    return {
+      handled: false,
+      notifications: null,
+      message: 'Unable to find login details to retrieve PR ID'
+    };
+  }
+
   let notificationTitle = null;
 
   // The author of the review should change to no longer having any action.
@@ -28,7 +38,15 @@ export async function handlePullRequestReview(hookData: PullRequestReviewHook):
   await userModel.markUserForUpdate(pullReq.user.login);
 
   if (review.state === 'approved') {
-    notificationTitle = `${review.user.login} approved your PR`;
+    // Either send ready to merge OR send approved notification
+    const prDetails = await getPRDetailsFromCommit(
+        loginDetails.githubToken, repo.full_name, hookData.review.commit_id);
+    if (prDetails && prDetails.commit.state === 'SUCCESS') {
+      notificationTitle =
+          `${review.user.login} approved your PR and it's ready to merge`;
+    } else {
+      notificationTitle = `${review.user.login} approved your PR`;
+    }
   } else if (review.state === 'changes_requested') {
     notificationTitle = `${review.user.login} requested changes`;
   } else if (review.state === 'commented') {
@@ -36,15 +54,6 @@ export async function handlePullRequestReview(hookData: PullRequestReviewHook):
     if (review.user.login !== pullReq.user.login) {
       notificationTitle = `${review.user.login} commented on your PR`;
     }
-  }
-
-  const loginDetails = await userModel.getLoginDetails(pullReq.user.login);
-  if (!loginDetails) {
-    return {
-      handled: false,
-      notifications: null,
-      message: 'Unable to find login details to retrieve PR ID'
-    };
   }
 
   const prGqlId = await getPRID(
