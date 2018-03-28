@@ -3,6 +3,7 @@ import {render} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import {dashData} from './dash-data.js';
 import {DashPollController} from './dash-poll-controller.js';
 import {genericIssueListTemplate} from './issues.js';
+import {legendTemplate} from './legend.js';
 import {notificationCenter} from './notification-center.js';
 import {profileTemplate} from './profile.js';
 import {genericPrListTemplate, outgoingPrListTemplate} from './prs.js';
@@ -151,6 +152,26 @@ function onMessage(event: ServiceWorkerMessageEvent|MessageEvent) {
 }
 
 async function start() {
+  // Render persistent UI
+  render(
+      legendTemplate([
+        {type: 'complete', description: 'Ready to merge'},
+        {type: 'actionable', description: 'Requires attention'},
+        {type: 'activity', description: 'New activity'},
+      ]),
+      document.querySelector('.outgoing-legend'));
+  render(
+      legendTemplate([
+        {type: 'actionable', description: 'Requires attention'},
+        {type: 'activity', description: 'New activity'},
+      ]),
+      document.querySelector('.incoming-legend'));
+  render(
+      legendTemplate([
+        {type: 'actionable', description: 'Assigned to you'},
+      ]),
+      document.querySelector('.assigned-issues-legend'));
+
   // Initialise the dashbaord with data
   await performFullUpdate();
 

@@ -23,6 +23,10 @@ h2 {
   font-weight: normal;
   padding-bottom: var(--padding);
   border-bottom: 1px solid var(--light-grey);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-flow: wrap;
 }
 
 h6 {
