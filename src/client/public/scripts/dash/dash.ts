@@ -200,8 +200,8 @@ async function start() {
   /**
    * Event handler for when the filter is changed.
    */
-  function filterChanged(id: FilterId, event: any) {
-    filterController.updateFilter(id, event.detail as FilterState);
+  function filterChanged(id: FilterId, event: {detail: FilterState}) {
+    filterController.updateFilter(id, event.detail);
     renderAll();
   }
 

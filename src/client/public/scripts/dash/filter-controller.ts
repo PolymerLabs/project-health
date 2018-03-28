@@ -11,7 +11,7 @@ export class FilterController {
     this.filters = new Map();
   }
 
-  createFilter(id: FilterId, filters: {type: string}[]) {
+  createFilter(id: FilterId, filters: Array<{type: string}>) {
     const state: FilterState = {};
     for (const filter of filters) {
       state[filter.type] = false;

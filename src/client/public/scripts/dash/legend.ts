@@ -3,7 +3,7 @@ import {FilterState} from './filter-controller.js';
 
 export type LegendItem = {
   type: 'complete'|'actionable'|'activity',
-  description: String,
+  description: string,
 };
 
 function itemTemplate(item: LegendItem) {
