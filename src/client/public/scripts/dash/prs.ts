@@ -13,14 +13,8 @@ export function genericPrListTemplate(
     newlyActionablePRs: string[],
     filter: FilterState|undefined,
     emptyMessage: EmptyMessage) {
+  prList = applyFilter(filter, prList);
   if (prList.length) {
-    if (filter) {
-      prList = prList.filter((pr) => {
-        const {type} = statusToDisplay(pr);
-        const typeDisabled = filter[type];
-        return !typeDisabled;
-      });
-    }
     return html`${prList.map((pr) => {
       const isNewlyActionable =
           newlyActionablePRs && newlyActionablePRs.indexOf(pr.id) !== -1;
@@ -31,19 +25,28 @@ export function genericPrListTemplate(
   }
 }
 
+/**
+ * Applies a filter to a PR list
+ */
+function applyFilter<T extends api.PullRequest>(
+    filter: FilterState|undefined, prList: T[]): T[] {
+  if (!filter) {
+    return prList;
+  }
+  return prList.filter((pr) => {
+    const {type} = statusToDisplay(pr);
+    const typeDisabled = filter[type];
+    return !typeDisabled;
+  });
+}
+
 export function outgoingPrListTemplate(
     prList: api.OutgoingPullRequest[],
     newlyActionablePRs: string[],
     filter: FilterState|undefined,
     emptyMessage: EmptyMessage) {
+  prList = applyFilter(filter, prList);
   if (prList.length) {
-    if (filter) {
-      prList = prList.filter((pr) => {
-        const {type} = statusToDisplay(pr);
-        const typeDisabled = filter[type];
-        return !typeDisabled;
-      });
-    }
     return html`${prList.map((pr) => {
       const isNewlyActionable =
           newlyActionablePRs && newlyActionablePRs.indexOf(pr.id) !== -1;

@@ -84,10 +84,14 @@ async function renderIssues() {
 
   const actionableIds = dashData.getIssueUpdates();
   render(
-      genericIssueListTemplate(issues, actionableIds, {
-        title: 'No issues assigned to you',
-        description: 'When you\'re assigned issues, they\'ll appear here.'
-      }),
+      genericIssueListTemplate(
+          issues,
+          actionableIds,
+          filterController.getFilter('assigned-issues'),
+          {
+            title: 'No issues assigned to you',
+            description: 'When you\'re assigned issues, they\'ll appear here.'
+          }),
       (document.querySelector('.assigned-issues__list') as Element));
 }
 
