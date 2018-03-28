@@ -5,13 +5,22 @@ import {genericDashboardRowEventTemplate, genericDashboardRowTemplate, StatusDis
 import {EmptyMessage, emptyTemplate} from '../components/empty-message.js';
 
 import {getAutoMergeOptions} from './auto-merge-events.js';
+import {FilterState} from './filter-controller.js';
 import {parseAsEventModel} from './pr-event.js';
 
 export function genericPrListTemplate(
     prList: api.PullRequest[],
     newlyActionablePRs: string[],
+    filter: FilterState|undefined,
     emptyMessage: EmptyMessage) {
   if (prList.length) {
+    if (filter) {
+      prList = prList.filter((pr) => {
+        const {type} = statusToDisplay(pr);
+        const typeDisabled = filter[type];
+        return !typeDisabled;
+      });
+    }
     return html`${prList.map((pr) => {
       const isNewlyActionable =
           newlyActionablePRs && newlyActionablePRs.indexOf(pr.id) !== -1;
@@ -25,8 +34,16 @@ export function genericPrListTemplate(
 export function outgoingPrListTemplate(
     prList: api.OutgoingPullRequest[],
     newlyActionablePRs: string[],
+    filter: FilterState|undefined,
     emptyMessage: EmptyMessage) {
   if (prList.length) {
+    if (filter) {
+      prList = prList.filter((pr) => {
+        const {type} = statusToDisplay(pr);
+        const typeDisabled = filter[type];
+        return !typeDisabled;
+      });
+    }
     return html`${prList.map((pr) => {
       const isNewlyActionable =
           newlyActionablePRs && newlyActionablePRs.indexOf(pr.id) !== -1;
@@ -40,38 +57,34 @@ export function outgoingPrListTemplate(
 export function statusToDisplay(pr: api.PullRequest): StatusDisplay {
   switch (pr.status.type) {
     case 'UnknownStatus':
-      return {text: '', actionable: false};
+      return {text: '', type: 'activity'};
     case 'NoActionRequired':
-      return {text: 'No action required', actionable: false};
+      return {text: 'No action required', type: 'activity'};
     case 'NewActivity':
-      return {text: 'New activity', actionable: false};
+      return {text: 'New activity', type: 'activity'};
     case 'StatusChecksPending':
-      return {text: 'Status checks pending', actionable: false};
+      return {text: 'Status checks pending', type: 'activity'};
     case 'WaitingReview':
       return {
         text: `Waiting on ${pr.status.reviewers.join(', ')}`,
-        actionable: false
+        type: 'activity'
       };
     case 'ChangesRequested':
-      return {text: 'Changes requested', actionable: false};
+      return {text: 'Changes requested', type: 'activity'};
     case 'PendingChanges':
-      return {text: 'Waiting on you', actionable: true};
+      return {text: 'Waiting on you', type: 'actionable'};
     case 'PendingMerge':
-      return {
-        text: 'Ready to merge',
-        actionable: true,
-        className: 'pr-status__merge',
-      };
+      return {text: 'Ready to merge', type: 'complete'};
     case 'StatusChecksFailed':
-      return {text: 'Status checks failed', actionable: true};
+      return {text: 'Status checks failed', type: 'actionable'};
     case 'NoReviewers':
-      return {text: 'No reviewers assigned', actionable: true};
+      return {text: 'No reviewers assigned', type: 'actionable'};
     case 'ReviewRequired':
-      return {text: 'Pending your review', actionable: true};
+      return {text: 'Pending your review', type: 'actionable'};
     case 'ApprovalRequired':
-      return {text: 'Pending your approval', actionable: true};
+      return {text: 'Pending your approval', type: 'actionable'};
     case 'MergeRequired':
-      return {text: 'Requires merging', actionable: true};
+      return {text: 'Requires merging', type: 'actionable'};
     default:
       const unknown: never = pr.status;
       throw new Error(`Unknown PullRequestStatus: ${unknown}`);

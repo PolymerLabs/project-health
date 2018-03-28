@@ -8,7 +8,7 @@ import {timeToString} from '../dash/utils/time-to-string.js';
  */
 
 export interface StatusDisplay {
-  actionable: boolean;
+  type: 'complete'|'actionable'|'activity';
   text: string;
   className?: string;
 }
@@ -76,7 +76,7 @@ export function genericDashboardRowTemplate(
   const status = data.status;
 
   return html`
-      <div class$="${rowClasses.join(' ')}">
+      <div class$="${rowClasses.join(' ')}" type$="${status.type}">
         <div class="dashboard-row-header">
           <div class="dashboard-row-author">
             <div class="dashboard-row-author__name">${data.author}</div>
@@ -91,10 +91,7 @@ export function genericDashboardRowTemplate(
 
           <a class="dashboard-row-link" href="${data.url}" target="_blank">
             <div class="dashboard-row-status small-heading">
-              <span class$="dashboard-row-status__msg ${
-      status.actionable ?
-          'actionable' :
-          ''} ${status.className ? status.className : ''}">${status.text}</span>
+              <span class="dashboard-row-status__msg">${status.text}</span>
             </div>
             <div class="dashboard-row-info">
               <span class="dashboard-row-info__repo-name">${data.owner}/${

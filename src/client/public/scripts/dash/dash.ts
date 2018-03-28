@@ -2,8 +2,9 @@ import {render} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 
 import {dashData} from './dash-data.js';
 import {DashPollController} from './dash-poll-controller.js';
+import {FilterController, FilterId, FilterState} from './filter-controller.js';
 import {genericIssueListTemplate} from './issues.js';
-import {legendTemplate} from './legend.js';
+import {LegendItem, legendTemplate} from './legend.js';
 import {notificationCenter} from './notification-center.js';
 import {profileTemplate} from './profile.js';
 import {genericPrListTemplate, outgoingPrListTemplate} from './prs.js';
@@ -17,6 +18,7 @@ const CHECK_SERVER_ID = 'check-server-updates';
 const SHORT_POLL_INTERVAL = 15 * 1000;
 
 const updateController = new DashPollController();
+const filterController = new FilterController();
 
 function renderProfile() {
   const profileData = dashData.getProfileData();
@@ -44,11 +46,16 @@ function renderOutgoing() {
   const actionableIds = dashData.getOutgoingUpdates();
 
   render(
-      outgoingPrListTemplate(outgoingPrs, actionableIds, {
-        title: 'No outgoing pull requests',
-        description: 'When you open new pull requests, they\'ll appear here.'
-      }),
-      (document.querySelector('#outgoing') as Element));
+      outgoingPrListTemplate(
+          outgoingPrs,
+          actionableIds,
+          filterController.getFilter('outgoing-prs'),
+          {
+            title: 'No outgoing pull requests',
+            description:
+                'When you open new pull requests, they\'ll appear here.'
+          }),
+      (document.querySelector('.outgoing-prs__list') as Element));
 }
 
 function renderIncoming() {
@@ -60,12 +67,16 @@ function renderIncoming() {
   const actionableIds = dashData.getIncomingUpdates();
 
   render(
-      genericPrListTemplate(incomingPrs, actionableIds, {
-        title: 'No incoming pull requests',
-        description:
-            'When you\'re added as a reviewer to a pull request, they\'ll appear here.'
-      }),
-      (document.querySelector('#incoming') as Element));
+      genericPrListTemplate(
+          incomingPrs,
+          actionableIds,
+          filterController.getFilter('incoming-prs'),
+          {
+            title: 'No incoming pull requests',
+            description:
+                'When you\'re added as a reviewer to a pull request, they\'ll appear here.'
+          }),
+      (document.querySelector('.incoming-prs__list') as Element));
 }
 
 async function renderIssues() {
@@ -77,18 +88,20 @@ async function renderIssues() {
         title: 'No issues assigned to you',
         description: 'When you\'re assigned issues, they\'ll appear here.'
       }),
-      (document.querySelector('#your-issues') as Element));
+      (document.querySelector('.assigned-issues__list') as Element));
+}
+
+function renderAll() {
+  renderProfile();
+  renderOutgoing();
+  renderIncoming();
+  renderIssues();
 }
 
 async function performFullUpdate() {
   console.log('[Performing Full Update]');
   await dashData.updateData();
-
-  renderProfile();
-  renderOutgoing();
-  renderIncoming();
-  renderIssues();
-
+  renderAll();
   await updateApplicationState();
 }
 
@@ -152,25 +165,56 @@ function onMessage(event: ServiceWorkerMessageEvent|MessageEvent) {
 }
 
 async function start() {
-  // Render persistent UI
+  // Render persistent UI.
+  const outgoingFilters: LegendItem[] = [
+    {type: 'complete', description: 'Ready to merge'},
+    {type: 'actionable', description: 'Requires attention'},
+    {type: 'activity', description: 'New activity'},
+  ];
+  const incomingFilters: LegendItem[] = [
+    {type: 'actionable', description: 'Requires attention'},
+    {type: 'activity', description: 'New activity'},
+  ];
+  const assignedFilters: LegendItem[] = [
+    {type: 'actionable', description: 'Assigned to you'},
+  ];
+
   render(
-      legendTemplate([
-        {type: 'complete', description: 'Ready to merge'},
-        {type: 'actionable', description: 'Requires attention'},
-        {type: 'activity', description: 'New activity'},
-      ]),
-      document.querySelector('.outgoing-legend'));
+      legendTemplate(outgoingFilters),
+      document.querySelector('.outgoing-legend') as HTMLElement);
   render(
-      legendTemplate([
-        {type: 'actionable', description: 'Requires attention'},
-        {type: 'activity', description: 'New activity'},
-      ]),
-      document.querySelector('.incoming-legend'));
+      legendTemplate(incomingFilters),
+      document.querySelector('.incoming-legend') as HTMLElement);
   render(
-      legendTemplate([
-        {type: 'actionable', description: 'Assigned to you'},
-      ]),
-      document.querySelector('.assigned-issues-legend'));
+      legendTemplate(assignedFilters),
+      document.querySelector('.assigned-issues-legend') as HTMLElement);
+
+  filterController.createFilter('outgoing-prs', outgoingFilters);
+  filterController.createFilter('incoming-prs', outgoingFilters);
+  filterController.createFilter('assigned-issues', assignedFilters);
+
+  /**
+   * Event handler for when the filter is changed.
+   */
+  function filterChanged(id: FilterId, event: any) {
+    filterController.updateFilter(id, event.detail as FilterState);
+    renderAll();
+  }
+
+  /**
+   * Finds and attaches filter event listener.
+   */
+  function attachFilterListener(id: FilterId) {
+    const element = document.getElementById(id);
+    if (!element) {
+      throw Error('Could not attach filter event listener');
+    }
+    element.addEventListener('legend-change', filterChanged.bind(null, id));
+  }
+
+  attachFilterListener('incoming-prs');
+  attachFilterListener('outgoing-prs');
+  attachFilterListener('assigned-issues');
 
   // Initialise the dashbaord with data
   await performFullUpdate();

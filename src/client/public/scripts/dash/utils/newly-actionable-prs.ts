@@ -7,8 +7,8 @@ export function newlyActionablePrs(
 
   const oldActionablePRs: {[prId: string]: PullRequest} = {};
   for (const oldPr of oldList) {
-    const {actionable} = statusToDisplay(oldPr);
-    if (!actionable) {
+    const {type} = statusToDisplay(oldPr);
+    if (type === 'activity') {
       continue;
     }
 
@@ -16,8 +16,8 @@ export function newlyActionablePrs(
   }
 
   for (const newPr of newList) {
-    const {actionable} = statusToDisplay(newPr);
-    if (!actionable) {
+    const {type} = statusToDisplay(newPr);
+    if (type === 'activity') {
       continue;
     }
 

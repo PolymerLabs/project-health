@@ -1,0 +1,36 @@
+.legend-item {
+  margin: 0 var(--padding, 16px);
+  color: var(--legend-color, black);
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  transition: 100ms color cubic-bezier(0.22, 0.61, 0.36, 1);
+  user-select: none;
+}
+
+.legend-item:before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--legend-color, black);
+  display: inline-block;
+  margin-right: var(--padding, 0);
+  transition: 100ms background-color cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.legend-item[type='complete'] {
+  --legend-color: var(--merge-text-color, green);
+}
+
+.legend-item[type='actionable'] {
+  --legend-color: var(--actionable-color, orange);
+}
+
+.legend-item[type='activity'] {
+  --legend-color: var(--non-actionable-color, blue);
+}
+
+.legend-item[disabled] {
+  --legend-color: var(--light-grey, grey);
+}

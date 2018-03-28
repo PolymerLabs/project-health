@@ -20,11 +20,11 @@
   color: var(--secondary-text-color);
 }
 
-.dashboard-row-status__msg.pr-status__merge {
+.dashboard-row[type='complete'] .dashboard-row-status__msg {
   color: var(--merge-text-color);
 }
 
-.actionable {
+.dashboard-row[type='actionable'] .dashboard-row-status__msg {
   color: var(--actionable-color);
 }
 

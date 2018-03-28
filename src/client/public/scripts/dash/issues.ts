@@ -4,7 +4,7 @@ import {genericDashboardRowTemplate, StatusDisplay} from '../components/dashboar
 import {EmptyMessage, emptyTemplate} from '../components/empty-message.js';
 
 function statusToDisplay(): StatusDisplay {
-  return {text: 'Assigned to you', actionable: true};
+  return {text: 'Assigned to you', type: 'actionable'};
 }
 
 export function genericIssueListTemplate(
