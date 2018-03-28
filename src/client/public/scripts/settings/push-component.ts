@@ -120,7 +120,7 @@ class PushComponent {
         'You\'ll get notifications for important events', {
           icon: '/images/notification-images/icon-192x192.png',
           badge: '/images/notification-images/badge-128x128.png',
-          requiresInterfaction: true,
+          requiresInteraction: true,
           tag: 'training-notification',
           // tslint:disable-next-line:no-any
         } as any);
