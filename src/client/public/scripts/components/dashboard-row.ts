@@ -60,8 +60,6 @@ export function genericDashboardRowEventTemplate(data: DashboardRowEventData):
       </div>`;
 }
 
-// TODO: Is newly actionable for flashes only?
-
 export function genericDashboardRowTemplate(
     data: DashboardRowData,
     isNewlyActionable: boolean,
