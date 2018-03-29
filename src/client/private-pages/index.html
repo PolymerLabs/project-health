@@ -16,12 +16,27 @@
       <img src="/images/default-avatar.svg" />
     </div>
   </div>
-  <h2>Outgoing pull requests</h2>
-  <div id="outgoing" class="pr-list"></div>
-  <h2>Incoming pull requests</h2>
-  <div id="incoming" class="pr-list"></div>
-  <h2>Your Issues</h2>
-  <div id="your-issues" class="pr-list"></div>
+  <div id="outgoing-prs">
+    <h2>
+      Outgoing pull requests
+      <div class="outgoing-legend"></div>
+    </h2>
+    <div class="outgoing-prs__list pr-list"></div>
+  </div>
+  <div id="incoming-prs">
+    <h2>
+      Incoming pull requests
+      <div class="incoming-legend"></div>
+    </h2>
+    <div class="incoming-prs__list pr-list"></div>
+  </div>
+  <div id="assigned-issues">
+    <h2>
+      Your Issues
+      <div class="assigned-issues-legend"></div>
+    </h2>
+    <div class="assigned-issues__list pr-list"></div>
+  </div>
 
   <footer>Bug? Feedback? File an
     <a target="_blank" href="https://github.com/polymerlabs/project-health/issues/new">issue on GitHub</a>
