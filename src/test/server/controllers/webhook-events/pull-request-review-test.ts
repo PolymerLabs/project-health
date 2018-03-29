@@ -385,8 +385,7 @@ test.serial(
       t.deepEqual(
           sendStub.args[0][1],
           {
-            title:
-                'test-review-author approved your PR and it\'s ready to merge',
+            title: 'test-review-author approved - ready to merge',
             body: '[test-repo] test PR title',
             data: {
               pullRequest: {

@@ -43,8 +43,7 @@ export async function handlePullRequestReview(hookData: PullRequestReviewHook):
     if (prDetails && prDetails.commit.state === 'SUCCESS') {
       webhookResponse.message =
           'Sending approved and ready to merge notification';
-      notificationTitle =
-          `${review.user.login} approved your PR and it's ready to merge`;
+      notificationTitle = `${review.user.login} approved - ready to merge`;
     } else {
       webhookResponse.message =
           'Sending approved but not ready to merge notification';

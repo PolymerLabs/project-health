@@ -54,7 +54,7 @@ async function handleSuccessStatus(
     message: null,
   };
 
-  // Check if the latest commitsstatus checks have passed
+  // Check if the latest commits status checks have passed
   if (prDetails.commit.state !== 'SUCCESS' && prDetails.commit.state !== null) {
     webhookResponse.message =
         `Status of the PR's commit is not 'SUCCESS' or 'null': '${
