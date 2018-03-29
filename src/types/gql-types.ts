@@ -1325,6 +1325,24 @@ export interface AssignedIssuesQuery {
             }
           ),
         },
+        // A list of comments associated with the Issue.
+        comments:  {
+          __typename: string,
+          // Identifies the total count of items in the connection.
+          totalCount: number,
+        },
+        // A list of Reactions left on the Issue.
+        reactions:  {
+          __typename: string,
+          // Identifies the total count of items in the connection.
+          totalCount: number,
+        },
+        // A list of Users that are participating in the Issue conversation.
+        participants:  {
+          __typename: string,
+          // Identifies the total count of items in the connection.
+          totalCount: number,
+        },
       } | {
         __typename: "PullRequest",
       } | {
@@ -1713,4 +1731,26 @@ export interface mentionedFieldsFragment {
       },
     } | null > | null,
   } | null,
+};
+
+export interface popularityFieldsFragment {
+  __typename: "Issue",
+  // A list of comments associated with the Issue.
+  comments:  {
+    __typename: string,
+    // Identifies the total count of items in the connection.
+    totalCount: number,
+  },
+  // A list of Reactions left on the Issue.
+  reactions:  {
+    __typename: string,
+    // Identifies the total count of items in the connection.
+    totalCount: number,
+  },
+  // A list of Users that are participating in the Issue conversation.
+  participants:  {
+    __typename: string,
+    // Identifies the total count of items in the connection.
+    totalCount: number,
+  },
 };

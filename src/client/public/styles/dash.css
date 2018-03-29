@@ -5,6 +5,7 @@
 @import "./components/dashboard-row.css";
 @import "./components/empty-message.css";
 @import "./components/legend.css";
+@import "./components/issues.css";
 
 .pr-list a {
   text-decoration: none;

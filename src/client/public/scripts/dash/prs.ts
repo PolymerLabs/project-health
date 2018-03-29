@@ -124,5 +124,6 @@ function getPRRowTemplate(
         status: statusToDisplay(pr),
       },
       newlyActionable,
+      [],
       events);
 }

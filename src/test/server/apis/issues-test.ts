@@ -61,6 +61,7 @@ test('[issues]: should retrieve issues for a user', async (t) => {
           avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
           createdAt: 1521849856000,
           url: 'https://github.com/project-health1/repo/issues/16',
+          popularity: 1,
         },
         {
           id: 'MDU6SXNzdWUzMDgyMTAyNzM=',
@@ -71,6 +72,7 @@ test('[issues]: should retrieve issues for a user', async (t) => {
           avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
           createdAt: 1521849762000,
           url: 'https://github.com/project-health1/repo/issues/15',
+          popularity: 1,
         },
       ]);
     }

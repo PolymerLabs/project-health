@@ -69,7 +69,9 @@ export interface IncomingDashResponse {
   prs: PullRequest[];
 }
 
-export interface IssuesResponse { issues: Issue[]; }
+export interface IssuesResponse {
+  issues: Issue[];
+}
 
 export interface Review {
   author: string;
@@ -82,7 +84,9 @@ export interface JSONAPIResponse<T> {
   data?: T;
 }
 
-export interface LoginResponse { status: string; }
+export interface LoginResponse {
+  status: string;
+}
 
 export interface LastKnownResponse {
   lastKnownUpdate: string|null;
@@ -233,4 +237,9 @@ export interface Issue {
   avatarUrl: string;
   createdAt: number;
   url: string;
+  popularity: Popularity;
 }
+
+export type Popularity = number&{
+  _PopularityBrand: never;
+};

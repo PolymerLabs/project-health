@@ -8,6 +8,22 @@ function statusToDisplay(): StatusDisplay {
   return {text: 'Assigned to you', type: 'actionable'};
 }
 
+function popularityTemplate(popularity: api.Popularity) {
+  return html`
+  <div class="issue-info">
+    <div class="issue-info-item issue-popularity" score$="${popularity}">
+      <div class="issue-info-item__visual">
+        <div class="issue-popularity__fire"></div>
+        <div class="issue-popularity__fire"></div>
+        <div class="issue-popularity__fire"></div>
+        <div class="issue-popularity__fire"></div>
+      </div>
+      <div class="issue-info-item__description">popularity</div>
+    </div>
+  </div>
+  `;
+}
+
 export function genericIssueListTemplate(
     issues: api.Issue[],
     newlyActionableIssues: string[],
@@ -30,7 +46,8 @@ export function genericIssueListTemplate(
             owner: issue.owner,
             repo: issue.repo,
           },
-          isNewlyActionable);
+          isNewlyActionable,
+          [popularityTemplate(issue.popularity)]);
     })}`;
   } else {
     return emptyTemplate(emptyMessage);
