@@ -13,21 +13,24 @@ export const TOKEN_COLLECTION_NAME = 'user-tokens';
 
 export const REQUIRED_SCOPES = ['repo'];
 
-export interface LoginDetails {
-  username: string;
-  avatarUrl: string|null;
-  fullname: string|null;
+export interface UserRecord {
   githubToken: string;
-  scopes: string[]|null;
+  scopes: string[];
+  username: string;
+  fullname: string|null;
+  avatarUrl: string|null;
   lastKnownUpdate: string|null;
+  lastViewed?: number;
 }
+
+type FeatureID = 'lastViewed';
 
 /**
  * The structure of the data base is:
  *
  * - users/
  *   - <username>
- *     - subscriptions[]
+ *     - subscriptions (See PushSubscriptionsModel)
  *     - githubToken
  *     - githubTokenScopes[]
  *     - username
@@ -44,7 +47,7 @@ class UserModel {
    *
    * @private
    */
-  validateDetails(loginDetails: LoginDetails): boolean {
+  validateDetails(loginDetails: UserRecord): boolean {
     if (!loginDetails.githubToken) {
       return false;
     }
@@ -74,45 +77,6 @@ class UserModel {
     return true;
   }
 
-  async getLoginDetails(username: string): Promise<LoginDetails|null> {
-    const userDoc =
-        await firestore().collection(USERS_COLLECTION_NAME).doc(username).get();
-    const userData = userDoc.data();
-    if (!userData) {
-      // Document doesn't exist.
-      return null;
-    }
-
-    const loginDetails = userData as LoginDetails;
-    if (!this.validateDetails(loginDetails)) {
-      return null;
-    }
-
-    return loginDetails;
-  }
-
-  async getLoginFromRequest(req: express.Request) {
-    return this.getLoginFromToken(req.cookies[ID_COOKIE_NAME]);
-  }
-
-  async getLoginFromToken(userToken: string|
-                          undefined): Promise<LoginDetails|null> {
-    if (!userToken) {
-      return null;
-    }
-
-    const tokenDoc = await firestore()
-                         .collection(TOKEN_COLLECTION_NAME)
-                         .doc(userToken)
-                         .get();
-    const tokenData = tokenDoc.data();
-    if (!tokenData || !tokenData.username) {
-      return null;
-    }
-
-    return this.getLoginDetails(tokenData.username);
-  }
-
   async generateNewUserToken(githubToken: string, scopes: string[]):
       Promise<string> {
     const loginResult = await github().query<ViewerLoginQuery>({
@@ -126,7 +90,7 @@ class UserModel {
     const userDocument =
         await firestore().collection(USERS_COLLECTION_NAME).doc(username);
 
-    const details: LoginDetails = {
+    const details: UserRecord = {
       username,
       avatarUrl: loginResult.data.viewer.avatarUrl,
       fullname: loginResult.data.viewer.name,
@@ -173,6 +137,59 @@ class UserModel {
         lastKnownUpdate: FieldValue.serverTimestamp(),
       });
     }
+  }
+
+  // tslint:disable-next-line:no-any
+  async setFeatureData(username: string, featureId: FeatureID, data: any) {
+    const userRecord = await this.getUserRecord(username);
+    if (!userRecord) {
+      throw new Error('Cannot set feature data for a non-existent user.');
+    }
+
+    const doc =
+        await firestore().collection(USERS_COLLECTION_NAME).doc(username);
+    doc.update({
+      [featureId]: data,
+    });
+  }
+
+  async getUserRecord(username: string): Promise<UserRecord|null> {
+    const doc =
+        await firestore().collection(USERS_COLLECTION_NAME).doc(username);
+    const docSnapshot = await doc.get();
+    const data = docSnapshot.data();
+    if (!data) {
+      // Document doesn't exist.
+      return null;
+    }
+
+    const userRecord = data as UserRecord;
+    if (!this.validateDetails(userRecord)) {
+      return null;
+    }
+    return userRecord;
+  }
+
+  async getUserRecordFromRequest(req: express.Request) {
+    return this.getUserRecordFromToken(req.cookies[ID_COOKIE_NAME]);
+  }
+
+  async getUserRecordFromToken(userToken: string|
+                               undefined): Promise<UserRecord|null> {
+    if (!userToken) {
+      return null;
+    }
+
+    const tokenDoc = await firestore()
+                         .collection(TOKEN_COLLECTION_NAME)
+                         .doc(userToken)
+                         .get();
+    const tokenData = tokenDoc.data();
+    if (!tokenData || !tokenData.username) {
+      return null;
+    }
+
+    return this.getUserRecord(tokenData.username);
   }
 }
 

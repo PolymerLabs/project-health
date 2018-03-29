@@ -1,7 +1,7 @@
 import {WebHookHandleResponse} from '../../apis/github-webhook';
 import {getPRTag, sendNotification} from '../../controllers/notifications';
 import {CommitDetails, pullRequestsModel} from '../../models/pullRequestsModel';
-import {LoginDetails, userModel} from '../../models/userModel';
+import {userModel, UserRecord} from '../../models/userModel';
 import {getPRDetailsFromCommit, PullRequestDetails} from '../../utils/get-pr-from-commit';
 import {performAutomerge} from '../../utils/perform-automerge';
 
@@ -45,7 +45,7 @@ async function handleFailingStatus(
 }
 
 async function handleSuccessStatus(
-    loginDetails: LoginDetails,
+    loginDetails: UserRecord,
     hookData: StatusHook,
     prDetails: PullRequestDetails): Promise<WebHookHandleResponse> {
   const webhookResponse: WebHookHandleResponse = {
@@ -118,7 +118,7 @@ async function handleSuccessStatus(
 export async function handleStatus(hookData: StatusHook):
     Promise<WebHookHandleResponse> {
   const author = hookData.commit.author;
-  const loginDetails = await userModel.getLoginDetails(author.login);
+  const loginDetails = await userModel.getUserRecord(author.login);
   if (!loginDetails) {
     // Commit author isn't logged in so we have no GitHub token to find the
     // appropriate PR's affected by this status change

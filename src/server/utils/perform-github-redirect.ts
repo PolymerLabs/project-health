@@ -38,7 +38,7 @@ function createSearchParams(properties: {[key: string]: string}) {
 
 async function getUserScopes(req: express.Request): Promise<string[]> {
   const scopeSet: Set<string> = new Set(REQUIRED_SCOPES);
-  const login = await userModel.getLoginFromRequest(req);
+  const login = await userModel.getUserRecordFromRequest(req);
 
   if (login && login.scopes) {
     login.scopes.forEach((scope) => scopeSet.add(scope));

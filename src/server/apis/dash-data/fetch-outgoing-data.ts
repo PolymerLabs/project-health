@@ -4,14 +4,14 @@ import {commitFieldsFragment, OutgoingPullRequestsQuery, PullRequestReviewState,
 import {github} from '../../../utils/github';
 import {pullRequestsModel} from '../../models/pullRequestsModel';
 import {repositoryModel} from '../../models/repositoryModel';
-import {LoginDetails} from '../../models/userModel';
+import {UserRecord} from '../../models/userModel';
 import {convertPrFields, convertReviewFields, outgoingPrsQuery} from '../dash-data';
 
 /**
  * Fetches outgoing pull requests for user.
  */
 export async function fetchOutgoingData(
-    loginDetails: LoginDetails, dashLogin: string, startCursor?: string):
+    loginDetails: UserRecord, dashLogin: string, startCursor?: string):
     Promise<api.OutgoingDashResponse> {
   const outgoingPrData =
       await performQuery(dashLogin, loginDetails.githubToken, startCursor);
@@ -50,7 +50,7 @@ async function performQuery(login: string, token: string, startCursor?: string):
 }
 
 function getDashboardUser(
-    loginDetails: LoginDetails,
+    loginDetails: UserRecord,
     dashLogin: string,
     data: OutgoingPullRequestsQuery) {
   const user: api.DashboardUser = {
@@ -69,7 +69,7 @@ function getDashboardUser(
 }
 
 async function getAllPRInfo(
-    loginDetails: LoginDetails,
+    loginDetails: UserRecord,
     dashLogin: string,
     data: OutgoingPullRequestsQuery): Promise<OutgoingPullRequestInfo> {
   let totalCount = 0;

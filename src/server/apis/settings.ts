@@ -13,7 +13,7 @@ export function getRouter(): express.Router {
   settingsRouter.post(
       '/orgs.json',
       async (request: express.Request, response: express.Response) => {
-        const loginDetails = await userModel.getLoginFromRequest(request);
+        const loginDetails = await userModel.getUserRecordFromRequest(request);
         if (!loginDetails) {
           response.sendStatus(400);
           return;

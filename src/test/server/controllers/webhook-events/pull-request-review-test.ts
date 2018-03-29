@@ -121,7 +121,7 @@ test.serial(
 test.serial(
     '[handlePullRequestReview]: should handle lack of login details',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return null;
       });
 
@@ -137,7 +137,7 @@ test.serial(
 test.serial(
     '[handlePullRequestReview]: should handle an unsupported review state',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 
@@ -154,7 +154,7 @@ test.serial(
 test.serial(
     '[handlePullRequestReview]: should handle a failure to get the pull requests GraphQL ID',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 
@@ -174,7 +174,7 @@ test.serial(
 test.serial(
     '[handlePullRequestReview]: should send a notification when changes are requested',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 
@@ -210,7 +210,7 @@ test.serial(
 test.serial(
     '[handlePullRequestReview]: should send a notification when reviewer comments',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 
@@ -246,7 +246,7 @@ test.serial(
 test.serial(
     '[handlePullRequestReview]: should *not* send a notification when reviewer comment is the author of the PR',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 
@@ -269,7 +269,7 @@ test.serial(
 test.serial(
     '[handlePullRequestReview]: should send a notification for PR approval if no PR details from commit',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 
@@ -313,7 +313,7 @@ test.serial(
 test.serial(
     '[handlePullRequestReview]: should send a notification for PR approval with non-success state for commit',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 
@@ -357,7 +357,7 @@ test.serial(
 test.serial(
     '[handlePullRequestReview]: should send a notification for PR approval with ready to merge',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 

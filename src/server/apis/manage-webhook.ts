@@ -1,7 +1,7 @@
 import * as express from 'express';
 
 import {github} from '../../utils/github';
-import {LoginDetails, userModel} from '../models/userModel';
+import {userModel, UserRecord} from '../models/userModel';
 
 const PROD_ORIGIN = 'github-health.appspot.com';
 const STAGING_ORIGIN = 'github-health-staging.appspot.com';
@@ -23,7 +23,7 @@ export function getHookUrl(request: express.Request) {
 }
 
 async function addWebHook(
-    loginDetails: LoginDetails,
+    loginDetails: UserRecord,
     request: express.Request,
     response: express.Response) {
   try {
@@ -52,7 +52,7 @@ async function addWebHook(
 }
 
 async function removeWebHook(
-    loginDetails: LoginDetails,
+    loginDetails: UserRecord,
     request: express.Request,
     response: express.Response) {
   try {
@@ -92,7 +92,7 @@ export function getRouter(): express.Router {
   webhookRouter.post(
       '/:action',
       async (request: express.Request, response: express.Response) => {
-        const loginDetails = await userModel.getLoginFromRequest(request);
+        const loginDetails = await userModel.getUserRecordFromRequest(request);
         if (!loginDetails) {
           response.sendStatus(400);
           return;

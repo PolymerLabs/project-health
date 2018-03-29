@@ -1,8 +1,7 @@
 import {RepoDetails} from '../../types/api';
 import {firestore} from '../../utils/firestore';
 import {github} from '../../utils/github';
-
-import {LoginDetails} from './userModel';
+import {UserRecord} from './userModel';
 
 const REPO_COLLECTION_NAME = 'repositories';
 // 7 Days
@@ -30,7 +29,7 @@ class RepositoryModel {
   }
 
   async getRepositoryDetails(
-      loginDetails: LoginDetails,
+      loginDetails: UserRecord,
       owner: string,
       repo: string): Promise<RepoDetails|null> {
     const repoDoc = await firestore()

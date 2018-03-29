@@ -39,12 +39,13 @@ test.afterEach.always(async (t) => {
 });
 
 test('[issues]: should retrieve issues for a user', async (t) => {
-  t.context.sandbox.stub(userModel, 'getLoginFromRequest').callsFake(() => {
-    return {
-      username: 'project-health1',
-      githubToken: getTestTokens()['project-health1'],
-    };
-  });
+  t.context.sandbox.stub(userModel, 'getUserRecordFromRequest')
+      .callsFake(() => {
+        return {
+          username: 'project-health1',
+          githubToken: getTestTokens()['project-health1'],
+        };
+      });
   const response = {
     status: () => response,
     send: (text: string) => {

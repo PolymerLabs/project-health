@@ -139,7 +139,7 @@ test.afterEach.always(async (t) => {
 test.serial(
     '[handleStatus]: should not handle success hook if no login details',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return null;
       });
 
@@ -152,7 +152,7 @@ test.serial(
 test.serial(
     '[handleStatus]: should not handle error hook if no login details',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         // Return no details to act as no token
         return null;
       });
@@ -166,7 +166,7 @@ test.serial(
 test.serial(
     '[handleStatus]: should not handle success hook if no PR Details',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 
@@ -193,7 +193,7 @@ test.serial(
 test.serial(
     '[handleStatus]: should not handle error hook if no PR Details',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 
@@ -220,7 +220,7 @@ test.serial(
 test.serial(
     '[handleStatus]: should not handle success hook if PR is not open',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 
@@ -240,7 +240,7 @@ test.serial(
 test.serial(
     '[handleStatus]: should not handle error hook if PR is not open',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 
@@ -260,7 +260,7 @@ test.serial(
 test.serial(
     '[handleStatus]: should not handle success hook if the commit SHA is not the latest',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 
@@ -282,7 +282,7 @@ test.serial(
 test.serial(
     '[handleStatus]: should not handle error hook if the commit SHA is not the latest',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 
@@ -302,7 +302,7 @@ test.serial(
     });
 
 test.serial('[handleStatus]: should not handle pending hooks', async (t) => {
-  t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+  t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
     return FAKE_LOGIN_DETAILS;
   });
 
@@ -320,7 +320,7 @@ test.serial('[handleStatus]: should not handle pending hooks', async (t) => {
 test.serial(
     '[handleStatus]: should handle success hook but not do anything is commit isn\'t success',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 
@@ -350,7 +350,7 @@ test.serial(
 test.serial(
     '[handleStatus]: should handle success hook but not automerge if its not configured for PR',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 
@@ -398,7 +398,7 @@ test.serial(
 test.serial(
     '[handleStatus]: should handle success hook but not automerge if mergeType is null',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 
@@ -448,7 +448,7 @@ test.serial(
 test.serial(
     '[handleStatus]: should handle success hook but not automerge if mergeType is manual',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 
@@ -498,7 +498,7 @@ test.serial(
 test.serial(
     '[handleStatus]: should handle success hook and notify users of successful automerge',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 
@@ -548,7 +548,7 @@ test.serial(
 test.serial(
     '[handleStatus]: should handle success hook and notify users of an errored automerge *without* Githubs error response msg',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 
@@ -601,7 +601,7 @@ test.serial(
 test.serial(
     '[handleStatus]: should handle success hook and notify users of an errored automerge using Githubs error response msg',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 
@@ -657,7 +657,7 @@ test.serial(
 
 test.serial(
     '[handleStatus]: should notify author for new error hook', async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 
@@ -697,7 +697,7 @@ test.serial(
 test.serial(
     '[handleStatus]: should notify author for error hook if new state is different from previous state',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 
@@ -739,7 +739,7 @@ test.serial(
 test.serial(
     '[handleStatus]: should do nothing for error hook if the commits state is the same',
     async (t) => {
-      t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
         return FAKE_LOGIN_DETAILS;
       });
 

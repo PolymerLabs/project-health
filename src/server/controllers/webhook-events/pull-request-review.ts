@@ -23,7 +23,7 @@ export async function handlePullRequestReview(hookData: PullRequestReviewHook):
   const repo = hookData.repository;
   const pullReq = hookData.pull_request;
 
-  const loginDetails = await userModel.getLoginDetails(pullReq.user.login);
+  const loginDetails = await userModel.getUserRecord(pullReq.user.login);
   if (!loginDetails) {
     webhookResponse.message = 'Unable to find login details to retrieve PR ID';
     return webhookResponse;

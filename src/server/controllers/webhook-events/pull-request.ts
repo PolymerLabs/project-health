@@ -18,7 +18,7 @@ async function handleReviewRequested(hookBody: PullRequestHook):
   // The PR owner's dash should update with an incoming entry
   await userModel.markUserForUpdate(user.login);
 
-  const loginDetails = await userModel.getLoginDetails(user.login);
+  const loginDetails = await userModel.getUserRecord(user.login);
   if (!loginDetails) {
     return {
       handled: false,

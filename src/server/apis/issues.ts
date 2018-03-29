@@ -9,7 +9,7 @@ import {userModel} from '../models/userModel';
 export async function handleGetIssues(
     request: express.Request, response: express.Response) {
   try {
-    const loginDetails = await userModel.getLoginFromRequest(request);
+    const loginDetails = await userModel.getUserRecordFromRequest(request);
     if (!loginDetails) {
       response.status(400).send('No login details.');
       return;

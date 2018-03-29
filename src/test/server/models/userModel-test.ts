@@ -4,7 +4,7 @@ import * as http from 'http';
 import * as sinon from 'sinon';
 
 import {startTestReplayServer} from '../../../replay-server';
-import {TOKEN_COLLECTION_NAME, userModel, USERS_COLLECTION_NAME} from '../../../server/models/userModel';
+import {TOKEN_COLLECTION_NAME, userModel, UserRecord, USERS_COLLECTION_NAME} from '../../../server/models/userModel';
 import {firestore, initFirestore} from '../../../utils/firestore';
 import * as githubFactory from '../../../utils/github';
 import {initGithub} from '../../../utils/github';
@@ -49,7 +49,7 @@ test.after(() => {
 });
 
 test.serial('[usermodel]: should return null for no user', async (t) => {
-  const result = await userModel.getLoginDetails(TEST_USERNAME);
+  const result = await userModel.getUserRecord(TEST_USERNAME);
   t.deepEqual(result, null);
 });
 
@@ -68,7 +68,7 @@ test.serial(
           .doc(TEST_USERNAME)
           .set(exampleData);
 
-      const result = await userModel.getLoginDetails(TEST_USERNAME);
+      const result = await userModel.getUserRecord(TEST_USERNAME);
       t.deepEqual(result, null);
     });
 
@@ -87,7 +87,7 @@ test.serial(
           .doc(TEST_USERNAME)
           .set(exampleData);
 
-      const result = await userModel.getLoginDetails(TEST_USERNAME);
+      const result = await userModel.getUserRecord(TEST_USERNAME);
       t.deepEqual(result, null);
     });
 
@@ -108,7 +108,7 @@ test.serial(
           .doc(TEST_USERNAME)
           .set(exampleData);
 
-      const result = await userModel.getLoginDetails(TEST_USERNAME);
+      const result = await userModel.getUserRecord(TEST_USERNAME);
       t.deepEqual(result, null);
     });
 
@@ -127,7 +127,7 @@ test.serial(
           .doc(TEST_USERNAME)
           .set(exampleData);
 
-      const result = await userModel.getLoginDetails(TEST_USERNAME);
+      const result = await userModel.getUserRecord(TEST_USERNAME);
       t.deepEqual(result, null);
     });
 
@@ -146,7 +146,7 @@ test.serial(
           .doc(TEST_USERNAME)
           .set(exampleData);
 
-      const result = await userModel.getLoginDetails(TEST_USERNAME);
+      const result = await userModel.getUserRecord(TEST_USERNAME);
       t.deepEqual(result, null);
     });
 
@@ -165,7 +165,7 @@ test.serial(
           .doc(TEST_USERNAME)
           .set(exampleData);
 
-      const result = await userModel.getLoginDetails(TEST_USERNAME);
+      const result = await userModel.getUserRecord(TEST_USERNAME);
       t.deepEqual(result, null);
     });
 
@@ -186,7 +186,7 @@ test.serial(
           .doc(TEST_USERNAME)
           .set(exampleData);
 
-      const result = await userModel.getLoginDetails(TEST_USERNAME);
+      const result = await userModel.getUserRecord(TEST_USERNAME);
       t.deepEqual(result, exampleData);
     });
 
@@ -222,7 +222,7 @@ test.serial('[usermodel]: should return a new user token', async (t) => {
   const newToken = await userModel.generateNewUserToken(githubToken, scopes);
   t.deepEqual(newToken, TEST_USER_TOKEN);
 
-  const result = await userModel.getLoginFromToken(TEST_USER_TOKEN);
+  const result = await userModel.getUserRecordFromToken(TEST_USER_TOKEN);
   t.deepEqual(result, {
     githubToken,
     username: TEST_USERNAME,
@@ -236,13 +236,13 @@ test.serial('[usermodel]: should return a new user token', async (t) => {
 
 
 test.serial('[usermodel]: should return null for no token', async (t) => {
-  const result = await userModel.getLoginFromToken(undefined);
+  const result = await userModel.getUserRecordFromToken(undefined);
   t.deepEqual(result, null);
 });
 
 test.serial(
     '[usermodel]: should return null for token that doesnt exit', async (t) => {
-      const result = await userModel.getLoginFromToken(TEST_USER_TOKEN);
+      const result = await userModel.getUserRecordFromToken(TEST_USER_TOKEN);
       t.deepEqual(result, null);
     });
 
@@ -254,7 +254,7 @@ test.serial(
           .doc(TEST_USER_TOKEN)
           .set({});
 
-      const result = await userModel.getLoginFromToken(TEST_USER_TOKEN);
+      const result = await userModel.getUserRecordFromToken(TEST_USER_TOKEN);
       t.deepEqual(result, null);
     });
 
@@ -268,7 +268,7 @@ test.serial(
             username: TEST_USERNAME,
           });
 
-      const result = await userModel.getLoginFromToken(TEST_USER_TOKEN);
+      const result = await userModel.getUserRecordFromToken(TEST_USER_TOKEN);
       t.deepEqual(result, null);
     });
 
@@ -279,4 +279,35 @@ test.serial(
         await userModel.generateNewUserToken(
             getTestTokens()['project-health1'], []);
       }, 'New user info is invalid.');
+    });
+
+test.serial('[usermodel]: should set and last viewed feature', async (t) => {
+  const exampleData: UserRecord = {
+    username: TEST_USER_TOKEN,
+    fullname: TEST_NAME,
+    avatarUrl: TEST_AVATAR,
+    githubToken: '1234',
+    scopes: ['repo'],
+    lastKnownUpdate: new Date().toISOString(),
+  };
+
+  await firestore()
+      .collection(USERS_COLLECTION_NAME)
+      .doc(TEST_USERNAME)
+      .set(exampleData);
+
+  await userModel.setFeatureData(TEST_USERNAME, 'lastViewed', 1);
+  const userRecord = await userModel.getUserRecord(TEST_USERNAME);
+  if (!userRecord) {
+    throw new Error('Expected user record to exist.');
+  }
+  t.deepEqual(userRecord.lastViewed, 1);
+});
+
+test.serial(
+    '[usermodel]: should throw when setting a feature for a non existent user',
+    async (t) => {
+      await t.throws(async () => {
+        await userModel.setFeatureData('non-existent-user', 'lastViewed', 1);
+      });
     });
