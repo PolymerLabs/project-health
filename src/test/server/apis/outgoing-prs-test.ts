@@ -26,7 +26,7 @@ test.before(async (t) => {
       await startTestReplayServer(t, 'project-health1-dashboard outgoing');
   initGithub(url, url);
 
-  const loginDetails = {
+  const userRecord = {
     username: 'project-health1',
     githubToken: getTestTokens()['project-health1'],
     scopes: [],
@@ -35,12 +35,11 @@ test.before(async (t) => {
     lastKnownUpdate: new Date().toISOString(),
   };
 
-  const result = await fetchOutgoingData(loginDetails, 'project-health1');
+  const result = await fetchOutgoingData(userRecord, 'project-health1');
   let page = result;
 
   while (page.hasMore && page.cursor) {
-    page =
-        await fetchOutgoingData(loginDetails, 'project-health1', page.cursor);
+    page = await fetchOutgoingData(userRecord, 'project-health1', page.cursor);
     result.prs = result.prs.concat(page.prs);
   }
 

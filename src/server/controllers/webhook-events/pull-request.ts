@@ -18,8 +18,8 @@ async function handleReviewRequested(hookBody: PullRequestHook):
   // The PR owner's dash should update with an incoming entry
   await userModel.markUserForUpdate(user.login);
 
-  const loginDetails = await userModel.getUserRecord(user.login);
-  if (!loginDetails) {
+  const userRecord = await userModel.getUserRecord(user.login);
+  if (!userRecord) {
     return {
       handled: false,
       notifications: null,
@@ -28,10 +28,7 @@ async function handleReviewRequested(hookBody: PullRequestHook):
   }
 
   const prGqlId = await getPRID(
-      loginDetails.githubToken,
-      repo.owner.login,
-      repo.name,
-      pullRequest.number);
+      userRecord.githubToken, repo.owner.login, repo.name, pullRequest.number);
 
   if (!prGqlId) {
     return {

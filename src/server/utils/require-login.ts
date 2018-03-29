@@ -7,8 +7,8 @@ export function requireLogin(withRedirect?: boolean) {
              request: express.Request,
              response: express.Response,
              next: Function) => {
-    const loginDetails = await userModel.getUserRecordFromRequest(request);
-    if (loginDetails) {
+    const userRecord = await userModel.getUserRecordFromRequest(request);
+    if (userRecord) {
       next();
       return;
     }

@@ -9,8 +9,8 @@ import {createAPIRoute, ResponseDetails} from './api-route';
 
 async function handleLastKnownUpdate(request: express.Request):
     Promise<ResponseDetails<LastKnownResponse>> {
-  const loginDetails = await userModel.getUserRecordFromRequest(request);
-  if (!loginDetails) {
+  const userRecord = await userModel.getUserRecordFromRequest(request);
+  if (!userRecord) {
     return {
       statusCode: 401,
       error: {
@@ -22,7 +22,7 @@ async function handleLastKnownUpdate(request: express.Request):
 
   let lastKnownUpdate: string|null;
   if (!request.query.login) {
-    lastKnownUpdate = loginDetails.lastKnownUpdate;
+    lastKnownUpdate = userRecord.lastKnownUpdate;
   } else {
     const userDetails = await userModel.getUserRecord(request.query.login);
     if (!userDetails) {

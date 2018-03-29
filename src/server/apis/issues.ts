@@ -9,13 +9,13 @@ import {userModel} from '../models/userModel';
 export async function handleGetIssues(
     request: express.Request, response: express.Response) {
   try {
-    const loginDetails = await userModel.getUserRecordFromRequest(request);
-    if (!loginDetails) {
+    const userRecord = await userModel.getUserRecordFromRequest(request);
+    if (!userRecord) {
       response.status(400).send('No login details.');
       return;
     }
 
-    let assigneeLogin = loginDetails.username;
+    let assigneeLogin = userRecord.username;
     if (request.query.login) {
       assigneeLogin = request.query.login;
     }
@@ -25,7 +25,7 @@ export async function handleGetIssues(
         query: `assignee:${assigneeLogin} is:issue state:open`,
       },
       fetchPolicy: 'network-only',
-      context: {token: loginDetails.githubToken}
+      context: {token: userRecord.githubToken}
     });
 
     const issues: Issue[] = [];

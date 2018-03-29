@@ -296,18 +296,25 @@ test.serial('[usermodel]: should set and last viewed feature', async (t) => {
       .doc(TEST_USERNAME)
       .set(exampleData);
 
-  await userModel.setFeatureData(TEST_USERNAME, 'lastViewed', 1);
+  await userModel.setFeatureData(TEST_USERNAME, 'feature-lastViewed', {
+    enabledAt: 1,
+  });
   const userRecord = await userModel.getUserRecord(TEST_USERNAME);
   if (!userRecord) {
     throw new Error('Expected user record to exist.');
   }
-  t.deepEqual(userRecord.lastViewed, 1);
+  t.deepEqual(userRecord['feature-lastViewed'], {
+    enabledAt: 1,
+  });
 });
 
 test.serial(
     '[usermodel]: should throw when setting a feature for a non existent user',
     async (t) => {
       await t.throws(async () => {
-        await userModel.setFeatureData('non-existent-user', 'lastViewed', 1);
+        await userModel.setFeatureData(
+            'non-existent-user', 'feature-lastViewed', {
+              enabledAt: 1,
+            });
       });
     });

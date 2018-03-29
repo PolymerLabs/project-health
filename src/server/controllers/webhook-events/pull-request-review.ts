@@ -23,8 +23,8 @@ export async function handlePullRequestReview(hookData: PullRequestReviewHook):
   const repo = hookData.repository;
   const pullReq = hookData.pull_request;
 
-  const loginDetails = await userModel.getUserRecord(pullReq.user.login);
-  if (!loginDetails) {
+  const userRecord = await userModel.getUserRecord(pullReq.user.login);
+  if (!userRecord) {
     webhookResponse.message = 'Unable to find login details to retrieve PR ID';
     return webhookResponse;
   }
@@ -39,7 +39,7 @@ export async function handlePullRequestReview(hookData: PullRequestReviewHook):
   if (review.state === 'approved') {
     // Either send ready to merge OR send approved notification
     const prDetails = await getPRDetailsFromCommit(
-        loginDetails.githubToken, repo.full_name, hookData.review.commit_id);
+        userRecord.githubToken, repo.full_name, hookData.review.commit_id);
     if (prDetails && prDetails.commit.state === 'SUCCESS') {
       webhookResponse.message =
           'Sending approved and ready to merge notification';
@@ -69,7 +69,7 @@ export async function handlePullRequestReview(hookData: PullRequestReviewHook):
   }
 
   const prGqlId = await getPRID(
-      loginDetails.githubToken, repo.owner.login, repo.name, pullReq.number);
+      userRecord.githubToken, repo.owner.login, repo.name, pullReq.number);
 
   if (!prGqlId) {
     webhookResponse.message = 'Unable to retrieve the PR ID';

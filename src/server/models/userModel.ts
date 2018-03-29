@@ -20,10 +20,10 @@ export interface UserRecord {
   fullname: string|null;
   avatarUrl: string|null;
   lastKnownUpdate: string|null;
-  lastViewed?: number;
+  'feature-lastViewed'?: {enabledAt: number;};
 }
 
-type FeatureID = 'lastViewed';
+type FeatureID = 'feature-lastViewed';
 
 /**
  * The structure of the data base is:
@@ -47,30 +47,30 @@ class UserModel {
    *
    * @private
    */
-  validateDetails(loginDetails: UserRecord): boolean {
-    if (!loginDetails.githubToken) {
+  validateDetails(userRecord: UserRecord): boolean {
+    if (!userRecord.githubToken) {
       return false;
     }
 
-    if (!loginDetails.scopes) {
+    if (!userRecord.scopes) {
       return false;
     }
 
     for (const scope of REQUIRED_SCOPES) {
-      if (loginDetails.scopes.indexOf(scope) === -1) {
+      if (userRecord.scopes.indexOf(scope) === -1) {
         return false;
       }
     }
 
-    if (!loginDetails.username) {
+    if (!userRecord.username) {
       return false;
     }
 
-    if (typeof loginDetails.fullname === 'undefined') {
+    if (typeof userRecord.fullname === 'undefined') {
       return false;
     }
 
-    if (typeof loginDetails.avatarUrl === 'undefined') {
+    if (typeof userRecord.avatarUrl === 'undefined') {
       return false;
     }
 

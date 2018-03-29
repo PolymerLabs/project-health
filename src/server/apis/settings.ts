@@ -13,13 +13,13 @@ export function getRouter(): express.Router {
   settingsRouter.post(
       '/orgs.json',
       async (request: express.Request, response: express.Response) => {
-        const loginDetails = await userModel.getUserRecordFromRequest(request);
-        if (!loginDetails) {
+        const userRecord = await userModel.getUserRecordFromRequest(request);
+        if (!userRecord) {
           response.sendStatus(400);
           return;
         }
 
-        const scopes = loginDetails.scopes;
+        const scopes = userRecord.scopes;
         if (!scopes ||
             (scopes.indexOf('admin:org_hook') === -1 ||
              scopes.indexOf('read:org') === -1)) {
@@ -37,7 +37,7 @@ export function getRouter(): express.Router {
             query: orgsDetailsQuery,
             fetchPolicy: 'network-only',
             context: {
-              token: loginDetails.githubToken,
+              token: userRecord.githubToken,
             }
           });
 
@@ -61,7 +61,7 @@ export function getRouter(): express.Router {
               if (org.viewerCanAdminister) {
                 try {
                   const hooks = await github().get(
-                      `orgs/${org.login}/hooks`, loginDetails.githubToken);
+                      `orgs/${org.login}/hooks`, userRecord.githubToken);
 
                   const hookUrl = getHookUrl(request);
                   for (const hook of hooks) {
