@@ -54,7 +54,7 @@ async function handleSuccessStatus(
     message: null,
   };
 
-  // If all commits state is success (all status checks passed) or
+  // Check if the latest commitsstatus checks have passed
   if (prDetails.commit.state !== 'SUCCESS' && prDetails.commit.state !== null) {
     webhookResponse.message =
         `Status of the PR's commit is not 'SUCCESS' or 'null': '${
@@ -90,7 +90,7 @@ async function handleSuccessStatus(
         msg = err.error.message;
       }
 
-      notificationTitle = 'Automerge failed but the PR is ready to merge';
+      notificationTitle = `Automerge failed for '${prDetails.title}'`;
       icon = '/images/notification-images/icon-error-192x192.png';
 
       webhookResponse.message = `Unable to perform automerge: '${msg}'`;

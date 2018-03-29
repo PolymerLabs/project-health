@@ -1,7 +1,5 @@
 import anyTest, {TestInterface} from 'ava';
-// import * as fs from 'fs-extra';
 import {Server} from 'http';
-// import * as path from 'path';
 import * as sinon from 'sinon';
 import {SinonSandbox, SinonStub} from 'sinon';
 
@@ -358,9 +356,9 @@ test.serial(
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            const detailsClone = Object.assign({}, PR_DETAILS);
-            detailsClone.commit.state = 'SUCCESS';
-            return detailsClone;
+            const details = newFakePRDetails({});
+            details.commit.state = 'SUCCESS';
+            return details;
           });
 
       t.context.sandbox.stub(pullRequestsModel, 'getAutomergeOpts')
@@ -406,9 +404,9 @@ test.serial(
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            const detailsClone = Object.assign({}, PR_DETAILS);
-            detailsClone.commit.state = 'SUCCESS';
-            return detailsClone;
+            const details = newFakePRDetails({});
+            details.commit.state = 'SUCCESS';
+            return details;
           });
 
       t.context.sandbox.stub(pullRequestsModel, 'getAutomergeOpts')
@@ -456,9 +454,9 @@ test.serial(
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            const detailsClone = Object.assign({}, PR_DETAILS);
-            detailsClone.commit.state = 'SUCCESS';
-            return detailsClone;
+            const details = newFakePRDetails({});
+            details.commit.state = 'SUCCESS';
+            return details;
           });
 
       t.context.sandbox.stub(pullRequestsModel, 'getAutomergeOpts')
@@ -556,9 +554,9 @@ test.serial(
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            const detailsClone = Object.assign({}, PR_DETAILS);
-            detailsClone.commit.state = 'SUCCESS';
-            return detailsClone;
+            const details = newFakePRDetails({});
+            details.commit.state = 'SUCCESS';
+            return details;
           });
 
       t.context.sandbox.stub(pullRequestsModel, 'getAutomergeOpts')
@@ -585,7 +583,7 @@ test.serial(
       t.deepEqual(
           sendStub.args[0][1],
           {
-            title: 'Automerge failed but the PR is ready to merge',
+            title: 'Automerge failed for \'test-title\'',
             body: '[status-test] test-title',
             icon: '/images/notification-images/icon-error-192x192.png',
             data: {
@@ -609,9 +607,9 @@ test.serial(
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            const detailsClone = Object.assign({}, PR_DETAILS);
-            detailsClone.commit.state = 'SUCCESS';
-            return detailsClone;
+            const details = newFakePRDetails({});
+            details.commit.state = 'SUCCESS';
+            return details;
           });
 
       t.context.sandbox.stub(pullRequestsModel, 'getAutomergeOpts')
@@ -642,7 +640,7 @@ test.serial(
       t.deepEqual(
           sendStub.args[0][1],
           {
-            title: 'Automerge failed but the PR is ready to merge',
+            title: 'Automerge failed for \'test-title\'',
             body: '[status-test] test-title',
             icon: '/images/notification-images/icon-error-192x192.png',
             data: {
