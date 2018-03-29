@@ -26,6 +26,7 @@ async function handleFailingStatus(
       title: hookData.description,
       body: `[${hookData.repository.name}] ${prDetails.title}`,
       requireInteraction: false,
+      icon: '/images/notification-images/icon-error-192x192.png',
       data: {
         url: prDetails.url,
         pullRequest: {
@@ -53,64 +54,63 @@ async function handleSuccessStatus(
     message: null,
   };
 
-  const automergeOpts = await pullRequestsModel.getAutomergeOpts(
-      prDetails.owner, prDetails.repo, prDetails.number);
-  if (!automergeOpts) {
-    webhookResponse.message = 'No automerge options configured.';
-    return webhookResponse;
-  }
-
-  const mergeType = automergeOpts.mergeType;
-  if (!mergeType || mergeType === 'manual') {
-    webhookResponse.message = `A non-automerge type selected: ${mergeType}`;
+  // Check if the latest commits status checks have passed
+  if (prDetails.commit.state !== 'SUCCESS' && prDetails.commit.state !== null) {
+    webhookResponse.message =
+        `Status of the PR's commit is not 'SUCCESS' or 'null': '${
+            prDetails.commit.state}'`;
     return webhookResponse;
   }
 
   const repo = hookData.repository;
-  try {
-    const mergeSucessful = await performAutomerge(
-        loginDetails.githubToken, hookData, prDetails, mergeType);
-    if (mergeSucessful) {
-      const results = await sendNotification(prDetails.author, {
-        title: `Automerge complete for '${prDetails.title}'`,
-        body: `[${hookData.repository.name}] ${prDetails.title}`,
-        requireInteraction: false,
-        data: {
-          url: prDetails.url,
-          pullRequest: {
-            gqlId: prDetails.gqlId,
-          },
-        },
-        tag: getPRTag(repo.owner.login, repo.name, prDetails.number),
-      });
-      webhookResponse.notifications = results;
+
+  const automergeOpts = await pullRequestsModel.getAutomergeOpts(
+      prDetails.owner, prDetails.repo, prDetails.number);
+
+  let notificationTitle = null;
+  let icon = '/images/notification-images/icon-completed-192x192.png';
+
+  if (!automergeOpts || !automergeOpts.mergeType ||
+      automergeOpts.mergeType === 'manual') {
+    notificationTitle = 'PR is ready to merge';
+    webhookResponse.message = 'PR is ready to merge, automerge is not setup';
+  } else {
+    try {
+      await performAutomerge(
+          loginDetails.githubToken, prDetails, automergeOpts.mergeType);
+
+      notificationTitle = `Automerge complete for '${prDetails.title}'`;
+      icon = '/images/notification-images/icon-completed-192x192.png';
       webhookResponse.message = 'Automerge successful';
-    } else {
-      webhookResponse.message = 'Automerge not performed';
-    }
-  } catch (err) {
-    // Githubs response will have a slightly more helpful message
-    // under err.error.message.
-    let msg = err.message;
-    if (err.error && err.error.message) {
-      msg = err.error.message;
-    }
+    } catch (err) {
+      // Githubs response will have a slightly more helpful message
+      // under err.error.message.
+      let msg = err.message;
+      if (err.error && err.error.message) {
+        msg = err.error.message;
+      }
 
-    const results = await sendNotification(prDetails.author, {
-      title: `Auto-merge failed: '${msg}'`,
-      body: `[${hookData.repository.name}] ${prDetails.title}`,
-      requireInteraction: false,
-      data: {
-        url: prDetails.url,
-        pullRequest: {gqlId: prDetails.gqlId},
-      },
-      tag: getPRTag(repo.owner.login, repo.name, prDetails.number),
-    });
+      notificationTitle = `Automerge failed for '${prDetails.title}'`;
+      icon = '/images/notification-images/icon-error-192x192.png';
 
-    webhookResponse.notifications = results;
-    webhookResponse.message = `Unable to perform automerge: '${msg}'`;
+      webhookResponse.message = `Unable to perform automerge: '${msg}'`;
+    }
   }
 
+  const results = await sendNotification(prDetails.author, {
+    title: notificationTitle,
+    body: `[${hookData.repository.name}] ${prDetails.title}`,
+    requireInteraction: false,
+    icon,
+    data: {
+      url: prDetails.url,
+      pullRequest: {
+        gqlId: prDetails.gqlId,
+      },
+    },
+    tag: getPRTag(repo.owner.login, repo.name, prDetails.number),
+  });
+  webhookResponse.notifications = results;
   return webhookResponse;
 }
 
