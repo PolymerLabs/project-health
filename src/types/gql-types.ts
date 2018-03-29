@@ -1450,6 +1450,31 @@ export interface CommitToPRQuery {
             login: string,
           }
         ) | null,
+        // A list of reviews associated with the pull request.
+        reviews:  {
+          __typename: string,
+          // A list of nodes.
+          nodes:  Array< {
+            __typename: string,
+            // The actor who authored the comment.
+            author: ( {
+                __typename: "Organization",
+                // The username of the actor.
+                login: string,
+              } | {
+                __typename: "User",
+                // The username of the actor.
+                login: string,
+              } | {
+                __typename: "Bot",
+                // The username of the actor.
+                login: string,
+              }
+            ) | null,
+            // Identifies the current state of the pull request review.
+            state: PullRequestReviewState,
+          } | null > | null,
+        } | null,
         // A list of commits present in this pull request's head branch not present in the base branch.
         commits:  {
           __typename: string,
