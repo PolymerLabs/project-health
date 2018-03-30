@@ -56,13 +56,13 @@ test.before(async (t) => {
   };
 });
 
-test('dashoutgoing: sane output', (t) => {
+test('[outgoing-prs-test]: sane output', (t) => {
   const data = t.context.data;
   // Make sure a test is added each time these numbers are changed.
   t.is(data.prs.length, 11);
 });
 
-test('dashoutgoing: outgoing PRs are sorted', (t) => {
+test('[outgoing-prs-test]: outgoing PRs are sorted', (t) => {
   const data = t.context.data;
   let lastCreatedAt = data.prs[0].createdAt;
   for (const pr of data.prs) {
@@ -71,7 +71,7 @@ test('dashoutgoing: outgoing PRs are sorted', (t) => {
   }
 });
 
-test('dashoutgoing: outgoing PR, review with my own replies', (t) => {
+test('[outgoing-prs-test]: outgoing PR, review with my own replies', (t) => {
   t.deepEqual(t.context.prsById.get('project-health1/repo/pull/8'), {
     id: 'MDExOlB1bGxSZXF1ZXN0MTY2MTM2ODI5',
     author: 'project-health1',
@@ -104,10 +104,11 @@ test('dashoutgoing: outgoing PR, review with my own replies', (t) => {
     mergeable: MergeableState.MERGEABLE,
     automergeOpts: null,
     automergeAvailable: false,
+    hasNewActivity: false,
   });
 });
 
-test('dashoutgoing: Outgoing PR, no reviewers', (t) => {
+test('[outgoing-prs-test]: Outgoing PR, no reviewers', (t) => {
   t.deepEqual(t.context.prsById.get('project-health1/repo/pull/7'), {
     id: 'MDExOlB1bGxSZXF1ZXN0MTY2MTIxMzYx',
     author: 'project-health1',
@@ -130,10 +131,11 @@ test('dashoutgoing: Outgoing PR, no reviewers', (t) => {
     mergeable: MergeableState.MERGEABLE,
     automergeOpts: null,
     automergeAvailable: false,
+    hasNewActivity: false,
   });
 });
 
-test('dashoutgoing: Outgoing PR, changes requested', (t) => {
+test('[outgoing-prs-test]: Outgoing PR, changes requested', (t) => {
   t.deepEqual(t.context.prsById.get('project-health1/repo/pull/6'), {
     id: 'MDExOlB1bGxSZXF1ZXN0MTY1NzkzODg3',
     author: 'project-health1',
@@ -161,10 +163,11 @@ test('dashoutgoing: Outgoing PR, changes requested', (t) => {
     mergeable: MergeableState.MERGEABLE,
     automergeOpts: null,
     automergeAvailable: false,
+    hasNewActivity: false,
   });
 });
 
-test('dashoutgoing: Outgoing PR, approved, ready to merge', (t) => {
+test('[outgoing-prs-test]: Outgoing PR, approved, ready to merge', (t) => {
   t.deepEqual(t.context.prsById.get('project-health1/repo/pull/5'), {
     id: 'MDExOlB1bGxSZXF1ZXN0MTY1NzkzNDcx',
     author: 'project-health1',
@@ -192,10 +195,11 @@ test('dashoutgoing: Outgoing PR, approved, ready to merge', (t) => {
     mergeable: MergeableState.MERGEABLE,
     automergeOpts: null,
     automergeAvailable: false,
+    hasNewActivity: false,
   });
 });
 
-test('dashoutgoing: Outgoing PR, has 1 commented review', (t) => {
+test('[outgoing-prs-test]: Outgoing PR, has 1 commented review', (t) => {
   t.deepEqual(t.context.prsById.get('project-health1/repo/pull/2'), {
     id: 'MDExOlB1bGxSZXF1ZXN0MTYzODY0NTkz',
     author: 'project-health1',
@@ -225,10 +229,11 @@ test('dashoutgoing: Outgoing PR, has 1 commented review', (t) => {
     mergeable: MergeableState.MERGEABLE,
     automergeOpts: null,
     automergeAvailable: false,
+    hasNewActivity: false,
   });
 });
 
-test('dashoutgoing: Outgoing PR, requested reviews, no reviews', (t) => {
+test('[outgoing-prs-test]: Outgoing PR, requested reviews, no reviews', (t) => {
   t.deepEqual(t.context.prsById.get('project-health1/repo/pull/1'), {
     id: 'MDExOlB1bGxSZXF1ZXN0MTU4Njg4ODg0',
     author: 'project-health1',
@@ -249,11 +254,12 @@ test('dashoutgoing: Outgoing PR, requested reviews, no reviews', (t) => {
     mergeable: MergeableState.MERGEABLE,
     automergeOpts: null,
     automergeAvailable: false,
+    hasNewActivity: false,
   });
 });
 
 
-test('dashoutgoing: review requested changes then approved', (t) => {
+test('[outgoing-prs-test]: review requested changes then approved', (t) => {
   t.deepEqual(t.context.prsById.get('project-health1/repo/pull/12'), {
     id: 'MDExOlB1bGxSZXF1ZXN0MTcyMTEzODAz',
     author: 'project-health1',
@@ -281,10 +287,11 @@ test('dashoutgoing: review requested changes then approved', (t) => {
     mergeable: MergeableState.MERGEABLE,
     automergeOpts: null,
     automergeAvailable: false,
+    hasNewActivity: false,
   });
 });
 
-test('dashoutgoing: with success status', (t) => {
+test('[outgoing-prs-test]: with success status', (t) => {
   t.deepEqual(t.context.prsById.get('project-health1/status-repo/pull/3'), {
     id: 'MDExOlB1bGxSZXF1ZXN0MTc0NDQ3NDAw',
     author: 'project-health1',
@@ -312,10 +319,11 @@ test('dashoutgoing: with success status', (t) => {
     mergeable: MergeableState.UNKNOWN,
     automergeOpts: null,
     automergeAvailable: false,
+    hasNewActivity: false,
   });
 });
 
-test('dashoutgoing: with pending status', (t) => {
+test('[outgoing-prs-test]: with pending status', (t) => {
   t.deepEqual(t.context.prsById.get('project-health1/status-repo/pull/4'), {
     id: 'MDExOlB1bGxSZXF1ZXN0MTc0NDQ3NDYz',
     author: 'project-health1',
@@ -343,10 +351,11 @@ test('dashoutgoing: with pending status', (t) => {
     mergeable: MergeableState.UNKNOWN,
     automergeOpts: null,
     automergeAvailable: false,
+    hasNewActivity: false,
   });
 });
 
-test('dashoutgoing: with error status', (t) => {
+test('[outgoing-prs-test]: with error status', (t) => {
   t.deepEqual(t.context.prsById.get('project-health1/status-repo/pull/5'), {
     id: 'MDExOlB1bGxSZXF1ZXN0MTc0NDQ3NTc1',
     author: 'project-health1',
@@ -374,10 +383,11 @@ test('dashoutgoing: with error status', (t) => {
     mergeable: MergeableState.UNKNOWN,
     automergeOpts: null,
     automergeAvailable: false,
+    hasNewActivity: false,
   });
 });
 
-test('dashoutgoing: with failing status', (t) => {
+test('[outgoing-prs-test]: with failing status', (t) => {
   t.deepEqual(t.context.prsById.get('project-health1/status-repo/pull/6'), {
     id: 'MDExOlB1bGxSZXF1ZXN0MTc0NDQ3Njk2',
     author: 'project-health1',
@@ -405,5 +415,6 @@ test('dashoutgoing: with failing status', (t) => {
     mergeable: MergeableState.UNKNOWN,
     automergeOpts: null,
     automergeAvailable: false,
+    hasNewActivity: false,
   });
 });

@@ -5,6 +5,9 @@ import * as api from '../../types/api';
 import {IncomingPullRequestsQuery, mentionedFieldsFragment, prFieldsFragment, PullRequestReviewState, reviewFieldsFragment} from '../../types/gql-types';
 import {github} from '../../utils/github';
 import {userModel} from '../models/userModel';
+import {getPRLastActivityTimestamp} from '../utils/get-pr-last-activity';
+import {issueHasNewActivity} from '../utils/issue-has-new-activity';
+
 import {fetchOutgoingData} from './dash-data/fetch-outgoing-data';
 
 /**
@@ -98,6 +101,8 @@ export async function fetchIncomingData(
       mentioned.set(item.id, mention);
     }
   }
+
+  const lastViewedInfo = await userModel.getAllLastViewedInfo(dashboardLogin);
 
   // Incoming PRs that I've reviewed.
   for (const pr of viewerPrsResult.data.reviewed.nodes || []) {
@@ -196,6 +201,15 @@ export async function fetchIncomingData(
         relevantReview.state !== PullRequestReviewState.APPROVED) {
       reviewedPr.status = {type: 'ApprovalRequired'};
     }
+
+    const lastActivity = await getPRLastActivityTimestamp(reviewedPr);
+    if (lastActivity) {
+      reviewedPr.hasNewActivity = await issueHasNewActivity(
+          dashboardLogin, lastActivity, lastViewedInfo[pr.id]);
+    } else {
+      reviewedPr.hasNewActivity = false;
+    }
+
 
     prsShown.push(pr.id);
     incomingPrs.push(reviewedPr);
@@ -347,6 +361,7 @@ export function convertPrFields(fields: prFieldsFragment): api.PullRequest {
     author: '',
     status: {type: 'UnknownStatus'},
     events: [],
+    hasNewActivity: false,
   };
 
   if (fields.author && fields.author.__typename === 'User') {

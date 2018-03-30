@@ -4,7 +4,9 @@ import {commitFieldsFragment, OutgoingPullRequestsQuery, PullRequestReviewState,
 import {github} from '../../../utils/github';
 import {pullRequestsModel} from '../../models/pullRequestsModel';
 import {repositoryModel} from '../../models/repositoryModel';
-import {UserRecord} from '../../models/userModel';
+import {userModel, UserRecord} from '../../models/userModel';
+import {getPRLastActivityTimestamp} from '../../utils/get-pr-last-activity';
+import {issueHasNewActivity} from '../../utils/issue-has-new-activity';
 import {convertPrFields, convertReviewFields, outgoingPrsQuery} from '../dash-data';
 
 /**
@@ -77,6 +79,8 @@ async function getAllPRInfo(
   const prs: api.OutgoingPullRequest[] = [];
 
   if (data.user) {
+    const lastViewedInfo =
+        await userModel.getAllLastViewedInfo(userRecord.username);
     const prConnection = data.user.pullRequests;
 
     // Set pagination info.
@@ -206,7 +210,16 @@ async function getAllPRInfo(
         automergeAvailable,
         automergeOpts,
         mergeable: pr.mergeable,
+        hasNewActivity: false,
       };
+
+      const lastActivity = await getPRLastActivityTimestamp(fullPR);
+      if (lastActivity) {
+        fullPR.hasNewActivity = await issueHasNewActivity(
+            dashLogin, lastActivity, lastViewedInfo[pr.id]);
+      } else {
+        fullPR.hasNewActivity = false;
+      }
 
       return fullPR;
     });

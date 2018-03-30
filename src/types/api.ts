@@ -35,6 +35,7 @@ export interface PullRequest {
   avatarUrl: string;
   status: PullRequestStatus;
   events: PullRequestEvent[];
+  hasNewActivity: boolean;
 }
 
 export type PullRequestStatus =
