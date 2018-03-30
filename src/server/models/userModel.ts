@@ -9,6 +9,7 @@ import {github} from '../../utils/github';
 
 export const ID_COOKIE_NAME = 'health-id';
 export const USERS_COLLECTION_NAME = 'users';
+export const METADATA_COLLECTION_NAME = 'metadata';
 export const TOKEN_COLLECTION_NAME = 'user-tokens';
 
 export const REQUIRED_SCOPES = ['repo'];
@@ -34,6 +35,9 @@ type FeatureID = 'feature-lastViewed';
  *     - githubToken
  *     - githubTokenScopes[]
  *     - username
+ *     - metadata/
+ *         - last-viewed/
+ *             - <GitHub Issue ID>: <Last Viewed Timestamp>
  *
  * - user-tokens/
  *   - <Random Token>
@@ -190,6 +194,37 @@ class UserModel {
     }
 
     return this.getUserRecord(tokenData.username);
+  }
+
+  async updateLastViewed(username: string, issueId: string, timestamp: number) {
+    const doc = await firestore()
+                    .collection(USERS_COLLECTION_NAME)
+                    .doc(username)
+                    .collection(METADATA_COLLECTION_NAME)
+                    .doc('last-viewed');
+    await doc.update({
+      [issueId]: timestamp,
+    });
+  }
+
+  async getIssueLastViewed(username: string, issueId: string):
+      Promise<number|null> {
+    const doc = await firestore()
+                    .collection(USERS_COLLECTION_NAME)
+                    .doc(username)
+                    .collection(METADATA_COLLECTION_NAME)
+                    .doc('last-viewed');
+    const docSnapshot = await doc.get();
+    if (!docSnapshot.exists) {
+      return null;
+    }
+
+    const data = docSnapshot.data();
+    if (!data || !data[issueId]) {
+      return null;
+    }
+
+    return data[issueId];
   }
 }
 

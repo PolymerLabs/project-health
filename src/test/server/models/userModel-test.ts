@@ -318,3 +318,42 @@ test.serial(
             });
       });
     });
+
+test.serial('[usermodel]: should mark user for update', async (t) => {
+  const doc =
+      await firestore().collection(USERS_COLLECTION_NAME).doc('example-user');
+  await doc.create({});
+  await userModel.markUserForUpdate('example-user');
+  const snapshot = await doc.get();
+  const data = snapshot.data();
+  if (!data) {
+    throw new Error('Data should exist');
+  }
+  t.truthy(data.lastKnownUpdate);
+});
+
+test.serial(
+    '[usermodel]: should *not* mark user for update if they don\'t exist',
+    async (t) => {
+      await userModel.markUserForUpdate('example-user-2');
+      const doc = await firestore()
+                      .collection(USERS_COLLECTION_NAME)
+                      .doc('example-user-2');
+      const snapshot = await doc.get();
+      const data = snapshot.data();
+      t.deepEqual(data, null);
+    });
+
+test.serial(
+    '[usermodel]: should set and get last viewed timestamp', async (t) => {
+      let value =
+          await userModel.getIssueLastViewed('example-user', 'test-issue-id');
+      t.deepEqual(value, null);
+      await userModel.updateLastViewed('example-user', 'test-issue-id', 1);
+      value =
+          await userModel.getIssueLastViewed('example-user', 'test-issue-id');
+      t.deepEqual(value, 1);
+      value =
+          await userModel.getIssueLastViewed('example-user', 'test-issue-id-2');
+      t.deepEqual(value, null);
+    });

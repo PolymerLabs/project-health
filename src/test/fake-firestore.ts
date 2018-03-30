@@ -115,6 +115,13 @@ class FakeDoc {
     return new FakeDocSnapshot(this, this.data);
   }
 
+  async create(data: any) {
+    if (this.data) {
+      throw new Error('Doc already exists.');
+    }
+    this.data = data;
+  }
+
   async update(data: any) {
     if (!this.data) {
       this.data = {};
