@@ -367,32 +367,13 @@ test.serial(
           });
 
       const response = await handleStatus(SUCCESS_HOOK);
-      t.deepEqual(
-          response.message, 'PR is ready to merge, automerge is not setup');
+      t.deepEqual(response.message, 'Automerge not setup');
       t.deepEqual(response.handled, true, 'webhook should be handled.');
       t.deepEqual(
           performAutomergeStub.callCount,
           0,
           'No automerge should be attempted');
-      t.deepEqual(sendStub.callCount, 1, 'sendNotification should be called');
-      t.deepEqual(
-          sendStub.args[0][0], 'test-pr-author', 'Notification receiver');
-      t.deepEqual(
-          sendStub.args[0][1],
-          {
-            title: 'PR is ready to merge',
-            body: '[status-test] test-title',
-            icon: '/images/notification-images/icon-completed-192x192.png',
-            data: {
-              pullRequest: {
-                gqlId: 'test-pr-id',
-              },
-              url: 'http://test-url.com',
-            },
-            requireInteraction: false,
-            tag: 'pr-status-owner-login/status-test/1',
-          },
-          'Notification options');
+      t.deepEqual(sendStub.callCount, 0, 'sendNotification should be called');
     });
 
 test.serial(
@@ -417,32 +398,13 @@ test.serial(
           });
 
       const response = await handleStatus(SUCCESS_HOOK);
-      t.deepEqual(
-          response.message, 'PR is ready to merge, automerge is not setup');
+      t.deepEqual(response.message, 'Automerge not setup');
       t.deepEqual(response.handled, true, 'webhook should be handled.');
       t.deepEqual(
           performAutomergeStub.callCount,
           0,
           'No automerge should be attempted');
-      t.deepEqual(sendStub.callCount, 1, 'sendNotification should be called');
-      t.deepEqual(
-          sendStub.args[0][0], 'test-pr-author', 'Notification receiver');
-      t.deepEqual(
-          sendStub.args[0][1],
-          {
-            title: 'PR is ready to merge',
-            body: '[status-test] test-title',
-            icon: '/images/notification-images/icon-completed-192x192.png',
-            data: {
-              pullRequest: {
-                gqlId: 'test-pr-id',
-              },
-              url: 'http://test-url.com',
-            },
-            requireInteraction: false,
-            tag: 'pr-status-owner-login/status-test/1',
-          },
-          'Notification options');
+      t.deepEqual(sendStub.callCount, 0, 'sendNotification should be called');
     });
 
 test.serial(
@@ -467,32 +429,13 @@ test.serial(
           });
 
       const response = await handleStatus(SUCCESS_HOOK);
-      t.deepEqual(
-          response.message, 'PR is ready to merge, automerge is not setup');
+      t.deepEqual(response.message, 'Automerge not setup');
       t.deepEqual(response.handled, true, 'webhook should be handled.');
       t.deepEqual(
           performAutomergeStub.callCount,
           0,
           'No automerge should be attempted');
-      t.deepEqual(sendStub.callCount, 1, 'sendNotification should be called');
-      t.deepEqual(
-          sendStub.args[0][0], 'test-pr-author', 'Notification receiver');
-      t.deepEqual(
-          sendStub.args[0][1],
-          {
-            title: 'PR is ready to merge',
-            body: '[status-test] test-title',
-            icon: '/images/notification-images/icon-completed-192x192.png',
-            data: {
-              pullRequest: {
-                gqlId: 'test-pr-id',
-              },
-              url: 'http://test-url.com',
-            },
-            requireInteraction: false,
-            tag: 'pr-status-owner-login/status-test/1',
-          },
-          'Notification options');
+      t.deepEqual(sendStub.callCount, 0, 'sendNotification should be called');
     });
 
 test.serial(

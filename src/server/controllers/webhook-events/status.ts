@@ -72,8 +72,8 @@ async function handleSuccessStatus(
 
   if (!automergeOpts || !automergeOpts.mergeType ||
       automergeOpts.mergeType === 'manual') {
-    notificationTitle = 'PR is ready to merge';
-    webhookResponse.message = 'PR is ready to merge, automerge is not setup';
+    webhookResponse.message = 'Automerge not setup';
+    return webhookResponse;
   } else {
     try {
       await performAutomerge(
