@@ -23,15 +23,15 @@ export function getRouter(): express.Router {
  *  - ?cursor - page cursor
  */
 async function outgoingHandler(req: express.Request, res: express.Response) {
-  const loginDetails = await userModel.getLoginFromRequest(req);
-  if (!loginDetails) {
+  const userRecord = await userModel.getUserRecordFromRequest(req);
+  if (!userRecord) {
     res.sendStatus(401);
     return;
   }
 
   const userData = await fetchOutgoingData(
-      loginDetails,
-      req.query.login || loginDetails.username,
+      userRecord,
+      req.query.login || userRecord.username,
       req.query.cursor,
   );
 
@@ -42,15 +42,15 @@ async function outgoingHandler(req: express.Request, res: express.Response) {
  * Handles a response for incoming pull requests.
  */
 async function incomingHandler(req: express.Request, res: express.Response) {
-  const loginDetails = await userModel.getLoginFromRequest(req);
-  if (!loginDetails) {
+  const userRecord = await userModel.getUserRecordFromRequest(req);
+  if (!userRecord) {
     res.sendStatus(401);
     return;
   }
 
   const userData = await fetchIncomingData(
-      req.query.login || loginDetails.username,
-      loginDetails.githubToken,
+      req.query.login || userRecord.username,
+      userRecord.githubToken,
   );
 
   res.json(userData);

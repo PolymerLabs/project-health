@@ -4,23 +4,23 @@ import {commitFieldsFragment, OutgoingPullRequestsQuery, PullRequestReviewState,
 import {github} from '../../../utils/github';
 import {pullRequestsModel} from '../../models/pullRequestsModel';
 import {repositoryModel} from '../../models/repositoryModel';
-import {LoginDetails} from '../../models/userModel';
+import {UserRecord} from '../../models/userModel';
 import {convertPrFields, convertReviewFields, outgoingPrsQuery} from '../dash-data';
 
 /**
  * Fetches outgoing pull requests for user.
  */
 export async function fetchOutgoingData(
-    loginDetails: LoginDetails, dashLogin: string, startCursor?: string):
+    userRecord: UserRecord, dashLogin: string, startCursor?: string):
     Promise<api.OutgoingDashResponse> {
   const outgoingPrData =
-      await performQuery(dashLogin, loginDetails.githubToken, startCursor);
+      await performQuery(dashLogin, userRecord.githubToken, startCursor);
 
-  const prInfo = await getAllPRInfo(loginDetails, dashLogin, outgoingPrData);
+  const prInfo = await getAllPRInfo(userRecord, dashLogin, outgoingPrData);
 
   return {
     timestamp: new Date().toISOString(),
-    user: getDashboardUser(loginDetails, dashLogin, outgoingPrData),
+    user: getDashboardUser(userRecord, dashLogin, outgoingPrData),
     ...prInfo,
   };
 }
@@ -50,12 +50,12 @@ async function performQuery(login: string, token: string, startCursor?: string):
 }
 
 function getDashboardUser(
-    loginDetails: LoginDetails,
+    userRecord: UserRecord,
     dashLogin: string,
     data: OutgoingPullRequestsQuery) {
   const user: api.DashboardUser = {
     login: dashLogin,
-    isCurrentUser: loginDetails.username === dashLogin,
+    isCurrentUser: userRecord.username === dashLogin,
     name: null,
     avatarUrl: null,
   };
@@ -69,9 +69,8 @@ function getDashboardUser(
 }
 
 async function getAllPRInfo(
-    loginDetails: LoginDetails,
-    dashLogin: string,
-    data: OutgoingPullRequestsQuery): Promise<OutgoingPullRequestInfo> {
+    userRecord: UserRecord, dashLogin: string, data: OutgoingPullRequestsQuery):
+    Promise<OutgoingPullRequestInfo> {
   let totalCount = 0;
   let hasMore = false;
   let cursor = null;
@@ -180,7 +179,7 @@ async function getAllPRInfo(
       // Get repo details and automerge info
       const results = await Promise.all([
         repositoryModel.getRepositoryDetails(
-            loginDetails,
+            userRecord,
             pr.repository.owner.login,
             pr.repository.name,
             ),

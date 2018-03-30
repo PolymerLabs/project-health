@@ -116,6 +116,9 @@ class FakeDoc {
   }
 
   async update(data: any) {
+    if (!this.data) {
+      this.data = {};
+    }
     this.data = Object.assign(this.data, data);
   }
 

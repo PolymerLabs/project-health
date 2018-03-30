@@ -142,16 +142,17 @@ test(
         redirect: sinon.spy(),
       };
 
-      t.context.sandbox.stub(userModel, 'getLoginFromToken').callsFake(() => {
-        return {
-          username: 'project-health1',
-          avatarUrl: null,
-          fullname: null,
-          githubToken: '123',
-          scopes: ['repo', 'example-1'],
-          lastKnownUpdate: null,
-        };
-      });
+      t.context.sandbox.stub(userModel, 'getUserRecordFromToken')
+          .callsFake(() => {
+            return {
+              username: 'project-health1',
+              avatarUrl: null,
+              fullname: null,
+              githubToken: '123',
+              scopes: ['repo', 'example-1'],
+              lastKnownUpdate: null,
+            };
+          });
 
       // tslint:disable-next-line no-any
       await performGitHubRedirect(req as any, res as any);

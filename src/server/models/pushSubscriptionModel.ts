@@ -1,4 +1,5 @@
 import {firestore} from '../../utils/firestore';
+import {USERS_COLLECTION_NAME} from './userModel';
 
 interface PushSubscription {
   endpoint: string;
@@ -33,7 +34,7 @@ class PushSubscriptionModel {
   private getSubscriptionDoc(login: string, subscription: PushSubscription) {
     const b64Endpoint = new Buffer(subscription.endpoint).toString('base64');
     return firestore()
-        .collection('users')
+        .collection(USERS_COLLECTION_NAME)
         .doc(login)
         .collection('subscriptions')
         .doc(b64Endpoint);

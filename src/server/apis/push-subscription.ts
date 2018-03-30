@@ -16,8 +16,8 @@ export function getRouter(): express.Router {
             return;
           }
 
-          const loginDetails = await userModel.getLoginFromRequest(request);
-          if (!loginDetails) {
+          const userRecord = await userModel.getUserRecordFromRequest(request);
+          if (!userRecord) {
             response.status(400).send('No login details.');
             return;
           }
@@ -25,12 +25,12 @@ export function getRouter(): express.Router {
           const pushSubscriptionModel = getSubscriptionModel();
           if (request.params.action === 'add') {
             pushSubscriptionModel.addPushSubscription(
-                loginDetails.username,
+                userRecord.username,
                 request.body.subscription,
                 request.body.supportedContentEncodings);
           } else if (request.params.action === 'remove') {
             pushSubscriptionModel.removePushSubscription(
-                loginDetails.username, request.body.subscription);
+                userRecord.username, request.body.subscription);
           } else {
             response.status(400).send(
                 `Unknown action: ${request.params.action}`);

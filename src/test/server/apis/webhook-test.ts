@@ -65,7 +65,7 @@ test.serial('Webhook pull_request: review_requested.json', async (t) => {
   const sendStub =
       t.context.sandbox.stub(notificationController, 'sendNotification');
 
-  t.context.sandbox.stub(userModel, 'getLoginDetails').callsFake(() => {
+  t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
     return FAKE_LOGIN_DETAILS;
   });
 

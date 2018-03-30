@@ -1,7 +1,7 @@
 import * as express from 'express';
 
 import {github} from '../../utils/github';
-import {LoginDetails, userModel} from '../models/userModel';
+import {userModel, UserRecord} from '../models/userModel';
 
 const PROD_ORIGIN = 'github-health.appspot.com';
 const STAGING_ORIGIN = 'github-health-staging.appspot.com';
@@ -23,13 +23,13 @@ export function getHookUrl(request: express.Request) {
 }
 
 async function addWebHook(
-    loginDetails: LoginDetails,
+    userRecord: UserRecord,
     request: express.Request,
     response: express.Response) {
   try {
     const hookUrl = getHookUrl(request);
     await github().post(
-        `orgs/${request.body.org}/hooks`, loginDetails.githubToken, {
+        `orgs/${request.body.org}/hooks`, userRecord.githubToken, {
           name: 'web',
           active: true,
           events: [
@@ -52,7 +52,7 @@ async function addWebHook(
 }
 
 async function removeWebHook(
-    loginDetails: LoginDetails,
+    userRecord: UserRecord,
     request: express.Request,
     response: express.Response) {
   try {
@@ -60,7 +60,7 @@ async function removeWebHook(
 
     const org = request.body.org;
     const hooks =
-        await github().get(`orgs/${org}/hooks`, loginDetails.githubToken);
+        await github().get(`orgs/${org}/hooks`, userRecord.githubToken);
     let hookId = null;
     for (const hook of hooks) {
       if (hook.config.url === hookUrl) {
@@ -75,7 +75,7 @@ async function removeWebHook(
 
     await github().delete(
         `orgs/${org}/hooks/${hookId}`,
-        loginDetails.githubToken,
+        userRecord.githubToken,
     );
 
     response.sendStatus(200);
@@ -92,8 +92,8 @@ export function getRouter(): express.Router {
   webhookRouter.post(
       '/:action',
       async (request: express.Request, response: express.Response) => {
-        const loginDetails = await userModel.getLoginFromRequest(request);
-        if (!loginDetails) {
+        const userRecord = await userModel.getUserRecordFromRequest(request);
+        if (!userRecord) {
           response.sendStatus(400);
           return;
         }
@@ -104,9 +104,9 @@ export function getRouter(): express.Router {
         }
 
         if (request.params.action === 'add') {
-          await addWebHook(loginDetails, request, response);
+          await addWebHook(userRecord, request, response);
         } else if (request.params.action === 'remove') {
-          await removeWebHook(loginDetails, request, response);
+          await removeWebHook(userRecord, request, response);
         } else {
           response.sendStatus(400);
         }

@@ -1,7 +1,7 @@
 import {WebHookHandleResponse} from '../../apis/github-webhook';
 import {getPRTag, sendNotification} from '../../controllers/notifications';
 import {CommitDetails, pullRequestsModel} from '../../models/pullRequestsModel';
-import {LoginDetails, userModel} from '../../models/userModel';
+import {userModel, UserRecord} from '../../models/userModel';
 import {getPRDetailsFromCommit, PullRequestDetails} from '../../utils/get-pr-from-commit';
 import {performAutomerge} from '../../utils/perform-automerge';
 
@@ -45,7 +45,7 @@ async function handleFailingStatus(
 }
 
 async function handleSuccessStatus(
-    loginDetails: LoginDetails,
+    userRecord: UserRecord,
     hookData: StatusHook,
     prDetails: PullRequestDetails): Promise<WebHookHandleResponse> {
   const webhookResponse: WebHookHandleResponse = {
@@ -77,7 +77,7 @@ async function handleSuccessStatus(
   } else {
     try {
       await performAutomerge(
-          loginDetails.githubToken, prDetails, automergeOpts.mergeType);
+          userRecord.githubToken, prDetails, automergeOpts.mergeType);
 
       notificationTitle = `Automerge complete for '${prDetails.title}'`;
       icon = '/images/notification-images/icon-completed-192x192.png';
@@ -118,8 +118,8 @@ async function handleSuccessStatus(
 export async function handleStatus(hookData: StatusHook):
     Promise<WebHookHandleResponse> {
   const author = hookData.commit.author;
-  const loginDetails = await userModel.getLoginDetails(author.login);
-  if (!loginDetails) {
+  const userRecord = await userModel.getUserRecord(author.login);
+  if (!userRecord) {
     // Commit author isn't logged in so we have no GitHub token to find the
     // appropriate PR's affected by this status change
     return {
@@ -136,7 +136,7 @@ export async function handleStatus(hookData: StatusHook):
   };
 
   const prDetails = await getPRDetailsFromCommit(
-      loginDetails.githubToken, hookData.name, hookData.sha);
+      userRecord.githubToken, hookData.name, hookData.sha);
   if (!prDetails) {
     webhookResponse.message =
         'Unable to find PR Details for commit to store state.';
@@ -180,7 +180,7 @@ export async function handleStatus(hookData: StatusHook):
         savedCommitDetails,
     );
   } else if (hookData.state === 'success') {
-    return handleSuccessStatus(loginDetails, hookData, prDetails);
+    return handleSuccessStatus(userRecord, hookData, prDetails);
   }
 
   return {

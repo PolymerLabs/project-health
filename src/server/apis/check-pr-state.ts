@@ -16,8 +16,8 @@ export function getRouter(): express.Router {
             return;
           }
 
-          const loginDetails = await userModel.getLoginFromRequest(request);
-          if (!loginDetails) {
+          const userRecord = await userModel.getUserRecordFromRequest(request);
+          if (!userRecord) {
             response.status(400).send('No login details.');
             return;
           }
@@ -32,7 +32,7 @@ export function getRouter(): express.Router {
                 prIds,
               },
               fetchPolicy: 'network-only',
-              context: {token: loginDetails.githubToken}
+              context: {token: userRecord.githubToken}
             });
 
             if (results.data.nodes) {
