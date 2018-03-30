@@ -63,6 +63,7 @@ export function genericDashboardRowEventTemplate(data: DashboardRowEventData):
 export function genericDashboardRowTemplate(
     data: DashboardRowData,
     isNewlyActionable: boolean,
+    extraHeaderData?: TemplateResult[],
     extraEvents?: TemplateResult[]): TemplateResult {
   const additionalClasses: string[] = data.classes || [];
   const rowClasses = ['dashboard-row', ...additionalClasses];
@@ -99,6 +100,8 @@ export function genericDashboardRowTemplate(
               <span class="dashboard-row-info__title">${data.title}</span>
             </div>
           </a>
+
+          ${extraHeaderData}
         </div>
 
         ${extraEvents}

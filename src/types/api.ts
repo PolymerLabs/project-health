@@ -233,4 +233,9 @@ export interface Issue {
   avatarUrl: string;
   createdAt: number;
   url: string;
+  popularity: Popularity;
 }
+
+export type Popularity = number&{
+  _PopularityBrand: never;
+};
