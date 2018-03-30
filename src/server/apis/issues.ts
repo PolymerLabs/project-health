@@ -69,7 +69,7 @@ export async function handleGetIssues(
 }
 
 /**
- * Calculate the popularity scope for a pull request.
+ * Calculate the popularity scope for an issue.
  *
  * Currently a naive implementation that looks at total number of comments and
  * the total number of reactions on the issue itself. This does *not* include
