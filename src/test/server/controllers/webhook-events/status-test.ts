@@ -24,26 +24,10 @@ const TEST_SECRETS = {
   PRIVATE_VAPID_KEY: 'o1P9aXm-QPZezF_8b7aQabivhv3QqaB0yg5zoFs6-qc',
 };
 
-const FAKE_LOGIN_DETAILS = {
+const FAKE_USER_RECORD = {
   githubToken: 'injected-fake-token',
   username: 'test-username',
   scopes: null,
-};
-
-const PR_DETAILS: PullRequestDetails = {
-  gqlId: 'test-pr-id',
-  number: 1,
-  title: 'test-title',
-  body: 'test-body',
-  url: 'http://test-url.com',
-  owner: 'test-owner',
-  repo: 'test-repo',
-  author: 'test-pr-author',
-  state: 'OPEN',
-  commit: {
-    oid: 'test-commit-SHA',
-    state: 'PENDING',
-  }
 };
 
 const SUCCESS_HOOK: StatusHook = {
@@ -103,6 +87,24 @@ const PENDING_HOOK: StatusHook = {
 };
 
 function newFakePRDetails(extraDetails: {}) {
+  const PR_DETAILS: PullRequestDetails = {
+    gqlId: 'test-pr-id',
+    number: 1,
+    title: 'test-title',
+    body: 'test-body',
+    url: 'http://test-url.com',
+    owner: 'test-owner',
+    repo: 'test-repo',
+    author: 'test-pr-author',
+    state: 'OPEN',
+    commit: {
+      oid: 'test-commit-SHA',
+      state: 'PENDING',
+    },
+    reviews: [],
+    approvedReviewCount: 0,
+  };
+
   return Object.assign({}, PR_DETAILS, extraDetails);
 }
 
@@ -167,7 +169,7 @@ test.serial(
     '[handleStatus]: should not handle success hook if no PR Details',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return FAKE_USER_RECORD;
       });
 
       const getPRDetailsStub =
@@ -194,7 +196,7 @@ test.serial(
     '[handleStatus]: should not handle error hook if no PR Details',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return FAKE_USER_RECORD;
       });
 
       const getPRDetailsStub =
@@ -221,7 +223,7 @@ test.serial(
     '[handleStatus]: should not handle success hook if PR is not open',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return FAKE_USER_RECORD;
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
@@ -241,7 +243,7 @@ test.serial(
     '[handleStatus]: should not handle error hook if PR is not open',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return FAKE_USER_RECORD;
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
@@ -261,7 +263,7 @@ test.serial(
     '[handleStatus]: should not handle success hook if the commit SHA is not the latest',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return FAKE_USER_RECORD;
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
@@ -283,7 +285,7 @@ test.serial(
     '[handleStatus]: should not handle error hook if the commit SHA is not the latest',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return FAKE_USER_RECORD;
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
@@ -303,12 +305,12 @@ test.serial(
 
 test.serial('[handleStatus]: should not handle pending hooks', async (t) => {
   t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-    return FAKE_LOGIN_DETAILS;
+    return FAKE_USER_RECORD;
   });
 
   t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
       .callsFake(() => {
-        return PR_DETAILS;
+        return newFakePRDetails({});
       });
 
   const response = await handleStatus(PENDING_HOOK);
@@ -318,15 +320,15 @@ test.serial('[handleStatus]: should not handle pending hooks', async (t) => {
 });
 
 test.serial(
-    '[handleStatus]: should handle success hook but not do anything is commit isn\'t success',
+    '[handleStatus]: should handle success hook but not do anything if the commits state isn\'t success',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return FAKE_USER_RECORD;
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            return PR_DETAILS;
+            return newFakePRDetails({});
           });
 
       t.context.sandbox.stub(pullRequestsModel, 'getAutomergeOpts')
@@ -348,10 +350,10 @@ test.serial(
     });
 
 test.serial(
-    '[handleStatus]: should handle success hook but not automerge if its not configured for PR',
+    '[handleStatus]: should handle success hook but not do anything if there are no approved review',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return FAKE_USER_RECORD;
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
@@ -368,7 +370,41 @@ test.serial(
 
       const response = await handleStatus(SUCCESS_HOOK);
       t.deepEqual(
-          response.message, 'PR is ready to merge, automerge is not setup');
+          response.message,
+          'Status of the PR\'s commit is \'SUCCESS\' but we have no approved reviews');
+      t.deepEqual(response.handled, true, 'webhook should be handled.');
+      t.deepEqual(
+          performAutomergeStub.callCount,
+          0,
+          'No automerge should be attempted');
+      t.deepEqual(
+          sendStub.callCount, 0, 'sendNotification should not be called');
+    });
+
+test.serial(
+    '[handleStatus]: should handle success hook but not automerge if its not configured for PR',
+    async (t) => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
+        return FAKE_USER_RECORD;
+      });
+
+      t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
+          .callsFake(() => {
+            const details = newFakePRDetails({});
+            details.commit.state = 'SUCCESS';
+            details.approvedReviewCount = 1;
+            return details;
+          });
+
+      t.context.sandbox.stub(pullRequestsModel, 'getAutomergeOpts')
+          .callsFake(async () => {
+            return null;
+          });
+
+      const response = await handleStatus(SUCCESS_HOOK);
+      t.deepEqual(
+          response.message,
+          'PR commit has success state, automerge is not setup');
       t.deepEqual(response.handled, true, 'webhook should be handled.');
       t.deepEqual(
           performAutomergeStub.callCount,
@@ -380,7 +416,57 @@ test.serial(
       t.deepEqual(
           sendStub.args[0][1],
           {
-            title: 'PR is ready to merge',
+            title: 'Passing status checks & 1 approval',
+            body: '[status-test] test-title',
+            icon: '/images/notification-images/icon-completed-192x192.png',
+            data: {
+              pullRequest: {
+                gqlId: 'test-pr-id',
+              },
+              url: 'http://test-url.com',
+            },
+            requireInteraction: false,
+            tag: 'pr-status-owner-login/status-test/1',
+          },
+          'Notification options');
+    });
+
+test.serial(
+    '[handleStatus]: should handle success hook but not automerge if its not configured for PR (with multiple reviews)',
+    async (t) => {
+      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
+        return FAKE_USER_RECORD;
+      });
+
+      t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
+          .callsFake(() => {
+            const details = newFakePRDetails({});
+            details.commit.state = 'SUCCESS';
+            details.approvedReviewCount = 2;
+            return details;
+          });
+
+      t.context.sandbox.stub(pullRequestsModel, 'getAutomergeOpts')
+          .callsFake(async () => {
+            return null;
+          });
+
+      const response = await handleStatus(SUCCESS_HOOK);
+      t.deepEqual(
+          response.message,
+          'PR commit has success state, automerge is not setup');
+      t.deepEqual(response.handled, true, 'webhook should be handled.');
+      t.deepEqual(
+          performAutomergeStub.callCount,
+          0,
+          'No automerge should be attempted');
+      t.deepEqual(sendStub.callCount, 1, 'sendNotification should be called');
+      t.deepEqual(
+          sendStub.args[0][0], 'test-pr-author', 'Notification receiver');
+      t.deepEqual(
+          sendStub.args[0][1],
+          {
+            title: 'Passing status checks & 2 approvals',
             body: '[status-test] test-title',
             icon: '/images/notification-images/icon-completed-192x192.png',
             data: {
@@ -399,13 +485,14 @@ test.serial(
     '[handleStatus]: should handle success hook but not automerge if mergeType is null',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return FAKE_USER_RECORD;
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
             const details = newFakePRDetails({});
             details.commit.state = 'SUCCESS';
+            details.approvedReviewCount = 1;
             return details;
           });
 
@@ -418,7 +505,8 @@ test.serial(
 
       const response = await handleStatus(SUCCESS_HOOK);
       t.deepEqual(
-          response.message, 'PR is ready to merge, automerge is not setup');
+          response.message,
+          'PR commit has success state, automerge is not setup');
       t.deepEqual(response.handled, true, 'webhook should be handled.');
       t.deepEqual(
           performAutomergeStub.callCount,
@@ -430,7 +518,7 @@ test.serial(
       t.deepEqual(
           sendStub.args[0][1],
           {
-            title: 'PR is ready to merge',
+            title: 'Passing status checks & 1 approval',
             body: '[status-test] test-title',
             icon: '/images/notification-images/icon-completed-192x192.png',
             data: {
@@ -449,13 +537,14 @@ test.serial(
     '[handleStatus]: should handle success hook but not automerge if mergeType is manual',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return FAKE_USER_RECORD;
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
             const details = newFakePRDetails({});
             details.commit.state = 'SUCCESS';
+            details.approvedReviewCount = 1;
             return details;
           });
 
@@ -468,7 +557,8 @@ test.serial(
 
       const response = await handleStatus(SUCCESS_HOOK);
       t.deepEqual(
-          response.message, 'PR is ready to merge, automerge is not setup');
+          response.message,
+          'PR commit has success state, automerge is not setup');
       t.deepEqual(response.handled, true, 'webhook should be handled.');
       t.deepEqual(
           performAutomergeStub.callCount,
@@ -480,7 +570,7 @@ test.serial(
       t.deepEqual(
           sendStub.args[0][1],
           {
-            title: 'PR is ready to merge',
+            title: 'Passing status checks & 1 approval',
             body: '[status-test] test-title',
             icon: '/images/notification-images/icon-completed-192x192.png',
             data: {
@@ -499,12 +589,15 @@ test.serial(
     '[handleStatus]: should handle success hook and notify users of successful automerge',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return FAKE_USER_RECORD;
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            return PR_DETAILS;
+            const details = newFakePRDetails({});
+            details.commit.state = 'SUCCESS';
+            details.approvedReviewCount = 1;
+            return details;
           });
 
       t.context.sandbox.stub(pullRequestsModel, 'getAutomergeOpts')
@@ -549,13 +642,14 @@ test.serial(
     '[handleStatus]: should handle success hook and notify users of an errored automerge *without* Githubs error response msg',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return FAKE_USER_RECORD;
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
             const details = newFakePRDetails({});
             details.commit.state = 'SUCCESS';
+            details.approvedReviewCount = 1;
             return details;
           });
 
@@ -602,13 +696,14 @@ test.serial(
     '[handleStatus]: should handle success hook and notify users of an errored automerge using Githubs error response msg',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return FAKE_USER_RECORD;
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
             const details = newFakePRDetails({});
             details.commit.state = 'SUCCESS';
+            details.approvedReviewCount = 1;
             return details;
           });
 
@@ -658,12 +753,12 @@ test.serial(
 test.serial(
     '[handleStatus]: should notify author for new error hook', async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return FAKE_USER_RECORD;
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            return PR_DETAILS;
+            return newFakePRDetails({});
           });
 
       t.context.sandbox.stub(pullRequestsModel, 'getCommitDetails')
@@ -698,12 +793,12 @@ test.serial(
     '[handleStatus]: should notify author for error hook if new state is different from previous state',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return FAKE_USER_RECORD;
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            return PR_DETAILS;
+            return newFakePRDetails({});
           });
 
       t.context.sandbox.stub(pullRequestsModel, 'getCommitDetails')
@@ -740,12 +835,12 @@ test.serial(
     '[handleStatus]: should do nothing for error hook if the commits state is the same',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return FAKE_USER_RECORD;
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            return PR_DETAILS;
+            return newFakePRDetails({});
           });
 
       t.context.sandbox.stub(pullRequestsModel, 'getCommitDetails')

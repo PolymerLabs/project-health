@@ -73,7 +73,9 @@ function newFakePRDetails(extraDetails: {}) {
     commit: {
       oid: 'test-commit-SHA',
       state: 'PENDING',
-    }
+    },
+    reviews: [],
+    approvedReviewCount: 0,
   };
 
   return Object.assign({}, PR_DETAILS, extraDetails);

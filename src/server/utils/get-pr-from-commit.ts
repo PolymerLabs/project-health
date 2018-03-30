@@ -3,6 +3,11 @@ import gql from 'graphql-tag';
 import {CommitToPRQuery} from '../../types/gql-types';
 import {github} from '../../utils/github';
 
+export interface ReviewDetails {
+  state: 'PENDING'|'COMMENTED'|'APPROVED'|'CHANGES_REQUESTED'|'DISMISSED';
+  author: string;
+}
+
 // Used to clean the data from Apollo / GitHub API
 export interface PullRequestDetails {
   gqlId: string;
@@ -15,6 +20,8 @@ export interface PullRequestDetails {
   author: string;
   commit: CommitDetails;
   state: 'OPEN'|'CLOSED'|'MERGED';
+  reviews: ReviewDetails[];
+  approvedReviewCount: number;
 }
 
 interface CommitDetails {
@@ -72,6 +79,25 @@ export async function getPRDetailsFromCommit(
       continue;
     }
 
+    const reviews = [];
+    let approvedReviewCount = 0;
+    if (prData.reviews && prData.reviews.nodes) {
+      for (const review of prData.reviews.nodes) {
+        if (!review || !review.author || !review.author.login) {
+          continue;
+        }
+
+        if (review.state === 'APPROVED') {
+          approvedReviewCount++;
+        }
+
+        reviews.push({
+          state: review.state,
+          author: review.author.login,
+        });
+      }
+    }
+
     // PR Query will only return 1
     // Should be safe based on:
     // https://stackoverflow.com/questions/9392365/how-would-git-handle-a-sha-1-collision-on-a-blob
@@ -86,6 +112,8 @@ export async function getPRDetailsFromCommit(
       author: prData.author.login,
       state: prData.state,
       commit: commits[0],
+      reviews,
+      approvedReviewCount,
     };
   }
 
@@ -112,6 +140,14 @@ query CommitToPR($query: String!) {
         author {
           login
         },
+        reviews(first: 10) {
+          nodes {
+            author {
+              login
+            }
+            state
+          }
+        }
         commits(last: 1) {
           nodes {
             commit {

@@ -62,6 +62,13 @@ async function handleSuccessStatus(
     return webhookResponse;
   }
 
+  if (prDetails.approvedReviewCount === 0) {
+    webhookResponse.message =
+        'Status of the PR\'s commit is \'SUCCESS\' but we have no approved ' +
+        'reviews';
+    return webhookResponse;
+  }
+
   const repo = hookData.repository;
 
   const automergeOpts = await pullRequestsModel.getAutomergeOpts(
@@ -72,8 +79,11 @@ async function handleSuccessStatus(
 
   if (!automergeOpts || !automergeOpts.mergeType ||
       automergeOpts.mergeType === 'manual') {
-    notificationTitle = 'PR is ready to merge';
-    webhookResponse.message = 'PR is ready to merge, automerge is not setup';
+    notificationTitle =
+        `Passing status checks & ${prDetails.approvedReviewCount} approval${
+            prDetails.approvedReviewCount > 1 ? 's' : ''}`;
+    webhookResponse.message =
+        'PR commit has success state, automerge is not setup';
   } else {
     try {
       await performAutomerge(
