@@ -97,6 +97,7 @@ test('dashoutgoing2: requested changes', (t) => {
     },
     title: 'Modify readme description',
     url: 'https://github.com/project-health1/repo/pull/14',
+    hasNewActivity: false,
   });
 });
 
@@ -135,6 +136,7 @@ test('dashoutgoing2: review with comments', (t) => {
     },
     title: 'My changes to readme',
     url: 'https://github.com/project-health1/repo/pull/13',
+    hasNewActivity: false,
   });
 });
 
@@ -173,6 +175,7 @@ test('dashoutgoing2: review with comments2', (t) => {
     },
     title: 'A new pull request',
     url: 'https://github.com/project-health1/repo/pull/11',
+    hasNewActivity: false,
   });
 });
 
@@ -208,6 +211,7 @@ test('dashoutgoing2: ready to merge', (t) => {
     },
     title: 'Questionable changes',
     url: 'https://github.com/project-health1/repo/pull/10',
+    hasNewActivity: false,
   });
 });
 
@@ -244,6 +248,7 @@ test('dashoutgoing2: changes requested, new commit', (t) => {
     },
     title: 'Update links in readme',
     url: 'https://github.com/project-health1/repo/pull/9',
+    hasNewActivity: false,
   });
 });
 
@@ -271,6 +276,7 @@ test('dashoutgoing2: no review', (t) => {
     },
     title: 'Add a field for getting the template of an element',
     url: 'https://github.com/project-health1/repo/pull/4',
+    hasNewActivity: false,
   });
 });
 
@@ -306,5 +312,6 @@ test('dashoutgoing2: basic requested changes', (t) => {
     },
     title: 'A couple minor changes for browserify compatibility',
     url: 'https://github.com/project-health1/repo/pull/3',
+    hasNewActivity: false,
   });
 });

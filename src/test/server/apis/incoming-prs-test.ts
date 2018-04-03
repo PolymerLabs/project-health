@@ -2,8 +2,10 @@ import anyTest, {TestInterface} from 'ava';
 
 import {startTestReplayServer} from '../../../replay-server';
 import {fetchIncomingData} from '../../../server/apis/dash-data';
+import {UserRecord} from '../../../server/models/userModel';
 import {IncomingDashResponse, PullRequest} from '../../../types/api';
 import {PullRequestReviewState} from '../../../types/gql-types';
+import {initFirestore} from '../../../utils/firestore';
 import {initGithub} from '../../../utils/github';
 import {getTestTokens} from '../../get-test-tokens';
 
@@ -13,6 +15,10 @@ type TestContext = {
 };
 const test = anyTest as TestInterface<TestContext>;
 
+test.before(() => {
+  initFirestore();
+});
+
 /**
  * Generates the test context object before each test.
  */
@@ -21,8 +27,15 @@ test.beforeEach(async (t) => {
       await startTestReplayServer(t, 'project-health1-dashboard incoming');
   initGithub(url, url);
 
-  const data = await fetchIncomingData(
-      'project-health1', getTestTokens()['project-health1']);
+  const userRecord: UserRecord = {
+    username: 'project-health1',
+    githubToken: getTestTokens()['project-health1'],
+    scopes: [],
+    fullname: '',
+    avatarUrl: '',
+    lastKnownUpdate: '',
+  };
+  const data = await fetchIncomingData(userRecord, 'project-health1');
   server.close();
 
   const prsById = new Map();
@@ -37,13 +50,13 @@ test.beforeEach(async (t) => {
   };
 });
 
-test('dashincoming: sane output', (t) => {
+test('[incoming-prs-test]: sane output', (t) => {
   const data = t.context.data;
   // Make sure a test is added each time these numbers are changed.
   t.is(data.prs.length, 7);
 });
 
-test('dashincoming: events are always sorted correctly', (t) => {
+test('[incoming-prs-test]: events are always sorted correctly', (t) => {
   const data = t.context.data;
   for (const pr of data.prs) {
     let lastTime = 0;
@@ -63,7 +76,7 @@ test('dashincoming: events are always sorted correctly', (t) => {
   }
 });
 
-test('dashincoming: incoming PRs are ordered', (t) => {
+test('[incoming-prs-test]: incoming PRs are ordered', (t) => {
   const prs = t.context.data.prs;
 
   // Actionable status items appear before non actionable ones.
@@ -138,34 +151,37 @@ test('dashincoming: incoming PRs are ordered', (t) => {
   }
 });
 
-test('dashincoming: Incoming PR with old @mention before I reviewed', (t) => {
-  t.deepEqual(t.context.prsById.get('11'), {
-    id: 'MDExOlB1bGxSZXF1ZXN0MTY3ODI2Mzk1',
-    author: 'project-health2',
-    avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
-    createdAt: 1518042329000,
-    events: [
-      {
-        review: {
-          author: 'project-health1',
-          createdAt: 1518042373000,
-          reviewState: PullRequestReviewState.COMMENTED,
+test(
+    '[incoming-prs-test]: Incoming PR with old @mention before I reviewed',
+    (t) => {
+      t.deepEqual(t.context.prsById.get('11'), {
+        id: 'MDExOlB1bGxSZXF1ZXN0MTY3ODI2Mzk1',
+        author: 'project-health2',
+        avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
+        createdAt: 1518042329000,
+        events: [
+          {
+            review: {
+              author: 'project-health1',
+              createdAt: 1518042373000,
+              reviewState: PullRequestReviewState.COMMENTED,
+            },
+            type: 'MyReviewEvent',
+          },
+        ],
+        number: 11,
+        owner: 'project-health1',
+        repo: 'repo',
+        status: {
+          type: 'ApprovalRequired',
         },
-        type: 'MyReviewEvent',
-      },
-    ],
-    number: 11,
-    owner: 'project-health1',
-    repo: 'repo',
-    status: {
-      type: 'ApprovalRequired',
-    },
-    title: 'A new pull request',
-    url: 'https://github.com/project-health1/repo/pull/11',
-  });
-});
+        title: 'A new pull request',
+        url: 'https://github.com/project-health1/repo/pull/11',
+        hasNewActivity: false,
+      });
+    });
 
-test('dashincoming: Incoming PR with new @mention after I reviewed', (t) => {
+test('[incoming-prs-test]: Incoming PR with new @mention after I reviewed', (t) => {
   t.deepEqual(t.context.prsById.get('10'), {
     id: 'MDExOlB1bGxSZXF1ZXN0MTY3Nzg1NjAw',
     author: 'project-health2',
@@ -196,10 +212,11 @@ test('dashincoming: Incoming PR with new @mention after I reviewed', (t) => {
     },
     title: 'Questionable changes',
     url: 'https://github.com/project-health1/repo/pull/10',
+    hasNewActivity: false,
   });
 });
 
-test('dashincoming: Incoming PR that I reviewed. New commit since', (t) => {
+test('[incoming-prs-test]: Incoming PR that I reviewed. New commit since', (t) => {
   t.deepEqual(t.context.prsById.get('9'), {
     id: 'MDExOlB1bGxSZXF1ZXN0MTY2MzUxNTky',
     author: 'project-health2',
@@ -233,10 +250,11 @@ test('dashincoming: Incoming PR that I reviewed. New commit since', (t) => {
     },
     title: 'Update links in readme',
     url: 'https://github.com/project-health1/repo/pull/9',
+    hasNewActivity: false,
   });
 });
 
-test('dashincoming: Incoming PR, I requested changes', (t) => {
+test('[incoming-prs-test]: Incoming PR, I requested changes', (t) => {
   t.deepEqual(t.context.prsById.get('3'), {
     id: 'MDExOlB1bGxSZXF1ZXN0MTY0NzE5MzU4',
     author: 'project-health2',
@@ -256,10 +274,11 @@ test('dashincoming: Incoming PR, I requested changes', (t) => {
         reviewState: PullRequestReviewState.CHANGES_REQUESTED,
       }
     }],
+    hasNewActivity: false,
   });
 });
 
-test('dashincoming: Incoming review request', (t) => {
+test('[incoming-prs-test]: Incoming review request', (t) => {
   t.deepEqual(t.context.prsById.get('4'), {
     id: 'MDExOlB1bGxSZXF1ZXN0MTY0NzI1NzUw',
     author: 'project-health2',
@@ -272,10 +291,11 @@ test('dashincoming: Incoming review request', (t) => {
     url: 'https://github.com/project-health1/repo/pull/4',
     status: {type: 'ReviewRequired'},
     events: [],
+    hasNewActivity: false,
   });
 });
 
-test('dashincoming: incoming with mention, new commits', (t) => {
+test('[incoming-prs-test]: incoming with mention, new commits', (t) => {
   t.deepEqual(t.context.prsById.get('13'), {
     id: 'MDExOlB1bGxSZXF1ZXN0MTczNjExNzIw',
     author: 'project-health2',
@@ -314,10 +334,11 @@ test('dashincoming: incoming with mention, new commits', (t) => {
             'https://github.com/project-health1/repo/pull/13#issuecomment-371333354',
       },
     ],
+    hasNewActivity: false,
   });
 });
 
-test('dashincoming: Incoming PR with changes requested', (t) => {
+test('[incoming-prs-test]: Incoming PR with changes requested', (t) => {
   t.deepEqual(t.context.prsById.get('14'), {
     id: 'MDExOlB1bGxSZXF1ZXN0MTc0NDY2NTk5',
     author: 'project-health2',
@@ -341,5 +362,6 @@ test('dashincoming: Incoming PR with changes requested', (t) => {
     },
     title: 'Modify readme description',
     url: 'https://github.com/project-health1/repo/pull/14',
+    hasNewActivity: false,
   });
 });

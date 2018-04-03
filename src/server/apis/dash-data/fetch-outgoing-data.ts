@@ -4,7 +4,9 @@ import {commitFieldsFragment, OutgoingPullRequestsQuery, PullRequestReviewState,
 import {github} from '../../../utils/github';
 import {pullRequestsModel} from '../../models/pullRequestsModel';
 import {repositoryModel} from '../../models/repositoryModel';
-import {UserRecord} from '../../models/userModel';
+import {FeatureDetails, userModel, UserRecord} from '../../models/userModel';
+import {getPRLastActivityTimestamp} from '../../utils/get-pr-last-activity';
+import {issueHasNewActivity} from '../../utils/issue-has-new-activity';
 import {convertPrFields, convertReviewFields, outgoingPrsQuery} from '../dash-data';
 
 /**
@@ -77,6 +79,22 @@ async function getAllPRInfo(
   const prs: api.OutgoingPullRequest[] = [];
 
   if (data.user) {
+    const loginRecord = await userModel.getUserRecord(dashLogin);
+    let lastviewedFeature: FeatureDetails|null = null;
+    if (loginRecord) {
+      lastviewedFeature =
+          loginRecord.featureLastViewed ? loginRecord.featureLastViewed : null;
+    }
+
+    // Set up the feature usage *IF* the signed-in user is the viewed user.
+    if (!lastviewedFeature && dashLogin === userRecord.username) {
+      lastviewedFeature = {
+        enabledAt: Date.now(),
+      };
+      await userModel.setFeatureData(
+          userRecord.username, 'featureLastViewed', lastviewedFeature);
+    }
+    const lastViewedInfo = await userModel.getAllLastViewedInfo(dashLogin);
     const prConnection = data.user.pullRequests;
 
     // Set pagination info.
@@ -206,7 +224,16 @@ async function getAllPRInfo(
         automergeAvailable,
         automergeOpts,
         mergeable: pr.mergeable,
+        hasNewActivity: false,
       };
+
+      const lastActivity = await getPRLastActivityTimestamp(fullPR);
+      if (lastActivity) {
+        fullPR.hasNewActivity = await issueHasNewActivity(
+            lastviewedFeature, lastActivity, lastViewedInfo[pr.id]);
+      } else {
+        fullPR.hasNewActivity = false;
+      }
 
       return fullPR;
     });

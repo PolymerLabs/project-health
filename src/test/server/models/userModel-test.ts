@@ -296,27 +296,26 @@ test.serial('[usermodel]: should set and last viewed feature', async (t) => {
       .doc(TEST_USERNAME)
       .set(exampleData);
 
-  await userModel.setFeatureData(TEST_USERNAME, 'feature-lastViewed', {
+  await userModel.setFeatureData(TEST_USERNAME, 'featureLastViewed', {
     enabledAt: 1,
   });
   const userRecord = await userModel.getUserRecord(TEST_USERNAME);
   if (!userRecord) {
     throw new Error('Expected user record to exist.');
   }
-  t.deepEqual(userRecord['feature-lastViewed'], {
+  t.deepEqual(userRecord['featureLastViewed'], {
     enabledAt: 1,
   });
 });
 
 test.serial(
-    '[usermodel]: should throw when setting a feature for a non existent user',
+    '[usermodel]: should not throw when setting a feature for a non existent user',
     async (t) => {
-      await t.throws(async () => {
-        await userModel.setFeatureData(
-            'non-existent-user', 'feature-lastViewed', {
-              enabledAt: 1,
-            });
+      await userModel.setFeatureData('non-existent-user', 'featureLastViewed', {
+        enabledAt: 1,
       });
+
+      t.pass();
     });
 
 test.serial('[usermodel]: should mark user for update', async (t) => {
@@ -346,14 +345,9 @@ test.serial(
 
 test.serial(
     '[usermodel]: should set and get last viewed timestamp', async (t) => {
-      let value =
-          await userModel.getIssueLastViewed('example-user', 'test-issue-id');
-      t.deepEqual(value, null);
+      let value = await userModel.getAllLastViewedInfo('example-user');
+      t.deepEqual(value, {});
       await userModel.updateLastViewed('example-user', 'test-issue-id', 1);
-      value =
-          await userModel.getIssueLastViewed('example-user', 'test-issue-id');
-      t.deepEqual(value, 1);
-      value =
-          await userModel.getIssueLastViewed('example-user', 'test-issue-id-2');
-      t.deepEqual(value, null);
+      value = await userModel.getAllLastViewedInfo('example-user');
+      t.deepEqual(value['test-issue-id'], 1);
     });

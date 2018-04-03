@@ -4,7 +4,10 @@ import gql from 'graphql-tag';
 import * as api from '../../types/api';
 import {IncomingPullRequestsQuery, mentionedFieldsFragment, prFieldsFragment, PullRequestReviewState, reviewFieldsFragment} from '../../types/gql-types';
 import {github} from '../../utils/github';
-import {userModel} from '../models/userModel';
+import {FeatureDetails, userModel, UserRecord} from '../models/userModel';
+import {getPRLastActivityTimestamp} from '../utils/get-pr-last-activity';
+import {issueHasNewActivity} from '../utils/issue-has-new-activity';
+
 import {fetchOutgoingData} from './dash-data/fetch-outgoing-data';
 
 /**
@@ -49,8 +52,8 @@ async function incomingHandler(req: express.Request, res: express.Response) {
   }
 
   const userData = await fetchIncomingData(
+      userRecord,
       req.query.login || userRecord.username,
-      userRecord.githubToken,
   );
 
   res.json(userData);
@@ -60,7 +63,8 @@ async function incomingHandler(req: express.Request, res: express.Response) {
  * Fetches incoming pull requests for user.
  */
 export async function fetchIncomingData(
-    dashboardLogin: string, token: string): Promise<api.IncomingDashResponse> {
+    userRecord: UserRecord,
+    dashboardLogin: string): Promise<api.IncomingDashResponse> {
   const openPrQuery = 'is:open is:pr archived:false';
   const reviewedQueryString =
       `reviewed-by:${dashboardLogin} ${openPrQuery} -author:${dashboardLogin}`;
@@ -78,7 +82,9 @@ export async function fetchIncomingData(
       mentionsQueryString,
     },
     fetchPolicy: 'network-only',
-    context: {token}
+    context: {
+      token: userRecord.githubToken,
+    }
   });
 
   const incomingPrs = [];
@@ -98,6 +104,23 @@ export async function fetchIncomingData(
       mentioned.set(item.id, mention);
     }
   }
+
+  const loginRecord = await userModel.getUserRecord(dashboardLogin);
+  let lastviewedFeature: FeatureDetails|null = null;
+  if (loginRecord) {
+    lastviewedFeature =
+        loginRecord.featureLastViewed ? loginRecord.featureLastViewed : null;
+  }
+
+  // Set up the feature usage *IF* the signed-in user is the viewed user.
+  if (!lastviewedFeature && dashboardLogin === userRecord.username) {
+    lastviewedFeature = {
+      enabledAt: Date.now(),
+    };
+    await userModel.setFeatureData(
+        userRecord.username, 'featureLastViewed', lastviewedFeature);
+  }
+  const lastViewedInfo = await userModel.getAllLastViewedInfo(dashboardLogin);
 
   // Incoming PRs that I've reviewed.
   for (const pr of viewerPrsResult.data.reviewed.nodes || []) {
@@ -126,6 +149,7 @@ export async function fetchIncomingData(
 
     const reviewedPr: api.PullRequest = {
       ...convertPrFields(pr),
+      hasNewActivity: false,
       status: {type: 'NoActionRequired'},
     };
 
@@ -196,6 +220,13 @@ export async function fetchIncomingData(
         relevantReview.state !== PullRequestReviewState.APPROVED) {
       reviewedPr.status = {type: 'ApprovalRequired'};
     }
+
+    const lastActivity = await getPRLastActivityTimestamp(reviewedPr);
+    if (lastActivity) {
+      reviewedPr.hasNewActivity = await issueHasNewActivity(
+          lastviewedFeature, lastActivity, lastViewedInfo[pr.id]);
+    }
+
 
     prsShown.push(pr.id);
     incomingPrs.push(reviewedPr);
@@ -347,6 +378,7 @@ export function convertPrFields(fields: prFieldsFragment): api.PullRequest {
     author: '',
     status: {type: 'UnknownStatus'},
     events: [],
+    hasNewActivity: false,
   };
 
   if (fields.author && fields.author.__typename === 'User') {

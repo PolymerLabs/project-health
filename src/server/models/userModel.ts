@@ -14,6 +14,8 @@ export const TOKEN_COLLECTION_NAME = 'user-tokens';
 
 export const REQUIRED_SCOPES = ['repo'];
 
+export interface FeatureDetails { enabledAt: number; }
+
 export interface UserRecord {
   githubToken: string;
   scopes: string[];
@@ -21,10 +23,10 @@ export interface UserRecord {
   fullname: string|null;
   avatarUrl: string|null;
   lastKnownUpdate: string|null;
-  'feature-lastViewed'?: {enabledAt: number;};
+  featureLastViewed?: FeatureDetails;
 }
 
-type FeatureID = 'feature-lastViewed';
+type FeatureID = 'featureLastViewed';
 
 /**
  * The structure of the data base is:
@@ -145,11 +147,6 @@ class UserModel {
 
   // tslint:disable-next-line:no-any
   async setFeatureData(username: string, featureId: FeatureID, data: any) {
-    const userRecord = await this.getUserRecord(username);
-    if (!userRecord) {
-      throw new Error('Cannot set feature data for a non-existent user.');
-    }
-
     const doc =
         await firestore().collection(USERS_COLLECTION_NAME).doc(username);
     doc.update({
@@ -207,8 +204,8 @@ class UserModel {
     });
   }
 
-  async getIssueLastViewed(username: string, issueId: string):
-      Promise<number|null> {
+  async getAllLastViewedInfo(username: string):
+      Promise<{[issue: string]: number}> {
     const doc = await firestore()
                     .collection(USERS_COLLECTION_NAME)
                     .doc(username)
@@ -216,15 +213,15 @@ class UserModel {
                     .doc('last-viewed');
     const docSnapshot = await doc.get();
     if (!docSnapshot.exists) {
-      return null;
+      return {};
     }
 
     const data = docSnapshot.data();
-    if (!data || !data[issueId]) {
-      return null;
+    if (!data) {
+      return {};
     }
 
-    return data[issueId];
+    return data;
   }
 }
 
