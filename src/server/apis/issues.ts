@@ -5,6 +5,8 @@ import {Issue, IssuesResponse, Popularity} from '../../types/api';
 import {AssignedIssuesQuery, popularityFieldsFragment} from '../../types/gql-types';
 import {github} from '../../utils/github';
 import {userModel} from '../models/userModel';
+import {getIssueLastActivity} from '../utils/get-issue-last-activity';
+import {issueHasNewActivity} from '../utils/issue-has-new-activity';
 
 export async function handleGetIssues(
     request: express.Request, response: express.Response) {
@@ -19,6 +21,10 @@ export async function handleGetIssues(
     if (request.query.login) {
       assigneeLogin = request.query.login;
     }
+
+    const loginRecord = await userModel.getUserRecord(assigneeLogin);
+    const lastViewedInfo = await userModel.getAllLastViewedInfo(assigneeLogin);
+
     const assignedIssuesResult = await github().query<AssignedIssuesQuery>({
       query: assignedIssuesQuery,
       variables: {
@@ -44,6 +50,13 @@ export async function handleGetIssues(
           continue;
         }
 
+        let hasNewActivity = false;
+        const lastActivity = await getIssueLastActivity(assigneeLogin, node);
+        if (lastActivity) {
+          hasNewActivity = await issueHasNewActivity(
+              loginRecord, lastActivity, lastViewedInfo[node.id]);
+        }
+
         issues.push({
           id: node.id,
           title: node.title,
@@ -54,6 +67,7 @@ export async function handleGetIssues(
           createdAt: new Date(node.createdAt).getTime(),
           url: node.url,
           popularity: fetchPopularity(node),
+          hasNewActivity,
         });
       }
     }
@@ -77,7 +91,7 @@ export async function handleGetIssues(
  */
 function fetchPopularity(fields: popularityFieldsFragment): Popularity {
   const score = fields.participants.totalCount * 2 +
-      fields.comments.totalCount / 2 + fields.reactions.totalCount;
+      fields.commentTotal.count / 2 + fields.reactions.totalCount;
   const scaledScore = Math.round(score / 10);
   return Math.min(Math.max(scaledScore, 1), 4) as Popularity;
 }
@@ -96,7 +110,6 @@ query AssignedIssues($query: String!){
       ... on Issue {
         id
         title
-        createdAt
         url
         author {
           login
@@ -109,14 +122,27 @@ query AssignedIssues($query: String!){
           }
         }
         ...popularityFields
+        ...commentFields
+      }
+    }
+  }
+}
+
+fragment commentFields on Issue {
+  createdAt
+  comments(last: 1) {
+    nodes {
+      createdAt
+      author {
+        login
       }
     }
   }
 }
 
 fragment popularityFields on Issue {
-  comments {
-    totalCount
+  commentTotal: comments {
+    count: totalCount
   }
   reactions {
     totalCount

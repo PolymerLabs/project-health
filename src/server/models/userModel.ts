@@ -14,7 +14,9 @@ export const TOKEN_COLLECTION_NAME = 'user-tokens';
 
 export const REQUIRED_SCOPES = ['repo'];
 
-export interface FeatureDetails { enabledAt: number; }
+export interface FeatureDetails {
+  enabledAt: number;
+}
 
 export interface UserRecord {
   githubToken: string;
@@ -23,10 +25,8 @@ export interface UserRecord {
   fullname: string|null;
   avatarUrl: string|null;
   lastKnownUpdate: string|null;
-  featureLastViewed?: FeatureDetails;
+  featureLastViewed: FeatureDetails;
 }
-
-type FeatureID = 'featureLastViewed';
 
 /**
  * The structure of the data base is:
@@ -80,6 +80,10 @@ class UserModel {
       return false;
     }
 
+    if (typeof userRecord.featureLastViewed === 'undefined') {
+      return false;
+    }
+
     return true;
   }
 
@@ -103,6 +107,9 @@ class UserModel {
       scopes,
       githubToken,
       lastKnownUpdate: null,
+      featureLastViewed: {
+        enabledAt: Date.now(),
+      }
     };
 
     if (!this.validateDetails(details)) {
@@ -143,15 +150,6 @@ class UserModel {
         lastKnownUpdate: FieldValue.serverTimestamp(),
       });
     }
-  }
-
-  // tslint:disable-next-line:no-any
-  async setFeatureData(username: string, featureId: FeatureID, data: any) {
-    const doc =
-        await firestore().collection(USERS_COLLECTION_NAME).doc(username);
-    doc.update({
-      [featureId]: data,
-    });
   }
 
   async getUserRecord(username: string): Promise<UserRecord|null> {

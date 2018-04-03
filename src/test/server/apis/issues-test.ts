@@ -7,6 +7,7 @@ import {startTestReplayServer} from '../../../replay-server';
 import {handleGetIssues} from '../../../server/apis/issues';
 import {userModel} from '../../../server/models/userModel';
 import {IssuesResponse} from '../../../types/api';
+import {initFirestore} from '../../../utils/firestore';
 import {initGithub} from '../../../utils/github';
 import {getTestTokens} from '../../get-test-tokens';
 
@@ -16,6 +17,10 @@ type TestContext = {
   sandbox: SinonSandbox,
 };
 const test = anyTest as TestInterface<TestContext>;
+
+test.before(() => {
+  initFirestore();
+});
 
 /**
  * Generates the test context object before each test.
@@ -63,6 +68,7 @@ test('[issues]: should retrieve issues for a user', async (t) => {
           createdAt: 1521849856000,
           url: 'https://github.com/project-health1/repo/issues/16',
           popularity: 1,
+          hasNewActivity: false,
         },
         {
           id: 'MDU6SXNzdWUzMDgyMTAyNzM=',
@@ -74,6 +80,7 @@ test('[issues]: should retrieve issues for a user', async (t) => {
           createdAt: 1521849762000,
           url: 'https://github.com/project-health1/repo/issues/15',
           popularity: 1,
+          hasNewActivity: false,
         },
       ]);
     }

@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import * as api from '../../types/api';
 import {IncomingPullRequestsQuery, mentionedFieldsFragment, prFieldsFragment, PullRequestReviewState, reviewFieldsFragment} from '../../types/gql-types';
 import {github} from '../../utils/github';
-import {FeatureDetails, userModel, UserRecord} from '../models/userModel';
+import {userModel, UserRecord} from '../models/userModel';
 import {getPRLastActivityTimestamp} from '../utils/get-pr-last-activity';
 import {issueHasNewActivity} from '../utils/issue-has-new-activity';
 
@@ -106,20 +106,6 @@ export async function fetchIncomingData(
   }
 
   const loginRecord = await userModel.getUserRecord(dashboardLogin);
-  let lastviewedFeature: FeatureDetails|null = null;
-  if (loginRecord) {
-    lastviewedFeature =
-        loginRecord.featureLastViewed ? loginRecord.featureLastViewed : null;
-  }
-
-  // Set up the feature usage *IF* the signed-in user is the viewed user.
-  if (!lastviewedFeature && dashboardLogin === userRecord.username) {
-    lastviewedFeature = {
-      enabledAt: Date.now(),
-    };
-    await userModel.setFeatureData(
-        userRecord.username, 'featureLastViewed', lastviewedFeature);
-  }
   const lastViewedInfo = await userModel.getAllLastViewedInfo(dashboardLogin);
 
   // Incoming PRs that I've reviewed.
@@ -224,7 +210,7 @@ export async function fetchIncomingData(
     const lastActivity = await getPRLastActivityTimestamp(reviewedPr);
     if (lastActivity) {
       reviewedPr.hasNewActivity = await issueHasNewActivity(
-          lastviewedFeature, lastActivity, lastViewedInfo[pr.id]);
+          loginRecord, lastActivity, lastViewedInfo[pr.id]);
     }
 
 

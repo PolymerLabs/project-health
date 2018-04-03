@@ -235,6 +235,7 @@ export interface Issue {
   createdAt: number;
   url: string;
   popularity: Popularity;
+  hasNewActivity: boolean;
 }
 
 export type Popularity = number&{
