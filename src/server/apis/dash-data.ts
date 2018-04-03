@@ -381,7 +381,7 @@ export function convertPrFields(fields: prFieldsFragment): api.PullRequest {
     hasNewActivity: false,
   };
 
-  if (fields.author && fields.author.__typename === 'User') {
+  if (fields.author) {
     pr.author = fields.author.login;
     pr.avatarUrl = fields.author.avatarUrl;
   }
