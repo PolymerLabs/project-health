@@ -1,27 +1,18 @@
-import {userModel} from '../models/userModel';
+import {FeatureDetails} from '../models/userModel';
 
 export async function issueHasNewActivity(
-    username: string, lastActivity: number, userLastViewed: number|null):
-    Promise<boolean> {
-  const userRecord = await userModel.getUserRecord(username);
-  if (!userRecord) {
+    featureLastViewed: FeatureDetails|null,
+    lastActivity: number,
+    userLastViewed: number|null): Promise<boolean> {
+  if (!featureLastViewed) {
     return false;
-  }
-
-  let lastviewedFeature = userRecord.featureLastViewed;
-  if (!lastviewedFeature) {
-    lastviewedFeature = {
-      enabledAt: Date.now(),
-    };
-    await userModel.setFeatureData(
-        username, 'featureLastViewed', lastviewedFeature);
   }
 
   // We need to account for when the feature was first used and when
   // the user last interacted with the issue
-  if (!userLastViewed || userLastViewed < lastviewedFeature.enabledAt) {
-    userLastViewed = lastviewedFeature.enabledAt;
+  if (!userLastViewed || userLastViewed < featureLastViewed.enabledAt) {
+    userLastViewed = featureLastViewed.enabledAt;
   }
 
-  return (lastActivity > userLastViewed);
+  return lastActivity > userLastViewed;
 }

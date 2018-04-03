@@ -2,6 +2,7 @@ import anyTest, {TestInterface} from 'ava';
 
 import {startTestReplayServer} from '../../../replay-server';
 import {fetchIncomingData} from '../../../server/apis/dash-data';
+import {UserRecord} from '../../../server/models/userModel';
 import {IncomingDashResponse, PullRequest} from '../../../types/api';
 import {PullRequestReviewState} from '../../../types/gql-types';
 import {initFirestore} from '../../../utils/firestore';
@@ -26,8 +27,15 @@ test.beforeEach(async (t) => {
       await startTestReplayServer(t, 'project-health1-dashboard incoming');
   initGithub(url, url);
 
-  const data = await fetchIncomingData(
-      'project-health1', getTestTokens()['project-health1']);
+  const userRecord: UserRecord = {
+    username: 'project-health1',
+    githubToken: getTestTokens()['project-health1'],
+    scopes: [],
+    fullname: '',
+    avatarUrl: '',
+    lastKnownUpdate: '',
+  };
+  const data = await fetchIncomingData(userRecord, 'project-health1');
   server.close();
 
   const prsById = new Map();
