@@ -2,12 +2,11 @@ import anyTest, {TestInterface} from 'ava';
 
 import {startTestReplayServer} from '../../../replay-server';
 import {fetchIncomingData} from '../../../server/apis/dash-data';
-import {UserRecord} from '../../../server/models/userModel';
 import {IncomingDashResponse, PullRequest} from '../../../types/api';
 import {PullRequestReviewState} from '../../../types/gql-types';
 import {initFirestore} from '../../../utils/firestore';
 import {initGithub} from '../../../utils/github';
-import {getTestTokens} from '../../get-test-tokens';
+import {newFakeUserRecord} from '../../utils/newFakeUserRecord';
 
 type TestContext = {
   data: IncomingDashResponse,
@@ -27,14 +26,7 @@ test.beforeEach(async (t) => {
       await startTestReplayServer(t, 'project-health1-dashboard incoming');
   initGithub(url, url);
 
-  const userRecord: UserRecord = {
-    username: 'project-health1',
-    githubToken: getTestTokens()['project-health1'],
-    scopes: [],
-    fullname: '',
-    avatarUrl: '',
-    lastKnownUpdate: '',
-  };
+  const userRecord = newFakeUserRecord();
   const data = await fetchIncomingData(userRecord, 'project-health1');
   server.close();
 

@@ -6,7 +6,7 @@ import {OutgoingDashResponse, OutgoingPullRequest} from '../../../types/api';
 import {MergeableState, PullRequestReviewState} from '../../../types/gql-types';
 import {initFirestore} from '../../../utils/firestore';
 import {initGithub} from '../../../utils/github';
-import {getTestTokens} from '../../get-test-tokens';
+import {newFakeUserRecord} from '../../utils/newFakeUserRecord';
 
 type TestContext = {
   data: OutgoingDashResponse,
@@ -26,14 +26,7 @@ test.before(async (t) => {
       await startTestReplayServer(t, 'project-health1-dashboard outgoing');
   initGithub(url, url);
 
-  const userRecord = {
-    username: 'project-health1',
-    githubToken: getTestTokens()['project-health1'],
-    scopes: [],
-    avatarUrl: null,
-    fullname: null,
-    lastKnownUpdate: new Date().toISOString(),
-  };
+  const userRecord = newFakeUserRecord();
 
   const result = await fetchOutgoingData(userRecord, 'project-health1');
   let page = result;

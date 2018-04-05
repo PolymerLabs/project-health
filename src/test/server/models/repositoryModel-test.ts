@@ -7,7 +7,7 @@ import {startTestReplayServer} from '../../../replay-server';
 import {MAX_CACHE_AGE, repositoryModel} from '../../../server/models/repositoryModel';
 import {initFirestore} from '../../../utils/firestore';
 import {github, initGithub} from '../../../utils/github';
-import {getTestTokens} from '../../get-test-tokens';
+import {newFakeUserRecord} from '../../utils/newFakeUserRecord';
 
 type TestContext = {
   server: Server,
@@ -16,15 +16,6 @@ type TestContext = {
 
 const REPO_OWNER = 'polymerlabs';
 const REPO_NAME = 'project-health';
-
-const LOGIN_DETAILS = {
-  username: 'gauntface',
-  avatarUrl: null,
-  fullname: null,
-  githubToken: getTestTokens()['project-health1'],
-  scopes: ['repo'],
-  lastKnownUpdate: null,
-};
 
 const test = anyTest as TestInterface<TestContext>;
 
@@ -49,7 +40,7 @@ test.afterEach.always(async (t) => {
 
 test.serial('getRepositoryDetails when not in Firestore', async (t) => {
   const repoDetails = await repositoryModel.getRepositoryDetails(
-      LOGIN_DETAILS, REPO_OWNER, REPO_NAME);
+      newFakeUserRecord(), REPO_OWNER, REPO_NAME);
   if (!repoDetails) {
     throw new Error('repoDetails must exist');
   }
@@ -63,7 +54,7 @@ test.serial('getRepositoryDetails when stashed in Firestore', async (t) => {
   const githubGetSpy = t.context.sandbox.spy(githubInstance, 'get');
 
   let repoDetails = await repositoryModel.getRepositoryDetails(
-      LOGIN_DETAILS, REPO_OWNER, REPO_NAME);
+      newFakeUserRecord(), REPO_OWNER, REPO_NAME);
   if (!repoDetails) {
     throw new Error('repoDetails must exist');
   }
@@ -72,7 +63,7 @@ test.serial('getRepositoryDetails when stashed in Firestore', async (t) => {
   t.false(repoDetails.allow_merge_commit);
 
   repoDetails = await repositoryModel.getRepositoryDetails(
-      LOGIN_DETAILS, REPO_OWNER, REPO_NAME);
+      newFakeUserRecord(), REPO_OWNER, REPO_NAME);
   if (!repoDetails) {
     throw new Error('repoDetails must exist');
   }
@@ -92,7 +83,7 @@ test.serial('getRepositoryDetails should not use old data', async (t) => {
   });
 
   let repoDetails = await repositoryModel.getRepositoryDetails(
-      LOGIN_DETAILS, REPO_OWNER, REPO_NAME);
+      newFakeUserRecord(), REPO_OWNER, REPO_NAME);
   if (!repoDetails) {
     throw new Error('repoDetails must exist');
   }
@@ -103,7 +94,7 @@ test.serial('getRepositoryDetails should not use old data', async (t) => {
   currentTime += MAX_CACHE_AGE + 1;
 
   repoDetails = await repositoryModel.getRepositoryDetails(
-      LOGIN_DETAILS, REPO_OWNER, REPO_NAME);
+      newFakeUserRecord(), REPO_OWNER, REPO_NAME);
   if (!repoDetails) {
     throw new Error('repoDetails must exist');
   }

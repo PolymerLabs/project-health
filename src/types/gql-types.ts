@@ -1283,8 +1283,6 @@ export interface AssignedIssuesQuery {
         id: string,
         // Identifies the issue title.
         title: string,
-        // Identifies the date and time when the object was created.
-        createdAt: string,
         // The HTTP URL for this issue
         url: string,
         // The actor who authored the comment.
@@ -1326,10 +1324,10 @@ export interface AssignedIssuesQuery {
           ),
         },
         // A list of comments associated with the Issue.
-        comments:  {
+        commentTotal:  {
           __typename: string,
           // Identifies the total count of items in the connection.
-          totalCount: number,
+          count: number,
         },
         // A list of Reactions left on the Issue.
         reactions:  {
@@ -1342,6 +1340,33 @@ export interface AssignedIssuesQuery {
           __typename: string,
           // Identifies the total count of items in the connection.
           totalCount: number,
+        },
+        // Identifies the date and time when the object was created.
+        createdAt: string,
+        // A list of comments associated with the Issue.
+        comments:  {
+          __typename: string,
+          // A list of nodes.
+          nodes:  Array< {
+            __typename: string,
+            // Identifies the date and time when the object was created.
+            createdAt: string,
+            // The actor who authored the comment.
+            author: ( {
+                __typename: "Organization",
+                // The username of the actor.
+                login: string,
+              } | {
+                __typename: "User",
+                // The username of the actor.
+                login: string,
+              } | {
+                __typename: "Bot",
+                // The username of the actor.
+                login: string,
+              }
+            ) | null,
+          } | null > | null,
         },
       } | {
         __typename: "PullRequest",
@@ -1733,13 +1758,44 @@ export interface mentionedFieldsFragment {
   } | null,
 };
 
-export interface popularityFieldsFragment {
+export interface commentFieldsFragment {
   __typename: "Issue",
+  // Identifies the date and time when the object was created.
+  createdAt: string,
   // A list of comments associated with the Issue.
   comments:  {
     __typename: string,
+    // A list of nodes.
+    nodes:  Array< {
+      __typename: string,
+      // Identifies the date and time when the object was created.
+      createdAt: string,
+      // The actor who authored the comment.
+      author: ( {
+          __typename: "Organization",
+          // The username of the actor.
+          login: string,
+        } | {
+          __typename: "User",
+          // The username of the actor.
+          login: string,
+        } | {
+          __typename: "Bot",
+          // The username of the actor.
+          login: string,
+        }
+      ) | null,
+    } | null > | null,
+  },
+};
+
+export interface popularityFieldsFragment {
+  __typename: "Issue",
+  // A list of comments associated with the Issue.
+  commentTotal:  {
+    __typename: string,
     // Identifies the total count of items in the connection.
-    totalCount: number,
+    count: number,
   },
   // A list of Reactions left on the Issue.
   reactions:  {

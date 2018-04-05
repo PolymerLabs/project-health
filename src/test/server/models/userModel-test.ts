@@ -4,16 +4,14 @@ import * as http from 'http';
 import * as sinon from 'sinon';
 
 import {startTestReplayServer} from '../../../replay-server';
-import {TOKEN_COLLECTION_NAME, userModel, UserRecord, USERS_COLLECTION_NAME} from '../../../server/models/userModel';
+import {TOKEN_COLLECTION_NAME, userModel, USERS_COLLECTION_NAME} from '../../../server/models/userModel';
 import {firestore, initFirestore} from '../../../utils/firestore';
 import * as githubFactory from '../../../utils/github';
 import {initGithub} from '../../../utils/github';
 import {getTestTokens} from '../../get-test-tokens';
+import {FAKE_USERNAME, newFakeUserRecord} from '../../utils/newFakeUserRecord';
 
 const TEST_USER_TOKEN = 'fake-user-token-abcd';
-const TEST_USERNAME = 'fake-username';
-const TEST_NAME = 'fake name';
-const TEST_AVATAR = 'https://example.com/avatar.png';
 
 type TestContext = {
   sandbox: sinon.SinonSandbox,
@@ -30,14 +28,14 @@ test.before(async (t) => {
 
 test.beforeEach(async (t) => {
   await userModel.deleteUserToken(TEST_USER_TOKEN);
-  await userModel.deleteUser(TEST_USERNAME);
+  await userModel.deleteUser(FAKE_USERNAME);
 
   t.context.sandbox = sinon.createSandbox();
 });
 
 test.afterEach.always(async (t) => {
   await userModel.deleteUserToken(TEST_USER_TOKEN);
-  await userModel.deleteUser(TEST_USERNAME);
+  await userModel.deleteUser(FAKE_USERNAME);
 
   t.context.sandbox.restore();
 });
@@ -49,161 +47,125 @@ test.after(() => {
 });
 
 test.serial('[usermodel]: should return null for no user', async (t) => {
-  const result = await userModel.getUserRecord(TEST_USERNAME);
+  const result = await userModel.getUserRecord(FAKE_USERNAME);
   t.deepEqual(result, null);
 });
 
 test.serial(
     '[usermodel]: should return null for user with no token', async (t) => {
-      const exampleData = {
-        username: TEST_USER_TOKEN,
-        fullname: TEST_NAME,
-        avatarUrl: TEST_AVATAR,
-        scopes: [],
-        lastKnownUpdate: new Date().toISOString(),
-      };
+      const exampleRecord = newFakeUserRecord();
+      delete exampleRecord.githubToken;
 
       await firestore()
           .collection(USERS_COLLECTION_NAME)
-          .doc(TEST_USERNAME)
-          .set(exampleData);
+          .doc(exampleRecord.username)
+          .set(exampleRecord);
 
-      const result = await userModel.getUserRecord(TEST_USERNAME);
+      const result = await userModel.getUserRecord(exampleRecord.username);
       t.deepEqual(result, null);
     });
 
 test.serial(
     '[usermodel]: should return null for user with no scopes', async (t) => {
-      const exampleData = {
-        username: TEST_USER_TOKEN,
-        fullname: TEST_NAME,
-        avatarUrl: TEST_AVATAR,
-        githubToken: '1234',
-        lastKnownUpdate: new Date().toISOString(),
-      };
+      const exampleRecord = newFakeUserRecord();
+      delete exampleRecord.scopes;
 
       await firestore()
           .collection(USERS_COLLECTION_NAME)
-          .doc(TEST_USERNAME)
-          .set(exampleData);
+          .doc(exampleRecord.username)
+          .set(exampleRecord);
 
-      const result = await userModel.getUserRecord(TEST_USERNAME);
+      const result = await userModel.getUserRecord(exampleRecord.username);
       t.deepEqual(result, null);
     });
 
 test.serial(
     '[usermodel]: should return null for user with scopes but missing repo',
     async (t) => {
-      const exampleData = {
-        username: TEST_USER_TOKEN,
-        fullname: TEST_NAME,
-        avatarUrl: TEST_AVATAR,
-        githubToken: '1234',
-        scopes: ['other'],
-        lastKnownUpdate: new Date().toISOString(),
-      };
+      const exampleRecord = newFakeUserRecord();
+      exampleRecord.scopes = ['other'];
 
       await firestore()
           .collection(USERS_COLLECTION_NAME)
-          .doc(TEST_USERNAME)
-          .set(exampleData);
+          .doc(exampleRecord.username)
+          .set(exampleRecord);
 
-      const result = await userModel.getUserRecord(TEST_USERNAME);
+      const result = await userModel.getUserRecord(exampleRecord.username);
       t.deepEqual(result, null);
     });
 
 test.serial(
     '[usermodel]: should return null for user with no username', async (t) => {
-      const exampleData = {
-        fullname: TEST_NAME,
-        avatarUrl: TEST_AVATAR,
-        githubToken: '1234',
-        scopes: ['repo'],
-        lastKnownUpdate: new Date().toISOString(),
-      };
+      const exampleRecord = newFakeUserRecord();
+      delete exampleRecord.username;
 
       await firestore()
           .collection(USERS_COLLECTION_NAME)
-          .doc(TEST_USERNAME)
-          .set(exampleData);
+          .doc(FAKE_USERNAME)
+          .set(exampleRecord);
 
-      const result = await userModel.getUserRecord(TEST_USERNAME);
+      const result = await userModel.getUserRecord(FAKE_USERNAME);
       t.deepEqual(result, null);
     });
 
 test.serial(
     '[usermodel]: should return null for user with no fullname', async (t) => {
-      const exampleData = {
-        username: TEST_USERNAME,
-        avatarUrl: TEST_AVATAR,
-        githubToken: '1234',
-        scopes: ['repo'],
-        lastKnownUpdate: new Date().toISOString(),
-      };
+      const exampleRecord = newFakeUserRecord();
+      delete exampleRecord.fullname;
 
       await firestore()
           .collection(USERS_COLLECTION_NAME)
-          .doc(TEST_USERNAME)
-          .set(exampleData);
+          .doc(exampleRecord.username)
+          .set(exampleRecord);
 
-      const result = await userModel.getUserRecord(TEST_USERNAME);
+      const result = await userModel.getUserRecord(exampleRecord.username);
       t.deepEqual(result, null);
     });
 
 test.serial(
     '[usermodel]: should return null for user with no avatar', async (t) => {
-      const exampleData = {
-        username: TEST_USERNAME,
-        fullname: TEST_NAME,
-        githubToken: '1234',
-        scopes: ['repo'],
-        lastKnownUpdate: new Date().toISOString(),
-      };
+      const exampleRecord = newFakeUserRecord();
+      delete exampleRecord.avatarUrl;
 
       await firestore()
           .collection(USERS_COLLECTION_NAME)
-          .doc(TEST_USERNAME)
-          .set(exampleData);
+          .doc(exampleRecord.username)
+          .set(exampleRecord);
 
-      const result = await userModel.getUserRecord(TEST_USERNAME);
+      const result = await userModel.getUserRecord(exampleRecord.username);
       t.deepEqual(result, null);
     });
 
 test.serial(
     '[usermodel]: should return data for existing user with valid data',
     async (t) => {
-      const exampleData = {
-        username: TEST_USER_TOKEN,
-        fullname: TEST_NAME,
-        avatarUrl: TEST_AVATAR,
-        githubToken: '1234',
-        scopes: ['repo'],
-        lastKnownUpdate: new Date().toISOString(),
-      };
+      const exampleRecord = newFakeUserRecord();
 
       await firestore()
           .collection(USERS_COLLECTION_NAME)
-          .doc(TEST_USERNAME)
-          .set(exampleData);
+          .doc(exampleRecord.username)
+          .set(exampleRecord);
 
-      const result = await userModel.getUserRecord(TEST_USERNAME);
-      t.deepEqual(result, exampleData);
+      const result = await userModel.getUserRecord(exampleRecord.username);
+      t.deepEqual(result, exampleRecord);
     });
 
 test.serial('[usermodel]: should return a new user token', async (t) => {
-  const githubToken = 'fake-github-token';
-  const scopes = ['repo', 'test-1', 'test-2'];
+  // This ensures enabledAt is the same
+  t.context.sandbox.useFakeTimers();
+
+  const exampleRecord = newFakeUserRecord();
 
   t.context.sandbox.stub(githubFactory, 'github').callsFake(() => {
     return {
       query: ({context}: {context: {token: string}}) => {
-        t.deepEqual(context.token, githubToken);
+        t.deepEqual(context.token, exampleRecord.githubToken);
         return {
           data: {
             viewer: {
-              login: TEST_USERNAME,
-              name: TEST_NAME,
-              avatarUrl: TEST_AVATAR,
+              login: exampleRecord.username,
+              name: exampleRecord.fullname,
+              avatarUrl: exampleRecord.avatarUrl,
             }
           }
         };
@@ -219,18 +181,12 @@ test.serial('[usermodel]: should return a new user token', async (t) => {
     };
   });
 
-  const newToken = await userModel.generateNewUserToken(githubToken, scopes);
+  const newToken = await userModel.generateNewUserToken(
+      exampleRecord.githubToken, exampleRecord.scopes);
   t.deepEqual(newToken, TEST_USER_TOKEN);
 
   const result = await userModel.getUserRecordFromToken(TEST_USER_TOKEN);
-  t.deepEqual(result, {
-    githubToken,
-    username: TEST_USERNAME,
-    fullname: TEST_NAME,
-    avatarUrl: TEST_AVATAR,
-    scopes,
-    lastKnownUpdate: null,
-  });
+  t.deepEqual(result, exampleRecord);
 });
 
 
@@ -265,7 +221,7 @@ test.serial(
           .collection(TOKEN_COLLECTION_NAME)
           .doc(TEST_USER_TOKEN)
           .set({
-            username: TEST_USERNAME,
+            username: FAKE_USERNAME,
           });
 
       const result = await userModel.getUserRecordFromToken(TEST_USER_TOKEN);
@@ -279,43 +235,6 @@ test.serial(
         await userModel.generateNewUserToken(
             getTestTokens()['project-health1'], []);
       }, 'New user info is invalid.');
-    });
-
-test.serial('[usermodel]: should set and last viewed feature', async (t) => {
-  const exampleData: UserRecord = {
-    username: TEST_USER_TOKEN,
-    fullname: TEST_NAME,
-    avatarUrl: TEST_AVATAR,
-    githubToken: '1234',
-    scopes: ['repo'],
-    lastKnownUpdate: new Date().toISOString(),
-  };
-
-  await firestore()
-      .collection(USERS_COLLECTION_NAME)
-      .doc(TEST_USERNAME)
-      .set(exampleData);
-
-  await userModel.setFeatureData(TEST_USERNAME, 'featureLastViewed', {
-    enabledAt: 1,
-  });
-  const userRecord = await userModel.getUserRecord(TEST_USERNAME);
-  if (!userRecord) {
-    throw new Error('Expected user record to exist.');
-  }
-  t.deepEqual(userRecord['featureLastViewed'], {
-    enabledAt: 1,
-  });
-});
-
-test.serial(
-    '[usermodel]: should not throw when setting a feature for a non existent user',
-    async (t) => {
-      await userModel.setFeatureData('non-existent-user', 'featureLastViewed', {
-        enabledAt: 1,
-      });
-
-      t.pass();
     });
 
 test.serial('[usermodel]: should mark user for update', async (t) => {

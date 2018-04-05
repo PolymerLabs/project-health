@@ -8,10 +8,10 @@ import {testScreenshot} from '../../pixel-tester';
 import {startTestReplayServer} from '../../replay-server';
 import {DashServer} from '../../server/dash-server';
 import {pullRequestsModel} from '../../server/models/pullRequestsModel';
-import {userModel, UserRecord} from '../../server/models/userModel';
+import {userModel} from '../../server/models/userModel';
 import {initFirestore} from '../../utils/firestore';
 import {initGithub} from '../../utils/github';
-import {getTestTokens} from '../get-test-tokens';
+import {newFakeUserRecord} from '../utils/newFakeUserRecord';
 
 type TestContext = {
   replayServer: Server,
@@ -44,20 +44,13 @@ test.beforeEach(async (t) => {
     sandbox: sinon.sandbox.create(),
   };
 
-  const getFakeLogin = (): UserRecord => {
-    return {
-      username: 'project-health1',
-      avatarUrl: null,
-      fullname: null,
-      githubToken: getTestTokens()['project-health1'],
-      scopes: [],
-      lastKnownUpdate: null,
-    };
-  };
-
   // Stub login to point to fake user.
   t.context.sandbox.stub(userModel, 'getUserRecordFromRequest')
-      .callsFake(getFakeLogin);
+      .callsFake(() => {
+        const userRecord = newFakeUserRecord();
+        userRecord.username = 'project-health1';
+        return userRecord;
+      });
 
   initGithub(t.context.replayAddress, t.context.replayAddress);
 });

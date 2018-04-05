@@ -5,7 +5,6 @@
         {
           "id": "MDU6SXNzdWUzMDgyMTA0Njc=",
           "title": "I found a bug.",
-          "createdAt": "2018-03-24T00:04:16Z",
           "url": "https://github.com/project-health1/repo/issues/16",
           "author": {
             "login": "project-health2",
@@ -21,8 +20,8 @@
             "__typename": "Repository"
           },
           "__typename": "Issue",
-          "comments": {
-            "totalCount": 0,
+          "commentTotal": {
+            "count": 0,
             "__typename": "IssueCommentConnection"
           },
           "reactions": {
@@ -32,12 +31,16 @@
           "participants": {
             "totalCount": 2,
             "__typename": "UserConnection"
+          },
+          "createdAt": "2018-03-24T00:04:16Z",
+          "comments": {
+            "nodes": [],
+            "__typename": "IssueCommentConnection"
           }
         },
         {
           "id": "MDU6SXNzdWUzMDgyMTAyNzM=",
           "title": "Self Assigned Issue",
-          "createdAt": "2018-03-24T00:02:42Z",
           "url": "https://github.com/project-health1/repo/issues/15",
           "author": {
             "login": "project-health1",
@@ -53,8 +56,8 @@
             "__typename": "Repository"
           },
           "__typename": "Issue",
-          "comments": {
-            "totalCount": 0,
+          "commentTotal": {
+            "count": 0,
             "__typename": "IssueCommentConnection"
           },
           "reactions": {
@@ -64,6 +67,11 @@
           "participants": {
             "totalCount": 1,
             "__typename": "UserConnection"
+          },
+          "createdAt": "2018-03-24T00:02:42Z",
+          "comments": {
+            "nodes": [],
+            "__typename": "IssueCommentConnection"
           }
         }
       ],
