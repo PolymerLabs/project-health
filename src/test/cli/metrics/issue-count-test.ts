@@ -19,7 +19,8 @@ test.afterEach.always(async (t) => {
 });
 
 test.serial('WebComponents issue count', async (t) => {
-  const result = await getIssueCounts({org: 'WebComponents'});
+  const result =
+      await getIssueCounts({org: 'WebComponents', since: new Date(0)});
   t.is(result.issues.length, 1599);
   t.truthy(result.summary());
   t.truthy(result.rawData());
