@@ -24,7 +24,7 @@ import {MetricResult} from './metric-result';
 
 export type IssueCountOpts = {
   org: string,
-  repo?: string,
+  repo?: string, since: Date,
 };
 
 /**
@@ -45,7 +45,10 @@ export async function getIssueCounts(opts: IssueCountOpts):
   const issues: Issue[] = [];
   for (const {owner, name} of repos) {
     for (const issue of await getIssues(owner, name)) {
-      issues.push(issue);
+      if (new Date(issue.openedAt) > opts.since ||
+          new Date(issue.closedAt) > opts.since) {
+        issues.push(issue);
+      }
     }
   }
   return new IssueCountResult(issues);

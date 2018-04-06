@@ -106,7 +106,7 @@ export async function run(argv: string[]) {
       metricResult = await getReviewLatency({...orgInfo, since});
       break;
     case 'issue-counts':
-      metricResult = await getIssueCounts(orgInfo);
+      metricResult = await getIssueCounts({...orgInfo, since});
       break;
     case 'review-coverage':
       metricResult =
