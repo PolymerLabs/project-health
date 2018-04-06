@@ -4,14 +4,14 @@ import * as puppeteer from 'puppeteer';
 import * as sinon from 'sinon';
 import {SinonSandbox} from 'sinon';
 
-import {testScreenshot} from '../../pixel-tester';
-import {startTestReplayServer} from '../../replay-server';
 import {DashServer} from '../../server/dash-server';
 import {pullRequestsModel} from '../../server/models/pullRequestsModel';
 import {userModel} from '../../server/models/userModel';
 import {initFirestore} from '../../utils/firestore';
 import {initGithub} from '../../utils/github';
 import {newFakeUserRecord} from '../utils/newFakeUserRecord';
+import {testScreenshot} from '../utils/pixel-tester';
+import {startTestReplayServer} from '../utils/replay-server';
 
 type TestContext = {
   replayServer: Server,

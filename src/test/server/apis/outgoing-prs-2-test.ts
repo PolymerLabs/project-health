@@ -1,12 +1,12 @@
 import anyTest, {TestInterface} from 'ava';
 
-import {startTestReplayServer} from '../../../replay-server';
 import {fetchOutgoingData} from '../../../server/apis/dash-data/fetch-outgoing-data';
 import {OutgoingDashResponse, OutgoingPullRequest} from '../../../types/api';
 import {PullRequestReviewState} from '../../../types/gql-types';
 import {initFirestore} from '../../../utils/firestore';
 import {initGithub} from '../../../utils/github';
 import {newFakeUserRecord} from '../../utils/newFakeUserRecord';
+import {startTestReplayServer} from '../../utils/replay-server';
 
 type TestContext = {
   data: OutgoingDashResponse,

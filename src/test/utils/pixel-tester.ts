@@ -11,7 +11,8 @@ import pixelmatch = require('pixelmatch');
 // tslint:disable-next-line:no-require-imports
 import mergeImg = require('merge-img');
 
-const goldensRoot = path.join(__dirname, '..', 'goldens');
+const projectRoot = path.join(__dirname, '..', '..');
+const goldensRoot = path.join(projectRoot, '..', 'goldens');
 
 /**
  * Given paths to two images, will return whether or not the two images are the

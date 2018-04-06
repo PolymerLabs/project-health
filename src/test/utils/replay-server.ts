@@ -5,7 +5,8 @@ import * as http from 'http';
 import * as path from 'path';
 import * as request from 'request';
 
-const replayRoot = path.join(__dirname, '..', 'replays');
+const projectRoot = path.join(__dirname, '..', '..');
+const replayRoot = path.join(projectRoot, '..', 'replays');
 const githubApiUrl = 'https://api.github.com/graphql';
 const githubJsonUrl = 'https://api.github.com';
 const timeout = 1000 * 10;
@@ -37,7 +38,7 @@ export async function startTestReplayServer(
   const replayDir = path.join(replayRoot, testTitle.replace(/\s+/g, '-'));
 
   if (record) {
-    const tokensPath = path.join(__dirname, '..', 'tokens.json');
+    const tokensPath = path.join(projectRoot, 'tokens.json');
     if (!await fsExtra.pathExists(tokensPath)) {
       throw new Error('Missing tokens.json with test tokens.');
     }

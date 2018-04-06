@@ -2,8 +2,8 @@ import anyTest, {TestInterface} from 'ava';
 import {Server} from 'http';
 
 import {getStars} from '../../../cli/metrics/stars';
-import {startTestReplayServer} from '../../../replay-server';
 import {initGithub} from '../../../utils/github';
+import {startTestReplayServer} from '../../utils/replay-server';
 
 const test = anyTest as TestInterface<{server: Server}>;
 

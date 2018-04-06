@@ -5,7 +5,6 @@ import * as path from 'path';
 import * as sinon from 'sinon';
 import {SinonSandbox} from 'sinon';
 
-import {startTestReplayServer} from '../../../replay-server';
 import * as notificationController from '../../../server/controllers/notifications';
 import {handlePullRequest} from '../../../server/controllers/webhook-events/pull-request';
 import {pullRequestsModel} from '../../../server/models/pullRequestsModel';
@@ -14,6 +13,7 @@ import * as getPRIDModule from '../../../server/utils/get-gql-pr-id';
 import {initFirestore} from '../../../utils/firestore';
 import {initGithub} from '../../../utils/github';
 import {initSecrets} from '../../../utils/secrets';
+import {startTestReplayServer} from '../../utils/replay-server';
 
 const hookJsonDir = path.join(__dirname, '..', '..', 'static', 'webhook-data');
 

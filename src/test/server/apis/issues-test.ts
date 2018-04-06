@@ -3,13 +3,13 @@ import {Server} from 'http';
 import * as sinon from 'sinon';
 import {SinonSandbox} from 'sinon';
 
-import {startTestReplayServer} from '../../../replay-server';
 import {handleGetIssues} from '../../../server/apis/issues';
 import {userModel} from '../../../server/models/userModel';
 import {IssuesResponse} from '../../../types/api';
 import {initFirestore} from '../../../utils/firestore';
 import {initGithub} from '../../../utils/github';
 import {getTestTokens} from '../../get-test-tokens';
+import {startTestReplayServer} from '../../utils/replay-server';
 
 type TestContext = {
   replayServer: Server,
