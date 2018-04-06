@@ -93,6 +93,18 @@
   background-color: var(--actionable-color);
 }
 
+.dashboard-row[type='complete'] a {
+  text-decoration-color: var(--merge-text-color);
+}
+
+.dashboard-row[type='actionable'] a {
+  text-decoration-color: var(--actionable-color);
+}
+
+.dashboard-row[type='activity'] a {
+  text-decoration-color: var(--non-actionable-color);
+}
+
 .dashboard-row-link:hover .dashboard-row-info, .dashboard-row-event__url:hover {
   text-decoration-line: underline;
   text-decoration-color: inherit;
