@@ -8,7 +8,7 @@
 @import "./components/issues.css";
 
 .pr-list a {
-  text-decoration: none;
+  text-decoration-line: none;
   color: inherit;
 }
 
