@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import {Issue, IssuesResponse, Popularity} from '../../types/api';
 import {AssignedIssuesQuery, popularityFieldsFragment} from '../../types/gql-types';
 import {github} from '../../utils/github';
-import {userModel} from '../models/userModel';
+import {userModel, UserRecord} from '../models/userModel';
 import {getIssueLastActivity} from '../utils/get-issue-last-activity';
 import {issueHasNewActivity} from '../utils/issue-has-new-activity';
 
@@ -22,8 +22,12 @@ export async function handleGetIssues(
       assigneeLogin = request.query.login;
     }
 
-    const loginRecord = await userModel.getUserRecord(assigneeLogin);
-    const lastViewedInfo = await userModel.getAllLastViewedInfo(assigneeLogin);
+    let loginRecord: UserRecord|null = null;
+    let lastViewedInfo: {[issue: string]: number}|null = null;
+    if (assigneeLogin === userRecord.username) {
+      loginRecord = await userModel.getUserRecord(assigneeLogin);
+      lastViewedInfo = await userModel.getAllLastViewedInfo(assigneeLogin);
+    }
 
     const assignedIssuesResult = await github().query<AssignedIssuesQuery>({
       query: assignedIssuesQuery,
@@ -51,10 +55,12 @@ export async function handleGetIssues(
         }
 
         let hasNewActivity = false;
-        const lastActivity = await getIssueLastActivity(assigneeLogin, node);
-        if (lastActivity) {
-          hasNewActivity = await issueHasNewActivity(
-              loginRecord, lastActivity, lastViewedInfo[node.id]);
+        if (lastViewedInfo && loginRecord) {
+          const lastActivity = await getIssueLastActivity(assigneeLogin, node);
+          if (lastActivity) {
+            hasNewActivity = await issueHasNewActivity(
+                loginRecord, lastActivity, lastViewedInfo[node.id]);
+          }
         }
 
         issues.push({

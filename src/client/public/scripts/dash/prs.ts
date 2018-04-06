@@ -10,15 +10,12 @@ import {parseAsEventModel} from './pr-event.js';
 
 export function genericPrListTemplate(
     prList: api.PullRequest[],
-    newlyActionablePRs: string[],
     filter: FilterState|undefined,
     emptyMessage: EmptyMessage) {
   prList = applyFilter(filter, prList);
   if (prList.length) {
     return html`${prList.map((pr) => {
-      const isNewlyActionable =
-          newlyActionablePRs && newlyActionablePRs.indexOf(pr.id) !== -1;
-      return getPRRowTemplate(pr, isNewlyActionable);
+      return getPRRowTemplate(pr);
     })}`;
   } else {
     return emptyTemplate(emptyMessage);
@@ -42,15 +39,12 @@ function applyFilter<T extends api.PullRequest>(
 
 export function outgoingPrListTemplate(
     prList: api.OutgoingPullRequest[],
-    newlyActionablePRs: string[],
     filter: FilterState|undefined,
     emptyMessage: EmptyMessage) {
   prList = applyFilter(filter, prList);
   if (prList.length) {
     return html`${prList.map((pr) => {
-      const isNewlyActionable =
-          newlyActionablePRs && newlyActionablePRs.indexOf(pr.id) !== -1;
-      return outgoingPrTemplate(pr, isNewlyActionable);
+      return outgoingPrTemplate(pr);
     })}`;
   } else {
     return emptyTemplate(emptyMessage);
@@ -94,16 +88,13 @@ export function statusToDisplay(pr: api.PullRequest): StatusDisplay {
   }
 }
 
-export function outgoingPrTemplate(
-    pr: api.OutgoingPullRequest, newlyActionable: boolean) {
+export function outgoingPrTemplate(pr: api.OutgoingPullRequest) {
   const autoMergeEvents = getAutoMergeOptions(pr as api.OutgoingPullRequest);
-  return getPRRowTemplate(pr, newlyActionable, autoMergeEvents);
+  return getPRRowTemplate(pr, autoMergeEvents);
 }
 
 function getPRRowTemplate(
-    pr: api.PullRequest,
-    newlyActionable: boolean,
-    automergeEvents?: TemplateResult[]) {
+    pr: api.PullRequest, automergeEvents?: TemplateResult[]) {
   const prEvents = pr.events.map(
       (event) => genericDashboardRowEventTemplate(parseAsEventModel(event)));
 
@@ -114,6 +105,7 @@ function getPRRowTemplate(
 
   return genericDashboardRowTemplate(
       {
+        id: pr.id,
         createdAt: pr.createdAt,
         author: pr.author,
         avatarUrl: pr.avatarUrl,
@@ -122,8 +114,8 @@ function getPRRowTemplate(
         owner: pr.owner,
         repo: pr.repo,
         status: statusToDisplay(pr),
+        hasNewActivity: pr.hasNewActivity,
       },
-      newlyActionable,
       [],
       events);
 }

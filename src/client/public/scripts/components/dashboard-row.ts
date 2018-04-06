@@ -14,6 +14,7 @@ export interface StatusDisplay {
 }
 
 export interface DashboardRowData {
+  id: string;
   status: StatusDisplay;
   createdAt: number;
   author: string;
@@ -22,6 +23,7 @@ export interface DashboardRowData {
   title: string;
   owner: string;
   repo: string;
+  hasNewActivity: boolean;
   classes?: string[];
 }
 
@@ -62,19 +64,54 @@ export function genericDashboardRowEventTemplate(data: DashboardRowEventData):
 
 export function genericDashboardRowTemplate(
     data: DashboardRowData,
-    isNewlyActionable: boolean,
     extraHeaderData?: TemplateResult[],
     extraEvents?: TemplateResult[]): TemplateResult {
   const additionalClasses: string[] = data.classes || [];
   const rowClasses = ['dashboard-row', ...additionalClasses];
-  if (isNewlyActionable) {
-    rowClasses.push('is-newly-actionable');
-  }
   if (extraEvents && extraEvents.length > 0) {
     rowClasses.push('has-events');
   }
 
   const status = data.status;
+
+  const hasActivityClasses = ['dashboard-row-status__has-activity'];
+  if (data.hasNewActivity) {
+    hasActivityClasses.push('enabled');
+  }
+
+  async function handleRowClick(event: Event) {
+    let hasActivityElement: HTMLElement|null = null;
+
+    let testNode = event.target as HTMLElement;
+    while (testNode) {
+      if (testNode && testNode.classList.contains('dashboard-row-link')) {
+        hasActivityElement =
+            testNode.querySelector('.dashboard-row-status__has-activity');
+        break;
+      }
+      testNode = testNode.parentNode as HTMLElement;
+    }
+
+    if (hasActivityElement) {
+      hasActivityElement.classList.remove('enabled');
+    }
+
+    const response = await fetch('/api/last-viewed/update/', {
+      method: 'POST',
+      credentials: 'include',
+      body: JSON.stringify({
+        id: data.id,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const responseText = await response.text();
+      console.warn('Unable to update last-viewed timestamp: ', responseText);
+    }
+  }
 
   return html`
       <div class$="${rowClasses.join(' ')}" type$="${status.type}">
@@ -90,9 +127,11 @@ export function genericDashboardRowTemplate(
             <img class="dashboard-row-avatar__img" src="${data.avatarUrl}">
           </div>
 
-          <a class="dashboard-row-link" href="${data.url}" target="_blank">
+          <a class="dashboard-row-link" href="${
+      data.url}" target="_blank" on-click="${handleRowClick}">
             <div class="dashboard-row-status small-heading">
               <span class="dashboard-row-status__msg">${status.text}</span>
+              <span class$="${hasActivityClasses.join(' ')}"></span>
             </div>
             <div class="dashboard-row-info">
               <span class="dashboard-row-info__repo-name">${data.owner}/${

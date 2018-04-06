@@ -83,7 +83,7 @@ export interface JSONAPIResponse<T> {
   data?: T;
 }
 
-export interface LoginResponse { status: string; }
+export interface GenericStatusResponse { status: string; }
 
 export interface LastKnownResponse {
   lastKnownUpdate: string|null;

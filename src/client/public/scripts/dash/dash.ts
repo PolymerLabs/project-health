@@ -43,14 +43,9 @@ function renderOutgoing() {
     return;
   }
 
-  const actionableIds = dashData.getOutgoingUpdates();
-
   render(
       outgoingPrListTemplate(
-          outgoingPrs,
-          actionableIds,
-          filterController.getFilter('outgoing-prs'),
-          {
+          outgoingPrs, filterController.getFilter('outgoing-prs'), {
             title: 'No outgoing pull requests',
             description:
                 'When you open new pull requests, they\'ll appear here.'
@@ -64,14 +59,9 @@ function renderIncoming() {
     return;
   }
 
-  const actionableIds = dashData.getIncomingUpdates();
-
   render(
       genericPrListTemplate(
-          incomingPrs,
-          actionableIds,
-          filterController.getFilter('incoming-prs'),
-          {
+          incomingPrs, filterController.getFilter('incoming-prs'), {
             title: 'No incoming pull requests',
             description:
                 'When you\'re added as a reviewer to a pull request, they\'ll appear here.'
@@ -82,13 +72,9 @@ function renderIncoming() {
 async function renderIssues() {
   const issues = await dashData.getIssues();
 
-  const actionableIds = dashData.getIssueUpdates();
   render(
       genericIssueListTemplate(
-          issues,
-          actionableIds,
-          filterController.getFilter('assigned-issues'),
-          {
+          issues, filterController.getFilter('assigned-issues'), {
             title: 'No issues assigned to you',
             description: 'When you\'re assigned issues, they\'ll appear here.'
           }),
@@ -137,21 +123,6 @@ async function updateApplicationState(focused?: boolean) {
 
   if (focused) {
     await dashData.markDataViewed();
-
-    // When an element is marked as 'is-newly-actionable' we need to apply the
-    // flash keyframe animation (achieved by adding the 'actionable-flash'
-    // class).
-    // To reliably do this, ensure the class is removed, force a style
-    // recalc, then apply the flash.
-    const elements = document.querySelectorAll('.is-newly-actionable');
-    for (let i = 0; i < elements.length; i++) {
-      const element = elements.item(i) as HTMLElement;
-      element.classList.remove('actionable-flash');
-      // tslint:disable-next-line:no-unused-expression
-      element.offsetTop;  // Force a style recalc
-      element.classList.remove('is-newly-actionable');
-      element.classList.add('actionable-flash');
-    }
   }
 }
 

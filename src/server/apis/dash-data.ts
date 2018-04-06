@@ -105,8 +105,12 @@ export async function fetchIncomingData(
     }
   }
 
-  const loginRecord = await userModel.getUserRecord(dashboardLogin);
-  const lastViewedInfo = await userModel.getAllLastViewedInfo(dashboardLogin);
+  let loginRecord: UserRecord|null = null;
+  let lastViewedInfo: {[issue: string]: number}|null = null;
+  if (dashboardLogin === userRecord.username) {
+    loginRecord = await userModel.getUserRecord(dashboardLogin);
+    lastViewedInfo = await userModel.getAllLastViewedInfo(dashboardLogin);
+  }
 
   // Incoming PRs that I've reviewed.
   for (const pr of viewerPrsResult.data.reviewed.nodes || []) {
@@ -207,12 +211,13 @@ export async function fetchIncomingData(
       reviewedPr.status = {type: 'ApprovalRequired'};
     }
 
-    const lastActivity = await getPRLastActivityTimestamp(reviewedPr);
-    if (lastActivity) {
-      reviewedPr.hasNewActivity = await issueHasNewActivity(
-          loginRecord, lastActivity, lastViewedInfo[pr.id]);
+    if (lastViewedInfo && loginRecord) {
+      const lastActivity = await getPRLastActivityTimestamp(reviewedPr);
+      if (lastActivity) {
+        reviewedPr.hasNewActivity = await issueHasNewActivity(
+            loginRecord, lastActivity, lastViewedInfo[pr.id]);
+      }
     }
-
 
     prsShown.push(pr.id);
     incomingPrs.push(reviewedPr);

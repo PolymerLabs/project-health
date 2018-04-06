@@ -26,17 +26,15 @@ function popularityTemplate(popularity: api.Popularity) {
 
 export function genericIssueListTemplate(
     issues: api.Issue[],
-    newlyActionableIssues: string[],
     filter: FilterState|undefined,
     emptyMessage: EmptyMessage) {
   // Issuses currently are only of one type.
   const filtered = filter && filter['actionable'];
   if (issues.length && !filtered) {
     return html`${issues.map((issue) => {
-      const isNewlyActionable = newlyActionableIssues &&
-          newlyActionableIssues.indexOf(issue.id) !== -1;
       return genericDashboardRowTemplate(
           {
+            id: issue.id,
             status: statusToDisplay(),
             createdAt: issue.createdAt,
             author: issue.author,
@@ -45,8 +43,8 @@ export function genericIssueListTemplate(
             title: issue.title,
             owner: issue.owner,
             repo: issue.repo,
+            hasNewActivity: issue.hasNewActivity,
           },
-          isNewlyActionable,
           [popularityTemplate(issue.popularity)]);
     })}`;
   } else {

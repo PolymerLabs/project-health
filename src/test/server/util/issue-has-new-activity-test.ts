@@ -26,12 +26,6 @@ test.afterEach((t) => {
 });
 
 test.serial(
-    '[issueHasNewActivity]: should handle no user record', async (t) => {
-      const activity = await issueHasNewActivity(null, 0, null);
-      t.deepEqual(activity, false, 'issue has activity');
-    });
-
-test.serial(
     '[issueHasNewActivity]: should use feature enabled at instead of user last viewed',
     async (t) => {
       const userRecord = newFakeUserRecord();

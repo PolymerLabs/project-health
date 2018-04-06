@@ -124,7 +124,7 @@ class FakeDoc {
 
   async update(data: any) {
     if (!this.data) {
-      this.data = {};
+      throw new Error('You can only update an existing doc');
     }
     this.data = Object.assign(this.data, data);
   }
