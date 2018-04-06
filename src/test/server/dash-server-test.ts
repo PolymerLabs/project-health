@@ -21,3 +21,9 @@ test('/webhook/ ping should return 200', async (t) => {
   t.deepEqual(textResponse, '');
   t.true(response.ok);
 });
+
+test('should resolve if closed without starting', async (t) => {
+  const server = new DashServer();
+  await server.close();
+  t.pass();
+});

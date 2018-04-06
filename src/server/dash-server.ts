@@ -23,7 +23,7 @@ import {requireLogin} from './utils/require-login';
 const STATIC_EXT = ['html'];
 
 export class DashServer {
-  private app: express.Express;
+  private app: Express;
   private server: Server|null;
 
   constructor() {

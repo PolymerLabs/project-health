@@ -3,13 +3,13 @@ import * as crypto from 'crypto';
 import * as http from 'http';
 import * as sinon from 'sinon';
 
-import {startTestReplayServer} from '../../../replay-server';
 import {TOKEN_COLLECTION_NAME, userModel, USERS_COLLECTION_NAME} from '../../../server/models/userModel';
 import {firestore, initFirestore} from '../../../utils/firestore';
 import * as githubFactory from '../../../utils/github';
 import {initGithub} from '../../../utils/github';
 import {getTestTokens} from '../../get-test-tokens';
 import {FAKE_USERNAME, newFakeUserRecord} from '../../utils/newFakeUserRecord';
+import {startTestReplayServer} from '../../utils/replay-server';
 
 const TEST_USER_TOKEN = 'fake-user-token-abcd';
 

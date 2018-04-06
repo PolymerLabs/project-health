@@ -3,7 +3,6 @@ import {Server} from 'http';
 import * as sinon from 'sinon';
 import {SinonSandbox, SinonStub} from 'sinon';
 
-import {startTestReplayServer} from '../../../../replay-server';
 import * as notificationController from '../../../../server/controllers/notifications';
 import {handlePullRequestReview} from '../../../../server/controllers/webhook-events/pull-request-review';
 import {PullRequestReviewHook} from '../../../../server/controllers/webhook-events/types';
@@ -14,6 +13,7 @@ import {PullRequestDetails} from '../../../../server/utils/get-pr-from-commit';
 import {initFirestore} from '../../../../utils/firestore';
 import {initGithub} from '../../../../utils/github';
 import {initSecrets} from '../../../../utils/secrets';
+import {startTestReplayServer} from '../../../utils/replay-server';
 
 const TEST_SECRETS = {
   GITHUB_CLIENT_ID: 'ClientID',

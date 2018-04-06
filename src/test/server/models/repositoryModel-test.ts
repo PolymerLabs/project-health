@@ -3,11 +3,11 @@ import {Server} from 'http';
 import * as sinon from 'sinon';
 import {SinonSandbox} from 'sinon';
 
-import {startTestReplayServer} from '../../../replay-server';
 import {MAX_CACHE_AGE, repositoryModel} from '../../../server/models/repositoryModel';
 import {initFirestore} from '../../../utils/firestore';
 import {github, initGithub} from '../../../utils/github';
 import {newFakeUserRecord} from '../../utils/newFakeUserRecord';
+import {startTestReplayServer} from '../../utils/replay-server';
 
 type TestContext = {
   server: Server,
