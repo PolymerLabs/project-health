@@ -94,7 +94,7 @@ export function getRouter(): express.Router {
       async (request: express.Request, response: express.Response) => {
         const userRecord = await userModel.getUserRecordFromRequest(request);
         if (!userRecord) {
-          response.sendStatus(400);
+          response.sendStatus(401);
           return;
         }
 

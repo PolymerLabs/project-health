@@ -13,7 +13,7 @@ export async function handleGetIssues(
   try {
     const userRecord = await userModel.getUserRecordFromRequest(request);
     if (!userRecord) {
-      response.status(400).send('No login details.');
+      response.status(401).send('No login details.');
       return;
     }
 

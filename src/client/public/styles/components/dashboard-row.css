@@ -81,7 +81,7 @@
   opacity: 0;
 }
 
-.dashboard-row-status__has-activity.enabled {
+.dashboard-row-link[has-new-activity=true] .dashboard-row-status__has-activity {
   opacity: 1;
 }
 

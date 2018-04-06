@@ -74,26 +74,16 @@ export function genericDashboardRowTemplate(
 
   const status = data.status;
 
-  const hasActivityClasses = ['dashboard-row-status__has-activity'];
-  if (data.hasNewActivity) {
-    hasActivityClasses.push('enabled');
-  }
-
   async function handleRowClick(event: Event) {
-    let hasActivityElement: HTMLElement|null = null;
-
-    let testNode = event.target as HTMLElement;
-    while (testNode) {
-      if (testNode && testNode.classList.contains('dashboard-row-link')) {
-        hasActivityElement =
-            testNode.querySelector('.dashboard-row-status__has-activity');
-        break;
-      }
-      testNode = testNode.parentNode as HTMLElement;
+    let anchorElement: HTMLElement|null = event.target as HTMLElement;
+    while (anchorElement &&
+           !anchorElement.classList.contains('dashboard-row-link')) {
+      anchorElement = anchorElement.parentNode as HTMLElement;
     }
+    console.log(anchorElement);
 
-    if (hasActivityElement) {
-      hasActivityElement.classList.remove('enabled');
+    if (anchorElement) {
+      anchorElement.removeAttribute('has-new-activity');
     }
 
     const response = await fetch('/api/last-viewed/update/', {
@@ -128,10 +118,11 @@ export function genericDashboardRowTemplate(
           </div>
 
           <a class="dashboard-row-link" href="${
-      data.url}" target="_blank" on-click="${handleRowClick}">
+      data.url}" target="_blank" on-click="${
+      handleRowClick}" has-new-activity$="${data.hasNewActivity}">
             <div class="dashboard-row-status small-heading">
               <span class="dashboard-row-status__msg">${status.text}</span>
-              <span class$="${hasActivityClasses.join(' ')}"></span>
+              <span class="dashboard-row-status__has-activity"></span>
             </div>
             <div class="dashboard-row-info">
               <span class="dashboard-row-info__repo-name">${data.owner}/${

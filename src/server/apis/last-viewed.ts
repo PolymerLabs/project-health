@@ -10,7 +10,7 @@ async function handleUpdateRequest(request: express.Request):
   const userRecord = await userModel.getUserRecordFromRequest(request);
   if (!userRecord) {
     return {
-      statusCode: 400,
+      statusCode: 401,
       error: {
         code: 'no-user-record',
         message: 'Please sign in',
