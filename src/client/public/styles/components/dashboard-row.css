@@ -94,8 +94,8 @@
 }
 
 .dashboard-row-link:hover .dashboard-row-info, .dashboard-row-event__url:hover {
-  text-decoration: underline;
-  text-decoration-color: var(--non-actionable-color);
+  text-decoration-line: underline;
+  text-decoration-color: inherit;
 }
 
 .dashboard-row-info {
@@ -167,7 +167,8 @@
 }
 
 .dashboard-row-event__action {
-  text-decoration: underline;
+  text-decoration-line: underline;
+  text-decoration-color: inherit;
 }
 
 .dashboard-row-event.blue-dot .dashboard-row-event__bullet svg {

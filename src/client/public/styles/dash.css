@@ -8,7 +8,7 @@
 @import "./components/issues.css";
 
 .pr-list a {
-  text-decoration: none;
+  text-decoration-line: none;
   color: inherit;
 }
 
@@ -19,4 +19,24 @@
 
 .pr-list__empty-message {
   color: var(--secondary-text-color);
+}
+
+.dashboard-row[type='complete'] .dashboard-row-status__msg {
+  color: var(--merge-text-color);
+}
+
+.dashboard-row[type='complete'] a {
+  text-decoration-color: var(--merge-text-color);
+}
+
+.dashboard-row[type='actionable'] .dashboard-row-status__msg {
+  color: var(--actionable-color);
+}
+
+.dashboard-row[type='actionable'] a {
+  text-decoration-color: var(--actionable-color);
+}
+
+.dashboard-row[type='activity'] a {
+  text-decoration-color: var(--non-actionable-color);
 }
