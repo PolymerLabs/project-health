@@ -1,4 +1,4 @@
-import {JSONAPIResponse, LoginResponse} from '../../../../types/api.js';
+import {GenericStatusResponse, JSONAPIResponse} from '../../../../types/api.js';
 
 function handleOriginRedirect(
     redirectOrigin: string, queryParams: URLSearchParams) {
@@ -24,7 +24,7 @@ async function handleLoginCode(code: string, queryParams: URLSearchParams) {
   });
 
   const jsonResponse =
-      (await response.json()) as JSONAPIResponse<LoginResponse>;
+      (await response.json()) as JSONAPIResponse<GenericStatusResponse>;
   if (jsonResponse.error) {
     console.error(jsonResponse.error.message);
     window.location.href = '/';

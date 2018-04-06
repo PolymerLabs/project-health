@@ -1,14 +1,14 @@
 import * as express from 'express';
 import fetch from 'node-fetch';
 
-import {LoginResponse} from '../../types/api';
+import {GenericStatusResponse} from '../../types/api';
 import {secrets} from '../../utils/secrets';
 import {ID_COOKIE_NAME, userModel} from '../models/userModel';
 
 import {createAPIRoute, ResponseDetails} from './api-route';
 
 async function handleLoginRequest(request: express.Request):
-    Promise<ResponseDetails<LoginResponse>> {
+    Promise<ResponseDetails<GenericStatusResponse>> {
   if (!request.body) {
     return {
       statusCode: 400,

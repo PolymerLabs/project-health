@@ -20,28 +20,3 @@
 .pr-list__empty-message {
   color: var(--secondary-text-color);
 }
-
-.dashboard-row[type='complete'] .dashboard-row-status__msg {
-  color: var(--merge-text-color);
-}
-
-.dashboard-row[type='actionable'] .dashboard-row-status__msg {
-  color: var(--actionable-color);
-}
-
-/* Actionable Flash */
-@keyframes flash {
-  0% {
-    background-color: var(--actionable-highlight-color);
-  }
-  to {
-    background-color: var(--page-bg-color);
-  }
-}
-
-.dashboard-row.actionable-flash, .dashboard-row.actionable-flash > .dashboard-row-event:last-child > .dashboard-row-event__bullet svg {
-  animation-fill-mode: backwards;
-  animation-delay: 200ms;
-  animation-duration: 500ms;
-  animation-name: flash;
-}

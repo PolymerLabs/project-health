@@ -98,7 +98,7 @@ class UserModel {
     const userDocument =
         await firestore().collection(USERS_COLLECTION_NAME).doc(username);
 
-    const details: UserRecord = {
+    let details: UserRecord = {
       username,
       avatarUrl: loginResult.data.viewer.avatarUrl,
       fullname: loginResult.data.viewer.name,
@@ -110,6 +110,16 @@ class UserModel {
       }
     };
 
+    const existingUserDoc = await userDocument.get();
+    if (existingUserDoc.exists) {
+      const combinedDetails = Object.assign(details, existingUserDoc);
+      // Only use combined details if they work, other fall back to what works
+      if (this.validateDetails(combinedDetails)) {
+        details = combinedDetails;
+      }
+    }
+
+    // Final validation - this should never fail!
     if (!this.validateDetails(details)) {
       throw new Error('New user info is invalid.');
     }
@@ -195,9 +205,16 @@ class UserModel {
                     .doc(username)
                     .collection(METADATA_COLLECTION_NAME)
                     .doc('last-viewed');
-    await doc.update({
-      [issueId]: timestamp,
-    });
+    const docSnapshot = await doc.get();
+    if (docSnapshot.exists) {
+      await doc.update({
+        [issueId]: timestamp,
+      });
+    } else {
+      await doc.create({
+        [issueId]: timestamp,
+      });
+    }
   }
 
   async getAllLastViewedInfo(username: string):

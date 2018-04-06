@@ -79,8 +79,13 @@ async function getAllPRInfo(
   const prs: api.OutgoingPullRequest[] = [];
 
   if (data.user) {
-    const loginRecord = await userModel.getUserRecord(dashLogin);
-    const lastViewedInfo = await userModel.getAllLastViewedInfo(dashLogin);
+    let loginRecord: UserRecord|null = null;
+    let lastViewedInfo: {[issue: string]: number}|null = null;
+    if (dashLogin === userRecord.username) {
+      loginRecord = await userModel.getUserRecord(dashLogin);
+      lastViewedInfo = await userModel.getAllLastViewedInfo(dashLogin);
+    }
+
     const prConnection = data.user.pullRequests;
 
     // Set pagination info.
@@ -213,10 +218,12 @@ async function getAllPRInfo(
         hasNewActivity: false,
       };
 
-      const lastActivity = await getPRLastActivityTimestamp(fullPR);
-      if (lastActivity) {
-        fullPR.hasNewActivity = await issueHasNewActivity(
-            loginRecord, lastActivity, lastViewedInfo[pr.id]);
+      if (lastViewedInfo && loginRecord) {
+        const lastActivity = await getPRLastActivityTimestamp(fullPR);
+        if (lastActivity) {
+          fullPR.hasNewActivity = await issueHasNewActivity(
+              loginRecord, lastActivity, lastViewedInfo[pr.id]);
+        }
       }
 
       return fullPR;

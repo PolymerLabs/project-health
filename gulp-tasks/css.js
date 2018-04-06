@@ -18,6 +18,7 @@ function css() {
             customProperties: {
               // Allows both fallback and CSS variables to be used
               preserve: true,
+              warnings: false,
             }
           }
         }),
