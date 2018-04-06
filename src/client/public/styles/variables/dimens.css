@@ -1,5 +1,6 @@
 :root {
   --padding: 12px;
+  --grid-size: 16px;
   --small-text: 12px;
 
   --avatar-size: 40px;

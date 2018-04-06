@@ -5,8 +5,8 @@ import {DashPollController} from './dash-poll-controller.js';
 import {FilterController, FilterId, FilterState} from './filter-controller.js';
 import {genericIssueListTemplate} from './issues.js';
 import {LegendItem, legendTemplate} from './legend.js';
+import {navTemplate} from './nav.js';
 import {notificationCenter} from './notification-center.js';
-import {profileTemplate} from './profile.js';
 import {genericPrListTemplate, outgoingPrListTemplate} from './prs.js';
 import {getLoginParam} from './utils/get-data.js';
 
@@ -20,21 +20,17 @@ const SHORT_POLL_INTERVAL = 15 * 1000;
 const updateController = new DashPollController();
 const filterController = new FilterController();
 
-function renderProfile() {
+function renderUser() {
   const profileData = dashData.getProfileData();
   if (!profileData) {
     return;
   }
 
-  const profileContainerElement =
-      (document.querySelector('#profile-container') as Element);
-  if (profileData.isCurrentUser) {
-    profileContainerElement.classList.remove('incognito');
-  } else {
-    profileContainerElement.classList.add('incognito');
-  }
+  const pageHeader = (document.querySelector('#page-header') as Element);
+  pageHeader.textContent = profileData.login;
 
-  render(profileTemplate(profileData), profileContainerElement);
+  const nav = (document.querySelector('#main-nav') as Element);
+  render(navTemplate(profileData), nav);
 }
 
 function renderOutgoing() {
@@ -96,7 +92,7 @@ async function renderIssues() {
 }
 
 function renderAll() {
-  renderProfile();
+  renderUser();
   renderOutgoing();
   renderIncoming();
   renderIssues();
