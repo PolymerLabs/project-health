@@ -6,6 +6,7 @@
   cursor: pointer;
   transition: 100ms color cubic-bezier(0.22, 0.61, 0.36, 1);
   user-select: none;
+  font-family: var(--default-font);
 }
 
 .legend-item:before {
