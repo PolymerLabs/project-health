@@ -28,6 +28,10 @@ async function handleLoginCode(code: string, queryParams: URLSearchParams) {
   if (jsonResponse.error) {
     console.error(jsonResponse.error.message);
     const msgElement = document.querySelector('.oauth-msg');
+    if (!msgElement) {
+      console.warn('Unable to find oauth-msg element to show error.');
+      return;
+    }
     msgElement.textContent =
         `Unable to login with server: '${jsonResponse.error.message}'`;
     return;
