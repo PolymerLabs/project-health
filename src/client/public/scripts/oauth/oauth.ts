@@ -27,7 +27,9 @@ async function handleLoginCode(code: string, queryParams: URLSearchParams) {
       (await response.json()) as JSONAPIResponse<LoginResponse>;
   if (jsonResponse.error) {
     console.error(jsonResponse.error.message);
-    window.location.href = '/';
+    const msgElement = document.querySelector('.oauth-msg');
+    msgElement.textContent =
+        `Unable to login with server: '${jsonResponse.error.message}'`;
     return;
   }
 
