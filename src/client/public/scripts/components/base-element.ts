@@ -24,10 +24,10 @@ export abstract class BaseElement extends HTMLElement {
   }
 
   connectedCallback() {
-    this.renderCallback();
+    this.requestRender();
   }
 
-  renderCallback() {
+  requestRender() {
     this._debouncer(() => {
       litRender(this.render(), this);
     });
@@ -37,7 +37,7 @@ export abstract class BaseElement extends HTMLElement {
       _name: string,
       _oldValue: string|null,
       _newValue: string|null) {
-    this.renderCallback();
+    this.requestRender();
   }
 
   abstract render(): TemplateResult;

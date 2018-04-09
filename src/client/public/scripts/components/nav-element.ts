@@ -13,7 +13,7 @@ export class NavElement extends BaseElement {
 
   set user(user: api.DashboardUser|null) {
     this._user = user;
-    this.renderCallback();
+    this.requestRender();
   }
 
   _userTemplate(): TemplateResult {
