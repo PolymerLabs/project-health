@@ -1,3 +1,5 @@
+import '../components/nav-element.js';
+
 import {render} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import {NavElement} from '../components/nav-element.js';
 
@@ -9,9 +11,6 @@ import {LegendItem, legendTemplate} from './legend.js';
 import {notificationCenter} from './notification-center.js';
 import {genericPrListTemplate, outgoingPrListTemplate} from './prs.js';
 import {getLoginParam} from './utils/get-data.js';
-
-// Must export the imported custom elements so they don't get compiled out.
-export {NavElement};
 
 // Full update - poll every 5 minutes
 const FULL_UPDATE_ID = 'full-update';
