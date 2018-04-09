@@ -1,4 +1,4 @@
-import {render} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
+import {render as litRender} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import {TemplateResult} from '../../../../../node_modules/lit-html/lit-html.js';
 
 type Debouncer = (task: Function) => Promise<void>;
@@ -17,11 +17,10 @@ function createDebouncer(): Debouncer {
 }
 
 export abstract class BaseElement extends HTMLElement {
-  private _debouncer: Debouncer;
+  private _debouncer: Debouncer = createDebouncer();
 
   constructor() {
     super();
-    this._debouncer = createDebouncer();
   }
 
   connectedCallback() {
@@ -30,7 +29,7 @@ export abstract class BaseElement extends HTMLElement {
 
   renderCallback() {
     this._debouncer(() => {
-      render(this.render(), this);
+      litRender(this.render(), this);
     });
   }
 
