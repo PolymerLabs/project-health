@@ -54,11 +54,11 @@ class UserModel {
    * @private
    */
   validateDetails(userRecord: UserRecord): boolean {
-    if (!userRecord.githubToken) {
+    if (!userRecord.githubToken || typeof userRecord.githubToken !== 'string') {
       return false;
     }
 
-    if (!userRecord.scopes) {
+    if (!userRecord.scopes || !Array.isArray(userRecord.scopes)) {
       return false;
     }
 
@@ -68,15 +68,15 @@ class UserModel {
       }
     }
 
-    if (!userRecord.username) {
+    if (!userRecord.username || typeof userRecord.username !== 'string') {
       return false;
     }
 
-    if (typeof userRecord.fullname === 'undefined') {
+    if (!userRecord.fullname || typeof userRecord.fullname !== 'string') {
       return false;
     }
 
-    if (typeof userRecord.avatarUrl === 'undefined') {
+    if (!userRecord.avatarUrl || typeof userRecord.avatarUrl !== 'string') {
       return false;
     }
 
