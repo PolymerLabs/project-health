@@ -45,7 +45,6 @@ async function handleLoginRequest(request: express.Request):
     };
   }
 
-
   const accessToken = loginResponseBody['access_token'];
   const userScopes =
       loginResponseBody['scope'] ? loginResponseBody['scope'].split(',') : [];
