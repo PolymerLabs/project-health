@@ -1,24 +1,28 @@
+import '../components/empty-message.js';
+
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import {TemplateResult} from '../../../../../node_modules/lit-html/lit-html.js';
 import * as api from '../../../../types/api.js';
 import {genericDashboardRowEventTemplate, genericDashboardRowTemplate, StatusDisplay} from '../components/dashboard-row.js';
-import {EmptyMessage, emptyTemplate} from '../components/empty-message.js';
+import {createEmptyMessage} from '../components/empty-message.js';
 
 import {getAutoMergeOptions} from './auto-merge-events.js';
 import {FilterState} from './filter-controller.js';
 import {parseAsEventModel} from './pr-event.js';
 
+
 export function genericPrListTemplate(
     prList: api.PullRequest[],
     filter: FilterState|undefined,
-    emptyMessage: EmptyMessage) {
+    emptyMessageTitle: string,
+    emptyMessageDescription: string) {
   prList = applyFilter(filter, prList);
   if (prList.length) {
     return html`${prList.map((pr) => {
       return getPRRowTemplate(pr);
     })}`;
   } else {
-    return emptyTemplate(emptyMessage);
+    return createEmptyMessage(emptyMessageTitle, emptyMessageDescription);
   }
 }
 
@@ -40,14 +44,15 @@ function applyFilter<T extends api.PullRequest>(
 export function outgoingPrListTemplate(
     prList: api.OutgoingPullRequest[],
     filter: FilterState|undefined,
-    emptyMessage: EmptyMessage) {
+    emptyMessageTitle: string,
+    emptyMessageDescription: string) {
   prList = applyFilter(filter, prList);
   if (prList.length) {
     return html`${prList.map((pr) => {
       return outgoingPrTemplate(pr);
     })}`;
   } else {
-    return emptyTemplate(emptyMessage);
+    return createEmptyMessage(emptyMessageTitle, emptyMessageDescription);
   }
 }
 

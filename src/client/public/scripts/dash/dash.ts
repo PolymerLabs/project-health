@@ -43,11 +43,10 @@ function renderOutgoing() {
 
   render(
       outgoingPrListTemplate(
-          outgoingPrs, filterController.getFilter('outgoing-prs'), {
-            title: 'No outgoing pull requests',
-            description:
-                'When you open new pull requests, they\'ll appear here.'
-          }),
+          outgoingPrs,
+          filterController.getFilter('outgoing-prs'),
+          'No outgoing pull requests',
+          'When you open new pull requests, they\'ll appear here.'),
       (document.querySelector('.outgoing-prs__list') as Element));
 }
 
@@ -59,11 +58,10 @@ function renderIncoming() {
 
   render(
       genericPrListTemplate(
-          incomingPrs, filterController.getFilter('incoming-prs'), {
-            title: 'No incoming pull requests',
-            description:
-                'When you\'re added as a reviewer to a pull request, they\'ll appear here.'
-          }),
+          incomingPrs,
+          filterController.getFilter('incoming-prs'),
+          'No incoming pull requests',
+          'When you\'re added as a reviewer to a pull request, they\'ll appear here.'),
       (document.querySelector('.incoming-prs__list') as Element));
 }
 
@@ -72,10 +70,10 @@ async function renderIssues() {
 
   render(
       genericIssueListTemplate(
-          issues, filterController.getFilter('assigned-issues'), {
-            title: 'No issues assigned to you',
-            description: 'When you\'re assigned issues, they\'ll appear here.'
-          }),
+          issues,
+          filterController.getFilter('assigned-issues'),
+          'No issues assigned to you',
+          'When you\'re assigned issues, they\'ll appear here.'),
       (document.querySelector('.assigned-issues__list') as Element));
 }
 

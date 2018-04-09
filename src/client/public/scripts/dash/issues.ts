@@ -1,7 +1,11 @@
+import '../components/empty-message.js';
+
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import * as api from '../../../../types/api.js';
 import {genericDashboardRowTemplate, StatusDisplay} from '../components/dashboard-row.js';
-import {EmptyMessage, emptyTemplate} from '../components/empty-message.js';
+
+import {createEmptyMessage} from '../components/empty-message.js';
+
 import {FilterState} from './filter-controller.js';
 
 function statusToDisplay(): StatusDisplay {
@@ -27,7 +31,8 @@ function popularityTemplate(popularity: api.Popularity) {
 export function genericIssueListTemplate(
     issues: api.Issue[],
     filter: FilterState|undefined,
-    emptyMessage: EmptyMessage) {
+    emptyMessageTitle: string,
+    emptyMessageDescription: string) {
   // Issuses currently are only of one type.
   const filtered = filter && filter['actionable'];
   if (issues.length && !filtered) {
@@ -48,6 +53,6 @@ export function genericIssueListTemplate(
           [popularityTemplate(issue.popularity)]);
     })}`;
   } else {
-    return emptyTemplate(emptyMessage);
+    return createEmptyMessage(emptyMessageTitle, emptyMessageDescription);
   }
 }
