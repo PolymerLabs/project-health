@@ -51,6 +51,11 @@ export class DashServer {
     // Enable lit-html
     const litPath = path.dirname(require.resolve('lit-html'));
     app.use('/node_modules/lit-html', express.static(litPath));
+    const customElementsPath =
+        path.dirname(require.resolve('@webcomponents/custom-elements'));
+    app.use(
+        '/node_modules/@webcomponents/custom-elements',
+        express.static(customElementsPath));
 
     // Enable /* to serve /client/public
     // Enable /bundled.* to serve /client/bundled/public

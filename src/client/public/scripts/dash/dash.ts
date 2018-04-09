@@ -1,11 +1,13 @@
+import '../components/nav-element.js';
+
 import {render} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
+import {NavElement} from '../components/nav-element.js';
 
 import {dashData} from './dash-data.js';
 import {DashPollController} from './dash-poll-controller.js';
 import {FilterController, FilterId, FilterState} from './filter-controller.js';
 import {genericIssueListTemplate} from './issues.js';
 import {LegendItem, legendTemplate} from './legend.js';
-import {navTemplate} from './nav.js';
 import {notificationCenter} from './notification-center.js';
 import {genericPrListTemplate, outgoingPrListTemplate} from './prs.js';
 import {getLoginParam} from './utils/get-data.js';
@@ -29,8 +31,8 @@ function renderUser() {
   const pageHeader = (document.querySelector('#page-header') as Element);
   pageHeader.textContent = profileData.login;
 
-  const nav = (document.querySelector('#main-nav') as Element);
-  render(navTemplate(profileData), nav);
+  const nav = (document.querySelector('nav-element') as NavElement);
+  nav.user = profileData;
 }
 
 function renderOutgoing() {

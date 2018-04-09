@@ -9,14 +9,11 @@
   <link href="/styles/dash.css" rel="stylesheet" />
   <link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
   <link rel="icon" type="image/png" href="/images/favicon-16x16.png" sizes="16x16">
+  <script nomodule src="/node_modules/@webcomponents/custom-elements/custom-elements.min.js"></script>
 </head>
 
 <body>
-  <nav id="main-nav">
-    <div class="nav-avatar">
-      <img src="/images/default-avatar.svg" />
-    </div>
-  </nav>
+  <nav-element></nav-element>
   <div class="main-content">
     <div id="profile-container">
 
@@ -50,9 +47,8 @@
   </div>
 </body>
 
-
+<script nomodule src="/bundled/scripts/dash/dash.js"></script>
 <!-- The crossorigin attribute sends credentials for requests to the same origin. -->
-<script nomodule src="/bundled/scripts/dash/dash.js" crossorigin></script>
 <script type="module" src="/scripts/dash/dash.js" crossorigin></script>
 
 <script async src='https://www.google-analytics.com/analytics.js'></script>
