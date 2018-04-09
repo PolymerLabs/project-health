@@ -51,7 +51,8 @@ export function createAPIRoute<T>(routeCb: APIRouteCb<T>) {
       response.status(500).json({
         error: {
           code: 'uncaught-exception',
-          message: 'An uncaught exception was thrown: ' + err.message,
+          message: `An uncaught exception was thrown while responding to '${
+              request.url}': '${err.message}'`,
         },
       });
     }

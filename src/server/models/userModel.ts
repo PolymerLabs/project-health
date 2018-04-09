@@ -14,7 +14,9 @@ export const TOKEN_COLLECTION_NAME = 'user-tokens';
 
 export const REQUIRED_SCOPES = ['repo'];
 
-export interface FeatureDetails { enabledAt: number; }
+export interface FeatureDetails {
+  enabledAt: number;
+}
 
 export interface UserRecord {
   githubToken: string;
@@ -52,11 +54,11 @@ class UserModel {
    * @private
    */
   validateDetails(userRecord: UserRecord): boolean {
-    if (!userRecord.githubToken) {
+    if (!userRecord.githubToken || typeof userRecord.githubToken !== 'string') {
       return false;
     }
 
-    if (!userRecord.scopes) {
+    if (!userRecord.scopes || !Array.isArray(userRecord.scopes)) {
       return false;
     }
 
@@ -66,15 +68,15 @@ class UserModel {
       }
     }
 
-    if (!userRecord.username) {
+    if (!userRecord.username || typeof userRecord.username !== 'string') {
       return false;
     }
 
-    if (typeof userRecord.fullname === 'undefined') {
+    if (!userRecord.fullname || typeof userRecord.fullname !== 'string') {
       return false;
     }
 
-    if (typeof userRecord.avatarUrl === 'undefined') {
+    if (!userRecord.avatarUrl || typeof userRecord.avatarUrl !== 'string') {
       return false;
     }
 
@@ -110,9 +112,10 @@ class UserModel {
       }
     };
 
-    const existingUserDoc = await userDocument.get();
-    if (existingUserDoc.exists) {
-      const combinedDetails = Object.assign(details, existingUserDoc);
+    const existingUserSnapshot = await userDocument.get();
+    if (existingUserSnapshot.exists) {
+      const existingData = existingUserSnapshot.data();
+      const combinedDetails = Object.assign(details, existingData);
       // Only use combined details if they work, other fall back to what works
       if (this.validateDetails(combinedDetails)) {
         details = combinedDetails;

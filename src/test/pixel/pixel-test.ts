@@ -29,7 +29,8 @@ test.before(async () => {
   // This allows automerge to be visible for a specific PR.
   pullRequestsModel.pullRequestOpened('project-health1', 'status-repo', 4);
 
-  browser = await puppeteer.launch({args: ['--no-sandbox']});
+  browser = await puppeteer.launch(
+      {args: ['--no-sandbox', '--disable-setuid-sandbox']});
 
   dashServer = new DashServer();
   dashAddress = await dashServer.listen();
