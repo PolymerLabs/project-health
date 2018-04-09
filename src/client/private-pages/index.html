@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Project Health</title>
   <link href="/styles/base.css" rel="stylesheet" />
-  <link href="/styles/nav.css" rel="stylesheet" />
+  <link href="/styles/components/nav.css" rel="stylesheet" />
+  <link href="/styles/components/toggle-element.css" rel="stylesheet" />
   <link href="/styles/dash.css" rel="stylesheet" />
   <link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
   <link rel="icon" type="image/png" href="/images/favicon-16x16.png" sizes="16x16">
@@ -15,10 +16,10 @@
 <body>
   <nav-element></nav-element>
   <div class="main-content">
-    <div id="profile-container">
-
+    <div class="profile-container">
+      <h1 id="page-header"></h1>
+      <toggle-element id="push-toggle" disabled="true"></toggle-element>
     </div>
-    <h1 id="page-header"></h1>
     <div id="outgoing-prs">
       <h2>
         Outgoing pull requests
@@ -51,8 +52,13 @@
 <!-- The crossorigin attribute sends credentials for requests to the same origin. -->
 <script type="module" src="/scripts/dash/dash.js" crossorigin></script>
 
+
+<script nomodule src="/bundled/scripts/settings/push-component.js" crossorigin></script>
+<script type="module" src="/scripts/settings/push-component.js" crossorigin></script>
+
 <script async src='https://www.google-analytics.com/analytics.js'></script>
 <script>window.ga = window.ga || function () { (ga.q = ga.q || []).push(arguments) }; ga.l = +new Date;</script>
+
 <script nomodule src="/bundled/scripts/window-analytics.js" crossorigin></script>
 <script type="module" src="/scripts/window-analytics.js"></script>
 
