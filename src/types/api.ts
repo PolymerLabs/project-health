@@ -23,6 +23,11 @@ export interface OutgoingPullRequest extends PullRequest {
   automergeAvailable: boolean;
 }
 
+export interface LastComment {
+  createdAt: number;
+  author: string|null;
+}
+
 export interface PullRequest {
   id: string;
   repo: string;
@@ -35,6 +40,7 @@ export interface PullRequest {
   avatarUrl: string;
   status: PullRequestStatus;
   events: PullRequestEvent[];
+  lastComment: LastComment|null;
   hasNewActivity: boolean;
 }
 
@@ -70,7 +76,9 @@ export interface IncomingDashResponse {
   prs: PullRequest[];
 }
 
-export interface IssuesResponse { issues: Issue[]; }
+export interface IssuesResponse {
+  issues: Issue[];
+}
 
 export interface Review {
   author: string;
@@ -83,7 +91,9 @@ export interface JSONAPIResponse<T> {
   data?: T;
 }
 
-export interface GenericStatusResponse { status: string; }
+export interface GenericStatusResponse {
+  status: string;
+}
 
 export interface LastKnownResponse {
   lastKnownUpdate: string|null;

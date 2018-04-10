@@ -169,6 +169,7 @@ test(
         },
         title: 'A new pull request',
         url: 'https://github.com/project-health1/repo/pull/11',
+        lastComment: null,
         hasNewActivity: false,
       });
     });
@@ -204,6 +205,7 @@ test('[incoming-prs-test]: Incoming PR with new @mention after I reviewed', (t) 
     },
     title: 'Questionable changes',
     url: 'https://github.com/project-health1/repo/pull/10',
+    lastComment: null,
     hasNewActivity: false,
   });
 });
@@ -242,6 +244,7 @@ test('[incoming-prs-test]: Incoming PR that I reviewed. New commit since', (t) =
     },
     title: 'Update links in readme',
     url: 'https://github.com/project-health1/repo/pull/9',
+    lastComment: null,
     hasNewActivity: false,
   });
 });
@@ -266,6 +269,7 @@ test('[incoming-prs-test]: Incoming PR, I requested changes', (t) => {
         reviewState: PullRequestReviewState.CHANGES_REQUESTED,
       }
     }],
+    lastComment: null,
     hasNewActivity: false,
   });
 });
@@ -283,6 +287,7 @@ test('[incoming-prs-test]: Incoming review request', (t) => {
     url: 'https://github.com/project-health1/repo/pull/4',
     status: {type: 'ReviewRequired'},
     events: [],
+    lastComment: null,
     hasNewActivity: false,
   });
 });
@@ -326,6 +331,10 @@ test('[incoming-prs-test]: incoming with mention, new commits', (t) => {
             'https://github.com/project-health1/repo/pull/13#issuecomment-371333354',
       },
     ],
+    lastComment: {
+      createdAt: 1520468480000,
+      author: 'project-health2',
+    },
     hasNewActivity: false,
   });
 });
@@ -354,6 +363,7 @@ test('[incoming-prs-test]: Incoming PR with changes requested', (t) => {
     },
     title: 'Modify readme description',
     url: 'https://github.com/project-health1/repo/pull/14',
+    lastComment: null,
     hasNewActivity: false,
   });
 });

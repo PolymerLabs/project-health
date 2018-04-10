@@ -905,6 +905,31 @@ export interface OutgoingPullRequestsQuery {
             },
           } | null > | null,
         },
+        // A list of comments associated with the pull request.
+        comments:  {
+          __typename: "IssueCommentConnection",
+          // A list of nodes.
+          nodes:  Array< {
+            __typename: "IssueComment",
+            // The actor who authored the comment.
+            author: ( {
+                __typename: "Organization",
+                // The username of the actor.
+                login: string,
+              } | {
+                __typename: "User",
+                // The username of the actor.
+                login: string,
+              } | {
+                __typename: "Bot",
+                // The username of the actor.
+                login: string,
+              }
+            ) | null,
+            // Identifies the date and time when the object was created.
+            createdAt: string,
+          } | null > | null,
+        },
         // A list of reviews associated with the pull request.
         reviews:  {
           __typename: "PullRequestReviewConnection",
@@ -1125,6 +1150,31 @@ export interface IncomingPullRequestsQuery {
             url: string,
           }
         ) | null,
+        // A list of comments associated with the pull request.
+        comments:  {
+          __typename: string,
+          // A list of nodes.
+          nodes:  Array< {
+            __typename: string,
+            // The actor who authored the comment.
+            author: ( {
+                __typename: "Organization",
+                // The username of the actor.
+                login: string,
+              } | {
+                __typename: "User",
+                // The username of the actor.
+                login: string,
+              } | {
+                __typename: "Bot",
+                // The username of the actor.
+                login: string,
+              }
+            ) | null,
+            // Identifies the date and time when the object was created.
+            createdAt: string,
+          } | null > | null,
+        },
         // A list of reviews associated with the pull request.
         reviews:  {
           __typename: string,
@@ -1660,6 +1710,35 @@ export interface prFieldsFragment {
       url: string,
     }
   ) | null,
+};
+
+export interface lastCommentFieldsFragment {
+  __typename: "PullRequest",
+  // A list of comments associated with the pull request.
+  comments:  {
+    __typename: string,
+    // A list of nodes.
+    nodes:  Array< {
+      __typename: string,
+      // The actor who authored the comment.
+      author: ( {
+          __typename: "Organization",
+          // The username of the actor.
+          login: string,
+        } | {
+          __typename: "User",
+          // The username of the actor.
+          login: string,
+        } | {
+          __typename: "Bot",
+          // The username of the actor.
+          login: string,
+        }
+      ) | null,
+      // Identifies the date and time when the object was created.
+      createdAt: string,
+    } | null > | null,
+  },
 };
 
 export interface commitFieldsFragment {

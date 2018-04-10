@@ -47,6 +47,10 @@
               ],
               "__typename": "PullRequestCommitConnection"
             },
+            "comments": {
+              "nodes": [],
+              "__typename": "IssueCommentConnection"
+            },
             "repository": {
               "name": "repo",
               "nameWithOwner": "project-health1/repo",
@@ -104,6 +108,10 @@
                 }
               ],
               "__typename": "PullRequestCommitConnection"
+            },
+            "comments": {
+              "nodes": [],
+              "__typename": "IssueCommentConnection"
             },
             "repository": {
               "name": "repo",
@@ -163,6 +171,10 @@
               ],
               "__typename": "PullRequestCommitConnection"
             },
+            "comments": {
+              "nodes": [],
+              "__typename": "IssueCommentConnection"
+            },
             "repository": {
               "name": "repo",
               "nameWithOwner": "project-health1/repo",
@@ -210,6 +222,10 @@
                 }
               ],
               "__typename": "PullRequestCommitConnection"
+            },
+            "comments": {
+              "nodes": [],
+              "__typename": "IssueCommentConnection"
             },
             "repository": {
               "name": "repo",
@@ -287,6 +303,10 @@
               ],
               "__typename": "PullRequestCommitConnection"
             },
+            "comments": {
+              "nodes": [],
+              "__typename": "IssueCommentConnection"
+            },
             "repository": {
               "name": "repo",
               "nameWithOwner": "project-health1/repo",
@@ -353,6 +373,10 @@
                 }
               ],
               "__typename": "PullRequestCommitConnection"
+            },
+            "comments": {
+              "nodes": [],
+              "__typename": "IssueCommentConnection"
             },
             "repository": {
               "name": "repo",
@@ -424,6 +448,10 @@
               ],
               "__typename": "PullRequestCommitConnection"
             },
+            "comments": {
+              "nodes": [],
+              "__typename": "IssueCommentConnection"
+            },
             "repository": {
               "name": "status-repo",
               "nameWithOwner": "project-health1/status-repo",
@@ -437,7 +465,7 @@
             "url": "https://github.com/project-health1/status-repo/pull/3",
             "number": 3,
             "id": "MDExOlB1bGxSZXF1ZXN0MTc0NDQ3NDAw",
-            "mergeable": "UNKNOWN",
+            "mergeable": "MERGEABLE",
             "createdAt": "2018-03-12T17:54:50Z",
             "viewerSubscription": "SUBSCRIBED",
             "author": {
@@ -494,6 +522,10 @@
               ],
               "__typename": "PullRequestCommitConnection"
             },
+            "comments": {
+              "nodes": [],
+              "__typename": "IssueCommentConnection"
+            },
             "repository": {
               "name": "status-repo",
               "nameWithOwner": "project-health1/status-repo",
@@ -507,7 +539,7 @@
             "url": "https://github.com/project-health1/status-repo/pull/4",
             "number": 4,
             "id": "MDExOlB1bGxSZXF1ZXN0MTc0NDQ3NDYz",
-            "mergeable": "UNKNOWN",
+            "mergeable": "MERGEABLE",
             "createdAt": "2018-03-12T17:55:01Z",
             "viewerSubscription": "SUBSCRIBED",
             "author": {
@@ -564,6 +596,10 @@
               ],
               "__typename": "PullRequestCommitConnection"
             },
+            "comments": {
+              "nodes": [],
+              "__typename": "IssueCommentConnection"
+            },
             "repository": {
               "name": "status-repo",
               "nameWithOwner": "project-health1/status-repo",
@@ -577,7 +613,7 @@
             "url": "https://github.com/project-health1/status-repo/pull/5",
             "number": 5,
             "id": "MDExOlB1bGxSZXF1ZXN0MTc0NDQ3NTc1",
-            "mergeable": "UNKNOWN",
+            "mergeable": "MERGEABLE",
             "createdAt": "2018-03-12T17:55:24Z",
             "viewerSubscription": "SUBSCRIBED",
             "author": {
@@ -634,6 +670,10 @@
               ],
               "__typename": "PullRequestCommitConnection"
             },
+            "comments": {
+              "nodes": [],
+              "__typename": "IssueCommentConnection"
+            },
             "repository": {
               "name": "status-repo",
               "nameWithOwner": "project-health1/status-repo",
@@ -647,7 +687,7 @@
             "url": "https://github.com/project-health1/status-repo/pull/6",
             "number": 6,
             "id": "MDExOlB1bGxSZXF1ZXN0MTc0NDQ3Njk2",
-            "mergeable": "UNKNOWN",
+            "mergeable": "MERGEABLE",
             "createdAt": "2018-03-12T17:55:53Z",
             "viewerSubscription": "SUBSCRIBED",
             "author": {
@@ -665,9 +705,9 @@
     "rateLimit": {
       "cost": 1,
       "limit": 5000,
-      "remaining": 4998,
-      "resetAt": "2018-03-21T01:24:29Z",
-      "nodeCount": 140,
+      "remaining": 4980,
+      "resetAt": "2018-04-10T20:23:46Z",
+      "nodeCount": 150,
       "__typename": "RateLimit"
     }
   }

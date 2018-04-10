@@ -93,6 +93,10 @@
             "__typename": "PullRequestCommitConnection"
           },
           "__typename": "PullRequest",
+          "comments": {
+            "nodes": [],
+            "__typename": "IssueCommentConnection"
+          },
           "repository": {
             "name": "repo",
             "nameWithOwner": "project-health1/repo",
@@ -163,6 +167,19 @@
             "__typename": "PullRequestCommitConnection"
           },
           "__typename": "PullRequest",
+          "comments": {
+            "nodes": [
+              {
+                "author": {
+                  "login": "project-health2",
+                  "__typename": "User"
+                },
+                "createdAt": "2018-03-08T00:21:20Z",
+                "__typename": "IssueComment"
+              }
+            ],
+            "__typename": "IssueCommentConnection"
+          },
           "repository": {
             "name": "repo",
             "nameWithOwner": "project-health1/repo",
@@ -222,6 +239,10 @@
             "__typename": "PullRequestCommitConnection"
           },
           "__typename": "PullRequest",
+          "comments": {
+            "nodes": [],
+            "__typename": "IssueCommentConnection"
+          },
           "repository": {
             "name": "repo",
             "nameWithOwner": "project-health1/repo",
@@ -281,6 +302,10 @@
             "__typename": "PullRequestCommitConnection"
           },
           "__typename": "PullRequest",
+          "comments": {
+            "nodes": [],
+            "__typename": "IssueCommentConnection"
+          },
           "repository": {
             "name": "repo",
             "nameWithOwner": "project-health1/repo",
@@ -351,6 +376,10 @@
             "__typename": "PullRequestCommitConnection"
           },
           "__typename": "PullRequest",
+          "comments": {
+            "nodes": [],
+            "__typename": "IssueCommentConnection"
+          },
           "repository": {
             "name": "repo",
             "nameWithOwner": "project-health1/repo",
@@ -410,6 +439,10 @@
             "__typename": "PullRequestCommitConnection"
           },
           "__typename": "PullRequest",
+          "comments": {
+            "nodes": [],
+            "__typename": "IssueCommentConnection"
+          },
           "repository": {
             "name": "repo",
             "nameWithOwner": "project-health1/repo",
@@ -592,9 +625,9 @@
     "rateLimit": {
       "cost": 1,
       "limit": 5000,
-      "remaining": 4998,
-      "resetAt": "2018-04-05T01:02:14Z",
-      "nodeCount": 3060,
+      "remaining": 4966,
+      "resetAt": "2018-04-10T20:23:46Z",
+      "nodeCount": 3080,
       "__typename": "RateLimit"
     }
   }
