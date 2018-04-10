@@ -152,11 +152,12 @@ test.serial(
         lastPushedAt: 2,
         url: 'http://example.com'
       }];
-      pr.lastComment = {
+      const lastComment = {
         createdAt: 1,
         author: 'example-username',
       };
-      const activity = await getPRLastActivity('example-username', pr);
+      const activity =
+          await getPRLastActivity('example-username', pr, lastComment);
       t.deepEqual(activity, 2, 'PR last activity result');
     });
 
@@ -172,11 +173,12 @@ test.serial(
         lastPushedAt: 1,
         url: 'http://example.com'
       }];
-      pr.lastComment = {
+      const lastComment = {
         createdAt: 2,
         author: 'diff-username',
       };
-      const activity = await getPRLastActivity('example-username', pr);
+      const activity =
+          await getPRLastActivity('example-username', pr, lastComment);
       t.deepEqual(activity, 2, 'PR last activity result');
     });
 
@@ -193,10 +195,11 @@ test.serial(
         lastPushedAt: 1,
         url: 'http://example.com'
       }];
-      pr.lastComment = {
+      const lastComment = {
         createdAt: 2,
         author: 'example-username',
       };
-      const activity = await getPRLastActivity('example-username', pr);
+      const activity =
+          await getPRLastActivity('example-username', pr, lastComment);
       t.deepEqual(activity, null, 'PR last activity result');
     });

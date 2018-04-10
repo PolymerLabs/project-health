@@ -1,6 +1,12 @@
 import {PullRequest} from '../../types/api';
 
-export function getPRLastActivity(userLogin: string, pr: PullRequest): number|
+export interface LastComment {
+  createdAt: number;
+  author: string|null;
+}
+
+export function getPRLastActivity(
+    userLogin: string, pr: PullRequest, lastComment?: LastComment|null): number|
     null {
   let lastActivity = pr.createdAt;
 
@@ -26,13 +32,13 @@ export function getPRLastActivity(userLogin: string, pr: PullRequest): number|
   }
 
   // If there is a comment on the PR, see if it's newer than the above events
-  if (pr.lastComment) {
-    if (lastActivity === null || pr.lastComment.createdAt > lastActivity) {
-      if (pr.lastComment.author === userLogin) {
+  if (lastComment) {
+    if (lastActivity === null || lastComment.createdAt > lastActivity) {
+      if (lastComment.author === userLogin) {
         // No new activity if author is the user
         return null;
       }
-      lastActivity = pr.lastComment.createdAt;
+      lastActivity = lastComment.createdAt;
     }
   }
 

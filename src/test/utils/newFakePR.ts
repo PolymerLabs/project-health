@@ -15,7 +15,6 @@ export function newFakePR() {
       type: 'UnknownStatus',
     },
     events: [],
-    lastComment: null,
     hasNewActivity: false,
   };
   return Object.assign({}, fakeDetails);

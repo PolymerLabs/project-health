@@ -23,11 +23,6 @@ export interface OutgoingPullRequest extends PullRequest {
   automergeAvailable: boolean;
 }
 
-export interface LastComment {
-  createdAt: number;
-  author: string|null;
-}
-
 export interface PullRequest {
   id: string;
   repo: string;
@@ -40,7 +35,6 @@ export interface PullRequest {
   avatarUrl: string;
   status: PullRequestStatus;
   events: PullRequestEvent[];
-  lastComment: LastComment|null;
   hasNewActivity: boolean;
 }
 

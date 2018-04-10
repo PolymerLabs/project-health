@@ -5,7 +5,7 @@ import * as api from '../../types/api';
 import {IncomingPullRequestsQuery, mentionedFieldsFragment, prFieldsFragment, PullRequestReviewState, reviewFieldsFragment} from '../../types/gql-types';
 import {github} from '../../utils/github';
 import {userModel, UserRecord} from '../models/userModel';
-import {getPRLastActivity} from '../utils/get-pr-last-activity';
+import {getPRLastActivity, LastComment} from '../utils/get-pr-last-activity';
 import {issueHasNewActivity} from '../utils/issue-has-new-activity';
 
 import {fetchOutgoingData} from './dash-data/fetch-outgoing-data';
@@ -137,7 +137,7 @@ export async function fetchIncomingData(
       myReview = convertReviewFields(relevantReview as reviewFieldsFragment);
     }
 
-    let lastComment: api.LastComment|null = null;
+    let lastComment: LastComment|null = null;
     if (pr.comments.nodes && pr.comments.nodes.length > 0) {
       const lastPRComment = pr.comments.nodes[0];
       if (lastPRComment) {
@@ -156,7 +156,6 @@ export async function fetchIncomingData(
       ...convertPrFields(pr),
       hasNewActivity: false,
       status: {type: 'NoActionRequired'},
-      lastComment,
     };
 
     const prMention = mentioned.get(pr.id);
@@ -229,7 +228,7 @@ export async function fetchIncomingData(
 
     if (lastViewedInfo && loginRecord) {
       const lastActivity =
-          await getPRLastActivity(userRecord.username, reviewedPr);
+          await getPRLastActivity(userRecord.username, reviewedPr, lastComment);
       if (lastActivity) {
         reviewedPr.hasNewActivity = await issueHasNewActivity(
             loginRecord, lastActivity, lastViewedInfo[pr.id]);
@@ -386,7 +385,6 @@ export function convertPrFields(fields: prFieldsFragment): api.PullRequest {
     author: '',
     status: {type: 'UnknownStatus'},
     events: [],
-    lastComment: null,
     hasNewActivity: false,
   };
 
