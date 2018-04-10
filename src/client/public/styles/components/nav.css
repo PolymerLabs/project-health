@@ -7,10 +7,6 @@ nav-element {
   line-height: 20px;
   flex-shrink: 0;
   position: absolute;
-
-  --grid-size: 16px;
-  --max-desktop-width: 1024px;
-  --nav-size: 250px;
 }
 
 .nav-title {
