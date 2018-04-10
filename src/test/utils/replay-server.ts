@@ -38,7 +38,7 @@ export async function startTestReplayServer(
   const replayDir = path.join(replayRoot, testTitle.replace(/\s+/g, '-'));
 
   if (record) {
-    const tokensPath = path.join(projectRoot, 'tokens.json');
+    const tokensPath = path.join(projectRoot, '..', 'tokens.json');
     if (!await fsExtra.pathExists(tokensPath)) {
       throw new Error('Missing tokens.json with test tokens.');
     }

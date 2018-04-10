@@ -43,13 +43,13 @@ test.beforeEach(async (t) => {
   };
 });
 
-test('dashoutgoing2: sane output', (t) => {
+test('[outgoing-prs-2]: sane output', (t) => {
   const data = t.context.data;
   // Make sure a test is added each time these numbers are changed.
   t.is(data.prs.length, 7);
 });
 
-test('dashoutgoing2: outgoing PRs are sorted', (t) => {
+test('[outgoing-prs-2]: outgoing PRs are sorted', (t) => {
   const data = t.context.data;
   let lastCreatedAt = data.prs[0].createdAt;
   for (const pr of data.prs) {
@@ -58,7 +58,7 @@ test('dashoutgoing2: outgoing PRs are sorted', (t) => {
   }
 });
 
-test('dashoutgoing2: requested changes', (t) => {
+test('[outgoing-prs-2]: requested changes', (t) => {
   t.deepEqual(t.context.prsById.get('14'), {
     author: 'project-health2',
     automergeOpts: null,
@@ -94,7 +94,7 @@ test('dashoutgoing2: requested changes', (t) => {
   });
 });
 
-test('dashoutgoing2: review with comments', (t) => {
+test('[outgoing-prs-2]: review with comments', (t) => {
   t.deepEqual(t.context.prsById.get('13'), {
     author: 'project-health2',
     automergeOpts: null,
@@ -133,7 +133,7 @@ test('dashoutgoing2: review with comments', (t) => {
   });
 });
 
-test('dashoutgoing2: review with comments2', (t) => {
+test('[outgoing-prs-2]: review with comments2', (t) => {
   t.deepEqual(t.context.prsById.get('11'), {
     author: 'project-health2',
     automergeOpts: null,
@@ -172,7 +172,7 @@ test('dashoutgoing2: review with comments2', (t) => {
   });
 });
 
-test('dashoutgoing2: ready to merge', (t) => {
+test('[outgoing-prs-2]: ready to merge', (t) => {
   t.deepEqual(t.context.prsById.get('10'), {
     author: 'project-health2',
     automergeOpts: null,
@@ -208,7 +208,7 @@ test('dashoutgoing2: ready to merge', (t) => {
   });
 });
 
-test('dashoutgoing2: changes requested, new commit', (t) => {
+test('[outgoing-prs-2]: changes requested, new commit', (t) => {
   t.deepEqual(t.context.prsById.get('9'), {
     author: 'project-health2',
     automergeOpts: null,
@@ -245,7 +245,7 @@ test('dashoutgoing2: changes requested, new commit', (t) => {
   });
 });
 
-test('dashoutgoing2: no review', (t) => {
+test('[outgoing-prs-2]: no review', (t) => {
   t.deepEqual(t.context.prsById.get('4'), {
     author: 'project-health2',
     automergeOpts: null,
@@ -273,7 +273,7 @@ test('dashoutgoing2: no review', (t) => {
   });
 });
 
-test('dashoutgoing2: basic requested changes', (t) => {
+test('[outgoing-prs-2]: basic requested changes', (t) => {
   t.deepEqual(t.context.prsById.get('3'), {
     author: 'project-health2',
     automergeOpts: null,

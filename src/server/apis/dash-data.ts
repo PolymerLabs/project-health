@@ -5,7 +5,7 @@ import * as api from '../../types/api';
 import {IncomingPullRequestsQuery, mentionedFieldsFragment, prFieldsFragment, PullRequestReviewState, reviewFieldsFragment} from '../../types/gql-types';
 import {github} from '../../utils/github';
 import {userModel, UserRecord} from '../models/userModel';
-import {getPRLastActivityTimestamp} from '../utils/get-pr-last-activity';
+import {getPRLastActivity, LastComment} from '../utils/get-pr-last-activity';
 import {issueHasNewActivity} from '../utils/issue-has-new-activity';
 
 import {fetchOutgoingData} from './dash-data/fetch-outgoing-data';
@@ -137,6 +137,21 @@ export async function fetchIncomingData(
       myReview = convertReviewFields(relevantReview as reviewFieldsFragment);
     }
 
+    let lastComment: LastComment|null = null;
+    if (pr.comments.nodes && pr.comments.nodes.length > 0) {
+      const lastPRComment = pr.comments.nodes[0];
+      if (lastPRComment) {
+        lastComment = {
+          createdAt: new Date(lastPRComment.createdAt).getTime(),
+          author: null,
+        };
+
+        if (lastPRComment.author && lastPRComment.author.login) {
+          lastComment.author = lastPRComment.author.login;
+        }
+      }
+    }
+
     const reviewedPr: api.PullRequest = {
       ...convertPrFields(pr),
       hasNewActivity: false,
@@ -212,7 +227,8 @@ export async function fetchIncomingData(
     }
 
     if (lastViewedInfo && loginRecord) {
-      const lastActivity = await getPRLastActivityTimestamp(reviewedPr);
+      const lastActivity =
+          await getPRLastActivity(userRecord.username, reviewedPr, lastComment);
       if (lastActivity) {
         reviewedPr.hasNewActivity = await issueHasNewActivity(
             loginRecord, lastActivity, lastViewedInfo[pr.id]);
@@ -480,6 +496,18 @@ fragment prFields on PullRequest {
   }
 }`;
 
+const lastCommentFragment = gql`
+fragment lastCommentFields on PullRequest {
+  comments(last: 1) {
+    nodes {
+      author {
+        login
+      }
+      createdAt
+    }
+  }
+}`;
+
 export const outgoingPrsQuery = gql`
 query OutgoingPullRequests($login: String!, $startCursor: String) {
 	user(login: $login) {
@@ -495,6 +523,7 @@ query OutgoingPullRequests($login: String!, $startCursor: String) {
       nodes {
         ...prFields
         ...statusFields
+        ...lastCommentFields
         reviews(last: 10) {
           totalCount
           nodes {
@@ -525,6 +554,7 @@ query OutgoingPullRequests($login: String!, $startCursor: String) {
 
 ${prFragment}
 ${reviewFragment}
+${lastCommentFragment}
 
 fragment commitFields on Commit {
   status {
@@ -563,6 +593,7 @@ query IncomingPullRequests($login: String!, $reviewRequestsQueryString: String!,
     nodes {
       ... on PullRequest {
         ...prFields
+        ...lastCommentFields
         reviews(author: $login, last: 10) {
           nodes {
             ...reviewFields
@@ -590,6 +621,7 @@ query IncomingPullRequests($login: String!, $reviewRequestsQueryString: String!,
       ...mentionedFields
     }
   }
+
   rateLimit {
     cost
     limit
@@ -601,6 +633,7 @@ query IncomingPullRequests($login: String!, $reviewRequestsQueryString: String!,
 
 ${prFragment}
 ${reviewFragment}
+${lastCommentFragment}
 
 fragment mentionedFields on PullRequest {
   id

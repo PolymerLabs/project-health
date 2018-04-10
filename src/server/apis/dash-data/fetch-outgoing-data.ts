@@ -5,7 +5,7 @@ import {github} from '../../../utils/github';
 import {pullRequestsModel} from '../../models/pullRequestsModel';
 import {repositoryModel} from '../../models/repositoryModel';
 import {userModel, UserRecord} from '../../models/userModel';
-import {getPRLastActivityTimestamp} from '../../utils/get-pr-last-activity';
+import {getPRLastActivity} from '../../utils/get-pr-last-activity';
 import {issueHasNewActivity} from '../../utils/issue-has-new-activity';
 import {convertPrFields, convertReviewFields, outgoingPrsQuery} from '../dash-data';
 
@@ -219,7 +219,8 @@ async function getAllPRInfo(
       };
 
       if (lastViewedInfo && loginRecord) {
-        const lastActivity = await getPRLastActivityTimestamp(fullPR);
+        const lastActivity =
+            await getPRLastActivity(userRecord.username, fullPR);
         if (lastActivity) {
           fullPR.hasNewActivity = await issueHasNewActivity(
               loginRecord, lastActivity, lastViewedInfo[pr.id]);
