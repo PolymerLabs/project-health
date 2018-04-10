@@ -14,12 +14,12 @@ export class ToggleElement extends BaseElement {
 
   set details(details: ToggleDetails) {
     this._details = details;
-    this.renderCallback();
+    this.requestRender();
   }
 
   set selected(selected: boolean) {
     this.isSelected = selected;
-    this.renderCallback();
+    this.requestRender();
   }
 
   get selected(): boolean {
@@ -37,7 +37,7 @@ export class ToggleElement extends BaseElement {
       }
 
       this.isSelected = !this.isSelected;
-      this.renderCallback();
+      this.requestRender();
       this.dispatchEvent(new Event('change'));
     };
 

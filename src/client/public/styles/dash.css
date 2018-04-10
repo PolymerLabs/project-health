@@ -20,12 +20,12 @@
   color: var(--secondary-text-color);
 }
 
-.profile-container {
+.title-container {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
-.profile-container #page-header {
+.title-container #page-header {
   flex: 1;
 }
