@@ -98,7 +98,7 @@ test.serial(
       t.deepEqual(deleteStub.callCount, 1, 'github().delete call count');
       t.deepEqual(
           deleteStub.args[0][0],
-          'repos/test-owner/test-repo/git/refs/branch-name',
+          'repos/test-owner/test-repo/git/refs/heads/branch-name',
           'github().delete() github url');
       t.deepEqual(
           deleteStub.args[0][1],
