@@ -17,4 +17,12 @@ export async function performAutomerge(
         merge_method: mergeType,
       },
   );
+
+  // Git branch should be on the main repo (Not remote or a tag)
+  if (prDetails.headRef && prDetails.headRef.prefix === 'refs/heads/') {
+    await github().delete(
+        `repos/${prDetails.owner}/${prDetails.repo}/git/refs/${
+            prDetails.headRef.name}`,
+        githubToken);
+  }
 }

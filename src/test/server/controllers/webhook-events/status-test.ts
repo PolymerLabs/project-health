@@ -9,11 +9,12 @@ import {StatusHook} from '../../../../server/controllers/webhook-events/types';
 import {pullRequestsModel} from '../../../../server/models/pullRequestsModel';
 import {userModel} from '../../../../server/models/userModel';
 import * as getPRFromCommitModule from '../../../../server/utils/get-pr-from-commit';
-import {PullRequestDetails} from '../../../../server/utils/get-pr-from-commit';
 import * as performAutomergeModule from '../../../../server/utils/perform-automerge';
 import {initFirestore} from '../../../../utils/firestore';
 import {initGithub} from '../../../../utils/github';
 import {initSecrets} from '../../../../utils/secrets';
+import {newFakePullRequestDetails} from '../../../utils/newFakePRDetails';
+import {newFakeUserRecord} from '../../../utils/newFakeUserRecord';
 import {startTestReplayServer} from '../../../utils/replay-server';
 
 const TEST_SECRETS = {
@@ -22,28 +23,6 @@ const TEST_SECRETS = {
   PUBLIC_VAPID_KEY:
       'BPtJjYprRvU3TOb0tw3FrVbLww3bp7ssGjX99PFlqIOb3b8uOH4_Q21GYhwsDRwcfToaFVVeOxWOq5XaXD1MGdw',
   PRIVATE_VAPID_KEY: 'o1P9aXm-QPZezF_8b7aQabivhv3QqaB0yg5zoFs6-qc',
-};
-
-const FAKE_LOGIN_DETAILS = {
-  githubToken: 'injected-fake-token',
-  username: 'test-username',
-  scopes: null,
-};
-
-const PR_DETAILS: PullRequestDetails = {
-  gqlId: 'test-pr-id',
-  number: 1,
-  title: 'test-title',
-  body: 'test-body',
-  url: 'http://test-url.com',
-  owner: 'test-owner',
-  repo: 'test-repo',
-  author: 'test-pr-author',
-  state: 'OPEN',
-  commit: {
-    oid: 'test-commit-SHA',
-    state: 'PENDING',
-  }
 };
 
 const SUCCESS_HOOK: StatusHook = {
@@ -101,10 +80,6 @@ const PENDING_HOOK: StatusHook = {
     },
   },
 };
-
-function newFakePRDetails(extraDetails: {}) {
-  return Object.assign({}, PR_DETAILS, extraDetails);
-}
 
 type TestContext = {
   server: Server,
@@ -166,8 +141,9 @@ test.serial(
 test.serial(
     '[handleStatus]: should not handle success hook if no PR Details',
     async (t) => {
+      const userRecord = newFakeUserRecord();
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return userRecord;
       });
 
       const getPRDetailsStub =
@@ -183,7 +159,7 @@ test.serial(
           getPRDetailsStub.callCount,
           1,
           'getPRDetailsFromCommit should be called once.');
-      t.deepEqual(getPRDetailsStub.args[0][0], 'injected-fake-token');
+      t.deepEqual(getPRDetailsStub.args[0][0], userRecord.githubToken);
       t.deepEqual(getPRDetailsStub.args[0][1], 'project-health/status-test');
       t.deepEqual(getPRDetailsStub.args[0][2], 'test-commit-SHA');
       t.deepEqual(
@@ -193,8 +169,9 @@ test.serial(
 test.serial(
     '[handleStatus]: should not handle error hook if no PR Details',
     async (t) => {
+      const userRecord = newFakeUserRecord();
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return userRecord;
       });
 
       const getPRDetailsStub =
@@ -210,7 +187,7 @@ test.serial(
           getPRDetailsStub.callCount,
           1,
           'getPRDetailsFromCommit should be called once.');
-      t.deepEqual(getPRDetailsStub.args[0][0], 'injected-fake-token');
+      t.deepEqual(getPRDetailsStub.args[0][0], userRecord.githubToken);
       t.deepEqual(getPRDetailsStub.args[0][1], 'project-health/status-test');
       t.deepEqual(getPRDetailsStub.args[0][2], 'test-commit-SHA');
       t.deepEqual(
@@ -221,14 +198,14 @@ test.serial(
     '[handleStatus]: should not handle success hook if PR is not open',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return newFakeUserRecord();
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            return newFakePRDetails({
-              state: 'CLOSED',
-            });
+            const details = newFakePullRequestDetails();
+            details.state = 'CLOSED';
+            return details;
           });
 
       const response = await handleStatus(SUCCESS_HOOK);
@@ -241,14 +218,14 @@ test.serial(
     '[handleStatus]: should not handle error hook if PR is not open',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return newFakeUserRecord();
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            return newFakePRDetails({
-              state: 'CLOSED',
-            });
+            const details = newFakePullRequestDetails();
+            details.state = 'CLOSED';
+            return details;
           });
 
       const response = await handleStatus(ERROR_HOOK);
@@ -261,16 +238,14 @@ test.serial(
     '[handleStatus]: should not handle success hook if the commit SHA is not the latest',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return newFakeUserRecord();
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            return newFakePRDetails({
-              commit: {
-                oid: 'diff-commit-oid',
-              }
-            });
+            const details = newFakePullRequestDetails();
+            details.commit.oid = 'diff-commit-oid';
+            return details;
           });
 
       const response = await handleStatus(SUCCESS_HOOK);
@@ -283,16 +258,14 @@ test.serial(
     '[handleStatus]: should not handle error hook if the commit SHA is not the latest',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return newFakeUserRecord();
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            return newFakePRDetails({
-              commit: {
-                oid: 'diff-commit-oid',
-              }
-            });
+            const details = newFakePullRequestDetails();
+            details.commit.oid = 'diff-commit-oid';
+            return details;
           });
 
       const response = await handleStatus(ERROR_HOOK);
@@ -303,12 +276,12 @@ test.serial(
 
 test.serial('[handleStatus]: should not handle pending hooks', async (t) => {
   t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-    return FAKE_LOGIN_DETAILS;
+    return newFakeUserRecord();
   });
 
   t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
       .callsFake(() => {
-        return PR_DETAILS;
+        return newFakePullRequestDetails();
       });
 
   const response = await handleStatus(PENDING_HOOK);
@@ -321,12 +294,12 @@ test.serial(
     '[handleStatus]: should handle success hook but not do anything is commit isn\'t success',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return newFakeUserRecord();
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            return PR_DETAILS;
+            return newFakePullRequestDetails();
           });
 
       t.context.sandbox.stub(pullRequestsModel, 'getAutomergeOpts')
@@ -351,12 +324,12 @@ test.serial(
     '[handleStatus]: should handle success hook but not automerge if its not configured for PR',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return newFakeUserRecord();
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            const details = newFakePRDetails({});
+            const details = newFakePullRequestDetails();
             details.commit.state = 'SUCCESS';
             return details;
           });
@@ -380,12 +353,12 @@ test.serial(
     '[handleStatus]: should handle success hook but not automerge if mergeType is null',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return newFakeUserRecord();
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            const details = newFakePRDetails({});
+            const details = newFakePullRequestDetails();
             details.commit.state = 'SUCCESS';
             return details;
           });
@@ -411,12 +384,12 @@ test.serial(
     '[handleStatus]: should handle success hook but not automerge if mergeType is manual',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return newFakeUserRecord();
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            const details = newFakePRDetails({});
+            const details = newFakePullRequestDetails();
             details.commit.state = 'SUCCESS';
             return details;
           });
@@ -442,12 +415,14 @@ test.serial(
     '[handleStatus]: should handle success hook and notify users of successful automerge',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return newFakeUserRecord();
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            return PR_DETAILS;
+            const details = newFakePullRequestDetails();
+            details.commit.state = 'SUCCESS';
+            return details;
           });
 
       t.context.sandbox.stub(pullRequestsModel, 'getAutomergeOpts')
@@ -492,12 +467,12 @@ test.serial(
     '[handleStatus]: should handle success hook and notify users of an errored automerge *without* Githubs error response msg',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return newFakeUserRecord();
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            const details = newFakePRDetails({});
+            const details = newFakePullRequestDetails();
             details.commit.state = 'SUCCESS';
             return details;
           });
@@ -545,12 +520,12 @@ test.serial(
     '[handleStatus]: should handle success hook and notify users of an errored automerge using Githubs error response msg',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return newFakeUserRecord();
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            const details = newFakePRDetails({});
+            const details = newFakePullRequestDetails();
             details.commit.state = 'SUCCESS';
             return details;
           });
@@ -601,12 +576,12 @@ test.serial(
 test.serial(
     '[handleStatus]: should notify author for new error hook', async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return newFakeUserRecord();
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            return PR_DETAILS;
+            return newFakePullRequestDetails();
           });
 
       t.context.sandbox.stub(pullRequestsModel, 'getCommitDetails')
@@ -641,12 +616,12 @@ test.serial(
     '[handleStatus]: should notify author for error hook if new state is different from previous state',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return newFakeUserRecord();
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            return PR_DETAILS;
+            return newFakePullRequestDetails();
           });
 
       t.context.sandbox.stub(pullRequestsModel, 'getCommitDetails')
@@ -683,12 +658,12 @@ test.serial(
     '[handleStatus]: should do nothing for error hook if the commits state is the same',
     async (t) => {
       t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return FAKE_LOGIN_DETAILS;
+        return newFakeUserRecord();
       });
 
       t.context.sandbox.stub(getPRFromCommitModule, 'getPRDetailsFromCommit')
           .callsFake(() => {
-            return PR_DETAILS;
+            return newFakePullRequestDetails();
           });
 
       t.context.sandbox.stub(pullRequestsModel, 'getCommitDetails')

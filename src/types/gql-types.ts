@@ -1461,6 +1461,15 @@ export interface CommitToPRQuery {
         state: PullRequestState,
         // The HTTP URL for this pull request.
         url: string,
+        // Identifies the head Ref associated with the pull request.
+        headRef:  {
+          __typename: string,
+          id: string,
+          // The ref's prefix, such as `refs/heads/` or `refs/tags/`.
+          prefix: string,
+          // The ref name.
+          name: string,
+        } | null,
         // The repository associated with this node.
         repository:  {
           __typename: string,

@@ -15,6 +15,7 @@ export interface PullRequestDetails {
   author: string;
   commit: CommitDetails;
   state: 'OPEN'|'CLOSED'|'MERGED';
+  headRef?: {id: string; prefix: string; name: string;};
 }
 
 interface CommitDetails {
@@ -87,6 +88,14 @@ export async function getPRDetailsFromCommit(
       state: prData.state,
       commit: commits[0],
     };
+
+    if (prData.headRef) {
+      pr.headRef = {
+        id: prData.headRef.id,
+        prefix: prData.headRef.prefix,
+        name: prData.headRef.name
+      };
+    }
   }
 
   return pr;
@@ -103,6 +112,11 @@ query CommitToPR($query: String!) {
         bodyText,
         state,
         url,
+        headRef {
+          id,
+          prefix,
+          name
+        },
         repository {
           name
           owner {
