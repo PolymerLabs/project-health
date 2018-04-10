@@ -1,11 +1,12 @@
 nav-element {
-  width: 250px;
+  width: var(--nav-size);
   display: flex;
   flex-direction: column;
   margin-right: var(--grid-size);
   font-size: 14px;
   line-height: 20px;
   flex-shrink: 0;
+  position: absolute;
 }
 
 .nav-title {

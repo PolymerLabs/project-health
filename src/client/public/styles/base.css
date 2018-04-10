@@ -22,6 +22,13 @@ body {
   margin: 0 auto;
 }
 
+@media (max-width: 1550px) {
+  .main-content {
+    margin-left: calc(var(--nav-size) + var(--grid-size));
+    width: auto;
+  }
+}
+
 h1, h2 {
   font-family: var(--heading-font);
 }
