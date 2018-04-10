@@ -1,38 +1,32 @@
+import {ToggleElement} from '../components/toggle-element.js';
+
 import {applicationServerKey} from './application-server-key.js';
 import {addSubscriptionToBackend, removeSubscriptionFromBackend} from './push-backend.js';
 
-interface PushComponentState {
+interface PushState {
   isSupported: boolean;
   permissionBlocked: boolean;
   savedToBackend: boolean;
   subscription: PushSubscription|null;
 }
 
-class PushComponent {
-  private pushToggle: HTMLInputElement;
-  private pushStatus: Element;
-  private pushText: Element;
-  private state: PushComponentState;
+class PushController {
+  private toggleElement: ToggleElement;
+  private state: PushState;
 
   constructor() {
-    const toggleElement = document.querySelector(
-                              '.js-push-component__toggle') as HTMLInputElement;
-    const statusElement = document.querySelector('.push-component__status');
-    const textElement = document.querySelector('.push-component__text');
-
-    if (!toggleElement) {
+    this.toggleElement =
+        (document.querySelector('#push-toggle') as ToggleElement);
+    if (!this.toggleElement) {
       throw new Error('Unable to find toggle element.');
     }
-    if (!statusElement) {
-      throw new Error('Unable to find status element.');
-    }
-    if (!textElement) {
-      throw new Error('Unable to find text element.');
-    }
 
-    this.pushToggle = toggleElement;
-    this.pushStatus = statusElement;
-    this.pushText = textElement;
+    this.toggleElement.details = {
+      label: 'Push Notifications',
+      selectedImg: '/images/notifications-active.svg',
+      deselectedImg: '/images/notifications-off.svg',
+    };
+
     this.state = {
       isSupported: (navigator.serviceWorker && ('PushManager' in window)),
       permissionBlocked: false,
@@ -40,11 +34,11 @@ class PushComponent {
       subscription: null,
     };
 
-    this.pushToggle.addEventListener('change', async (event) => {
+    this.toggleElement.addEventListener('change', async (event) => {
       event.preventDefault();
-      this.pushToggle.setAttribute('disabled', 'true');
+      this.toggleElement.setAttribute('disabled', 'true');
 
-      if (this.pushToggle.checked) {
+      if (this.toggleElement.selected) {
         await this.setupPush();
       } else {
         await this.disablePush();
@@ -61,27 +55,16 @@ class PushComponent {
       ]);
 
       if (!this.state.isSupported) {
-        this.pushStatus.textContent = '[Not Supported]';
-        this.pushToggle.setAttribute('disabled', 'true');
+        this.toggleElement.setAttribute('disabled', 'true');
       } else if (this.state.permissionBlocked) {
-        this.pushStatus.textContent = '[Notification Permission Blocked]';
-        this.pushToggle.setAttribute('disabled', 'true');
+        this.toggleElement.setAttribute('disabled', 'true');
       } else {
-        this.pushToggle.removeAttribute('disabled');
-        this.pushToggle.checked =
+        this.toggleElement.removeAttribute('disabled');
+        this.toggleElement.selected =
             !!(this.state.subscription && this.state.savedToBackend);
-        if (this.pushToggle.checked) {
-          this.pushText.textContent =
-              'Push notifications are enabled. Toggle to no longer receive push notifications on this device.';
-        } else {
-          this.pushText.textContent =
-              'Push notifications are disabled. Toggle to receive push notifications on this device.';
-        }
       }
-
     } catch (err) {
-      this.pushToggle.setAttribute('disabled', 'true');
-      this.pushStatus.textContent = '[Unable to Setup Notifications]';
+      this.toggleElement.setAttribute('disabled', 'true');
     }
   }
 
@@ -142,5 +125,5 @@ class PushComponent {
   }
 }
 
-const pushComponent = new PushComponent();
+const pushComponent = new PushController();
 pushComponent.update();

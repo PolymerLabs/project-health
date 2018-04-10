@@ -19,3 +19,13 @@
 .pr-list__empty-message {
   color: var(--secondary-text-color);
 }
+
+.title-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.title-container #page-header {
+  flex: 1;
+}
