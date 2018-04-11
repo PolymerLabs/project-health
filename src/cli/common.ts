@@ -88,6 +88,7 @@ export function getReviewsForPullRequest(pullRequest: PullRequest): Review[] {
         !authors.has(review.author.login)) {
       authors.add(review.author.login);
       reviewEvents.push({
+        createdAt: pullRequest.createdAt,
         latency: new Date(review.submittedAt).getTime() -
             new Date(pullRequest.createdAt).getTime(),
         reviewedAt: review.submittedAt,
@@ -110,6 +111,7 @@ export type PullRequest = {
 };
 
 export type Review = {
+  createdAt: string,
   reviewedAt: string,
   latency: number,
 };
