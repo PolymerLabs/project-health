@@ -48,7 +48,7 @@ export class ReviewLatencyResult implements MetricResult {
     // Sort results into date buckets.
     const buckets: Map<string, Review[]> = new Map();
     for (const entry of this.reviews) {
-      const date = new Date(entry.reviewedAt);
+      const date = new Date(entry.createdAt);
       // Sort into weekly buckets.
       date.setDate(date.getDate() - date.getDay());
       const dateKey = date.toDateString();
@@ -92,7 +92,7 @@ export async function getReviewLatency(opts: ReviewLatencyOpts):
     repos = await getOrgRepos(opts.org);
   }
 
-  const fetches = [];
+  const fetches: Array<Promise<PullRequest[]>> = [];
   const reviews: Review[] = [];
 
   for (const {owner, name} of repos) {
@@ -101,7 +101,7 @@ export async function getReviewLatency(opts: ReviewLatencyOpts):
   for (const prs of fetches) {
     for (const pr of await prs) {
       for (const review of getReviewsForPullRequest(pr)) {
-        if (new Date(review.reviewedAt) > opts.since) {
+        if (new Date(review.createdAt) > opts.since) {
           reviews.push(review);
         }
       }
