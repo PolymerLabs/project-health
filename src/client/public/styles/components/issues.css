@@ -20,28 +20,24 @@
   flex-shrink: 0;
 }
 
-.issue-popularity__fire {
-  width: 14px;
-  height: 14px;
+.material-icons-extended.issue-popularity__fire {
+  font-size: 14px;
+  color: hsl(0, 0%, 83%);
   margin: 0px -1px;
-  mask-image: url('/images/fire.svg');
-  -webkit-mask-size: contain;
-  display: inline-block;
-  background: hsl(0, 0%, 83%);
 }
 
 .issue-popularity[score='1'] .issue-popularity__fire:nth-child(-n+1) {
-  background: var(--actionable-color, red);
+  color: var(--actionable-color, red);
 }
 
 .issue-popularity[score='2'] .issue-popularity__fire:nth-child(-n+2) {
-  background: var(--actionable-color, red);
+  color: var(--actionable-color, red);
 }
 
 .issue-popularity[score='3'] .issue-popularity__fire:nth-child(-n+3) {
-  background: var(--actionable-color, red);
+  color: var(--actionable-color, red);
 }
 
 .issue-popularity[score='4'] .issue-popularity__fire:nth-child(-n+4) {
-  background: var(--actionable-color, red);
+  color: var(--actionable-color, red);
 }
