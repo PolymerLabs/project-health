@@ -15,6 +15,11 @@ function newFakeIssue(): commentFieldsFragment {
   const commentFields: commentFieldsFragment = {
     __typename: 'Issue',
     createdAt: '2017-03-15T02:33:10Z',
+    author: {
+      __typename: 'User',
+      login: 'test-author-login',
+      avatarUrl: 'https://example.com/avatar/url.png',
+    },
     comments: {
       __typename: 'Comments',
       nodes: [{
@@ -28,7 +33,7 @@ function newFakeIssue(): commentFieldsFragment {
     },
   };
 
-  return commentFields;
+  return Object.assign({}, commentFields);
 }
 
 test.before(() => {
@@ -44,6 +49,21 @@ test.beforeEach(async (t) => {
 test.afterEach((t) => {
   t.context.sandbox.restore();
 });
+
+test.serial(
+    '[getIssueLastActivity]: should return null for user authored issue with no comments',
+    async (t) => {
+      const fakeIssue = newFakeIssue();
+      fakeIssue.author = {
+        __typename: 'User',
+        login: 'example-username',
+        avatarUrl: 'https://example.com/avatar/url.png',
+      };
+      fakeIssue.comments.nodes = [];
+      const activity =
+          await getIssueLastActivity('example-username', fakeIssue);
+      t.deepEqual(activity, null, 'issue has new activity result');
+    });
 
 test.serial(
     '[getIssueLastActivity]: should return comment timestamp', async (t) => {
@@ -103,4 +123,30 @@ test.serial(
       }];
       const activity = await getIssueLastActivity('example-username', issue);
       t.deepEqual(activity, null, 'issue has new activity result');
+    });
+
+test.serial(
+    '[getIssueLastActivity]: should throw for multiple comments', async (t) => {
+      const issue = newFakeIssue();
+      issue.comments.nodes = [
+        {
+          __typename: 'string',
+          createdAt: '2017-03-15T01:33:10Z',
+          author: {
+            __typename: 'User',
+            login: 'example-username',
+          },
+        },
+        {
+          __typename: 'string',
+          createdAt: '2017-03-15T01:33:10Z',
+          author: {
+            __typename: 'User',
+            login: 'example-username',
+          },
+        }
+      ];
+      await t.throws(async () => {
+        await getIssueLastActivity('example-username', issue);
+      });
     });

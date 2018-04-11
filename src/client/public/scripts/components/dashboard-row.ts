@@ -8,7 +8,7 @@ import {timeToString} from '../dash/utils/time-to-string.js';
  */
 
 export interface StatusDisplay {
-  type: 'complete'|'actionable'|'activity';
+  type: 'complete'|'actionable'|'activity'|'passive';
   text: string;
   className?: string;
 }

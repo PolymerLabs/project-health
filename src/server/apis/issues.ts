@@ -1,99 +1,128 @@
 import * as express from 'express';
 import gql from 'graphql-tag';
 
-import {Issue, IssuesResponse, Popularity} from '../../types/api';
-import {AssignedIssuesQuery, popularityFieldsFragment} from '../../types/gql-types';
+import {Issue, IssuesResponse, IssueStatus, Popularity} from '../../types/api';
+import {issueFieldsFragment, IssuesSearchQuery, popularityFieldsFragment} from '../../types/gql-types';
 import {github} from '../../utils/github';
-import {userModel, UserRecord} from '../models/userModel';
+import {userModel} from '../models/userModel';
 import {getIssueLastActivity} from '../utils/get-issue-last-activity';
 import {issueHasNewActivity} from '../utils/issue-has-new-activity';
 
-export async function handleGetIssues(
-    request: express.Request, response: express.Response) {
-  try {
-    const userRecord = await userModel.getUserRecordFromRequest(request);
-    if (!userRecord) {
-      response.status(401).send('No login details.');
-      return;
-    }
-
-    let assigneeLogin = userRecord.username;
-    if (request.query.login) {
-      assigneeLogin = request.query.login;
-    }
-
-    let loginRecord: UserRecord|null = null;
-    let lastViewedInfo: {[issue: string]: number}|null = null;
-    if (assigneeLogin === userRecord.username) {
-      loginRecord = await userModel.getUserRecord(assigneeLogin);
-      lastViewedInfo = await userModel.getAllLastViewedInfo(assigneeLogin);
-    }
-
-    const assignedIssuesResult = await github().query<AssignedIssuesQuery>({
-      query: assignedIssuesQuery,
-      variables: {
-        query: `assignee:${assigneeLogin} is:issue state:open`,
-      },
-      fetchPolicy: 'network-only',
-      context: {token: userRecord.githubToken}
-    });
-
-    const issues: Issue[] = [];
-    if (assignedIssuesResult.data.search.nodes) {
-      for (const node of assignedIssuesResult.data.search.nodes) {
-        if (!node) {
-          continue;
-        }
-
-        if (node.__typename !== 'Issue') {
-          continue;
-        }
-
-        if (!node.author) {
-          // This should never be the case
-          continue;
-        }
-
-        let hasNewActivity = false;
-        if (lastViewedInfo && loginRecord) {
-          const lastActivity = await getIssueLastActivity(assigneeLogin, node);
-          if (lastActivity) {
-            hasNewActivity = await issueHasNewActivity(
-                loginRecord, lastActivity, lastViewedInfo[node.id]);
-          }
-        }
-
-        issues.push({
-          id: node.id,
-          title: node.title,
-          repo: node.repository.name,
-          owner: node.repository.owner.login,
-          author: node.author.login,
-          avatarUrl: node.author.avatarUrl,
-          createdAt: new Date(node.createdAt).getTime(),
-          url: node.url,
-          popularity: fetchPopularity(node),
-          hasNewActivity,
-        });
-      }
-    }
-
-    const issuesResponse: IssuesResponse = {
-      issues,
-    };
-    response.json(issuesResponse);
-  } catch (err) {
-    console.error(err);
-    response.status(500).send('An unhandled error occured.');
+async function getIssueData(
+    queryCb: (assigneeLogin: string) => string,
+    statusCb: (issue: issueFieldsFragment, assigneeLogin: string) =>
+        IssueStatus,
+    request: express.Request,
+    response: express.Response,
+) {
+  const userRecord = await userModel.getUserRecordFromRequest(request);
+  if (!userRecord) {
+    response.status(401).send('No login details.');
+    return;
   }
+
+  let assigneeLogin = userRecord.username;
+  if (request.query.login) {
+    assigneeLogin = request.query.login;
+  }
+
+  let lastViewedInfo: {[issue: string]: number}|null = null;
+  if (assigneeLogin === userRecord.username) {
+    lastViewedInfo = await userModel.getAllLastViewedInfo(assigneeLogin);
+  }
+
+  const issueResult = await github().query<IssuesSearchQuery>({
+    query: issueQuery,
+    variables: {
+      query: queryCb(assigneeLogin),
+    },
+    fetchPolicy: 'network-only',
+    context: {token: userRecord.githubToken}
+  });
+
+  const issues: Issue[] = [];
+  if (issueResult.data.search.nodes) {
+    for (const node of issueResult.data.search.nodes) {
+      if (!node) {
+        continue;
+      }
+
+      if (node.__typename !== 'Issue') {
+        continue;
+      }
+
+      if (!node.author) {
+        // This should never be the case
+        continue;
+      }
+
+      let hasNewActivity = false;
+      if (lastViewedInfo) {
+        const lastActivity = await getIssueLastActivity(assigneeLogin, node);
+        if (lastActivity) {
+          hasNewActivity = await issueHasNewActivity(
+              userRecord, lastActivity, lastViewedInfo[node.id]);
+        }
+      }
+
+      issues.push({
+        id: node.id,
+        title: node.title,
+        repo: node.repository.name,
+        owner: node.repository.owner.login,
+        author: node.author.login,
+        avatarUrl: node.author.avatarUrl,
+        createdAt: new Date(node.createdAt).getTime(),
+        url: node.url,
+        popularity: fetchPopularity(node),
+        hasNewActivity,
+        status: statusCb(node, assigneeLogin),
+      });
+    }
+  }
+
+  const issuesResponse: IssuesResponse = {
+    issues,
+  };
+  response.json(issuesResponse);
+}
+
+export async function handleAssignedIssues(
+    request: express.Request, response: express.Response) {
+  const queryCb = (assigneeLogin: string) =>
+      `assignee:${assigneeLogin} is:issue state:open archived:false`;
+  const statusCb = (): IssueStatus => {
+    return {type: 'Assigned'};
+  };
+  await getIssueData(queryCb, statusCb, request, response);
+}
+
+export async function handleActivityIssues(
+    request: express.Request, response: express.Response) {
+  const queryCb = (assigneeLogin: string) =>
+      `is:issue archived:false is:open involves:${assigneeLogin} -assignee:${
+          assigneeLogin}`;
+  const statusCb = (node: issueFieldsFragment, assigneeLogin: string) => {
+    let status: IssueStatus = {
+      type: 'Involved',
+    };
+
+    if (node.author && node.author.login === assigneeLogin) {
+      status = {
+        type: 'Author',
+      };
+    }
+    return status;
+  };
+  await getIssueData(queryCb, statusCb, request, response);
 }
 
 /**
  * Calculate the popularity scope for an issue.
  *
- * Currently a naive implementation that looks at total number of comments and
- * the total number of reactions on the issue itself. This does *not* include
- * reactions on individual comments.
+ * Currently a naive implementation that looks at total number of comments
+ * and the total number of reactions on the issue itself. This does *not*
+ * include reactions on individual comments.
  */
 function fetchPopularity(fields: popularityFieldsFragment): Popularity {
   const score = fields.participants.totalCount * 2 +
@@ -104,48 +133,32 @@ function fetchPopularity(fields: popularityFieldsFragment): Popularity {
 
 export function getRouter(): express.Router {
   const automergeRouter = express.Router();
-  automergeRouter.get('/assigned/', handleGetIssues);
+  automergeRouter.get('/assigned/', handleAssignedIssues);
+  automergeRouter.get('/activity/', handleActivityIssues);
 
   return automergeRouter;
 }
 
-const assignedIssuesQuery = gql`
-query AssignedIssues($query: String!){
-  search(query:$query,type:ISSUE,last:20) {
-    nodes {
-      ... on Issue {
-        id
-        title
-        url
-        author {
-          login
-          avatarUrl
-        }
-        repository {
-          name
-          owner {
-            login
-          }
-        }
-        ...popularityFields
-        ...commentFields
-      }
-    }
-  }
-}
-
-fragment commentFields on Issue {
+const issueFragment = gql`
+fragment issueFields on Issue {
+  id
+  title
+  url
   createdAt
-  comments(last: 1) {
-    nodes {
-      createdAt
-      author {
-        login
-      }
+  author {
+    login
+    avatarUrl
+  }
+  repository {
+    name
+    owner {
+      login
     }
   }
 }
+`;
 
+const popularityFragment = gql`
 fragment popularityFields on Issue {
   commentTotal: comments {
     count: totalCount
@@ -156,5 +169,39 @@ fragment popularityFields on Issue {
   participants {
     totalCount
   }
+}`;
+
+const commentFragment = gql`
+fragment commentFields on Issue {
+  createdAt
+  author {
+    login
+    avatarUrl
+  }
+  comments(last: 1) {
+    nodes {
+      createdAt
+      author {
+        login
+      }
+    }
+  }
+}`;
+
+const issueQuery = gql`
+query IssuesSearch($query: String!){
+  search(query:$query,type:ISSUE,last:10) {
+    nodes {
+      ... on Issue {
+        ...issueFields
+        ...popularityFields
+        ...commentFields
+      }
+    }
+  }
 }
+
+${issueFragment}
+${popularityFragment}
+${commentFragment}
 `;

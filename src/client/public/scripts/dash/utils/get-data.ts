@@ -51,3 +51,10 @@ export async function getAssignedIssues(): Promise<api.IssuesResponse> {
   });
   return await response.json() as api.IssuesResponse;
 }
+
+export async function getIssueActivity(): Promise<api.IssuesResponse> {
+  const response = await fetch(`/api/issues/activity${getUserLoginParam()}`, {
+    credentials: 'include',
+  });
+  return await response.json() as api.IssuesResponse;
+}

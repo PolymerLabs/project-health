@@ -2,7 +2,7 @@ import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import {FilterState} from './filter-controller.js';
 
 export type LegendItem = {
-  type: 'complete'|'actionable'|'activity',
+  type: 'complete'|'actionable'|'activity'|'passive',
   description: string,
 };
 
@@ -39,6 +39,7 @@ function itemTemplate(item: LegendItem) {
 }
 
 export function legendTemplate(types: LegendItem[]) {
+  console.log(types);
   return html`
   <div class="legend small-heading">
     ${types.map(itemTemplate)}

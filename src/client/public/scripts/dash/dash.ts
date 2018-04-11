@@ -67,8 +67,8 @@ function renderIncoming() {
       (document.querySelector('.incoming-prs__list') as Element));
 }
 
-async function renderIssues() {
-  const issues = await dashData.getIssues();
+async function renderAssignedIssues() {
+  const issues = await dashData.getAssignedIssues();
 
   render(
       genericIssueListTemplate(
@@ -79,11 +79,24 @@ async function renderIssues() {
       (document.querySelector('.assigned-issues__list') as Element));
 }
 
+async function renderIssueActivity() {
+  const issues = await dashData.getIssueActivity();
+
+  render(
+      genericIssueListTemplate(
+          issues,
+          filterController.getFilter('issue-activity'),
+          'No open issues involving you',
+          'When you\'re involved in issues, they\'ll appear here.'),
+      (document.querySelector('.issue-activity__list') as Element));
+}
+
 function renderAll() {
   renderUser();
   renderOutgoing();
   renderIncoming();
-  renderIssues();
+  renderAssignedIssues();
+  renderIssueActivity();
 }
 
 async function performFullUpdate() {
@@ -151,6 +164,10 @@ async function start() {
   const assignedFilters: LegendItem[] = [
     {type: 'actionable', description: 'Assigned to you'},
   ];
+  const issueActivityFilters: LegendItem[] = [
+    {type: 'actionable', description: 'Unread'},
+    {type: 'passive', description: 'Read'},
+  ];
 
   render(
       legendTemplate(outgoingFilters),
@@ -161,10 +178,14 @@ async function start() {
   render(
       legendTemplate(assignedFilters),
       document.querySelector('.assigned-issues-legend') as HTMLElement);
+  render(
+      legendTemplate(issueActivityFilters),
+      document.querySelector('.issue-activity-legend') as HTMLElement);
 
   filterController.createFilter('outgoing-prs', outgoingFilters);
   filterController.createFilter('incoming-prs', outgoingFilters);
   filterController.createFilter('assigned-issues', assignedFilters);
+  filterController.createFilter('issue-activity', issueActivityFilters);
 
   /**
    * Event handler for when the filter is changed.
@@ -188,6 +209,7 @@ async function start() {
   attachFilterListener('incoming-prs');
   attachFilterListener('outgoing-prs');
   attachFilterListener('assigned-issues');
+  attachFilterListener('issue-activity');
 
   // Initialise the dashbaord with data
   await performFullUpdate();
