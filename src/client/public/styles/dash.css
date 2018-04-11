@@ -28,4 +28,9 @@
 
 .title-container #page-header {
   flex: 1;
+  margin-bottom: 0;
+}
+
+toggle-element {
+  margin-top: var(--grid-size);
 }

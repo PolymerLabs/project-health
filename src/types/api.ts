@@ -70,9 +70,7 @@ export interface IncomingDashResponse {
   prs: PullRequest[];
 }
 
-export interface IssuesResponse {
-  issues: Issue[];
-}
+export interface IssuesResponse { issues: Issue[]; }
 
 export interface Review {
   author: string;
@@ -85,9 +83,7 @@ export interface JSONAPIResponse<T> {
   data?: T;
 }
 
-export interface GenericStatusResponse {
-  status: string;
-}
+export interface GenericStatusResponse { status: string; }
 
 export interface LastKnownResponse {
   lastKnownUpdate: string|null;
