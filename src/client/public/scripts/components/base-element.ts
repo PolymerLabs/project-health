@@ -40,5 +40,13 @@ export abstract class BaseElement extends HTMLElement {
     this.requestRender();
   }
 
+  toggleAttribute(name: string) {
+    if (this.hasAttribute(name)) {
+      this.removeAttribute(name);
+    } else {
+      this.setAttribute(name, '');
+    }
+  }
+
   abstract render(): TemplateResult;
 }

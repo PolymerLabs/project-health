@@ -17,6 +17,7 @@
 
 .issue-popularity {
   align-self: center;
+  flex-shrink: 0;
 }
 
 .issue-popularity__fire {
