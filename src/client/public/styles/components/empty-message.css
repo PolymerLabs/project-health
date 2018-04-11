@@ -18,13 +18,9 @@ empty-message {
   margin: calc(var(--padding) / 3) var(--padding);
 }
 
-.empty-message__sun {
-  mask-image: url('/images/sun.svg');
-  mask-repeat: no-repeat;
-  mask-size: 20px;
-  width: 20px;
-  height: 20px;
-  background: white;
+.empty-message__avatar > .empty-message__sun {
+  font-size: 20px;
+  color: white;
 }
 
 .empty-message__description {

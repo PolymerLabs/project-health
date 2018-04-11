@@ -28,8 +28,8 @@ export class NavElement extends BaseElement {
       avatarUrl = '/images/incognito.svg';
     }
 
-    const buttons =
-        html`<a href="/settings" title="Settings" class="settings"></a>`;
+    const buttons = html
+    `<a href="/settings" title="Settings" class="settings"><i class="material-icons-extended">settings</i></a>`;
 
     return html`
       <a class="nav-item selected" href="/">
