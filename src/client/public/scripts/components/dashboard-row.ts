@@ -1,3 +1,5 @@
+import './row-header.js';
+
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import {TemplateResult} from '../../../../../node_modules/lit-html/lit-html.js';
 import {timeToString} from '../dash/utils/time-to-string.js';
@@ -74,65 +76,10 @@ export function genericDashboardRowTemplate(
 
   const status = data.status;
 
-  async function handleRowClick(event: Event) {
-    let anchorElement: HTMLElement|null = event.target as HTMLElement;
-    while (anchorElement &&
-           !anchorElement.classList.contains('dashboard-row-link')) {
-      anchorElement = anchorElement.parentNode as HTMLElement;
-    }
-    console.log(anchorElement);
-
-    if (anchorElement) {
-      anchorElement.removeAttribute('has-new-activity');
-    }
-
-    const response = await fetch('/api/last-viewed/update/', {
-      method: 'POST',
-      credentials: 'include',
-      body: JSON.stringify({
-        id: data.id,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      const responseText = await response.text();
-      console.warn('Unable to update last-viewed timestamp: ', responseText);
-    }
-  }
-
   return html`
       <div class$="${rowClasses.join(' ')}" type$="${status.type}">
-        <div class="dashboard-row-header">
-          <div class="dashboard-row-author">
-            <div class="dashboard-row-author__name">${data.author}</div>
-            <time class="dashboard-row-author__creation-time" datetime="${
-      new Date(data.createdAt).toISOString()}">${
-      timeToString(data.createdAt)}</time>
-          </div>
-
-          <div class="dashboard-row-avatar">
-            <img class="dashboard-row-avatar__img" src="${data.avatarUrl}">
-          </div>
-
-          <a class="dashboard-row-link" href="${
-      data.url}" target="_blank" on-click="${
-      handleRowClick}" has-new-activity$="${data.hasNewActivity}">
-            <div class="dashboard-row-status small-heading">
-              <span class="dashboard-row-status__msg">${status.text}</span>
-              <span class="dashboard-row-status__has-activity"></span>
-            </div>
-            <div class="dashboard-row-info">
-              <span class="dashboard-row-info__repo-name">${data.owner}/${
-      data.repo}</span>
-              <span class="dashboard-row-info__title">${data.title}</span>
-            </div>
-          </a>
-
-          ${extraHeaderData}
-        </div>
+        <row-header rowData="${data}" extraHeaderData="${
+      extraHeaderData}"></row-header>
 
         ${extraEvents}
       </div>`;
