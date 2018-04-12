@@ -50,6 +50,7 @@ const argDefs = [
   {
     name: 'org',
     type: String,
+    lazyMultiple: true,
     description: 'Name of the GitHub org to measure',
   },
   {
