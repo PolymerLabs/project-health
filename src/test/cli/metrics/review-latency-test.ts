@@ -20,7 +20,7 @@ test.afterEach.always(async (t) => {
 
 test.serial('WebComponents review latency', async (t) => {
   const since = new Date(0);
-  const result = await getReviewLatency({org: 'WebComponents', since});
+  const result = await getReviewLatency({org: ['WebComponents'], since});
   t.is(result.totalLatency, 262575635000);
   t.is(result.reviews.length, 684);
 });
@@ -28,7 +28,7 @@ test.serial('WebComponents review latency', async (t) => {
 test.serial('WebComponents/webcomponents.org review latency', async (t) => {
   const since = new Date(0);
   const result = await getReviewLatency(
-      {org: 'WebComponents', repo: 'webcomponents.org', since});
+      {org: ['WebComponents'], repo: 'webcomponents.org', since});
   t.is(result.totalLatency, 19466495000);
   t.is(result.reviews.length, 425);
   t.truthy(result.summary());

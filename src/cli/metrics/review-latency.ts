@@ -76,7 +76,7 @@ export class ReviewLatencyResult implements MetricResult {
 }
 
 type ReviewLatencyOpts = {
-  org: string,
+  org: [string],
   repo?: string, since: Date,
 };
 
@@ -85,11 +85,14 @@ type ReviewLatencyOpts = {
  */
 export async function getReviewLatency(opts: ReviewLatencyOpts):
     Promise<ReviewLatencyResult> {
-  let repos;
+  let repos: Array<{owner: string, name: string}>;
   if (opts.repo) {
-    repos = [{owner: opts.org, name: opts.repo}];
+    repos = [{owner: opts.org[0], name: opts.repo}];
   } else {
-    repos = await getOrgRepos(opts.org);
+    repos = [];
+    for (const org of opts.org) {
+      repos = repos.concat(await getOrgRepos(org));
+    }
   }
 
   const fetches: Array<Promise<PullRequest[]>> = [];
