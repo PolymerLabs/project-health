@@ -2,6 +2,7 @@ export type ApplicationSecrets = {
   GITHUB_CLIENT_ID: string; GITHUB_CLIENT_SECRET: string;
   PUBLIC_VAPID_KEY: string;
   PRIVATE_VAPID_KEY: string;
+  GITHUB_APP_TO_GQL_TOKEN: string;
 };
 
 let secretsSingleton: ApplicationSecrets|null = null;

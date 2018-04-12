@@ -1456,6 +1456,19 @@ export interface OrgDetailsQuery {
   },
 };
 
+export interface RepoIdQueryVariables {
+  owner: string,
+  name: string,
+};
+
+export interface RepoIdQuery {
+  // Lookup a given repository by the owner and repository name.
+  repository:  {
+    __typename: "Repository",
+    id: string,
+  } | null,
+};
+
 export interface ViewerLoginQuery {
   // The currently authenticated user.
   viewer:  {
