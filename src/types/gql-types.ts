@@ -1319,11 +1319,11 @@ export interface IncomingPullRequestsQuery {
   } | null,
 };
 
-export interface AssignedIssuesQueryVariables {
+export interface IssuesSearchQueryVariables {
   query: string,
 };
 
-export interface AssignedIssuesQuery {
+export interface IssuesSearchQuery {
   // Perform a search across resources.
   search:  {
     __typename: "SearchResultItemConnection",
@@ -1335,6 +1335,8 @@ export interface AssignedIssuesQuery {
         title: string,
         // The HTTP URL for this issue
         url: string,
+        // Identifies the date and time when the object was created.
+        createdAt: string,
         // The actor who authored the comment.
         author: ( {
             __typename: "Organization",
@@ -1391,8 +1393,6 @@ export interface AssignedIssuesQuery {
           // Identifies the total count of items in the connection.
           totalCount: number,
         },
-        // Identifies the date and time when the object was created.
-        createdAt: string,
         // A list of comments associated with the Issue.
         comments:  {
           __typename: string,
@@ -1846,10 +1846,102 @@ export interface mentionedFieldsFragment {
   } | null,
 };
 
+export interface issueFieldsFragment {
+  __typename: "Issue",
+  id: string,
+  // Identifies the issue title.
+  title: string,
+  // The HTTP URL for this issue
+  url: string,
+  // Identifies the date and time when the object was created.
+  createdAt: string,
+  // The actor who authored the comment.
+  author: ( {
+      __typename: "Organization",
+      // The username of the actor.
+      login: string,
+      // A URL pointing to the actor's public avatar.
+      avatarUrl: string,
+    } | {
+      __typename: "User",
+      // The username of the actor.
+      login: string,
+      // A URL pointing to the actor's public avatar.
+      avatarUrl: string,
+    } | {
+      __typename: "Bot",
+      // The username of the actor.
+      login: string,
+      // A URL pointing to the actor's public avatar.
+      avatarUrl: string,
+    }
+  ) | null,
+  // The repository associated with this node.
+  repository:  {
+    __typename: string,
+    // The name of the repository.
+    name: string,
+    // The User owner of the repository.
+    owner: ( {
+        __typename: "Organization",
+        // The username used to login.
+        login: string,
+      } | {
+        __typename: "User",
+        // The username used to login.
+        login: string,
+      }
+    ),
+  },
+};
+
+export interface popularityFieldsFragment {
+  __typename: "Issue",
+  // A list of comments associated with the Issue.
+  commentTotal:  {
+    __typename: string,
+    // Identifies the total count of items in the connection.
+    count: number,
+  },
+  // A list of Reactions left on the Issue.
+  reactions:  {
+    __typename: string,
+    // Identifies the total count of items in the connection.
+    totalCount: number,
+  },
+  // A list of Users that are participating in the Issue conversation.
+  participants:  {
+    __typename: string,
+    // Identifies the total count of items in the connection.
+    totalCount: number,
+  },
+};
+
 export interface commentFieldsFragment {
   __typename: "Issue",
   // Identifies the date and time when the object was created.
   createdAt: string,
+  // The actor who authored the comment.
+  author: ( {
+      __typename: "Organization",
+      // The username of the actor.
+      login: string,
+      // A URL pointing to the actor's public avatar.
+      avatarUrl: string,
+    } | {
+      __typename: "User",
+      // The username of the actor.
+      login: string,
+      // A URL pointing to the actor's public avatar.
+      avatarUrl: string,
+    } | {
+      __typename: "Bot",
+      // The username of the actor.
+      login: string,
+      // A URL pointing to the actor's public avatar.
+      avatarUrl: string,
+    }
+  ) | null,
   // A list of comments associated with the Issue.
   comments:  {
     __typename: string,
@@ -1874,27 +1966,5 @@ export interface commentFieldsFragment {
         }
       ) | null,
     } | null > | null,
-  },
-};
-
-export interface popularityFieldsFragment {
-  __typename: "Issue",
-  // A list of comments associated with the Issue.
-  commentTotal:  {
-    __typename: string,
-    // Identifies the total count of items in the connection.
-    count: number,
-  },
-  // A list of Reactions left on the Issue.
-  reactions:  {
-    __typename: string,
-    // Identifies the total count of items in the connection.
-    totalCount: number,
-  },
-  // A list of Users that are participating in the Issue conversation.
-  participants:  {
-    __typename: string,
-    // Identifies the total count of items in the connection.
-    totalCount: number,
   },
 };

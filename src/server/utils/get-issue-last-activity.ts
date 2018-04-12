@@ -4,7 +4,10 @@ export function getIssueLastActivity(
     assigneeLogin: string, commentFragment: commentFieldsFragment) {
   let lastActivity = null;
 
-  if (commentFragment.createdAt) {
+  // If the user opened the issue - we don't want the createdAt to be treated
+  // as new activity.
+  if (!commentFragment.author ||
+      commentFragment.author.login !== assigneeLogin) {
     lastActivity = new Date(commentFragment.createdAt).getTime();
   }
 

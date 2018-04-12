@@ -3,6 +3,24 @@
     "search": {
       "nodes": [
         {
+          "__typename": "Issue",
+          "createdAt": "2018-03-24T00:04:16Z",
+          "comments": {
+            "nodes": [],
+            "__typename": "IssueCommentConnection"
+          },
+          "commentTotal": {
+            "count": 0,
+            "__typename": "IssueCommentConnection"
+          },
+          "reactions": {
+            "totalCount": 0,
+            "__typename": "ReactionConnection"
+          },
+          "participants": {
+            "totalCount": 2,
+            "__typename": "UserConnection"
+          },
           "id": "MDU6SXNzdWUzMDgyMTA0Njc=",
           "title": "I found a bug.",
           "url": "https://github.com/project-health1/repo/issues/16",
@@ -18,8 +36,15 @@
               "__typename": "User"
             },
             "__typename": "Repository"
-          },
+          }
+        },
+        {
           "__typename": "Issue",
+          "createdAt": "2018-03-24T00:02:42Z",
+          "comments": {
+            "nodes": [],
+            "__typename": "IssueCommentConnection"
+          },
           "commentTotal": {
             "count": 0,
             "__typename": "IssueCommentConnection"
@@ -29,16 +54,9 @@
             "__typename": "ReactionConnection"
           },
           "participants": {
-            "totalCount": 2,
+            "totalCount": 1,
             "__typename": "UserConnection"
           },
-          "createdAt": "2018-03-24T00:04:16Z",
-          "comments": {
-            "nodes": [],
-            "__typename": "IssueCommentConnection"
-          }
-        },
-        {
           "id": "MDU6SXNzdWUzMDgyMTAyNzM=",
           "title": "Self Assigned Issue",
           "url": "https://github.com/project-health1/repo/issues/15",
@@ -54,24 +72,6 @@
               "__typename": "User"
             },
             "__typename": "Repository"
-          },
-          "__typename": "Issue",
-          "commentTotal": {
-            "count": 0,
-            "__typename": "IssueCommentConnection"
-          },
-          "reactions": {
-            "totalCount": 0,
-            "__typename": "ReactionConnection"
-          },
-          "participants": {
-            "totalCount": 1,
-            "__typename": "UserConnection"
-          },
-          "createdAt": "2018-03-24T00:02:42Z",
-          "comments": {
-            "nodes": [],
-            "__typename": "IssueCommentConnection"
           }
         }
       ],

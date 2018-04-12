@@ -8,8 +8,26 @@ import {createEmptyMessage} from '../components/empty-message.js';
 
 import {FilterState} from './filter-controller.js';
 
-function statusToDisplay(): StatusDisplay {
-  return {text: 'Assigned to you', type: 'actionable'};
+function statusToDisplay(issue: api.Issue): StatusDisplay {
+  switch (issue.status.type) {
+    case 'Assigned':
+      return {text: 'Assigned to you', type: 'actionable'};
+    case 'Author':
+      return {
+        text: 'You filed this issue',
+        type: issue.hasNewActivity ? 'actionable' : 'passive'
+      };
+    case 'Involved':
+      return {
+        text: 'You are involved with this issue',
+        type: issue.hasNewActivity ? 'actionable' : 'passive'
+      };
+    case 'UnknownStatus':
+      return {text: '', type: 'activity'};
+    default:
+      const unknown: never = issue.status;
+      throw new Error(`Unknown PullRequestStatus: ${unknown}`);
+  }
 }
 
 function popularityTemplate(popularity: api.Popularity) {
@@ -28,19 +46,34 @@ function popularityTemplate(popularity: api.Popularity) {
   `;
 }
 
+/**
+ * Applies a filter to an array of issues
+ */
+function applyFilter(
+    filter: FilterState|undefined, issues: api.Issue[]): api.Issue[] {
+  if (!filter) {
+    return issues;
+  }
+  return issues.filter((issue) => {
+    const {type} = statusToDisplay(issue);
+    const typeDisabled = filter[type];
+    return !typeDisabled;
+  });
+}
+
 export function genericIssueListTemplate(
     issues: api.Issue[],
     filter: FilterState|undefined,
     emptyMessageTitle: string,
     emptyMessageDescription: string) {
-  // Issuses currently are only of one type.
-  const filtered = filter && filter['actionable'];
-  if (issues.length && !filtered) {
+  issues = applyFilter(filter, issues);
+
+  if (issues.length) {
     return html`${issues.map((issue) => {
       return genericDashboardRowTemplate(
           {
             id: issue.id,
-            status: statusToDisplay(),
+            status: statusToDisplay(issue),
             createdAt: issue.createdAt,
             author: issue.author,
             avatarUrl: issue.avatarUrl,

@@ -1,19 +1,18 @@
 import * as api from '../../../../types/api.js';
 
-import {getAssignedIssues, getIncomingData, getLastKnownUpdate, getOutgoingData} from './utils/get-data.js';
-import {newlyActionableIssues} from './utils/newly-actionable-issues.js';
+import {getAssignedIssues, getIncomingData, getIssueActivity, getLastKnownUpdate, getOutgoingData} from './utils/get-data.js';
 import {newlyActionablePrs} from './utils/newly-actionable-prs.js';
 
 class DashData {
   // This is the latest data received from the server and rendered to the page
   private lastPolledOutgoing: api.OutgoingDashResponse|null;
   private lastPolledIncoming: api.IncomingDashResponse|null;
-  private lastPolledIssues: api.IssuesResponse|null;
+  private lastPolledAssignedIssues: api.IssuesResponse|null;
+  private lastPolledIssueActivity: api.IssuesResponse|null;
 
   // This is the data that the user view the last time they were on the page
   private lastViewedOutgoing: api.OutgoingDashResponse|null;
   private lastViewedIncoming: api.IncomingDashResponse|null;
-  private lastViewedIssues: api.IssuesResponse|null;
 
   private lastUpdateFailed: boolean;
   private lastKnownVersion: string|null;
@@ -21,11 +20,11 @@ class DashData {
   constructor() {
     this.lastPolledOutgoing = null;
     this.lastPolledIncoming = null;
-    this.lastPolledIssues = null;
+    this.lastPolledAssignedIssues = null;
+    this.lastPolledIssueActivity = null;
 
     this.lastViewedOutgoing = null;
     this.lastViewedIncoming = null;
-    this.lastViewedIssues = null;
 
     this.lastKnownVersion = null;
     this.lastUpdateFailed = false;
@@ -38,13 +37,15 @@ class DashData {
         getOutgoingData(),
         getIncomingData(),
         getAssignedIssues(),
+        getIssueActivity(),
       ]);
 
       this.lastUpdateFailed = false;
 
       this.lastPolledOutgoing = results[0];
       this.lastPolledIncoming = results[1];
-      this.lastPolledIssues = results[2];
+      this.lastPolledAssignedIssues = results[2];
+      this.lastPolledIssueActivity = results[3];
     } catch (err) {
       this.lastUpdateFailed = true;
     }
@@ -53,7 +54,6 @@ class DashData {
   async markDataViewed() {
     this.lastViewedOutgoing = this.lastPolledOutgoing;
     this.lastViewedIncoming = this.lastPolledIncoming;
-    this.lastViewedIssues = this.lastPolledIssues;
   }
 
   getProfileData(): api.DashboardUser|null {
@@ -110,27 +110,20 @@ class DashData {
     return this.lastPolledIncoming.prs;
   }
 
-  getIssues(): api.Issue[] {
-    if (!this.lastPolledIssues) {
+  getAssignedIssues(): api.Issue[] {
+    if (!this.lastPolledAssignedIssues) {
       return [];
     }
 
-    return this.lastPolledIssues.issues;
+    return this.lastPolledAssignedIssues.issues;
   }
 
-  getIssueUpdates(): string[] {
-    if (!this.lastPolledIssues) {
+  getIssueActivity(): api.Issue[] {
+    if (!this.lastPolledIssueActivity) {
       return [];
     }
 
-    if (!this.lastViewedIssues) {
-      return [];
-    }
-
-    const newIssues = this.lastPolledIssues.issues;
-    const oldIssues = this.lastViewedIssues.issues;
-
-    return newlyActionableIssues(newIssues, oldIssues);
+    return this.lastPolledIssueActivity.issues;
   }
 
   async areServerUpdatesAvailable(): Promise<boolean> {

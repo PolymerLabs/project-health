@@ -236,6 +236,21 @@ export interface Issue {
   url: string;
   popularity: Popularity;
   hasNewActivity: boolean;
+  status: IssueStatus;
+}
+
+export type IssueStatus = Assigned|Author|Involved|UnknownStatus;
+
+interface Assigned {
+  type: 'Assigned';
+}
+
+interface Author {
+  type: 'Author';
+}
+
+interface Involved {
+  type: 'Involved';
 }
 
 export type Popularity = number&{
