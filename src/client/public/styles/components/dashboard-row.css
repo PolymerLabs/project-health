@@ -19,7 +19,7 @@
   z-index: var(--z-index-pr-line);
 }
 
-.dashboard-row-header, .dashboard-row-event {
+row-header, .dashboard-row-event {
   display: flex;
   flex-shrink: 0;
 }
