@@ -79,6 +79,7 @@
     "vinyl-source-stream": "^2.0.0"
   },
   "dependencies": {
+    "@google-cloud/error-reporting": "^0.4.0",
     "@google-cloud/firestore": "^0.11.2",
     "@material/switch": "^0.30.0",
     "@types/puppeteer": "^1.0.0",

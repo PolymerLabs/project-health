@@ -1,3 +1,4 @@
+import {ErrorReporting} from '@google-cloud/error-reporting';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
@@ -26,6 +27,7 @@ const STATIC_EXT = ['html'];
 export class DashServer {
   private app: Express;
   private server: Server|null;
+  private errors: ErrorReporting|null = null;
 
   constructor() {
     this.server = null;
@@ -33,6 +35,7 @@ export class DashServer {
 
     if (process.env.NODE_ENV === 'production') {
       app.use(enforceHTTPS);
+      this.errors = new ErrorReporting({reportUnhandledRejections: true});
     }
 
     // Setup common middleware
@@ -76,6 +79,11 @@ export class DashServer {
     // Enable public APIs
     app.use('/api/login/', getLoginRouter());
     app.use('/api/webhook/', getGitHubHookRouter());
+
+    // Must be last middleware.
+    if (this.errors) {
+      app.use(this.errors.express);
+    }
   }
 
   private async setupPrivateRoutes(app: Express) {
