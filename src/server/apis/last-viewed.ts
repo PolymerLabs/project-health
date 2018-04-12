@@ -1,33 +1,13 @@
 import * as express from 'express';
 
-import {GenericStatusResponse} from '../../types/api';
-import {userModel} from '../models/userModel';
+import {userModel, UserRecord} from '../models/userModel';
 
-import {createAPIRoute, ResponseDetails} from './api-route';
+import {APIResponse} from './api-router/abstract-api-router';
+import {PrivateAPIRouter} from './api-router/private-api-router';
+import * as responseHelper from './api-router/response-helper';
 
-async function handleUpdateRequest(request: express.Request):
-    Promise<ResponseDetails<GenericStatusResponse>> {
-  const userRecord = await userModel.getUserRecordFromRequest(request);
-  if (!userRecord) {
-    return {
-      statusCode: 401,
-      error: {
-        code: 'no-user-record',
-        message: 'Please sign in',
-      },
-    };
-  }
-
-  if (!request.body || !request.body.id) {
-    return {
-      statusCode: 400,
-      error: {
-        code: 'no-body',
-        message: 'The API expects a body with and "id" field.',
-      },
-    };
-  }
-
+async function handleUpdateRequest(
+    request: express.Request, userRecord: UserRecord): Promise<APIResponse> {
   const issueId = request.body.id;
   await userModel.updateLastViewed(
       userRecord.username,
@@ -35,16 +15,15 @@ async function handleUpdateRequest(request: express.Request):
       Date.now(),
   );
 
-  return {
-    statusCode: 200,
-    data: {
-      status: 'ok',
-    },
-  };
+  return responseHelper.data({
+    status: 'ok',
+  });
 }
 
 export function getRouter(): express.Router {
-  const loginRouter = express.Router();
-  loginRouter.post('/update/', createAPIRoute(handleUpdateRequest));
-  return loginRouter;
+  const lastViewedRouter = new PrivateAPIRouter();
+  lastViewedRouter.post('/update/', handleUpdateRequest, {
+    requireBody: true,
+  });
+  return lastViewedRouter.router;
 }

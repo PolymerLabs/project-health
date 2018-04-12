@@ -1,24 +1,14 @@
 import * as express from 'express';
 import fetch from 'node-fetch';
 
-import {GenericStatusResponse} from '../../types/api';
 import {secrets} from '../../utils/secrets';
 import {ID_COOKIE_NAME, userModel} from '../models/userModel';
+import {APIResponse} from './api-router/abstract-api-router';
+import {PublicAPIRouter} from './api-router/public-api-router';
+import * as responseHelper from './api-router/response-helper';
 
-import {createAPIRoute, ResponseDetails} from './api-route';
-
-async function handleLoginRequest(request: express.Request):
-    Promise<ResponseDetails<GenericStatusResponse>> {
-  if (!request.body) {
-    return {
-      statusCode: 400,
-      error: {
-        code: 'no-body',
-        message: 'The login API expects a body string.',
-      },
-    };
-  }
-
+export async function handleLoginRequest(request: express.Request):
+    Promise<APIResponse> {
   const loginResponse =
       await fetch('https://github.com/login/oauth/access_token', {
         method: 'POST',
@@ -35,14 +25,11 @@ async function handleLoginRequest(request: express.Request):
 
   const loginResponseBody = await loginResponse.json();
   if (loginResponseBody['error']) {
-    return {
-      statusCode: 400,
-      error: {
-        code: 'github-auth-failed',
-        message: `Unable to authenticate with GitHub: ${
-            JSON.stringify(loginResponseBody)}`,
-      }
-    };
+    const code = 'github-auth-failed';
+    const msg = `Unable to authenticate with GitHub: ${
+        JSON.stringify(loginResponseBody)}`;
+
+    return responseHelper.error(code, msg, {statusCode: 401});
   }
 
   const accessToken = loginResponseBody['access_token'];
@@ -61,24 +48,26 @@ async function handleLoginRequest(request: express.Request):
     }
   }
 
-  return {
-    statusCode: 200,
-    cookies: {
-      [ID_COOKIE_NAME]: {
-        value: newToken,
-        options: {
-          httpOnly: true,
-        },
+  return responseHelper.data(
+      {
+        status: 'ok',
       },
-    },
-    data: {
-      status: 'ok',
-    },
-  };
+      {
+        cookies: {
+          [ID_COOKIE_NAME]: {
+            value: newToken,
+            options: {
+              httpOnly: true,
+            },
+          },
+        }
+      });
 }
 
 export function getRouter(): express.Router {
-  const loginRouter = express.Router();
-  loginRouter.post('/', createAPIRoute(handleLoginRequest));
-  return loginRouter;
+  const loginRouter = new PublicAPIRouter();
+  loginRouter.post('/', handleLoginRequest, {
+    requireBody: true,
+  });
+  return loginRouter.router;
 }
