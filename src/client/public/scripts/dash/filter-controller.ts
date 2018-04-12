@@ -12,10 +12,13 @@ export class FilterController {
     this.filters = new Map();
   }
 
-  createFilter(id: FilterId, filters: Array<{type: string}>) {
+  createFilter(
+      id: FilterId,
+      filters: Array<{type: string, selected?: boolean}>) {
     const state: FilterState = {};
     for (const filter of filters) {
-      state[filter.type] = false;
+      state[filter.type] =
+          filter.selected === undefined || filter.selected ? true : false;
     }
     this.filters.set(id, state);
   }

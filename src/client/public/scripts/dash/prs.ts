@@ -36,8 +36,8 @@ function applyFilter<T extends api.PullRequest>(
   }
   return prList.filter((pr) => {
     const {type} = statusToDisplay(pr);
-    const typeDisabled = filter[type];
-    return !typeDisabled;
+    const typeSelected = filter[type];
+    return typeSelected;
   });
 }
 

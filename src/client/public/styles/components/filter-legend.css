@@ -32,6 +32,6 @@
   --legend-color: var(--non-actionable-color, blue);
 }
 
-.legend-item[disabled] {
+.legend-item:not(.selected) {
   --legend-color: var(--light-grey, grey);
 }

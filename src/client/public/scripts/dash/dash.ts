@@ -1,15 +1,16 @@
 import '../components/nav-element.js';
 import '../components/toggle-element.js';
+import '../components/filter-legend.js';
 import './push-controller.js';
 
 import {render} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
+import {FilterLegend, FilterLegendItem} from '../components/filter-legend.js';
 import {NavElement} from '../components/nav-element.js';
 
 import {dashData} from './dash-data.js';
 import {DashPollController} from './dash-poll-controller.js';
 import {FilterController, FilterId, FilterState} from './filter-controller.js';
 import {genericIssueListTemplate} from './issues.js';
-import {LegendItem, legendTemplate} from './legend.js';
 import {notificationCenter} from './notification-center.js';
 import {genericPrListTemplate, outgoingPrListTemplate} from './prs.js';
 import {getLoginParam} from './utils/get-data.js';
@@ -152,35 +153,38 @@ function onMessage(event: ServiceWorkerMessageEvent|MessageEvent) {
 
 async function start() {
   // Render persistent UI.
-  const outgoingFilters: LegendItem[] = [
+  const outgoingFilters: FilterLegendItem[] = [
     {type: 'complete', description: 'Ready to merge'},
     {type: 'actionable', description: 'Requires attention'},
     {type: 'activity', description: 'New activity'},
   ];
-  const incomingFilters: LegendItem[] = [
+  const incomingFilters: FilterLegendItem[] = [
     {type: 'actionable', description: 'Requires attention'},
     {type: 'activity', description: 'New activity'},
   ];
-  const assignedFilters: LegendItem[] = [
+  const assignedFilters: FilterLegendItem[] = [
     {type: 'actionable', description: 'Assigned to you'},
   ];
-  const issueActivityFilters: LegendItem[] = [
+  const issueActivityFilters: FilterLegendItem[] = [
     {type: 'actionable', description: 'Unread'},
-    {type: 'passive', description: 'Read'},
+    {type: 'passive', description: 'Read', selected: false},
   ];
 
-  render(
-      legendTemplate(outgoingFilters),
-      document.querySelector('.outgoing-legend') as HTMLElement);
-  render(
-      legendTemplate(incomingFilters),
-      document.querySelector('.incoming-legend') as HTMLElement);
-  render(
-      legendTemplate(assignedFilters),
-      document.querySelector('.assigned-issues-legend') as HTMLElement);
-  render(
-      legendTemplate(issueActivityFilters),
-      document.querySelector('.issue-activity-legend') as HTMLElement);
+  const outgoingLegendElement =
+      document.querySelector('.outgoing-legend') as FilterLegend;
+  outgoingLegendElement.filters = outgoingFilters;
+
+  const incomingLegendElement =
+      document.querySelector('.incoming-legend') as FilterLegend;
+  incomingLegendElement.filters = incomingFilters;
+
+  const assignedLegendElement =
+      document.querySelector('.assigned-issues-legend') as FilterLegend;
+  assignedLegendElement.filters = assignedFilters;
+
+  const issueActivityLegend =
+      document.querySelector('.issue-activity-legend') as FilterLegend;
+  issueActivityLegend.filters = issueActivityFilters;
 
   filterController.createFilter('outgoing-prs', outgoingFilters);
   filterController.createFilter('incoming-prs', outgoingFilters);
