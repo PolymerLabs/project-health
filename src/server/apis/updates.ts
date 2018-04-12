@@ -2,37 +2,22 @@ import * as express from 'express';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import {LastKnownResponse} from '../../types/api';
-import {userModel} from '../models/userModel';
+import {userModel, UserRecord} from '../models/userModel';
 
-import {createAPIRoute, ResponseDetails} from './api-route';
+import {APIResponse} from './api-router/abstract-api-router';
+import {PrivateAPIRouter} from './api-router/private-api-router';
+import * as reseponseHelper from './api-router/response-helper';
 
-async function handleLastKnownUpdate(request: express.Request):
-    Promise<ResponseDetails<LastKnownResponse>> {
-  const userRecord = await userModel.getUserRecordFromRequest(request);
-  if (!userRecord) {
-    return {
-      statusCode: 401,
-      error: {
-        code: 'no-login-details',
-        message: 'No login details were found for this request.',
-      }
-    };
-  }
-
+async function handleLastKnownUpdate(
+    request: express.Request, userRecord: UserRecord): Promise<APIResponse> {
   let lastKnownUpdate: string|null;
   if (!request.query.login) {
     lastKnownUpdate = userRecord.lastKnownUpdate;
   } else {
     const userDetails = await userModel.getUserRecord(request.query.login);
     if (!userDetails) {
-      return {
-        statusCode: 400,
-        error: {
-          code: 'bad-login-request',
-          message: 'User wasn\'t found in user model.',
-        },
-      };
+      return reseponseHelper.error(
+          'bad-login-request', 'User wasn\'t found in user model.');
     }
 
     lastKnownUpdate = userDetails.lastKnownUpdate;
@@ -47,17 +32,14 @@ async function handleLastKnownUpdate(request: express.Request):
     console.warn('Unable to read package.json');
   }
 
-  return {
-    statusCode: 200,
-    data: {
-      lastKnownUpdate,
-      version,
-    },
-  };
+  return reseponseHelper.data({
+    lastKnownUpdate,
+    version,
+  });
 }
 
 export function getRouter(): express.Router {
-  const loginRouter = express.Router();
-  loginRouter.get('/last-known.json', createAPIRoute(handleLastKnownUpdate));
-  return loginRouter;
+  const lastKnownUpdate = new PrivateAPIRouter();
+  lastKnownUpdate.get('/last-known.json', handleLastKnownUpdate);
+  return lastKnownUpdate.router;
 }

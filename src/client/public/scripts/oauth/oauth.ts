@@ -1,5 +1,3 @@
-import {GenericStatusResponse, JSONAPIResponse} from '../../../../types/api.js';
-
 function handleOriginRedirect(
     redirectOrigin: string, queryParams: URLSearchParams) {
   // This redirect allows testing on localhost or on the remote server
@@ -23,8 +21,7 @@ async function handleLoginCode(code: string, queryParams: URLSearchParams) {
     credentials: 'include',
   });
 
-  const jsonResponse =
-      (await response.json()) as JSONAPIResponse<GenericStatusResponse>;
+  const jsonResponse = await response.json();
   if (jsonResponse.error) {
     console.error(jsonResponse.error.message);
     const msgElement = document.querySelector('.oauth-msg');

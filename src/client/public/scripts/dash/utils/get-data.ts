@@ -31,8 +31,7 @@ export async function getLastKnownUpdate(): Promise<api.LastKnownResponse> {
         credentials: 'include',
       });
 
-  const fullResponse =
-      await response.json() as api.JSONAPIResponse<api.LastKnownResponse>;
+  const fullResponse = await response.json();
   if (fullResponse.error) {
     throw new Error(
         `Unable to get last known update: ${fullResponse.error.message}`);

@@ -78,11 +78,6 @@ export interface Review {
   reviewState: 'PENDING'|'COMMENTED'|'APPROVED'|'CHANGES_REQUESTED'|'DISMISSED';
 }
 
-export interface JSONAPIResponse<T> {
-  error?: {code: string; message: string;};
-  data?: T;
-}
-
 export interface GenericStatusResponse { status: string; }
 
 export interface LastKnownResponse {
