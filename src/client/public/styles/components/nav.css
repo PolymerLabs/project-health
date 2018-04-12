@@ -46,15 +46,17 @@ a.nav-item:hover {
 
 .settings {
   display: block;
-  width: 20px;
-  height: 20px;
-  background-color: var(--profile-button-color);
-  mask-image: url('/images/settings.svg');
-  -webkit-mask-size: 20px;
 }
 
-.settings:hover {
-  background-color: var(--profile-button-hover-color);
+.settings > .material-icons-extended {
+  font-size: 20px;
+  line-height: 20px;
+  vertical-align: middle;
+  color: var(--button-color);
+}
+
+.settings:hover > .material-icons-extended {
+  color: var(--button-hover-color);
 }
 
 .nav-item__separator {

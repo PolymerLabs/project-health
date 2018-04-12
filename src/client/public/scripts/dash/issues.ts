@@ -17,10 +17,10 @@ function popularityTemplate(popularity: api.Popularity) {
   <div class="issue-info">
     <div class="issue-info-item issue-popularity" score$="${popularity}">
       <div class="issue-info-item__visual">
-        <div class="issue-popularity__fire"></div>
-        <div class="issue-popularity__fire"></div>
-        <div class="issue-popularity__fire"></div>
-        <div class="issue-popularity__fire"></div>
+        <i class="material-icons-extended issue-popularity__fire">whatshot</i>
+        <i class="material-icons-extended issue-popularity__fire">whatshot</i>
+        <i class="material-icons-extended issue-popularity__fire">whatshot</i>
+        <i class="material-icons-extended issue-popularity__fire">whatshot</i>
       </div>
       <div class="issue-info-item__description">popularity</div>
     </div>

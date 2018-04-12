@@ -6,7 +6,7 @@ export abstract class EmptyMessage extends BaseElement {
   render() {
     return html`
     <div class="empty-message__avatar">
-      <div class="empty-message__sun"></div>
+      <i class="material-icons-extended empty-message__sun">wb_sunny</i>
     </div>
 
     <div>
