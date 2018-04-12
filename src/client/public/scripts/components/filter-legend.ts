@@ -62,7 +62,6 @@ export class FilterLegend extends BaseElement {
       return html``;
     }
     return html`${this.filters.map(this._renderFilter)}`;
-    ;
   }
 }
 
