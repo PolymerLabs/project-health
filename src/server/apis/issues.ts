@@ -82,17 +82,7 @@ async function getIssueData(
   }
 
   const issuesResponse: IssuesResponse = {
-    issues: issues.sort((a: Issue, b: Issue) => {
-      if (a.hasNewActivity === b.hasNewActivity) {
-        return 0;
-      }
-
-      if (a.hasNewActivity) {
-        return -1;
-      }
-
-      return 1;
-    }),
+    issues,
   };
   response.json(issuesResponse);
 }
