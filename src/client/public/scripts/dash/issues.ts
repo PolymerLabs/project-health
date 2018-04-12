@@ -56,8 +56,8 @@ function applyFilter(
   }
   return issues.filter((issue) => {
     const {type} = statusToDisplay(issue);
-    const typeDisabled = filter[type];
-    return !typeDisabled;
+    const typeSelected = filter[type];
+    return typeSelected;
   });
 }
 
