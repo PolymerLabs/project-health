@@ -4,7 +4,7 @@ import '../components/row-element.js';
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import * as api from '../../../../types/api.js';
 import {createEmptyMessage} from '../components/empty-message.js';
-import {DashboardRowData, DashboardRowEventData, StatusDisplay} from '../components/row-element.js';
+import {RowData, RowEvent, StatusDisplay} from '../components/row-element.js';
 
 import {getAutoMergeOptions} from './auto-merge-events.js';
 import {FilterState} from './filter-controller.js';
@@ -98,8 +98,7 @@ export function outgoingPrTemplate(pr: api.OutgoingPullRequest) {
   return getPRRowTemplate(pr, autoMergeEvents);
 }
 
-function getPRRowTemplate(
-    pr: api.PullRequest, automergeEvents?: DashboardRowEventData[]) {
+function getPRRowTemplate(pr: api.PullRequest, automergeEvents?: RowEvent[]) {
   const prEvents = pr.events.map((event) => parseAsEventModel(event));
 
   let events = prEvents;
@@ -107,7 +106,7 @@ function getPRRowTemplate(
     events = events.concat(automergeEvents);
   }
 
-  const data: DashboardRowData = {
+  const data: RowData = {
     id: pr.id,
     createdAt: pr.createdAt,
     author: pr.author,

@@ -4,7 +4,7 @@ import '../components/row-element.js';
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import * as api from '../../../../types/api.js';
 import {createEmptyMessage} from '../components/empty-message.js';
-import {DashboardRowData, StatusDisplay} from '../components/row-element.js';
+import {RowData, StatusDisplay} from '../components/row-element.js';
 
 import {FilterState} from './filter-controller.js';
 
@@ -62,7 +62,7 @@ function applyFilter(
 }
 
 function issueTemplate(issue: api.Issue) {
-  const data: DashboardRowData = {
+  const data: RowData = {
     id: issue.id,
     status: statusToDisplay(issue),
     createdAt: issue.createdAt,

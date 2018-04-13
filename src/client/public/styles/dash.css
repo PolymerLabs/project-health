@@ -1,7 +1,7 @@
 @import "./variables/dimens.css";
 @import "./variables/colors.css";
 @import "./variables/z-index.css";
-@import "./components/dashboard-row.css";
+@import "./components/row-element.css";
 @import "./components/empty-message.css";
 @import "./components/filter-legend.css";
 @import "./components/issues.css";

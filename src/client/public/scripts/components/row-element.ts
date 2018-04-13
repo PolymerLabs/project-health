@@ -9,10 +9,9 @@ import {BaseElement, property} from './base-element.js';
 export interface StatusDisplay {
   type: 'complete'|'actionable'|'activity'|'passive';
   text: string;
-  className?: string;
 }
 
-export interface DashboardRowData {
+export interface RowData {
   id: string;
   status: StatusDisplay;
   createdAt: number;
@@ -23,10 +22,9 @@ export interface DashboardRowData {
   owner: string;
   repo: string;
   hasNewActivity: boolean;
-  classes?: string[];
 }
 
-export interface DashboardRowEventData {
+export interface RowEvent {
   text: string|TemplateResult;
   time?: number;
   url?: string;
@@ -34,11 +32,11 @@ export interface DashboardRowEventData {
 }
 
 export class RowElement extends BaseElement {
-  @property() data: DashboardRowData|null = null;
+  @property() data: RowData|null = null;
   @property() extraHeaderData: TemplateResult[] = [];
-  @property() events: DashboardRowEventData[] = [];
+  @property() events: RowEvent[] = [];
 
-  _renderEvent(event: DashboardRowEventData) {
+  _renderEvent(event: RowEvent) {
     const timeTemplate = (time: number) =>
         html`<time class="dashboard-row-event__time" datetime="${
             new Date(time).toISOString()}">${timeToString(time)}</time>`;
@@ -70,19 +68,17 @@ export class RowElement extends BaseElement {
       return html``;
     }
 
-    const additionalClasses: string[] = this.data.classes || [];
-    const rowClasses = ['dashboard-row', ...additionalClasses];
+    this.setAttribute('type', this.data.status.type);
+
     if (this.events.length) {
-      rowClasses.push('has-events');
+      this.classList.add('has-events');
     }
 
     return html`
-<div class$="${rowClasses.join(' ')}" type$="${this.data.status.type}">
-  <row-header rowData="${this.data}" extraHeaderData="${
-        this.extraHeaderData}"></row-header>
+  <row-header rowData="${this.data}" extraHeaderData="${this.extraHeaderData}">
+  </row-header>
 
-  ${this.events.map(this._renderEvent)}
-</div>`;
+  ${this.events.map(this._renderEvent)}`;
   }
 }
 
