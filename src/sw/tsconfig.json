@@ -13,10 +13,10 @@
       "esnext.asynciterable",
       "webworker"
     ],
-    "rootDir": "../src",
-    "outDir": "../build"
+    "rootDir": "../../src",
+    "outDir": "../../build"
   },
   "include": [
-    "../src/sw/**/*"
+    "../../src/sw/**/*"
   ]
 }

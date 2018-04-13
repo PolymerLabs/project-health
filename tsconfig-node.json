@@ -12,17 +12,17 @@
       "es2017",
       "esnext.asynciterable"
     ],
-    "rootDir": "../src",
-    "outDir": "../build"
+    "rootDir": "./src",
+    "outDir": "./build"
   },
   "include": [
-    "../src/**/*.ts",
-    "../src/**/*.d.ts"
+    "./src/**/*.ts",
+    "./src/**/*.d.ts"
   ],
   "exclude": [
-    "../src/client/*",
-    "../src/client/**/*",
-    "../src/sw/*",
-    "../src/sw/**/*"
+    "./src/client/*",
+    "./src/client/**/*",
+    "./src/sw/*",
+    "./src/sw/**/*"
   ]
 }
