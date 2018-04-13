@@ -16,8 +16,14 @@
 
 <body>
   <nav-element></nav-element>
-  <dash-page class="main-content"></dash-page>
+  <app-element>
+    <dash-page id="dash" class="main-content"></dash-page>
+    <settings-page id="settings"></settings-page>
+  </app-element>
 </body>
+
+<script nomodule src="/bundled/scripts/app/app.js"></script>
+<script type="module" src="/scripts/app/app.js" crossorigin></script>
 
 <script nomodule src="/bundled/scripts/dash/dash.js"></script>
 <!-- The crossorigin attribute sends credentials for requests to the same origin. -->
