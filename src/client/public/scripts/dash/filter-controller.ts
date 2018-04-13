@@ -5,7 +5,7 @@ export type FilterState = {
 export type FilterId =
     'outgoing-prs'|'incoming-prs'|'assigned-issues'|'issue-activity';
 
-export class FilterController {
+class FilterController {
   private filters: Map<FilterId, FilterState>;
 
   constructor() {
@@ -31,3 +31,5 @@ export class FilterController {
     this.filters.set(id, config);
   }
 }
+
+export const filterController = new FilterController();

@@ -1,5 +1,5 @@
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
-import {FilterState} from '../dash/filter-controller.js';
+import {FilterId, FilterState} from '../dash/filter-controller.js';
 
 export type FilterLegendItem = {
   type: 'complete'|'actionable'|'activity'|'passive',
@@ -8,6 +8,10 @@ export type FilterLegendItem = {
 };
 
 import {BaseElement, property} from './base-element.js';
+
+export interface FilterLegendEvent {
+  state: FilterState;
+}
 
 export class FilterLegend extends BaseElement {
   @property() filters: FilterLegendItem[] = [];
@@ -36,8 +40,9 @@ export class FilterLegend extends BaseElement {
           result[type] = filter.classList.contains('selected');
         }
       }
-      item.dispatchEvent(
-          new CustomEvent('legend-change', {detail: result, bubbles: true}));
+
+      const detail: FilterLegendEvent = {state: result};
+      legend.dispatchEvent(new CustomEvent('legend-change', {detail}));
     }
 
     const selectedClass =
@@ -45,14 +50,16 @@ export class FilterLegend extends BaseElement {
 
     return html
     `<div class$="legend-item ${selectedClass}" type$="${
-        filter.type}" on-click="${handleToggle}">${filter.description}</div>`;
+        filter.type}" on-click="${handleToggle.bind(this)}">${
+        filter.description}</div>`;
   }
 
   render() {
     if (!this.filters) {
       return html``;
     }
-    return html`${this.filters.map(this._renderFilter)}`;
+
+    return html`${this.filters.map(this._renderFilter.bind(this))}`;
   }
 }
 

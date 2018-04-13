@@ -16,44 +16,7 @@
 
 <body>
   <nav-element></nav-element>
-  <div class="main-content">
-    <div class="title-container">
-      <h1 id="page-header"></h1>
-      <toggle-element id="push-toggle" disabled="true"></toggle-element>
-    </div>
-    <div id="outgoing-prs">
-      <h2>
-        Outgoing pull requests
-        <filter-legend class="outgoing-legend"></filter-legend>
-      </h2>
-      <div class="outgoing-prs__list pr-list"></div>
-    </div>
-    <div id="incoming-prs">
-      <h2>
-        Incoming pull requests
-        <filter-legend class="incoming-legend"></filter-legend>
-      </h2>
-      <div class="incoming-prs__list pr-list"></div>
-    </div>
-    <div id="assigned-issues">
-      <h2>
-        Your Issues
-        <filter-legend class="assigned-issues-legend"></filter-legend>
-      </h2>
-      <div class="assigned-issues__list pr-list"></div>
-    </div>
-    <div id="issue-activity">
-      <h2>
-        Your Issue Activity
-        <filter-legend class="issue-activity-legend"></filter-legend>
-      </h2>
-      <div class="issue-activity__list pr-list"></div>
-    </div>
-
-    <footer>Bug? Feedback? File an
-      <a target="_blank" href="https://github.com/polymerlabs/project-health/issues/new">issue on GitHub</a>
-    </footer>
-  </div>
+  <dash-page class="main-content"></dash-page>
 </body>
 
 <script nomodule src="/bundled/scripts/dash/dash.js"></script>
