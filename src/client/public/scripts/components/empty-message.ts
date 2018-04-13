@@ -1,8 +1,11 @@
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 
-import {BaseElement} from './base-element.js';
+import {BaseElement, property} from './base-element.js';
 
 export abstract class EmptyMessage extends BaseElement {
+  @property({attribute: true}) title = '';
+  @property({attribute: true}) description = '';
+
   render() {
     return html`
     <div class="empty-message__avatar">
@@ -10,15 +13,12 @@ export abstract class EmptyMessage extends BaseElement {
     </div>
 
     <div>
-      <div class="small-heading">${this.getAttribute('title')}</div>
-      <div class="empty-message__description">${
-        this.getAttribute('description')}</div>
+      <div class="small-heading">${this.title}</div>
+      <div class="empty-message__description">${this.description}</div>
     </div>`;
   }
 
-  static get observedAttributes(): string[] {
-    return ['title', 'description'];
-  }
+  // static observedAttributes = ['title', 'description'];
 }
 
 customElements.define('empty-message', EmptyMessage);

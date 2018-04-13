@@ -7,23 +7,14 @@ export type FilterLegendItem = {
   selected?: boolean,
 };
 
-import {BaseElement} from './base-element.js';
+import {BaseElement, property} from './base-element.js';
 
 export class FilterLegend extends BaseElement {
-  private _filters: FilterLegendItem[] = [];
+  @property() filters: FilterLegendItem[] = [];
 
   constructor() {
     super();
     this.classList.add('small-heading');
-  }
-
-  get filters() {
-    return this._filters;
-  }
-
-  set filters(filters: FilterLegendItem[]) {
-    this._filters = filters;
-    this.requestRender();
   }
 
   _renderFilter(filter: FilterLegendItem) {
