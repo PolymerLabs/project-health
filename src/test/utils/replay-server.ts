@@ -31,11 +31,13 @@ export async function startTestReplayServer(
 
   // Kind of weirdly, t.title will include the name of the current function
   // plus " for " as a prefix. Get the original name instead.
+  // Then remove any characters that may not work on windows.
   const testTitle =
       overrideTitle ? overrideTitle : t.title.replace(/^[\w\s]+ hook for /, '');
 
-  // We don't want spaces in our directory name.
-  const replayDir = path.join(replayRoot, testTitle.replace(/\s+/g, '-'));
+  // We don't want spaces or characters that may upset windows in our directory name.
+  const cleanTitle = testTitle.replace(/[^\w\s]/g, '').replace(/\s+/g, '-');
+  const replayDir = path.join(replayRoot, cleanTitle);
 
   if (record) {
     const tokensPath = path.join(projectRoot, '..', 'tokens.json');
