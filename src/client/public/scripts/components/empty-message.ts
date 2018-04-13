@@ -17,8 +17,6 @@ export abstract class EmptyMessage extends BaseElement {
       <div class="empty-message__description">${this.description}</div>
     </div>`;
   }
-
-  // static observedAttributes = ['title', 'description'];
 }
 
 customElements.define('empty-message', EmptyMessage);
