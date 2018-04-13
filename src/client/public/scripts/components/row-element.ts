@@ -37,20 +37,27 @@ export class RowElement extends BaseElement {
   @property() events: RowEvent[] = [];
 
   _renderEvent(event: RowEvent) {
-    const timeTemplate = (time: number) =>
-        html`<time class="dashboard-row-event__time" datetime="${
-            new Date(time).toISOString()}">${timeToString(time)}</time>`;
+    function timeTemplate(time?: number) {
+      if (!time) {
+        return '';
+      }
+      return html`<time class="dashboard-row-event__time" datetime="${
+          new Date(time).toISOString()}">${timeToString(time)}</time>`;
+    }
 
-    const linkTemplate = (url: string, text: string|TemplateResult) =>
-        html`<a class="dashboard-row-event__url" href="${
+    function linkTemplate(text: string|TemplateResult, url?: string) {
+      if (!url) {
+        return text;
+      } else {
+        return html`<a class="dashboard-row-event__url" href="${
             url}" target="_blank">${text}</a>`;
+      }
+    }
 
     return html`
 <div class$="dashboard-row-event ${
         event.classes ? event.classes.join(' ') : ''}">
-  ${
-        event.time ? timeTemplate(event.time) :
-                     html`<div class="dashboard-row-event__time"></div>`}
+  ${timeTemplate(event.time)}
 
   <div class="dashboard-row-event__bullet">
     <svg width="40" height="100%">
@@ -58,7 +65,7 @@ export class RowElement extends BaseElement {
     </svg>
   </div>
   <div class="dashboard-row-event__title">
-    ${event.url ? linkTemplate(event.url, event.text) : event.text}
+    ${linkTemplate(event.text, event.url)}
   </div>
 </div>`;
   }
