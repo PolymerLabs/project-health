@@ -1,5 +1,5 @@
 import * as api from '../../../../types/api.js';
-import {DashboardRowEventData} from '../components/dashboard-row.js';
+import {DashboardRowEventData} from '../components/row-element.js';
 
 function reviewStateToString(state: api.Review['reviewState']) {
   if (state === 'APPROVED') {

@@ -1,7 +1,6 @@
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
-import {TemplateResult} from '../../../../../node_modules/lit-html/lit-html.js';
 import * as api from '../../../../types/api.js';
-import {DashboardRowEventData, genericDashboardRowEventTemplate} from '../components/dashboard-row.js';
+import {DashboardRowEventData} from '../components/row-element.js';
 import {trackEvent} from '../utils/track-event.js';
 
 
@@ -61,7 +60,7 @@ function requestRender() {
 }
 
 export function getAutoMergeOptions(pr: api.OutgoingPullRequest):
-    TemplateResult[] {
+    DashboardRowEventData[] {
   if (!pr.automergeAvailable) {
     return [];
   }
@@ -93,7 +92,7 @@ export function getAutoMergeOptions(pr: api.OutgoingPullRequest):
     rebase: html`Auto <i>rebase and merge</i> when status checks pass`,
   };
 
-  const mergeOptions = [];
+  const mergeOptions: DashboardRowEventData[] = [];
 
   const selectedOption = pr.automergeOpts ? pr.automergeOpts.mergeType : null;
   const selectedOptionText =
@@ -109,7 +108,7 @@ export function getAutoMergeOptions(pr: api.OutgoingPullRequest):
         () => toggleCb()}">${selectedOptionText}</button>`,
     classes,
   };
-  mergeOptions.push(genericDashboardRowEventTemplate(titleOption));
+  mergeOptions.push(titleOption);
 
   if (!isOpen) {
     return mergeOptions;
@@ -122,7 +121,7 @@ export function getAutoMergeOptions(pr: api.OutgoingPullRequest):
           manualClick}">${optionText.manual}</button>`,
       classes: ['disconnected', 'red-dot']
     };
-    mergeOptions.push(genericDashboardRowEventTemplate(manualData));
+    mergeOptions.push(manualData);
   }
 
   if (pr.repoDetails.allow_merge_commit && selectedOption !== 'merge') {
@@ -132,7 +131,7 @@ export function getAutoMergeOptions(pr: api.OutgoingPullRequest):
           mergeClick}">${optionText.merge}</button>`,
       classes: ['disconnected', 'blue-dot']
     };
-    mergeOptions.push(genericDashboardRowEventTemplate(mergeData));
+    mergeOptions.push(mergeData);
   }
 
   if (pr.repoDetails.allow_squash_merge && selectedOption !== 'squash') {
@@ -142,7 +141,7 @@ export function getAutoMergeOptions(pr: api.OutgoingPullRequest):
           squashClick}">${optionText.squash}</button>`,
       classes: ['disconnected', 'blue-dot']
     };
-    mergeOptions.push(genericDashboardRowEventTemplate(rebaseData));
+    mergeOptions.push(rebaseData);
   }
 
   if (pr.repoDetails.allow_rebase_merge && selectedOption !== 'rebase') {
@@ -152,7 +151,7 @@ export function getAutoMergeOptions(pr: api.OutgoingPullRequest):
           rebaseClick}">${optionText.rebase}</button>`,
       classes: ['disconnected', 'blue-dot']
     };
-    mergeOptions.push(genericDashboardRowEventTemplate(rebaseData));
+    mergeOptions.push(rebaseData);
   }
 
   return mergeOptions;
