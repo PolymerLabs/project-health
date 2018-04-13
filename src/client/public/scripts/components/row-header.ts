@@ -3,12 +3,11 @@ import {TemplateResult} from '../../../../../node_modules/lit-html/lit-html.js';
 import {timeToString} from '../dash/utils/time-to-string.js';
 
 import {BaseElement, property} from './base-element.js';
-import {DashboardRowData} from './dashboard-row.js';
+import {RowData} from './row-element.js';
 
 export class RowHeader extends BaseElement {
-  @property({attribute: true}) rowData: DashboardRowData|undefined = undefined;
-  @property({attribute: true})
-  extraHeaderData: TemplateResult[]|undefined = undefined;
+  @property() rowData: RowData|undefined = undefined;
+  @property() extraHeaderData: TemplateResult[]|undefined = undefined;
 
   constructor() {
     super();

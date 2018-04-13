@@ -1,10 +1,10 @@
 import '../components/empty-message.js';
+import '../components/row-element.js';
 
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import * as api from '../../../../types/api.js';
-import {genericDashboardRowTemplate, StatusDisplay} from '../components/dashboard-row.js';
-
 import {createEmptyMessage} from '../components/empty-message.js';
+import {RowData, StatusDisplay} from '../components/row-element.js';
 
 import {FilterState} from './filter-controller.js';
 
@@ -61,6 +61,25 @@ function applyFilter(
   });
 }
 
+function issueTemplate(issue: api.Issue) {
+  const data: RowData = {
+    id: issue.id,
+    status: statusToDisplay(issue),
+    createdAt: issue.createdAt,
+    author: issue.author,
+    avatarUrl: issue.avatarUrl,
+    url: issue.url,
+    title: issue.title,
+    owner: issue.owner,
+    repo: issue.repo,
+    hasNewActivity: issue.hasNewActivity,
+  };
+  return html`
+<row-element data="${data}"
+             extraHeaderData="${[popularityTemplate(issue.popularity)]}">
+</row-element>`;
+}
+
 export function genericIssueListTemplate(
     issues: api.Issue[],
     filter: FilterState|undefined,
@@ -69,22 +88,7 @@ export function genericIssueListTemplate(
   issues = applyFilter(filter, issues);
 
   if (issues.length) {
-    return html`${issues.map((issue) => {
-      return genericDashboardRowTemplate(
-          {
-            id: issue.id,
-            status: statusToDisplay(issue),
-            createdAt: issue.createdAt,
-            author: issue.author,
-            avatarUrl: issue.avatarUrl,
-            url: issue.url,
-            title: issue.title,
-            owner: issue.owner,
-            repo: issue.repo,
-            hasNewActivity: issue.hasNewActivity,
-          },
-          [popularityTemplate(issue.popularity)]);
-    })}`;
+    return html`${issues.map((issue) => issueTemplate(issue))}`;
   } else {
     return createEmptyMessage(emptyMessageTitle, emptyMessageDescription);
   }

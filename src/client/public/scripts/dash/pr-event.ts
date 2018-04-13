@@ -1,5 +1,5 @@
 import * as api from '../../../../types/api.js';
-import {DashboardRowEventData} from '../components/dashboard-row.js';
+import {RowEvent} from '../components/row-element.js';
 
 function reviewStateToString(state: api.Review['reviewState']) {
   if (state === 'APPROVED') {
@@ -14,8 +14,7 @@ function reviewStateToString(state: api.Review['reviewState']) {
   return '';
 }
 
-export function parseAsEventModel(event: api.PullRequestEvent):
-    DashboardRowEventData {
+export function parseAsEventModel(event: api.PullRequestEvent): RowEvent {
   switch (event.type) {
     case 'OutgoingReviewEvent':
       const authors = event.reviews.map((review) => review.author);

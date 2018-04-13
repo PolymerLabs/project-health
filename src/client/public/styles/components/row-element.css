@@ -2,12 +2,13 @@
 @import "../variables/colors.css";
 @import "../variables/z-index.css";
 
-.dashboard-row {
+row-element {
+  display: block;
   position: relative;
   overflow: hidden;
 }
 
-.dashboard-row.has-events::before {
+row-element.has-events::before {
   position: absolute;
   top: calc((var(--padding) / 3) + 1px);
   bottom: calc(var(--padding) / 3);
@@ -61,15 +62,15 @@ row-header, .dashboard-row-event {
   color: var(--non-actionable-color);
 }
 
-.dashboard-row[type='actionable'] .dashboard-row-status__msg {
+row-element[type='actionable'] .dashboard-row-status__msg {
   color: var(--actionable-color);
 }
 
-.dashboard-row[type='complete'] .dashboard-row-status__msg {
+row-element[type='complete'] .dashboard-row-status__msg {
   color: var(--merge-text-color);
 }
 
-.dashboard-row[type='passive'] .dashboard-row-status__msg {
+row-element[type='passive'] .dashboard-row-status__msg {
   color: var(--passive-color);
 }
 
@@ -89,23 +90,23 @@ row-header, .dashboard-row-event {
   opacity: 1;
 }
 
-.dashboard-row[type='complete'] .dashboard-row-status__has-activity {
+row-element[type='complete'] .dashboard-row-status__has-activity {
   background-color: var(--merge-text-color);
 }
 
-.dashboard-row[type='actionable'] .dashboard-row-status__has-activity {
+row-element[type='actionable'] .dashboard-row-status__has-activity {
   background-color: var(--actionable-color);
 }
 
-.dashboard-row[type='complete'] a {
+row-element[type='complete'] a {
   text-decoration-color: var(--merge-text-color);
 }
 
-.dashboard-row[type='actionable'] a {
+row-element[type='actionable'] a {
   text-decoration-color: var(--actionable-color);
 }
 
-.dashboard-row[type='activity'] a {
+row-element[type='activity'] a {
   text-decoration-color: var(--non-actionable-color);
 }
 
@@ -164,7 +165,7 @@ row-header, .dashboard-row-event {
 }
 
 /* Hide the timeline line after the last event  */
-.dashboard-row, .dashboard-row > .dashboard-row-event:last-child > .dashboard-row-event__bullet svg {
+row-element, row-element > .dashboard-row-event:last-child > .dashboard-row-event__bullet svg {
   background-color: var(--page-bg-color);
 }
 
