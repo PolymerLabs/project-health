@@ -1,5 +1,5 @@
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
-import {FilterId, FilterState} from '../dash/filter-controller.js';
+import {FilterState} from '../dash/filter-controller.js';
 
 export type FilterLegendItem = {
   type: 'complete'|'actionable'|'activity'|'passive',
@@ -9,9 +9,7 @@ export type FilterLegendItem = {
 
 import {BaseElement, property} from './base-element.js';
 
-export interface FilterLegendEvent {
-  state: FilterState;
-}
+export interface FilterLegendEvent { state: FilterState; }
 
 export class FilterLegend extends BaseElement {
   @property() filters: FilterLegendItem[] = [];

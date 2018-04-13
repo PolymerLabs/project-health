@@ -43,6 +43,8 @@ async function documentFocused() {
   updateApplicationState(true);
 }
 
+window.addEventListener('focus', documentFocused);
+
 async function updateApplicationState(focused?: boolean) {
   console.log('[Update Application State]');
 
@@ -51,6 +53,7 @@ async function updateApplicationState(focused?: boolean) {
 
   await notificationCenter.updateState(focused);
 
+  // TODO: This should be removed.
   if (focused) {
     await dashData.markDataViewed();
   }
@@ -67,6 +70,14 @@ function onMessage(event: ServiceWorkerMessageEvent|MessageEvent) {
   }
 }
 
+if (navigator.serviceWorker) {
+  navigator.serviceWorker.addEventListener(
+      'message', (event) => onMessage(event));
+}
+
+/**
+ * User dashboard page with pull requests and issues.
+ */
 class DashPage extends BaseElement {
   private filters = {
     'outgoing-prs': [
@@ -93,12 +104,9 @@ class DashPage extends BaseElement {
   constructor() {
     super();
     this._createFilters();
-  }
 
-  async connectedCallback() {
-    // Render persistent UI.
-    // Initialise the dashbaord with data
-    await this.performFullUpdate();
+    document.body.addEventListener(
+        'render-outgoing-request', this.requestRender.bind(this));
 
     // Setup polling if we aren't emulating a different user.
     if (getLoginParam() === null) {
@@ -112,31 +120,16 @@ class DashPage extends BaseElement {
           checkServerForUpdates,
           SHORT_POLL_INTERVAL,
       );
-    } else {
-      console.log('Polling disabled due to login parameter being used.');
     }
-
-    // Setup events
-    window.addEventListener('focus', documentFocused);
-    window.addEventListener('message', onMessage);
-    document.body.addEventListener(
-        'render-outgoing-request', this.requestRender.bind(this));
-
-    if (navigator.serviceWorker) {
-      navigator.serviceWorker.addEventListener(
-          'message', (event) => onMessage(event));
-    }
-
-    const pushComponent = new PushController();
-    pushComponent.update();
-
-    this.addEventListener('legend-change', this._filtersChanged.bind(this));
   }
 
-  _filtersChanged(event: CustomEvent) {
-    const data = event.detail as FilterLegendEvent;
-    filterController.updateFilter(data.id, data.state);
-    this.requestRender();
+  async connectedCallback() {
+    await this.performFullUpdate();
+
+    // TODO: this should move inside the toggle-element and become its own
+    // PushToggle.
+    const pushComponent = new PushController();
+    pushComponent.update();
   }
 
   async performFullUpdate() {
@@ -146,7 +139,8 @@ class DashPage extends BaseElement {
     await updateApplicationState();
   }
 
-  renderUser() {
+  // TODO: this should live in the nav itself.
+  _renderNavUser() {
     const profileData = dashData.getProfileData();
     if (!profileData) {
       return;
@@ -171,18 +165,15 @@ class DashPage extends BaseElement {
     this.requestRender();
   }
 
+  // TODO: Render should be called as soon as we have any data, so the view is
+  // incrementally updated. Currently we wait for all the data before rendering.
   render() {
-    const profileData = dashData.getProfileData();
-    const outgoingPrs = dashData.getOutgoingPrs();
-    const incomingPrs = dashData.getIncomingPrs();
-    const assignedIssues = dashData.getAssignedIssues();
-    const issueActivity = dashData.getIssueActivity();
-
-    this.renderUser();
+    const user = dashData.getProfileData();
+    this._renderNavUser();
 
     return html`
 <div class="title-container">
-  <h1 id="page-header">${profileData && profileData.login}</h1>
+  <h1 id="page-header">${user && user.login}</h1>
   <toggle-element id="push-toggle" disabled="true"></toggle-element>
 </div>
 <div id="outgoing-prs">
@@ -195,7 +186,7 @@ class DashPage extends BaseElement {
   <div class="outgoing-prs__list pr-list">
     ${
         outgoingPrListTemplate(
-            outgoingPrs,
+            dashData.getOutgoingPrs(),
             filterController.getFilter('outgoing-prs'),
             'No outgoing pull requests',
             'When you open new pull requests, they\'ll appear here.')}
@@ -211,7 +202,7 @@ class DashPage extends BaseElement {
   <div class="incoming-prs__list pr-list">
     ${
         genericPrListTemplate(
-            incomingPrs,
+            dashData.getIncomingPrs(),
             filterController.getFilter('incoming-prs'),
             'No incoming pull requests',
             'When you\'re added as a reviewer to a pull request, they\'ll appear here.')}
@@ -227,7 +218,7 @@ class DashPage extends BaseElement {
   <div class="assigned-issues__list pr-list">
     ${
         genericIssueListTemplate(
-            assignedIssues,
+            dashData.getAssignedIssues(),
             filterController.getFilter('assigned-issues'),
             'No issues assigned to you',
             'When you\'re assigned issues, they\'ll appear here.')}
@@ -243,7 +234,7 @@ class DashPage extends BaseElement {
   <div class="issue-activity__list pr-list">
     ${
         genericIssueListTemplate(
-            issueActivity,
+            dashData.getIssueActivity(),
             filterController.getFilter('issue-activity'),
             'No open issues involving you',
             'When you\'re involved in issues, they\'ll appear here.')}

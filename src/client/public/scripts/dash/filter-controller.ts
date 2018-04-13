@@ -5,7 +5,7 @@ export type FilterState = {
 export type FilterId =
     'outgoing-prs'|'incoming-prs'|'assigned-issues'|'issue-activity';
 
-class FilterController {
+export class FilterController {
   private filters: Map<FilterId, FilterState>;
 
   constructor() {
