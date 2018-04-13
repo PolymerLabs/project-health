@@ -14,10 +14,10 @@
       "esnext.asynciterable",
       "dom"
     ],
-    "rootDir": "../src",
-    "outDir": "../build"
+    "rootDir": "../../src",
+    "outDir": "../../build"
   },
   "include": [
-    "../src/client/**/*"
+    "../../src/client/**/*"
   ]
 }

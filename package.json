@@ -19,9 +19,9 @@
     "test:record": "gulp build && RECORD=true npm run test:ava -- --timeout=1min",
     "test:rebaseline": "gulp build && REBASELINE=true npm run test:ava -- --timeout=1min",
     "test:ava": "nyc --reporter=text --reporter=html ava 'build/**/*-test.js' --verbose",
-    "typescript:node": "tsc -p ./tsconfigs/node.json --inlineSources",
-    "typescript:browser": "tsc -p ./tsconfigs/browser.json --inlineSources",
-    "typescript:sw": "tsc -p ./tsconfigs/sw.json --inlineSources"
+    "typescript:node": "tsc -p ./tsconfig-node.json --inlineSources",
+    "typescript:browser": "tsc -p ./src/client/tsconfig.json --inlineSources",
+    "typescript:sw": "tsc -p ./src/sw/tsconfig.json --inlineSources"
   },
   "repository": {
     "type": "git",
