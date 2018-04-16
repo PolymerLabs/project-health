@@ -12,9 +12,10 @@ export interface InstallHook {
     id: number; repository_selection: 'all' | 'selected';
     permissions: {[name: string]: string;};
     events: string[];
-    account: {login: string; avatar_url: string; type: 'User' | 'Organization';}
-    repositories: Array<{id: number, name: string, full_name: string}>
+    account:
+        {login: string; avatar_url: string; type: 'User' | 'Organization';}
   };
+  repositories: Array<{id: number, name: string, full_name: string}>;
 }
 
 export async function handleGithubAppInstall(hookBody: InstallHook):
@@ -29,7 +30,7 @@ export async function handleGithubAppInstall(hookBody: InstallHook):
     avatar_url: hookBody.installation.account.avatar_url,
   });
 
-  for (const repo of hookBody.installation.repositories) {
+  for (const repo of hookBody.repositories) {
     const repoId = await github().query<RepoIdQuery>({
       query: repoIdQuery,
       variables: {

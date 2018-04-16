@@ -26,12 +26,12 @@ function newFakeHookDetails() {
         avatar_url: '',
         type: 'Organization',
       },
-      repositories: [{
-        id: 456,
-        name: 'test-repo',
-        full_name: 'test-owner/test-repo',
-      }],
-    }
+    },
+    repositories: [{
+      id: 456,
+      name: 'test-repo',
+      full_name: 'test-owner/test-repo',
+    }],
   };
 
   return Object.assign({}, HOOK_DATA);
