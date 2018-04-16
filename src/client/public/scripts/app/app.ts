@@ -1,5 +1,5 @@
 import './router.js';
-import '../dash/dash.js';
+import '../components/nav-element.js';
 
 /**
  * Manages pages within the app.
@@ -51,11 +51,28 @@ class AppElement extends HTMLElement {
   /**
    * Lazily loads the requested module.
    */
-  loadModule(_module: string) {
-    // TODO(samli): This is disabled till these pages are implemented.
-    // const moduleSpecifier = `/scripts/pages/${module}.js`;
-    // import(moduleSpecifier);
+  async loadModule(module: string) {
+    const moduleSpecifier = `/scripts/pages/${module}.js`;
+    if (supportsDynamicImport) {
+      // eval() prevents browsers which don't support dynamic import from
+      // breaking.
+      eval(`import('${moduleSpecifier}')`);
+    } else {
+      const script = document.createElement('script');
+      script.src = `/bundled/scripts/pages/${module}.js`;
+      document.head.appendChild(script);
+    }
   }
 }
+
+const supportsDynamicImport = (() => {
+  try {
+    // tslint:disable-next-line:no-unused-expression
+    new Function('import("")');
+    return true;
+  } catch (err) {
+    return false;
+  }
+})();
 
 customElements.define('app-element', AppElement);

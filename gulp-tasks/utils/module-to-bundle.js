@@ -36,6 +36,7 @@ const processScript = (scriptPath, relativePath, destDir) => {
              // Minify the bundled JS
              uglifyPlugin({}, esMinify),
            ],
+           experimentalDynamicImport: true,
          })
       .pipe(source(relativePath))
       // Convert streaming vinyl files to use buffers.

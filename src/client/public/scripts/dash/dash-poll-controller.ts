@@ -47,7 +47,7 @@ export class DashPollController {
 
   triggerPoll(id: string) {
     if (!this.pollConfigs[id]) {
-      throw new Error(`Unkown poll id: '${id}'`);
+      throw new Error(`Unknown poll id: '${id}'`);
     }
 
     this.clearTimeout(id);

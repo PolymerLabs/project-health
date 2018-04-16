@@ -88,9 +88,9 @@ test.serial('[pixel-test] project-health1 dashboard UI', async (t) => {
 });
 
 
-test.serial('[pixel-test] project-health1 outgoing UI', async (t) => {
+test.serial('[pixel-test] project-health1 all outgoing UI', async (t) => {
   const page = await browser.newPage();
-  await page.goto(`${dashAddress}/outgoing`, {waitUntil: 'networkidle0'});
+  await page.goto(`${dashAddress}/all`, {waitUntil: 'networkidle0'});
 
   // Hide time stamps from screenshots.
   await page.$$eval('time', /* istanbul ignore next */ (elements) => {

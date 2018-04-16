@@ -125,6 +125,16 @@ export class DashServer {
     app.use('/api/check-pr-state/', getCheckPRStateRouter());
     app.use('/api/issues/', getIssuesRouter());
     app.use('/api/last-viewed/', getLastViewedRouter());
+
+    // Serve app shell on all other routes.
+    app.get(
+        '/*',
+        requireLogin(true),
+        (_request: express.Request, response: express.Response) => {
+          response.sendFile('index.html', {
+            root: privatePath,
+          });
+        });
   }
 
   listen(): Promise<string> {

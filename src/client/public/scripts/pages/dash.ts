@@ -1,4 +1,3 @@
-import '../components/nav-element.js';
 import '../components/toggle-element.js';
 import '../components/filter-legend.js';
 import '../dash/push-controller.js';
@@ -189,7 +188,8 @@ class DashPage extends BaseElement {
             dashData.getOutgoingPrs(),
             filterController.getFilter('outgoing-prs'),
             'No outgoing pull requests',
-            'When you open new pull requests, they\'ll appear here.')}
+            'When you open new pull requests, they\'ll appear here.',
+            dashData.getOutgoingInfo())}
   </div>
 </div>
 <div id="incoming-prs">

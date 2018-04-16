@@ -64,6 +64,14 @@ class DashData {
     return this.lastPolledOutgoing.user;
   }
 
+  getOutgoingInfo(): api.OutgoingPullRequestInfo|null {
+    if (!this.lastPolledOutgoing) {
+      return null;
+    }
+
+    return this.lastPolledOutgoing;
+  }
+
   getOutgoingPrs(): api.OutgoingPullRequest[] {
     if (!this.lastPolledOutgoing) {
       return [];

@@ -19,17 +19,11 @@ export class NavElement extends BaseElement {
       avatarUrl = '/images/incognito.svg';
     }
 
-    const buttons = html`
-<a href="/settings" title="Settings" class="settings">
-  <i class="material-icons-extended">settings</i>
-</a>`;
-
     return html`
 <a class="nav-item selected" href="/">
   <img class="nav-item__avatar" src="${avatarUrl}"
        alt="Avatar of ${this.user.login}" />
   <div class="nav-item__name">${this.user.login}</div>
-  <div class="nav-item-actions">${buttons}</div>
 </a>`;
   }
 

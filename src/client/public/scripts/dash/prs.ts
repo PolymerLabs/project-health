@@ -41,16 +41,24 @@ function applyFilter<T extends api.PullRequest>(
   });
 }
 
+function viewAllTemplate(info: api.OutgoingPullRequestInfo) {
+  return html`<a href="/all" class="view-all__button">View all ${
+      info.totalCount} outgoing pull requests</a>`;
+}
+
 export function outgoingPrListTemplate(
     prList: api.OutgoingPullRequest[],
     filter: FilterState|undefined,
     emptyMessageTitle: string,
-    emptyMessageDescription: string) {
+    emptyMessageDescription: string,
+    info: api.OutgoingPullRequestInfo|null) {
   prList = applyFilter(filter, prList);
   if (prList.length) {
     return html`${prList.map((pr) => {
       return outgoingPrTemplate(pr);
-    })}`;
+    })}
+    ${info && info.hasMore ? viewAllTemplate(info) : ''}
+    `;
   } else {
     return createEmptyMessage(emptyMessageTitle, emptyMessageDescription);
   }

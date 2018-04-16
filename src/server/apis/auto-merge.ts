@@ -42,7 +42,7 @@ export async function handleSetMergeOpt(request: express.Request):
 
 export function getRouter(): express.Router {
   const automergeRouter = new PrivateAPIRouter();
-  automergeRouter.post('/set-merge-options/', handleSetMergeOpt, {
+  automergeRouter.post('/set-merge-option/', handleSetMergeOpt, {
     requireBody: true,
   });
   return automergeRouter.router;
