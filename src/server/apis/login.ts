@@ -1,8 +1,10 @@
 import * as express from 'express';
 import fetch from 'node-fetch';
 
+import {GenericStatusResponse} from '../../types/api';
 import {secrets} from '../../utils/secrets';
 import {ID_COOKIE_NAME, userModel} from '../models/userModel';
+
 import {APIResponse} from './api-router/abstract-api-router';
 import {PublicAPIRouter} from './api-router/public-api-router';
 import * as responseHelper from './api-router/response-helper';
@@ -48,7 +50,7 @@ export async function handleLoginRequest(request: express.Request):
     }
   }
 
-  return responseHelper.data(
+  return responseHelper.data<GenericStatusResponse>(
       {
         status: 'ok',
       },

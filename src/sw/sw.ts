@@ -1,7 +1,7 @@
 import {} from '.';
 declare var self: ServiceWorkerGlobalScope;
 
-import {NotificationPayload, NotificationData, SWClientMessage} from '../types/api';
+import {NotificationPayload, NotificationData, SWClientMessage, CheckPRPayload} from '../types/api';
 import {trackEvent} from '../client/public/scripts/utils/track-event';
 
 type CustomNotification = {
@@ -73,7 +73,14 @@ async function cleanupNotifications(notifications: CustomNotification[]):
       return;
     }
 
-    const data = await response.json();
+    const responseBody = await response.json();
+    if (responseBody.error) {
+      console.warn(
+          'Check PR state API returned an error: ', responseBody.error);
+      return;
+    }
+
+    const data = responseBody.data as CheckPRPayload;
     for (const pullRequest of data.pullRequests) {
       if (pullRequest.state === 'CLOSED' || pullRequest.state === 'MERGED') {
         const notifications = prsToNotifications[pullRequest.gqlId];

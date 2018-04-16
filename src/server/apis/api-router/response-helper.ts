@@ -24,7 +24,7 @@ export function error(
   };
 }
 
-export function data<T>(data: T, opts?: ResponseOptions): DataAPIResponse {
+export function data<T>(data: T, opts?: ResponseOptions): DataAPIResponse<T> {
   opts = opts || {};
 
   const finalOpts: {statusCode: number, cookies?: CookiesObject} =

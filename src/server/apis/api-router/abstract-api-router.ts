@@ -16,14 +16,14 @@ export interface ErrorAPIResponse {
   error: {code: string; message: string;};
 }
 
-export interface DataAPIResponse {
+export interface DataAPIResponse<T> {
   statusCode: number;
   cookies?: CookiesObject;
-  // tslint:disable-next-line:no-any
-  data: any;
+  data: T;
 }
 
-export type APIResponse = ErrorAPIResponse|DataAPIResponse;
+// tslint:disable-next-line:no-any
+export type APIResponse = ErrorAPIResponse|DataAPIResponse<any>;
 
 export type PublicAPICallback = (request: express.Request) =>
     Promise<APIResponse>;
@@ -62,45 +62,50 @@ export abstract class AbstractAPIRouter<T extends APIRouteCallback> {
 
         // If the api requires a body, we can quickly response.
         if (opts.requireBody && !request.body) {
-          responseHelper.error(
-              'no-body', 'You must provide a request body for this API.');
+          this.sendResponse(
+              response,
+              responseHelper.error(
+                  'no-body', 'You must provide a request body for this API.'),
+          );
           return;
         }
 
         const apiResponse =
             await this.executeCallback(callback, request, response);
 
-        if ('error' in apiResponse) {
-          response.status(apiResponse.statusCode).json(apiResponse.error);
-        } else {
-          // Set any cookies if they are defined.
-          if (apiResponse.cookies) {
-            Object.keys(apiResponse.cookies).forEach((key) => {
-              if (!apiResponse.cookies) {
-                return;
-              }
-
-              const cookieDetails = apiResponse.cookies[key];
-              response.cookie(key, cookieDetails.value, cookieDetails.options);
-            });
-          }
-
-          response.status(apiResponse.statusCode).json(apiResponse.data);
-        }
-
+        this.sendResponse(response, apiResponse);
       } catch (err) {
-        response.status(500).json({
-          error: {
-            code: 'uncaught-exception',
-            message: 'An uncaught exception was thrown: ' + err.message,
-          },
-        });
+        this.sendResponse(
+            response,
+            responseHelper.error(
+                'uncaught-exception',
+                'An uncaught exception was thrown: ' + err.message));
       }
     };
   }
 
   get router() {
     return this.expRouter;
+  }
+
+  private sendResponse(response: express.Response, apiResponse: APIResponse) {
+    response.status(apiResponse.statusCode);
+
+    // Set any cookies if they are defined.
+    if ('cookies' in apiResponse &&
+        typeof apiResponse.cookies !== 'undefined') {
+      const cookies: CookiesObject = apiResponse.cookies;
+      Object.keys(cookies).forEach((key) => {
+        const cookieDetails = cookies[key];
+        response.cookie(key, cookieDetails.value, cookieDetails.options);
+      });
+    }
+
+    if ('error' in apiResponse) {
+      response.json({error: apiResponse.error});
+    } else {
+      response.json({data: apiResponse.data});
+    }
   }
 
   protected abstract executeCallback(
