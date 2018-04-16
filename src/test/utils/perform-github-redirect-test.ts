@@ -5,14 +5,7 @@ import {SinonSandbox} from 'sinon';
 import {userModel} from '../../server/models/userModel';
 import {performGitHubRedirect} from '../../server/utils/perform-github-redirect';
 import {initSecrets} from '../../utils/secrets';
-
-const TEST_SECRETS = {
-  GITHUB_CLIENT_ID: 'ClientID',
-  GITHUB_CLIENT_SECRET: 'ClientSecret',
-  PUBLIC_VAPID_KEY:
-      'BPtJjYprRvU3TOb0tw3FrVbLww3bp7ssGjX99PFlqIOb3b8uOH4_Q21GYhwsDRwcfToaFVVeOxWOq5XaXD1MGdw',
-  PRIVATE_VAPID_KEY: 'o1P9aXm-QPZezF_8b7aQabivhv3QqaB0yg5zoFs6-qc',
-};
+import {newFakeSecrets} from './newFakeSecrets';
 
 type TestContext = {
   sandbox: SinonSandbox
@@ -20,7 +13,7 @@ type TestContext = {
 const test = anyTest as TestInterface<TestContext>;
 
 test.before(() => {
-  initSecrets(TEST_SECRETS);
+  initSecrets(newFakeSecrets());
 });
 
 test.beforeEach((t) => {

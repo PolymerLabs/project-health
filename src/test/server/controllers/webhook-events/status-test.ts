@@ -14,16 +14,9 @@ import {initFirestore} from '../../../../utils/firestore';
 import {initGithub} from '../../../../utils/github';
 import {initSecrets} from '../../../../utils/secrets';
 import {newFakePullRequestDetails} from '../../../utils/newFakePRDetails';
+import {newFakeSecrets} from '../../../utils/newFakeSecrets';
 import {newFakeUserRecord} from '../../../utils/newFakeUserRecord';
 import {startTestReplayServer} from '../../../utils/replay-server';
-
-const TEST_SECRETS = {
-  GITHUB_CLIENT_ID: 'ClientID',
-  GITHUB_CLIENT_SECRET: 'ClientSecret',
-  PUBLIC_VAPID_KEY:
-      'BPtJjYprRvU3TOb0tw3FrVbLww3bp7ssGjX99PFlqIOb3b8uOH4_Q21GYhwsDRwcfToaFVVeOxWOq5XaXD1MGdw',
-  PRIVATE_VAPID_KEY: 'o1P9aXm-QPZezF_8b7aQabivhv3QqaB0yg5zoFs6-qc',
-};
 
 const SUCCESS_HOOK: StatusHook = {
   sha: 'test-commit-SHA',
@@ -92,7 +85,7 @@ let performAutomergeStub: SinonStub;
 
 test.before(() => {
   initFirestore();
-  initSecrets(TEST_SECRETS);
+  initSecrets(newFakeSecrets());
 });
 
 test.beforeEach(async (t) => {

@@ -6,19 +6,12 @@ import * as webpush from 'web-push';
 import {sendNotification} from '../../../server/controllers/notifications';
 import {getSubscriptionModel} from '../../../server/models/pushSubscriptionModel';
 import {initSecrets} from '../../../utils/secrets';
+import {newFakeSecrets} from '../../utils/newFakeSecrets';
 
 type TestContext = {
   sandbox: SinonSandbox,
 };
 const test = anyTest as TestInterface<TestContext>;
-
-const TEST_SECRETS = {
-  GITHUB_CLIENT_ID: 'ClientID',
-  GITHUB_CLIENT_SECRET: 'ClientSecret',
-  PUBLIC_VAPID_KEY:
-      'BPtJjYprRvU3TOb0tw3FrVbLww3bp7ssGjX99PFlqIOb3b8uOH4_Q21GYhwsDRwcfToaFVVeOxWOq5XaXD1MGdw',
-  PRIVATE_VAPID_KEY: 'o1P9aXm-QPZezF_8b7aQabivhv3QqaB0yg5zoFs6-qc',
-};
 
 const SAMPLE_DATA = {
   title: 'title',
@@ -29,7 +22,7 @@ const SAMPLE_DATA = {
 };
 
 test.before(() => {
-  initSecrets(TEST_SECRETS);
+  initSecrets(newFakeSecrets());
 });
 
 test.beforeEach(async (t) => {

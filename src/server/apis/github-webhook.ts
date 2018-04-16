@@ -1,6 +1,7 @@
 import * as express from 'express';
 
 import {NotificationsSent} from '../controllers/notifications';
+import {handleGithubAppInstall} from '../controllers/webhook-events/github-app-install';
 import {handlePullRequest} from '../controllers/webhook-events/pull-request';
 import {handlePullRequestReview} from '../controllers/webhook-events/pull-request-review';
 import {handleStatus} from '../controllers/webhook-events/status';
@@ -48,7 +49,7 @@ export function getRouter(): express.Router {
             }
           }
 
-          let handled = null;
+          let handled: WebHookHandleResponse|null = null;
           // List of these events available here:
           // https://developer.github.com/webhooks/
           switch (eventName) {
@@ -61,13 +62,18 @@ export function getRouter(): express.Router {
             case 'pull_request_review':
               handled = await handlePullRequestReview(request.body);
               break;
+            case 'installation':
+              handled = await handleGithubAppInstall(request.body);
             default:
-              console.warn(`Unsupported event type received: ${eventName}`);
-              handled = false;
               break;
           }
 
-          response.status(handled ? 200 : 202).json(handled);
+          response.status(handled ? 200 : 202);
+          if (handled) {
+            response.json(handled);
+          } else {
+            response.json({message: `Unsupported event type: ${eventName}`});
+          }
         } catch (err) {
           console.error(err);
           response.status(500).send(err.message);
