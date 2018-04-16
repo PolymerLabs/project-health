@@ -4,23 +4,21 @@ import gql from 'graphql-tag';
 import {Issue, IssuesResponse, IssueStatus, Popularity} from '../../types/api';
 import {issueFieldsFragment, IssuesSearchQuery, popularityFieldsFragment} from '../../types/gql-types';
 import {github} from '../../utils/github';
-import {userModel} from '../models/userModel';
+import {userModel, UserRecord} from '../models/userModel';
 import {getIssueLastActivity} from '../utils/get-issue-last-activity';
 import {issueHasNewActivity} from '../utils/issue-has-new-activity';
 
+import {APIResponse} from './api-router/abstract-api-router';
+import {PrivateAPIRouter} from './api-router/private-api-router';
+import * as responseHelper from './api-router/response-helper';
+
 async function getIssueData(
+    userRecord: UserRecord,
     queryCb: (assigneeLogin: string) => string,
     statusCb: (issue: issueFieldsFragment, assigneeLogin: string) =>
         IssueStatus,
     request: express.Request,
-    response: express.Response,
-) {
-  const userRecord = await userModel.getUserRecordFromRequest(request);
-  if (!userRecord) {
-    response.status(401).send('No login details.');
-    return;
-  }
-
+    ): Promise<APIResponse> {
   let assigneeLogin = userRecord.username;
   if (request.query.login) {
     assigneeLogin = request.query.login;
@@ -81,24 +79,23 @@ async function getIssueData(
     }
   }
 
-  const issuesResponse: IssuesResponse = {
+  return responseHelper.data<IssuesResponse>({
     issues,
-  };
-  response.json(issuesResponse);
+  });
 }
 
 export async function handleAssignedIssues(
-    request: express.Request, response: express.Response) {
+    request: express.Request, userRecord: UserRecord): Promise<APIResponse> {
   const queryCb = (assigneeLogin: string) =>
       `assignee:${assigneeLogin} is:issue state:open archived:false`;
   const statusCb = (): IssueStatus => {
     return {type: 'Assigned'};
   };
-  await getIssueData(queryCb, statusCb, request, response);
+  return await getIssueData(userRecord, queryCb, statusCb, request);
 }
 
 export async function handleActivityIssues(
-    request: express.Request, response: express.Response) {
+    request: express.Request, userRecord: UserRecord): Promise<APIResponse> {
   const queryCb = (assigneeLogin: string) =>
       `is:issue archived:false is:open involves:${assigneeLogin} -assignee:${
           assigneeLogin}`;
@@ -114,7 +111,7 @@ export async function handleActivityIssues(
     }
     return status;
   };
-  await getIssueData(queryCb, statusCb, request, response);
+  return await getIssueData(userRecord, queryCb, statusCb, request);
 }
 
 /**
@@ -132,11 +129,11 @@ function fetchPopularity(fields: popularityFieldsFragment): Popularity {
 }
 
 export function getRouter(): express.Router {
-  const automergeRouter = express.Router();
-  automergeRouter.get('/assigned/', handleAssignedIssues);
-  automergeRouter.get('/activity/', handleActivityIssues);
+  const issueRouter = new PrivateAPIRouter();
+  issueRouter.get('/assigned/', handleAssignedIssues);
+  issueRouter.get('/activity/', handleActivityIssues);
 
-  return automergeRouter;
+  return issueRouter.router;
 }
 
 const issueFragment = gql`

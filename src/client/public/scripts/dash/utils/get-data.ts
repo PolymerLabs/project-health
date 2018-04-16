@@ -48,12 +48,32 @@ export async function getAssignedIssues(): Promise<api.IssuesResponse> {
   const response = await fetch(`/api/issues/assigned${getUserLoginParam()}`, {
     credentials: 'include',
   });
-  return await response.json() as api.IssuesResponse;
+  const fullResponse = await response.json();
+  if (fullResponse.error) {
+    throw new Error(
+        `Unable to get assigned issues: ${fullResponse.error.message}`);
+  }
+
+  if (!fullResponse.data) {
+    throw new Error('No data provided by JSON API.');
+  }
+
+  return fullResponse.data;
 }
 
 export async function getIssueActivity(): Promise<api.IssuesResponse> {
   const response = await fetch(`/api/issues/activity${getUserLoginParam()}`, {
     credentials: 'include',
   });
-  return await response.json() as api.IssuesResponse;
+  const fullResponse = await response.json();
+  if (fullResponse.error) {
+    throw new Error(
+        `Unable to get issue activity: ${fullResponse.error.message}`);
+  }
+
+  if (!fullResponse.data) {
+    throw new Error('No data provided by JSON API.');
+  }
+
+  return fullResponse.data;
 }
