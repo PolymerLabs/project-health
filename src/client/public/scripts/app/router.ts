@@ -11,7 +11,7 @@ function globalClickHandler(event: MouseEvent) {
     return;
   }
 
-  const path = getSameOriginLink(event);
+  const path = getLinkFromEvent(event);
   if (!path) {
     return;
   }
@@ -29,7 +29,7 @@ function globalClickHandler(event: MouseEvent) {
 /**
  * Determine the URL of the associated same origin link click.
  */
-function getSameOriginLink(event: MouseEvent): string|undefined {
+function getLinkFromEvent(event: MouseEvent): string|undefined {
   // Only evaluate at non-modified left clicks.
   if (event.button !== 0 || event.metaKey || event.ctrlKey) {
     return;

@@ -1,4 +1,5 @@
 import './router.js';
+import '../dash/dash.js';
 
 /**
  * Manages pages within the app.
@@ -21,11 +22,11 @@ class AppElement extends HTMLElement {
    * Load the correct page based on the path.
    */
   updatePage() {
-    const path = window.location.pathname;
+    // Remove leading /
+    const path = window.location.pathname.substring(1);
     let module = 'dash';
-    const normalized = path.substring(1);
-    if (this.modules.includes(normalized)) {
-      module = normalized;
+    if (this.modules.includes(path)) {
+      module = path;
     }
     this.setVisiblePage(module);
 
