@@ -39,7 +39,8 @@ export class RowElement extends BaseElement {
   _renderEvent(event: RowEvent) {
     function timeTemplate(time?: number) {
       if (!time) {
-        return '';
+        // This is used for consistent spacing.
+        return '<div class="class="dashboard-row-event__time"></div>';
       }
       return html`<time class="dashboard-row-event__time" datetime="${
           new Date(time).toISOString()}">${timeToString(time)}</time>`;
