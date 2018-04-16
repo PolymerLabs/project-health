@@ -39,7 +39,7 @@ export class RowElement extends BaseElement {
   _renderEvent(event: RowEvent) {
     function timeTemplate(time?: number) {
       if (!time) {
-        return '';
+        return html`<time class="dashboard-row-event__time"></time>`;
       }
       return html`<time class="dashboard-row-event__time" datetime="${
           new Date(time).toISOString()}">${timeToString(time)}</time>`;

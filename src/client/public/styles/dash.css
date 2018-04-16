@@ -20,6 +20,17 @@
   color: var(--secondary-text-color);
 }
 
+.view-all__button {
+  display: block;
+  border: 1px solid var(--light-grey);
+  border-radius: 3px;
+  margin: var(--padding) auto;
+  padding: var(--padding);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .title-container {
   display: flex;
   flex-direction: row;

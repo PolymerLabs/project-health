@@ -14,9 +14,7 @@ export const TOKEN_COLLECTION_NAME = 'user-tokens';
 
 export const REQUIRED_SCOPES = ['repo'];
 
-export interface FeatureDetails {
-  enabledAt: number;
-}
+export interface FeatureDetails { enabledAt: number; }
 
 export interface UserRecord {
   githubToken: string;

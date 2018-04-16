@@ -27,6 +27,10 @@ app-element {
   margin: 0 auto;
 }
 
+app-element > :not([selected]) {
+  display: none;
+}
+
 @media (max-width: 1550px) {
   app-element {
     margin-left: calc(var(--nav-size) + var(--grid-size));

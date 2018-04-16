@@ -22,7 +22,8 @@ function globalClickHandler(event: MouseEvent) {
     return;
   }
 
-  window.history.pushState({}, '', path);
+  // Preserve query params
+  window.history.pushState({}, '', path + window.location.search);
   document.body.dispatchEvent(new CustomEvent('url-changed'));
 }
 
