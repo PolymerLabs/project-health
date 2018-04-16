@@ -10,7 +10,7 @@ interface PushState {
   subscription: PushSubscription|null;
 }
 
-class PushController {
+export class PushController {
   private toggleElement: ToggleElement;
   private state: PushState;
 
@@ -124,6 +124,3 @@ class PushController {
     await this.update();
   }
 }
-
-const pushComponent = new PushController();
-pushComponent.update();

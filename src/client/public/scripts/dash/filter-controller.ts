@@ -31,3 +31,5 @@ export class FilterController {
     this.filters.set(id, config);
   }
 }
+
+export const filterController = new FilterController();

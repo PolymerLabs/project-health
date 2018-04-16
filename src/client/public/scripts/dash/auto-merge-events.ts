@@ -51,12 +51,7 @@ function selectAutomergeOpt(
 }
 
 function requestRender() {
-  window.postMessage(
-      {
-        action: 'render-outgoing-request',
-      },
-      window.location.origin,
-  );
+  document.body.dispatchEvent(new CustomEvent('render-outgoing-request'));
 }
 
 export function getAutoMergeOptions(pr: api.OutgoingPullRequest): RowEvent[] {
