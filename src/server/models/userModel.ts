@@ -14,7 +14,9 @@ export const TOKEN_COLLECTION_NAME = 'user-tokens';
 
 export const REQUIRED_SCOPES = ['repo'];
 
-export interface FeatureDetails { enabledAt: number; }
+export interface FeatureDetails {
+  enabledAt: number;
+}
 
 export interface UserRecord {
   githubToken: string;
@@ -53,32 +55,30 @@ class UserModel {
    */
   validateDetails(userRecord: UserRecord): boolean {
     if (!userRecord.githubToken || typeof userRecord.githubToken !== 'string') {
+      console.warn(`Invalid githubToken: '${userRecord.githubToken}'`);
       return false;
     }
 
     if (!userRecord.scopes || !Array.isArray(userRecord.scopes)) {
+      console.warn(`Invalid scopes: '${userRecord.scopes}'`);
       return false;
     }
 
     for (const scope of REQUIRED_SCOPES) {
       if (userRecord.scopes.indexOf(scope) === -1) {
+        console.warn(`Missing required scope: '${scope}'`);
         return false;
       }
     }
 
     if (!userRecord.username || typeof userRecord.username !== 'string') {
-      return false;
-    }
-
-    if (!userRecord.fullname || typeof userRecord.fullname !== 'string') {
-      return false;
-    }
-
-    if (!userRecord.avatarUrl || typeof userRecord.avatarUrl !== 'string') {
+      console.warn(`Invalid username: '${userRecord.username}'`);
       return false;
     }
 
     if (typeof userRecord.featureLastViewed === 'undefined') {
+      console.warn(
+          `Invalid featureLastViewed: '${userRecord.featureLastViewed}'`);
       return false;
     }
 

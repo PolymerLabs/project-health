@@ -109,34 +109,6 @@ test.serial(
     });
 
 test.serial(
-    '[usermodel]: should return null for user with no fullname', async (t) => {
-      const exampleRecord = newFakeUserRecord();
-      delete exampleRecord.fullname;
-
-      await firestore()
-          .collection(USERS_COLLECTION_NAME)
-          .doc(exampleRecord.username)
-          .set(exampleRecord);
-
-      const result = await userModel.getUserRecord(exampleRecord.username);
-      t.deepEqual(result, null);
-    });
-
-test.serial(
-    '[usermodel]: should return null for user with no avatar', async (t) => {
-      const exampleRecord = newFakeUserRecord();
-      delete exampleRecord.avatarUrl;
-
-      await firestore()
-          .collection(USERS_COLLECTION_NAME)
-          .doc(exampleRecord.username)
-          .set(exampleRecord);
-
-      const result = await userModel.getUserRecord(exampleRecord.username);
-      t.deepEqual(result, null);
-    });
-
-test.serial(
     '[usermodel]: should return data for existing user with valid data',
     async (t) => {
       const exampleRecord = newFakeUserRecord();

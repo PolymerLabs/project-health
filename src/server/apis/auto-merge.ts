@@ -1,5 +1,6 @@
 import * as express from 'express';
 
+import {GenericStatusResponse} from '../../types/api';
 import {pullRequestsModel} from '../models/pullRequestsModel';
 
 import {APIResponse} from './api-router/abstract-api-router';
@@ -34,7 +35,7 @@ export async function handleSetMergeOpt(request: express.Request):
   await pullRequestsModel.setAutomergeOptions(
       owner, repo, num, automergeOption);
 
-  return responseHelper.data({
+  return responseHelper.data<GenericStatusResponse>({
     status: 'ok',
   });
 }

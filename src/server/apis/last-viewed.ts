@@ -1,5 +1,6 @@
 import * as express from 'express';
 
+import {GenericStatusResponse} from '../../types/api';
 import {userModel, UserRecord} from '../models/userModel';
 
 import {APIResponse} from './api-router/abstract-api-router';
@@ -15,7 +16,7 @@ async function handleUpdateRequest(
       Date.now(),
   );
 
-  return responseHelper.data({
+  return responseHelper.data<GenericStatusResponse>({
     status: 'ok',
   });
 }

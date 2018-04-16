@@ -2,11 +2,12 @@ import * as express from 'express';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
+import {LastKnownResponse} from '../../types/api';
 import {userModel, UserRecord} from '../models/userModel';
 
 import {APIResponse} from './api-router/abstract-api-router';
 import {PrivateAPIRouter} from './api-router/private-api-router';
-import * as reseponseHelper from './api-router/response-helper';
+import * as responseHelper from './api-router/response-helper';
 
 async function handleLastKnownUpdate(
     request: express.Request, userRecord: UserRecord): Promise<APIResponse> {
@@ -16,7 +17,7 @@ async function handleLastKnownUpdate(
   } else {
     const userDetails = await userModel.getUserRecord(request.query.login);
     if (!userDetails) {
-      return reseponseHelper.error(
+      return responseHelper.error(
           'bad-login-request', 'User wasn\'t found in user model.');
     }
 
@@ -32,7 +33,7 @@ async function handleLastKnownUpdate(
     console.warn('Unable to read package.json');
   }
 
-  return reseponseHelper.data({
+  return responseHelper.data<LastKnownResponse>({
     lastKnownUpdate,
     version,
   });
