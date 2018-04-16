@@ -1,3 +1,5 @@
+import '../components/toggle-element.js';
+
 import {ToggleElement} from '../components/toggle-element.js';
 
 import {applicationServerKey} from './application-server-key.js';

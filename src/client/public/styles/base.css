@@ -20,7 +20,7 @@ body {
   margin: 0;
 }
 
-.main-content {
+app-element {
   max-width: var(--max-desktop-width);
   width: var(--max-desktop-width);
   padding: 0 var(--padding);
@@ -28,7 +28,7 @@ body {
 }
 
 @media (max-width: 1550px) {
-  .main-content {
+  app-element {
     margin-left: calc(var(--nav-size) + var(--grid-size));
     width: auto;
   }
