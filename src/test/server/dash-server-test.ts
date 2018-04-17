@@ -2,6 +2,11 @@ import test from 'ava';
 import fetch from 'node-fetch';
 
 import {DashServer} from '../../server/dash-server';
+import {initFirestore} from '../../utils/firestore';
+
+test.before(() => {
+  initFirestore();
+});
 
 test('/webhook/ ping should return 200', async (t) => {
   const server = new DashServer();
