@@ -12,8 +12,11 @@ export interface InstallHook {
     id: number; repository_selection: 'all' | 'selected';
     permissions: {[name: string]: string;};
     events: string[];
-    account:
-        {login: string; avatar_url: string; type: 'User' | 'Organization';}
+    account: {
+      login: string,
+      avatar_url: string,
+      type: 'User' | 'Organization',
+    }
   };
   repositories: Array<{id: number, name: string, full_name: string}>;
 }
