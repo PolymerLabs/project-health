@@ -21,9 +21,9 @@ function newFakeIssue(): commentFieldsFragment {
       avatarUrl: 'https://example.com/avatar/url.png',
     },
     comments: {
-      __typename: 'Comments',
+      __typename: 'IssueCommentConnection',
       nodes: [{
-        __typename: 'string',
+        __typename: 'IssueComment',
         createdAt: '2017-03-15T01:33:10Z',
         author: {
           __typename: 'User',
@@ -114,7 +114,7 @@ test.serial(
     async (t) => {
       const issue = newFakeIssue();
       issue.comments.nodes = [{
-        __typename: 'string',
+        __typename: 'IssueComment',
         createdAt: '2017-03-15T01:33:10Z',
         author: {
           __typename: 'User',
@@ -130,7 +130,7 @@ test.serial(
       const issue = newFakeIssue();
       issue.comments.nodes = [
         {
-          __typename: 'string',
+          __typename: 'IssueComment',
           createdAt: '2017-03-15T01:33:10Z',
           author: {
             __typename: 'User',
@@ -138,7 +138,7 @@ test.serial(
           },
         },
         {
-          __typename: 'string',
+          __typename: 'IssueComment',
           createdAt: '2017-03-15T01:33:10Z',
           author: {
             __typename: 'User',
