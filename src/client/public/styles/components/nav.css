@@ -44,21 +44,6 @@ a.nav-item:hover {
   justify-content: flex-end;
 }
 
-.settings {
-  display: block;
-}
-
-.settings > .material-icons-extended {
-  font-size: 20px;
-  line-height: 20px;
-  vertical-align: middle;
-  color: var(--button-color);
-}
-
-.settings:hover > .material-icons-extended {
-  color: var(--button-hover-color);
-}
-
 .nav-item__separator {
   width: 100%;
   height: 1px;

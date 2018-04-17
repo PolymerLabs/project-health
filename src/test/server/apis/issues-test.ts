@@ -7,6 +7,7 @@ import {handleActivityIssues, handleAssignedIssues} from '../../../server/apis/i
 import {userModel} from '../../../server/models/userModel';
 import {initFirestore} from '../../../utils/firestore';
 import {github, initGithub} from '../../../utils/github';
+import {newFakeRequest} from '../../utils/newFakeRequest';
 import {newFakeUserRecord} from '../../utils/newFakeUserRecord';
 import {startTestReplayServer} from '../../utils/replay-server';
 
@@ -16,14 +17,6 @@ type TestContext = {
   sandbox: SinonSandbox,
 };
 const test = anyTest as TestInterface<TestContext>;
-
-function newFakeRequest() {
-  return {
-    body: '',
-    query: {},
-    // tslint:disable-next-line: no-any
-  } as any;
-}
 
 test.before(() => {
   initFirestore();

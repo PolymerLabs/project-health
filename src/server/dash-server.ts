@@ -14,9 +14,7 @@ import {getRouter as getGitHubHookRouter} from './apis/github-webhook';
 import {getRouter as getIssuesRouter} from './apis/issues';
 import {getRouter as getLastViewedRouter} from './apis/last-viewed';
 import {getRouter as getLoginRouter} from './apis/login';
-import {getRouter as getManageWebhookRouter} from './apis/manage-webhook';
 import {getRouter as getPushSubRouter} from './apis/push-subscription';
-import {getRouter as getSettingsRouter} from './apis/settings';
 import {getRouter as getUpdatesRouter} from './apis/updates';
 import {enforceHTTPS} from './utils/enforce-https';
 import {performGitHubRedirect} from './utils/perform-github-redirect';
@@ -118,8 +116,6 @@ export class DashServer {
     // Enable private APIs
     app.use('/api/dash/', getDashRouter());
     app.use('/api/push-subscription/', getPushSubRouter());
-    app.use('/api/manage-webhook/', getManageWebhookRouter());
-    app.use('/api/settings/', getSettingsRouter());
     app.use('/api/updates/', getUpdatesRouter());
     app.use('/api/auto-merge/', getAutomergeRouter());
     app.use('/api/check-pr-state/', getCheckPRStateRouter());
