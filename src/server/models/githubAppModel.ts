@@ -13,11 +13,11 @@ interface GithubAppInstall {
   avatar_url: string;
 }
 
-interface GithubRepo {
+export interface GithubRepo {
   id: string;
-  restId: number;
+  databaseId: number;
   name: string;
-  full_name: string;
+  nameWithOwner: string;
 }
 
 class GithubAppsModel {
@@ -33,13 +33,18 @@ class GithubAppsModel {
     }
   }
 
-  async addRepo(orgOrUser: string, repoData: GithubRepo) {
-    const repoDocRef = await firestore()
-                           .collection(GITHUB_APP_COLLECTION_NAME)
-                           .doc(orgOrUser)
-                           .collection(GITHUB_APP_REPO_COLLECTION_NAME)
-                           .doc(repoData.id);
-    await repoDocRef.set(repoData);
+  async addRepos(orgOrUser: string, allRepos: GithubRepo[]) {
+    return firestore().runTransaction(async (transaction) => {
+      for (const repo of allRepos) {
+        const repoDocRef = await firestore()
+                               .collection(GITHUB_APP_COLLECTION_NAME)
+                               .doc(orgOrUser)
+                               .collection(GITHUB_APP_REPO_COLLECTION_NAME)
+                               .doc(repo.id);
+        transaction.set(repoDocRef, repo);
+      }
+      return true;
+    });
   }
 }
 
