@@ -15,7 +15,4 @@
   --page-bg-color: white;
   --incognito-color: hsl(0, 0%, 20%);
   --red-color: #d0021b;
-
-  /* Styles sliders used on settings */
-  --mdc-theme-secondary: rgb(57, 73, 171);
 }

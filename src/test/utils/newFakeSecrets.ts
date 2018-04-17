@@ -1,7 +1,7 @@
 import {ApplicationSecrets} from '../../utils/secrets';
 
 export function newFakeSecrets(): ApplicationSecrets {
-  return {
+  const fakeSecrets = {
     GITHUB_CLIENT_ID: 'ClientID',
     GITHUB_CLIENT_SECRET: 'ClientSecret',
     PUBLIC_VAPID_KEY:
@@ -9,4 +9,5 @@ export function newFakeSecrets(): ApplicationSecrets {
     PRIVATE_VAPID_KEY: 'o1P9aXm-QPZezF_8b7aQabivhv3QqaB0yg5zoFs6-qc',
     GITHUB_APP_TO_GQL_TOKEN: 'GitHubAppToGQLToken',
   };
+  return Object.assign({}, fakeSecrets);
 }

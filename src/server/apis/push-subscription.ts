@@ -1,48 +1,39 @@
-import * as bodyParser from 'body-parser';
 import * as express from 'express';
 
+import {GenericStatusResponse} from '../../types/api';
 import {getSubscriptionModel} from '../models/pushSubscriptionModel';
-import {userModel} from '../models/userModel';
+import {UserRecord} from '../models/userModel';
+
+import {APIResponse} from './api-router/abstract-api-router';
+import {PrivateAPIRouter} from './api-router/private-api-router';
+import * as responseHelper from './api-router/response-helper';
+
+export async function handlePushSubscriptionAction(
+    request: express.Request, userRecord: UserRecord): Promise<APIResponse> {
+  const pushSubscriptionModel = getSubscriptionModel();
+  if (request.params.action === 'add') {
+    await pushSubscriptionModel.addPushSubscription(
+        userRecord.username,
+        request.body.subscription,
+        request.body.supportedContentEncodings);
+  } else if (request.params.action === 'remove') {
+    await pushSubscriptionModel.removePushSubscription(
+        userRecord.username, request.body.subscription);
+  } else {
+    return responseHelper.error(
+        'unknown-action',
+        `Received an unknown action: '${request.params.action}'`);
+  }
+
+  return responseHelper.data<GenericStatusResponse>({
+    status: 'ok',
+  });
+}
 
 export function getRouter(): express.Router {
-  const pushSubscriptionRouter = express.Router();
-  pushSubscriptionRouter.post(
-      '/:action',
-      bodyParser.json(),
-      async (request: express.Request, response: express.Response) => {
-        try {
-          if (!request.body) {
-            response.status(400).send('No body.');
-            return;
-          }
-
-          const userRecord = await userModel.getUserRecordFromRequest(request);
-          if (!userRecord) {
-            response.status(401).send('No login details.');
-            return;
-          }
-
-          const pushSubscriptionModel = getSubscriptionModel();
-          if (request.params.action === 'add') {
-            pushSubscriptionModel.addPushSubscription(
-                userRecord.username,
-                request.body.subscription,
-                request.body.supportedContentEncodings);
-          } else if (request.params.action === 'remove') {
-            pushSubscriptionModel.removePushSubscription(
-                userRecord.username, request.body.subscription);
-          } else {
-            response.status(400).send(
-                `Unknown action: ${request.params.action}`);
-            return;
-          }
-
-          response.send();
-        } catch (err) {
-          console.error(err);
-          response.status(500).send('An unhandled error occured.');
-        }
-      });
-
-  return pushSubscriptionRouter;
+  const pushSubscriptionRouter = new PrivateAPIRouter();
+  pushSubscriptionRouter.post('/:action', handlePushSubscriptionAction, {
+    requireBody: true,
+  });
+  return pushSubscriptionRouter.router;
 }

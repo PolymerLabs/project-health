@@ -22,8 +22,11 @@ async function performAPICall(
     },
     body: JSON.stringify(bodyContent),
   });
-  if (!response.ok) {
-    throw new Error('Server responded with a non-200 response code.');
+  const responseBody = await response.json();
+  if (responseBody.error) {
+    console.error(`Unable to ${action} push subscription: ${
+        responseBody.error.code} ${responseBody.error.message}`);
+    throw new Error(responseBody.error.message);
   }
 }
 
