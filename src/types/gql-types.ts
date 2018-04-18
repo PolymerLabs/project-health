@@ -3,43 +3,43 @@
 
 // The possible states of a pull request.
 export enum PullRequestState {
-  OPEN = "OPEN", // A pull request that is still open.
   CLOSED = "CLOSED", // A pull request that has been closed without being merged.
   MERGED = "MERGED", // A pull request that has been closed by being merged.
+  OPEN = "OPEN", // A pull request that is still open.
 }
 
 
 // The possible states of a pull request review.
 export enum PullRequestReviewState {
-  PENDING = "PENDING", // A review that has not yet been submitted.
-  COMMENTED = "COMMENTED", // An informational review.
   APPROVED = "APPROVED", // A review allowing the pull request to merge.
   CHANGES_REQUESTED = "CHANGES_REQUESTED", // A review blocking the pull request from merging.
+  COMMENTED = "COMMENTED", // An informational review.
   DISMISSED = "DISMISSED", // A review that has been dismissed.
+  PENDING = "PENDING", // A review that has not yet been submitted.
 }
 
 
 // Whether or not a PullRequest can be merged.
 export enum MergeableState {
-  MERGEABLE = "MERGEABLE", // The pull request can be merged.
   CONFLICTING = "CONFLICTING", // The pull request cannot be merged due to merge conflicts.
+  MERGEABLE = "MERGEABLE", // The pull request can be merged.
   UNKNOWN = "UNKNOWN", // The mergeability of the pull request is still being calculated.
 }
 
 
 // The possible states of a subscription.
 export enum SubscriptionState {
-  UNSUBSCRIBED = "UNSUBSCRIBED", // The User is only notified when particpating or @mentioned.
-  SUBSCRIBED = "SUBSCRIBED", // The User is notified of all conversations.
   IGNORED = "IGNORED", // The User is never notified.
+  SUBSCRIBED = "SUBSCRIBED", // The User is notified of all conversations.
   UNAVAILABLE = "UNAVAILABLE", // Subscriptions are currently unavailable
+  UNSUBSCRIBED = "UNSUBSCRIBED", // The User is only notified when particpating or @mentioned.
 }
 
 
 // The possible commit status states.
 export enum StatusState {
-  EXPECTED = "EXPECTED", // Status is expected.
   ERROR = "ERROR", // Status is errored.
+  EXPECTED = "EXPECTED", // Status is expected.
   FAILURE = "FAILURE", // Status is failing.
   PENDING = "PENDING", // Status is pending.
   SUCCESS = "SUCCESS", // Status is successful.
@@ -184,10 +184,10 @@ export interface RepoCommitsQuery {
           __typename: "Commit",
           // The linear commit history starting from (and including) this commit, in the same order as `git log`.
           history:  {
-            __typename: string,
+            __typename: "CommitHistoryConnection",
             // Information to aid in pagination.
             pageInfo:  {
-              __typename: string,
+              __typename: "PageInfo",
               // When paginating forwards, the cursor to continue.
               endCursor: string | null,
               // When paginating forwards, are there more items?
@@ -195,7 +195,7 @@ export interface RepoCommitsQuery {
             },
             // A list of nodes.
             nodes:  Array< {
-              __typename: string,
+              __typename: "Commit",
               // The Git object ID
               oid: string,
               // The datetime when this commit was committed.
@@ -359,10 +359,10 @@ export interface PullRequestCommitsQuery {
       __typename: "PullRequest",
       // A list of commits present in this pull request's head branch not present in the base branch.
       commits:  {
-        __typename: string,
+        __typename: "PullRequestCommitConnection",
         // Information to aid in pagination.
         pageInfo:  {
-          __typename: string,
+          __typename: "PageInfo",
           // When paginating forwards, the cursor to continue.
           endCursor: string | null,
           // When paginating forwards, are there more items?
@@ -370,10 +370,10 @@ export interface PullRequestCommitsQuery {
         },
         // A list of nodes.
         nodes:  Array< {
-          __typename: string,
+          __typename: "PullRequestCommit",
           // The Git commit object
           commit:  {
-            __typename: string,
+            __typename: "Commit",
             // The Git object ID
             oid: string,
             // The datetime when this commit was committed.
@@ -1015,7 +1015,7 @@ export interface IncomingPullRequestsQuery {
         __typename: "PullRequest",
         // The repository associated with this node.
         repository:  {
-          __typename: string,
+          __typename: "Repository",
           // The name of the repository.
           name: string,
           // The repository's name with owner.
@@ -1093,7 +1093,7 @@ export interface IncomingPullRequestsQuery {
         __typename: "PullRequest",
         // The repository associated with this node.
         repository:  {
-          __typename: string,
+          __typename: "Repository",
           // The name of the repository.
           name: string,
           // The repository's name with owner.
@@ -1152,10 +1152,10 @@ export interface IncomingPullRequestsQuery {
         ) | null,
         // A list of comments associated with the pull request.
         comments:  {
-          __typename: string,
+          __typename: "IssueCommentConnection",
           // A list of nodes.
           nodes:  Array< {
-            __typename: string,
+            __typename: "IssueComment",
             // The actor who authored the comment.
             author: ( {
                 __typename: "Organization",
@@ -1177,10 +1177,10 @@ export interface IncomingPullRequestsQuery {
         },
         // A list of reviews associated with the pull request.
         reviews:  {
-          __typename: string,
+          __typename: "PullRequestReviewConnection",
           // A list of nodes.
           nodes:  Array< {
-            __typename: string,
+            __typename: "PullRequestReview",
             // Identifies the date and time when the object was created.
             createdAt: string,
             // Identifies the current state of the pull request review.
@@ -1202,7 +1202,7 @@ export interface IncomingPullRequestsQuery {
             ) | null,
             // Identifies the commit associated with this pull request review.
             commit:  {
-              __typename: string,
+              __typename: "Commit",
               // The Git object ID
               oid: string,
             } | null,
@@ -1210,13 +1210,13 @@ export interface IncomingPullRequestsQuery {
         } | null,
         // A list of commits present in this pull request's head branch not present in the base branch.
         commits:  {
-          __typename: string,
+          __typename: "PullRequestCommitConnection",
           // A list of nodes.
           nodes:  Array< {
-            __typename: string,
+            __typename: "PullRequestCommit",
             // The Git commit object
             commit:  {
-              __typename: string,
+              __typename: "Commit",
               // The number of additions in this commit.
               additions: number,
               // The number of deletions in this commit.
@@ -1252,10 +1252,10 @@ export interface IncomingPullRequestsQuery {
         id: string,
         // A list of comments associated with the pull request.
         comments:  {
-          __typename: string,
+          __typename: "IssueCommentConnection",
           // A list of nodes.
           nodes:  Array< {
-            __typename: string,
+            __typename: "IssueComment",
             // Identifies the date and time when the object was created.
             createdAt: string,
             // The body rendered to text.
@@ -1266,10 +1266,10 @@ export interface IncomingPullRequestsQuery {
         },
         // A list of reviews associated with the pull request.
         reviews:  {
-          __typename: string,
+          __typename: "PullRequestReviewConnection",
           // A list of nodes.
           nodes:  Array< {
-            __typename: string,
+            __typename: "PullRequestReview",
             // The body of this review rendered as plain text.
             bodyText: string,
             // Identifies the date and time when the object was created.
@@ -1278,10 +1278,10 @@ export interface IncomingPullRequestsQuery {
             url: string,
             // A list of review comments for the current pull request review.
             comments:  {
-              __typename: string,
+              __typename: "PullRequestReviewCommentConnection",
               // A list of nodes.
               nodes:  Array< {
-                __typename: string,
+                __typename: "PullRequestReviewComment",
                 // Identifies when the comment was created.
                 createdAt: string,
                 // The comment body of this review comment rendered as plain text.
@@ -1360,7 +1360,7 @@ export interface IssuesSearchQuery {
         ) | null,
         // The repository associated with this node.
         repository:  {
-          __typename: string,
+          __typename: "Repository",
           // The name of the repository.
           name: string,
           // The User owner of the repository.
@@ -1377,28 +1377,28 @@ export interface IssuesSearchQuery {
         },
         // A list of comments associated with the Issue.
         commentTotal:  {
-          __typename: string,
+          __typename: "IssueCommentConnection",
           // Identifies the total count of items in the connection.
           count: number,
         },
         // A list of Reactions left on the Issue.
         reactions:  {
-          __typename: string,
+          __typename: "ReactionConnection",
           // Identifies the total count of items in the connection.
           totalCount: number,
         },
         // A list of Users that are participating in the Issue conversation.
         participants:  {
-          __typename: string,
+          __typename: "UserConnection",
           // Identifies the total count of items in the connection.
           totalCount: number,
         },
         // A list of comments associated with the Issue.
         comments:  {
-          __typename: string,
+          __typename: "IssueCommentConnection",
           // A list of nodes.
           nodes:  Array< {
-            __typename: string,
+            __typename: "IssueComment",
             // Identifies the date and time when the object was created.
             createdAt: string,
             // The actor who authored the comment.
@@ -1490,7 +1490,7 @@ export interface CommitToPRQuery {
         url: string,
         // Identifies the head Ref associated with the pull request.
         headRef:  {
-          __typename: string,
+          __typename: "Ref",
           id: string,
           // The ref's prefix, such as `refs/heads/` or `refs/tags/`.
           prefix: string,
@@ -1499,7 +1499,7 @@ export interface CommitToPRQuery {
         } | null,
         // The repository associated with this node.
         repository:  {
-          __typename: string,
+          __typename: "Repository",
           // The name of the repository.
           name: string,
           // The User owner of the repository.
@@ -1531,18 +1531,18 @@ export interface CommitToPRQuery {
         ) | null,
         // A list of commits present in this pull request's head branch not present in the base branch.
         commits:  {
-          __typename: string,
+          __typename: "PullRequestCommitConnection",
           // A list of nodes.
           nodes:  Array< {
-            __typename: string,
+            __typename: "PullRequestCommit",
             // The Git commit object
             commit:  {
-              __typename: string,
+              __typename: "Commit",
               // The Git object ID
               oid: string,
               // Status information for this commit
               status:  {
-                __typename: string,
+                __typename: "Status",
                 // The combined commit status.
                 state: StatusState,
               } | null,
@@ -1630,7 +1630,7 @@ export interface prFieldsFragment {
   __typename: "PullRequest",
   // The repository associated with this node.
   repository:  {
-    __typename: string,
+    __typename: "Repository",
     // The name of the repository.
     name: string,
     // The repository's name with owner.
@@ -1693,10 +1693,10 @@ export interface lastCommentFieldsFragment {
   __typename: "PullRequest",
   // A list of comments associated with the pull request.
   comments:  {
-    __typename: string,
+    __typename: "IssueCommentConnection",
     // A list of nodes.
     nodes:  Array< {
-      __typename: string,
+      __typename: "IssueComment",
       // The actor who authored the comment.
       author: ( {
           __typename: "Organization",
@@ -1722,10 +1722,10 @@ export interface commitFieldsFragment {
   __typename: "Commit",
   // Status information for this commit
   status:  {
-    __typename: string,
+    __typename: "Status",
     // The individual status contexts for this commit.
     contexts:  Array< {
-      __typename: string,
+      __typename: "StatusContext",
       id: string,
       // The name of this status context.
       context: string,
@@ -1745,19 +1745,19 @@ export interface statusFieldsFragment {
   __typename: "PullRequest",
   // A list of commits present in this pull request's head branch not present in the base branch.
   commits:  {
-    __typename: string,
+    __typename: "PullRequestCommitConnection",
     // A list of nodes.
     nodes:  Array< {
-      __typename: string,
+      __typename: "PullRequestCommit",
       // The Git commit object
       commit:  {
-        __typename: string,
+        __typename: "Commit",
         // Status information for this commit
         status:  {
-          __typename: string,
+          __typename: "Status",
           // The individual status contexts for this commit.
           contexts:  Array< {
-            __typename: string,
+            __typename: "StatusContext",
             id: string,
             // The name of this status context.
             context: string,
@@ -1781,10 +1781,10 @@ export interface mentionedFieldsFragment {
   id: string,
   // A list of comments associated with the pull request.
   comments:  {
-    __typename: string,
+    __typename: "IssueCommentConnection",
     // A list of nodes.
     nodes:  Array< {
-      __typename: string,
+      __typename: "IssueComment",
       // Identifies the date and time when the object was created.
       createdAt: string,
       // The body rendered to text.
@@ -1795,10 +1795,10 @@ export interface mentionedFieldsFragment {
   },
   // A list of reviews associated with the pull request.
   reviews:  {
-    __typename: string,
+    __typename: "PullRequestReviewConnection",
     // A list of nodes.
     nodes:  Array< {
-      __typename: string,
+      __typename: "PullRequestReview",
       // The body of this review rendered as plain text.
       bodyText: string,
       // Identifies the date and time when the object was created.
@@ -1807,10 +1807,10 @@ export interface mentionedFieldsFragment {
       url: string,
       // A list of review comments for the current pull request review.
       comments:  {
-        __typename: string,
+        __typename: "PullRequestReviewCommentConnection",
         // A list of nodes.
         nodes:  Array< {
-          __typename: string,
+          __typename: "PullRequestReviewComment",
           // Identifies when the comment was created.
           createdAt: string,
           // The comment body of this review comment rendered as plain text.
@@ -1855,7 +1855,7 @@ export interface issueFieldsFragment {
   ) | null,
   // The repository associated with this node.
   repository:  {
-    __typename: string,
+    __typename: "Repository",
     // The name of the repository.
     name: string,
     // The User owner of the repository.
@@ -1876,19 +1876,19 @@ export interface popularityFieldsFragment {
   __typename: "Issue",
   // A list of comments associated with the Issue.
   commentTotal:  {
-    __typename: string,
+    __typename: "IssueCommentConnection",
     // Identifies the total count of items in the connection.
     count: number,
   },
   // A list of Reactions left on the Issue.
   reactions:  {
-    __typename: string,
+    __typename: "ReactionConnection",
     // Identifies the total count of items in the connection.
     totalCount: number,
   },
   // A list of Users that are participating in the Issue conversation.
   participants:  {
-    __typename: string,
+    __typename: "UserConnection",
     // Identifies the total count of items in the connection.
     totalCount: number,
   },
@@ -1921,10 +1921,10 @@ export interface commentFieldsFragment {
   ) | null,
   // A list of comments associated with the Issue.
   comments:  {
-    __typename: string,
+    __typename: "IssueCommentConnection",
     // A list of nodes.
     nodes:  Array< {
-      __typename: string,
+      __typename: "IssueComment",
       // Identifies the date and time when the object was created.
       createdAt: string,
       // The actor who authored the comment.

@@ -111,10 +111,13 @@ class UserModel {
     const existingUserSnapshot = await userDocument.get();
     if (existingUserSnapshot.exists) {
       const existingData = existingUserSnapshot.data();
-      const combinedDetails = Object.assign(details, existingData);
-      // Only use combined details if they work, other fall back to what works
-      if (this.validateDetails(combinedDetails)) {
-        details = combinedDetails;
+      if (existingData) {
+        delete existingData.githubToken;
+        const combinedDetails = Object.assign(details, existingData);
+        // Only use combined details if they work, other fall back to what works
+        if (this.validateDetails(combinedDetails)) {
+          details = combinedDetails;
+        }
       }
     }
 
