@@ -50,7 +50,7 @@ class RepositoryModel {
     const response =
         await github().get(`repos/${owner}/${repo}`, userRecord.githubToken);
     if (response.error) {
-      console.error(response.message);
+      console.error('Get repo details threw an error: ', response.message);
       return null;
     }
 

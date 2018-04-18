@@ -75,7 +75,7 @@ export function getRouter(): express.Router {
             response.json({message: `Unsupported event type: ${eventName}`});
           }
         } catch (err) {
-          console.error(err);
+          console.error('Error while handled GitHub web hook: ', err);
           response.status(500).send(err.message);
         }
 

@@ -38,11 +38,11 @@ async function launch() {
 }
 
 // Display stack traces for uncaught errors.
-function logError(err: Error) {
-  console.error(err);
+function logError(prefix: string, err: Error) {
+  console.error(`${prefix}: `, err);
   throw err;
 }
-process.on('uncaughtException', logError);
-process.on('unhandledRejection', logError);
+process.on('uncaughtException', (err) => logError('Uncaught Exception', err));
+process.on('unhandledRejection', (err) => logError('Uncaught Rejection', err));
 
 launch();
