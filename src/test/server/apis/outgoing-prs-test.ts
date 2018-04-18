@@ -1,15 +1,16 @@
 import anyTest, {TestInterface} from 'ava';
 
-import {fetchOutgoingData} from '../../../server/apis/dash-data/fetch-outgoing-data';
-import {OutgoingDashResponse, OutgoingPullRequest} from '../../../types/api';
+import {handleOutgoingPRRequest} from '../../../server/apis/dash-data/handle-outgoing-pr-request';
+import {OutgoingPullRequest} from '../../../types/api';
 import {MergeableState, PullRequestReviewState} from '../../../types/gql-types';
 import {initFirestore} from '../../../utils/firestore';
 import {initGithub} from '../../../utils/github';
+import {newFakeRequest} from '../../utils/newFakeRequest';
 import {newFakeUserRecord} from '../../utils/newFakeUserRecord';
 import {startTestReplayServer} from '../../utils/replay-server';
 
 type TestContext = {
-  data: OutgoingDashResponse,
+  prs: OutgoingPullRequest[],
   prsById: Map<string, OutgoingPullRequest>,
 };
 const test = anyTest as TestInterface<TestContext>;
@@ -27,38 +28,37 @@ test.before(async (t) => {
   initGithub(url, url);
 
   const userRecord = newFakeUserRecord();
-
-  const result = await fetchOutgoingData(userRecord, 'project-health1');
-  let page = result;
-
-  while (page.hasMore && page.cursor) {
-    page = await fetchOutgoingData(userRecord, 'project-health1', page.cursor);
-    result.prs = result.prs.concat(page.prs);
+  userRecord.username = 'project-health1';
+  let response = await handleOutgoingPRRequest(newFakeRequest(), userRecord);
+  let allPRs = response.data.prs;
+  while (response.data.hasMore && response.data.cursor) {
+    const moreRequest = newFakeRequest();
+    moreRequest.query.cursor = response.data.cursor;
+    response = await handleOutgoingPRRequest(moreRequest, userRecord);
+    allPRs = allPRs.concat(response.data.prs);
   }
 
   server.close();
 
   const prsById = new Map();
-  for (const pr of result.prs) {
+  for (const pr of allPRs) {
     prsById.set(pr.url.replace(/https:\/\/github.com\//, ''), pr);
   }
 
   t.context = {
-    data: result,
+    prs: allPRs,
     prsById,
   };
 });
 
 test('[outgoing-prs-1]: sane output', (t) => {
-  const data = t.context.data;
   // Make sure a test is added each time these numbers are changed.
-  t.is(data.prs.length, 11);
+  t.is(t.context.prs.length, 11);
 });
 
 test('[outgoing-prs-1]: outgoing PRs are sorted', (t) => {
-  const data = t.context.data;
-  let lastCreatedAt = data.prs[0].createdAt;
-  for (const pr of data.prs) {
+  let lastCreatedAt = t.context.prs[0].createdAt;
+  for (const pr of t.context.prs) {
     t.true(pr.createdAt <= lastCreatedAt);
     lastCreatedAt = pr.createdAt;
   }

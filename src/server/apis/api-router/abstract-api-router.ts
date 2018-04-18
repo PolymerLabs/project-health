@@ -79,7 +79,7 @@ export abstract class AbstractAPIRouter<T extends APIRouteCallback> {
             response,
             responseHelper.error(
                 'uncaught-exception',
-                'An uncaught exception was thrown: ' + err.message));
+                `An uncaught exception was thrown: '${err.message}'`));
       }
     };
   }

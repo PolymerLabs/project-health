@@ -1,10 +1,11 @@
 import anyTest, {TestInterface} from 'ava';
 
-import {fetchOutgoingData} from '../../../server/apis/dash-data/fetch-outgoing-data';
+import {handleOutgoingPRRequest} from '../../../server/apis/dash-data/handle-outgoing-pr-request';
 import {OutgoingDashResponse, OutgoingPullRequest} from '../../../types/api';
 import {PullRequestReviewState} from '../../../types/gql-types';
 import {initFirestore} from '../../../utils/firestore';
 import {initGithub} from '../../../utils/github';
+import {newFakeRequest} from '../../utils/newFakeRequest';
 import {newFakeUserRecord} from '../../utils/newFakeUserRecord';
 import {startTestReplayServer} from '../../utils/replay-server';
 
@@ -27,18 +28,18 @@ test.beforeEach(async (t) => {
   initGithub(url, url);
 
   const userRecord = newFakeUserRecord();
-
-  const data = await fetchOutgoingData(userRecord, 'project-health2');
+  userRecord.username = 'project-health2';
+  const reponse = await handleOutgoingPRRequest(newFakeRequest(), userRecord);
   server.close();
 
   const prsById = new Map();
-  for (const pr of data.prs) {
+  for (const pr of reponse.data.prs) {
     prsById.set(
         pr.url.replace('https://github.com/project-health1/repo/pull/', ''),
         pr);
   }
   t.context = {
-    data,
+    data: reponse.data,
     prsById,
   };
 });

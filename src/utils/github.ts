@@ -73,7 +73,13 @@ class GitHub {
             console.warn(
                 'Failed to query GitHub for:', options.query.loc.source);
           }
-          throw e;
+
+          if (e.networkError && e.networkError.result &&
+              e.networkError.result.message) {
+            throw new Error(e.networkError.result.message);
+          } else {
+            throw e;
+          }
         }
       }
     }
