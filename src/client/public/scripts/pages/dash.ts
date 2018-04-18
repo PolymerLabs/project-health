@@ -106,7 +106,7 @@ class DashPage extends BaseElement {
     if (getLoginParam() === null) {
       updateController.startPoll(
           FULL_UPDATE_ID,
-          this.performFullUpdate,
+          this.performFullUpdate.bind(this),
           LONG_POLL_INTERVAL,
       );
       updateController.startPoll(
