@@ -36,7 +36,7 @@ const CONTRIBUTION_WINDOW = 1000 * 60 * 60 * 24 * 7;  // 7 days.
  * Returns a list of repos that the given user contributes to. It is ordered
  * based on contribution recency and consistency.
  */
-export async function getMyRepos(
+export async function generateMyRepoList(
     login: string, token: string): Promise<api.Repository[]> {
   const repos = new Map<string, api.Repository&{score: number}>();
   const variables: MyReposQueryVariables = {login};

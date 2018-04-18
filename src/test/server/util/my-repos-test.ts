@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import {getMyRepos} from '../../../server/utils/my-repos';
+import {generateMyRepoList} from '../../../server/utils/my-repos';
 import {initGithub} from '../../../utils/github';
 import {getTestTokens} from '../../get-test-tokens';
 import {startTestReplayServer} from '../../utils/replay-server';
@@ -8,9 +8,8 @@ import {startTestReplayServer} from '../../utils/replay-server';
 test('[my-repos] top contributed repos for samuelli', async (t) => {
   const {server, url} = await startTestReplayServer(t);
   initGithub(url, url);
-  const result = await getMyRepos(
+  const result = await generateMyRepoList(
       'samuelli', getTestTokens()['project-health1'] || 'fake-token');
-  console.log(JSON.stringify(result));
   t.deepEqual(result, [
     {
       'owner': 'PolymerLabs',
