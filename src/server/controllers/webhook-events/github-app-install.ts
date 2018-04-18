@@ -15,7 +15,7 @@ export interface InstallHook {
     account: {
       login: string,
       avatar_url: string,
-      type: 'User' | 'Organization',
+      type: 'User'|'Organization',
     }
   };
   repositories: Array<{id: number, name: string, full_name: string}>;

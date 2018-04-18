@@ -69,6 +69,10 @@ class GitHub {
           await promisify(setTimeout)((retries + 1) * 1000);
           retries++;
         } else {
+          if (options.query.loc && options.query.loc.source) {
+            console.warn(
+                'Failed to query GitHub for:', options.query.loc.source);
+          }
           throw e;
         }
       }
