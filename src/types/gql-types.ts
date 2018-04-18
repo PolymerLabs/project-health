@@ -1598,6 +1598,8 @@ export interface MyReposQuery {
             login: string,
           }
         ),
+        // Indicates if the repository is unmaintained.
+        isArchived: boolean,
       } | null > | null,
     },
   } | null,

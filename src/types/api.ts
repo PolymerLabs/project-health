@@ -70,7 +70,9 @@ export interface IncomingDashResponse {
   prs: PullRequest[];
 }
 
-export interface IssuesResponse { issues: Issue[]; }
+export interface IssuesResponse {
+  issues: Issue[];
+}
 
 export interface Review {
   author: string;
@@ -78,11 +80,25 @@ export interface Review {
   reviewState: 'PENDING'|'COMMENTED'|'APPROVED'|'CHANGES_REQUESTED'|'DISMISSED';
 }
 
-export interface GenericStatusResponse { status: string; }
+export interface GenericStatusResponse {
+  status: string;
+}
 
 export interface LastKnownResponse {
   lastKnownUpdate: string|null;
   version: string|null;
+}
+
+export interface Repository {
+  owner: string;
+  name: string;
+  avatarUrl: string|null;
+}
+
+export interface UserResponse {
+  login: string;
+  avatarUrl: string|null;
+  repos: string[];
 }
 
 /** Not necessarily actionable. */
