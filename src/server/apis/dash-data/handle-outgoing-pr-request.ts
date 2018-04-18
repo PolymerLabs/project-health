@@ -1,3 +1,5 @@
+import * as express from 'express';
+
 import * as api from '../../../types/api';
 import {OutgoingPullRequestInfo} from '../../../types/api';
 import {commitFieldsFragment, OutgoingPullRequestsQuery, PullRequestReviewState, reviewFieldsFragment} from '../../../types/gql-types';
@@ -7,24 +9,27 @@ import {repositoryModel} from '../../models/repositoryModel';
 import {userModel, UserRecord} from '../../models/userModel';
 import {getPRLastActivity} from '../../utils/get-pr-last-activity';
 import {issueHasNewActivity} from '../../utils/issue-has-new-activity';
+import {DataAPIResponse} from '../api-router/abstract-api-router';
+import * as responseHelper from '../api-router/response-helper';
 import {convertPrFields, convertReviewFields, outgoingPrsQuery} from '../dash-data';
 
 /**
  * Fetches outgoing pull requests for user.
  */
-export async function fetchOutgoingData(
-    userRecord: UserRecord, dashLogin: string, startCursor?: string):
-    Promise<api.OutgoingDashResponse> {
+export async function handleOutgoingPRRequest(
+    request: express.Request, userRecord: UserRecord):
+    Promise<DataAPIResponse<api.OutgoingDashResponse>> {
+  const dashLogin = request.query.login || userRecord.username;
+  const startCursor = request.query.cursor;
   const outgoingPrData =
       await performQuery(dashLogin, userRecord.githubToken, startCursor);
-
   const prInfo = await getAllPRInfo(userRecord, dashLogin, outgoingPrData);
 
-  return {
+  return responseHelper.data({
     timestamp: new Date().toISOString(),
     user: getDashboardUser(userRecord, dashLogin, outgoingPrData),
     ...prInfo,
-  };
+  });
 }
 
 async function performQuery(login: string, token: string, startCursor?: string):
@@ -42,12 +47,11 @@ async function performQuery(login: string, token: string, startCursor?: string):
       reviewRequestsQueryString,
       reviewedQueryString,
       mentionsQueryString,
-      startCursor
+      startCursor,
     },
     fetchPolicy: 'network-only',
     context: {token}
   });
-
   return viewerPrsResult.data;
 }
 

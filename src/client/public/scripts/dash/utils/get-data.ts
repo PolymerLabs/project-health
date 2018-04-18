@@ -15,14 +15,36 @@ export async function getOutgoingData(): Promise<api.OutgoingDashResponse> {
   const response = await fetch(`/api/dash/outgoing${getUserLoginParam()}`, {
     credentials: 'include',
   });
-  return await response.json() as api.OutgoingDashResponse;
+
+  const fullResponse = await response.json();
+  if (fullResponse.error) {
+    throw new Error(
+        `Unable to get last known update: ${fullResponse.error.message}`);
+  }
+
+  if (!fullResponse.data) {
+    throw new Error('No data provided by JSON API.');
+  }
+
+  return fullResponse.data as api.OutgoingDashResponse;
 }
 
 export async function getIncomingData(): Promise<api.IncomingDashResponse> {
   const response = await fetch(`/api/dash/incoming${getUserLoginParam()}`, {
     credentials: 'include',
   });
-  return await response.json() as api.IncomingDashResponse;
+
+  const fullResponse = await response.json();
+  if (fullResponse.error) {
+    throw new Error(
+        `Unable to get last known update: ${fullResponse.error.message}`);
+  }
+
+  if (!fullResponse.data) {
+    throw new Error('No data provided by JSON API.');
+  }
+
+  return fullResponse.data as api.IncomingDashResponse;
 }
 
 export async function getLastKnownUpdate(): Promise<api.LastKnownResponse> {
