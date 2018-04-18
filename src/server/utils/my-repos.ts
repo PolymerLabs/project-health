@@ -32,13 +32,15 @@ const SCORE_THRESHOLD = 30;
 const CONTRIBUTION_SIZE = 10;
 const CONTRIBUTION_WINDOW = 1000 * 60 * 60 * 24 * 7;  // 7 days.
 
+type RepoWithScore = api.Repository&{score: number};
+
 /**
  * Returns a list of repos that the given user contributes to. It is ordered
  * based on contribution recency and consistency.
  */
 export async function generateMyRepoList(
     login: string, token: string): Promise<api.Repository[]> {
-  const repos = new Map<string, api.Repository&{score: number}>();
+  const repos = new Map<string, RepoWithScore>();
   const variables: MyReposQueryVariables = {login};
 
   const response = await github().query<MyReposQuery>({
@@ -70,7 +72,7 @@ export async function generateMyRepoList(
   }
   await Promise.all(promises);
   const comparator = (a: string, b: string) => {
-    return (repos.get(a) || 0) < (repos.get(b) || 0) ? 1 : -1;
+    return repos.get(a)!.score < repos.get(b)!.score ? 1 : -1;
   };
   let result = Array.from(repos.keys());
 
