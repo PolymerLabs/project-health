@@ -1564,7 +1564,6 @@ export interface CommitToPRQuery {
 
 export interface MyReposQueryVariables {
   login: string,
-  cursor?: string | null,
 };
 
 export interface MyReposQuery {
@@ -1572,16 +1571,8 @@ export interface MyReposQuery {
   user:  {
     __typename: "User",
     // A list of repositories that the user recently contributed to.
-    contributedRepositories:  {
+    repositoriesContributedTo:  {
       __typename: "RepositoryConnection",
-      // Information to aid in pagination.
-      pageInfo:  {
-        __typename: "PageInfo",
-        // When paginating forwards, the cursor to continue.
-        endCursor: string | null,
-        // When paginating forwards, are there more items?
-        hasNextPage: boolean,
-      },
       // A list of nodes.
       nodes:  Array< {
         __typename: "Repository",
@@ -1592,10 +1583,14 @@ export interface MyReposQuery {
             __typename: "Organization",
             // The username used to login.
             login: string,
+            // A URL pointing to the owner's public avatar.
+            avatarUrl: string,
           } | {
             __typename: "User",
             // The username used to login.
             login: string,
+            // A URL pointing to the owner's public avatar.
+            avatarUrl: string,
           }
         ),
         // Indicates if the repository is unmaintained.

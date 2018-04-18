@@ -3,6 +3,7 @@ import * as crypto from 'crypto';
 import * as express from 'express';
 import gql from 'graphql-tag';
 
+import * as api from '../../types/api';
 import {ViewerLoginQuery} from '../../types/gql-types';
 import {firestore} from '../../utils/firestore';
 import {github} from '../../utils/github';
@@ -24,6 +25,7 @@ export interface UserRecord {
   avatarUrl: string|null;
   lastKnownUpdate: string|null;
   featureLastViewed: FeatureDetails;
+  repos: api.Repository[]|null;
 }
 
 /**
@@ -38,6 +40,7 @@ export interface UserRecord {
  *     - metadata/
  *         - last-viewed/
  *             - <GitHub Issue ID>: <Last Viewed Timestamp>
+ *     - repos[]
  *
  * - user-tokens/
  *   - <Random Token>
@@ -107,7 +110,8 @@ class UserModel {
       lastKnownUpdate: null,
       featureLastViewed: {
         enabledAt: Date.now(),
-      }
+      },
+      repos: null,
     };
 
     const existingUserSnapshot = await userDocument.get();
@@ -231,6 +235,15 @@ class UserModel {
     }
 
     return data;
+  }
+
+  async updateRepos(username: string, repos: api.Repository[]) {
+    const doc =
+        await firestore().collection(USERS_COLLECTION_NAME).doc(username);
+    const docSnapshot = await doc.get();
+    if (docSnapshot.exists) {
+      await doc.update({repos: repos});
+    }
   }
 }
 

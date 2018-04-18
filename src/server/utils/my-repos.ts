@@ -17,6 +17,7 @@
 import gql from 'graphql-tag';
 import {promisify} from 'util';
 
+import * as api from '../../types/api';
 import {MyReposQuery, MyReposQueryVariables} from '../../types/gql-types';
 import {github} from '../../utils/github';
 
@@ -36,35 +37,36 @@ const CONTRIBUTION_WINDOW = 1000 * 60 * 60 * 24 * 7;  // 7 days.
  * based on contribution recency and consistency.
  */
 export async function getMyRepos(
-    login: string, token: string): Promise<string[]> {
-  const repos = new Map<string, number>();
+    login: string, token: string): Promise<api.Repository[]> {
+  const repos = new Map<string, api.Repository&{score: number}>();
   const variables: MyReposQueryVariables = {login};
 
-  const results = github().cursorQuery<MyReposQuery>(
-      {
-        query: reposQuery,
-        variables,
-        context: {token},
-        fetchPolicy: 'network-only'
-      },
-      (q) => q.user && q.user.contributedRepositories);
+  const response = await github().query<MyReposQuery>({
+    query: reposQuery,
+    variables,
+    context: {token},
+    fetchPolicy: 'network-only'
+  });
 
   const promises = [];
-  for await (const data of results) {
-    if (!data || !data.user) {
+  if (!response.data.user) {
+    return [];
+  }
+  for (const repo of response.data.user.repositoriesContributedTo.nodes || []) {
+    // Ignore archived repos.
+    if (!repo || repo.isArchived) {
       continue;
     }
-    for (const repo of data.user.contributedRepositories.nodes || []) {
-      // Ignore archived repos.
-      if (!repo || repo.isArchived) {
-        continue;
-      }
-      const promise =
-          getContributionWeight(repo.owner.login, repo.name, login, token);
-      promises.push(promise.then((score) => {
-        repos.set(repo.owner.login + '/' + repo.name, score);
-      }));
-    }
+    const promise =
+        getContributionWeight(repo.owner.login, repo.name, login, token);
+    promises.push(promise.then((score) => {
+      repos.set(repo.owner.login + '/' + repo.name, {
+        score,
+        owner: repo.owner.login,
+        name: repo.name,
+        avatarUrl: repo.owner.avatarUrl,
+      });
+    }));
   }
   await Promise.all(promises);
   const comparator = (a: string, b: string) => {
@@ -73,10 +75,18 @@ export async function getMyRepos(
   let result = Array.from(repos.keys());
 
   // Filter out repos with small levels of contributions.
-  result = result.filter((key) => (repos.get(key) || 0) > SCORE_THRESHOLD);
+  result = result.filter((key) => {
+    const record = repos.get(key);
+    if (!record)
+      return false;
+    return record.score > SCORE_THRESHOLD;
+  });
 
-  result.sort(comparator).map((x => console.log(`${x}: ${repos.get(x)}`)));
-  return result.sort(comparator);
+  return result.sort(comparator).slice(0, 10).map((key) => {
+    const record = repos.get(key)!;
+    delete record.score;
+    return record;
+  });
 }
 
 /**
@@ -137,17 +147,14 @@ async function getContributionWeight(
 }
 
 const reposQuery = gql`
-  query MyRepos($login:String!, $cursor: String) {
+  query MyRepos($login:String!) {
     user(login: $login) {
-      contributedRepositories(first: 100, after: $cursor) {
-        pageInfo {
-          endCursor
-          hasNextPage
-        }
+      repositoriesContributedTo(first: 100, orderBy: {field: UPDATED_AT, direction: DESC}, contributionTypes: COMMIT) {
         nodes {
           name
           owner {
             login
+            avatarUrl
           }
           isArchived
         }
