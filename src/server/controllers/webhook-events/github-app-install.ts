@@ -28,21 +28,24 @@ export interface InstallHook {
 export async function handleGithubAppInstall(hookBody: InstallHook):
     Promise<WebHookHandleResponse> {
   const owner = hookBody.installation.account.login;
+
+  const queryId = 'repoId';
   const queries: string[] = [];
+  const fragments: string[] = [
+    `fragment repoFragment on Repository {
+      id
+      databaseId
+      name
+      nameWithOwner
+    }`,
+  ];
+
   for (const repo of hookBody.repositories) {
     queries.push(`repository(owner:"${owner}" name:"${repo.name}") {
       ...repoFragment
     }`);
   }
 
-  const fragments = [`fragment repoFragment on Repository {
-      id
-      databaseId
-      name
-      nameWithOwner
-    }`];
-
-  const queryId = 'repoId';
   const completeQuery = `query ${queryId} {
     ${
       queries
@@ -65,6 +68,10 @@ export async function handleGithubAppInstall(hookBody: InstallHook):
       token: secrets().GITHUB_APP_TO_GQL_TOKEN,
     }
   });
+  const allRepos = Object.keys(result.data).map((repoKey) => {
+    // tslint:disable-next-line:no-any
+    return (result.data as any)[repoKey];
+  });
 
   await githubAppModel.addInstallation({
     installationId: hookBody.installation.id,
@@ -76,10 +83,6 @@ export async function handleGithubAppInstall(hookBody: InstallHook):
     avatar_url: hookBody.installation.account.avatar_url,
   });
 
-  const allRepos = Object.keys(result.data).map((repoKey) => {
-    // tslint:disable-next-line:no-any
-    return (result.data as any)[repoKey];
-  });
   await githubAppModel.addRepos(hookBody.installation.account.login, allRepos);
 
   return {
