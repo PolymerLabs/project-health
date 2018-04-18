@@ -6,7 +6,7 @@ import {WebHookHandleResponse} from '../../apis/github-webhook';
 import {githubAppModel} from '../../models/githubAppModel';
 
 export interface InstallHook {
-  action: 'created';
+  action: 'created'|'deleted';
   installation: {
     id: number; repository_selection: 'all' | 'selected'; permissions: {
       [name: string]: string,
@@ -25,8 +25,7 @@ export interface InstallHook {
   }>;
 }
 
-export async function handleGithubAppInstall(hookBody: InstallHook):
-    Promise<WebHookHandleResponse> {
+async function handleNewAppInstall(hookBody: InstallHook) {
   const owner = hookBody.installation.account.login;
 
   const queryId = 'repoId';
@@ -90,5 +89,18 @@ export async function handleGithubAppInstall(hookBody: InstallHook):
     handled: true,
     notifications: null,
     message: 'Install recorded on backend',
+  };
+}
+
+export async function handleGithubAppInstall(hookBody: InstallHook):
+    Promise<WebHookHandleResponse> {
+  if (hookBody.action === 'created') {
+    return handleNewAppInstall(hookBody);
+  }
+
+  return {
+    handled: false,
+    notifications: null,
+    message: `Unexpected installation action: ${hookBody.action}`,
   };
 }
