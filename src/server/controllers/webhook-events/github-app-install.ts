@@ -46,7 +46,8 @@ export async function handleGithubAppInstall(hookBody: InstallHook):
     }`);
   }
 
-  const completeQuery = `query ${queryId} {
+  const completeQuery = `
+  query ${queryId} {
     ${
       queries
           .map((queryString, index) => {
