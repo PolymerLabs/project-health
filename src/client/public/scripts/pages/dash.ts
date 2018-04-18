@@ -69,11 +69,6 @@ function onMessage(event: ServiceWorkerMessageEvent|MessageEvent) {
   }
 }
 
-if (navigator.serviceWorker) {
-  navigator.serviceWorker.addEventListener(
-      'message', (event) => onMessage(event));
-}
-
 /**
  * User dashboard page with pull requests and issues.
  */
@@ -119,6 +114,11 @@ class DashPage extends BaseElement {
           checkServerForUpdates,
           SHORT_POLL_INTERVAL,
       );
+
+      if (navigator.serviceWorker) {
+        navigator.serviceWorker.addEventListener(
+            'message', (event) => onMessage(event));
+      }
     }
   }
 
