@@ -77,11 +77,13 @@ export async function getMyRepos(
   // Filter out repos with small levels of contributions.
   result = result.filter((key) => {
     const record = repos.get(key);
-    if (!record)
+    if (!record) {
       return false;
+    }
     return record.score > SCORE_THRESHOLD;
   });
 
+  // Only keep the top 10 and sort descending by score.
   return result.sort(comparator).slice(0, 10).map((key) => {
     const record = repos.get(key)!;
     delete record.score;

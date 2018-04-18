@@ -15,7 +15,9 @@ export const TOKEN_COLLECTION_NAME = 'user-tokens';
 
 export const REQUIRED_SCOPES = ['repo'];
 
-export interface FeatureDetails { enabledAt: number; }
+export interface FeatureDetails {
+  enabledAt: number;
+}
 
 export interface UserRecord {
   githubToken: string;
@@ -242,7 +244,7 @@ class UserModel {
         await firestore().collection(USERS_COLLECTION_NAME).doc(username);
     const docSnapshot = await doc.get();
     if (docSnapshot.exists) {
-      await doc.update({repos: repos});
+      await doc.update({repos});
     }
   }
 }

@@ -330,3 +330,17 @@ test.serial('[usermodel]: should update last viewed timestamp', async (t) => {
   const value = await userModel.getAllLastViewedInfo('example-user');
   t.deepEqual(value['test-issue-id'], 2);
 });
+
+test.serial('[usermodel]: should update a users repos', async (t) => {
+  const doc =
+      await firestore().collection(USERS_COLLECTION_NAME).doc('repos-user');
+  await doc.create({});
+  const fakeRepo = {owner: 'owner', name: 'name', avatarUrl: 'avatar'};
+  await userModel.updateRepos('repos-user', [fakeRepo]);
+  const snapshot = await doc.get();
+  const data = snapshot.data();
+  if (!data) {
+    throw new Error('Data should exist');
+  }
+  t.deepEqual(data.repos, [fakeRepo]);
+});
