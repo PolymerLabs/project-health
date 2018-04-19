@@ -3,7 +3,7 @@ import * as crypto from 'crypto';
 import * as http from 'http';
 import * as sinon from 'sinon';
 
-import {TOKEN_COLLECTION_NAME, userModel, USERS_COLLECTION_NAME} from '../../../server/models/userModel';
+import {REQUIRED_SCOPES, TOKEN_COLLECTION_NAME, userModel, USERS_COLLECTION_NAME} from '../../../server/models/userModel';
 import {firestore, initFirestore} from '../../../utils/firestore';
 import * as githubFactory from '../../../utils/github';
 import {initGithub} from '../../../utils/github';
@@ -221,14 +221,14 @@ test.serial(
           });
 
       const firstToken = await userModel.generateNewUserToken(
-          'github-token-1', ['repo', 'scope-1']);
+          'github-token-1', [...REQUIRED_SCOPES, 'scope-1']);
       t.deepEqual(firstToken, FIRST_TOKEN);
 
       userModel.markUserForUpdate('example-login');
       fakeTimer.tick(1000);
 
       const secondToken = await userModel.generateNewUserToken(
-          'github-token-2', ['repo', 'scope-2']);
+          'github-token-2', [...REQUIRED_SCOPES, 'scope-2']);
       t.deepEqual(secondToken, SECOND_TOKEN);
 
       const result = await userModel.getUserRecordFromToken(SECOND_TOKEN);
@@ -237,7 +237,7 @@ test.serial(
       }
       t.is(result.username, 'example-login');
       t.is(result.githubToken, 'github-token-2');
-      t.deepEqual(result.scopes, ['repo', 'scope-2']);
+      t.deepEqual(result.scopes, [...REQUIRED_SCOPES, 'scope-2']);
       t.is(result.fullname, 'example-name-2');
       t.is(result.avatarUrl, 'https://example-avatar-url/2');
       t.deepEqual(result.featureLastViewed, {enabledAt: 0});

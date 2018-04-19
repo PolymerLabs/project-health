@@ -2,9 +2,10 @@ import anyTest, {TestInterface} from 'ava';
 import * as sinon from 'sinon';
 import {SinonSandbox} from 'sinon';
 
-import {userModel} from '../../server/models/userModel';
+import {REQUIRED_SCOPES, userModel} from '../../server/models/userModel';
 import {performGitHubRedirect} from '../../server/utils/perform-github-redirect';
 import {initSecrets} from '../../utils/secrets';
+
 import {newFakeSecrets} from './newFakeSecrets';
 
 type TestContext = {
@@ -38,7 +39,8 @@ test(
       t.deepEqual(res.redirect.callCount, 1);
       t.deepEqual(
           res.redirect.args[0][0],
-          'https://github.com/login/oauth/authorize?client_id=ClientID&scope=repo');
+          `https://github.com/login/oauth/authorize?client_id=ClientID&scope=${
+              REQUIRED_SCOPES.join(' ')}`);
     });
 
 test(
@@ -59,7 +61,8 @@ test(
       t.deepEqual(res.redirect.callCount, 1);
       t.deepEqual(
           res.redirect.args[0][0],
-          'https://github.com/login/oauth/authorize?client_id=ClientID&scope=repo example-1 example-2');
+          `https://github.com/login/oauth/authorize?client_id=ClientID&scope=${
+              REQUIRED_SCOPES.join(' ')} example-1 example-2`);
     });
 
 test(
@@ -80,7 +83,9 @@ test(
       t.deepEqual(res.redirect.callCount, 1);
       t.deepEqual(
           res.redirect.args[0][0],
-          'https://github.com/login/oauth/authorize?client_id=ClientID&scope=repo&redirect_uri=https%3A%2F%2Fgithub-health.appspot.com%2Foauth.html%3Ffinal-redirect%3D%2Ftest-redirect');
+          `https://github.com/login/oauth/authorize?client_id=ClientID&scope=${
+              REQUIRED_SCOPES.join(
+                  ' ')}&redirect_uri=https%3A%2F%2Fgithub-health.appspot.com%2Foauth.html%3Ffinal-redirect%3D%2Ftest-redirect`);
     });
 
 test(
@@ -97,7 +102,9 @@ test(
       t.deepEqual(res.redirect.callCount, 1);
       t.deepEqual(
           res.redirect.args[0][0],
-          'https://github.com/login/oauth/authorize?client_id=ClientID&scope=repo&redirect_uri=https%3A%2F%2Fgithub-health.appspot.com%2Foauth.html%3Fredirect-origin%3Dhttp%3A%2F%2Flocalhost%3A8080%2Foauth.html');
+          `https://github.com/login/oauth/authorize?client_id=ClientID&scope=${
+              REQUIRED_SCOPES.join(
+                  ' ')}&redirect_uri=https%3A%2F%2Fgithub-health.appspot.com%2Foauth.html%3Fredirect-origin%3Dhttp%3A%2F%2Flocalhost%3A8080%2Foauth.html`);
     });
 
 
@@ -119,7 +126,9 @@ test(
       t.deepEqual(res.redirect.callCount, 1);
       t.deepEqual(
           res.redirect.args[0][0],
-          'https://github.com/login/oauth/authorize?client_id=ClientID&scope=repo&redirect_uri=https%3A%2F%2Fgithub-health.appspot.com%2Foauth.html%3Fredirect-origin%3Dhttps%3A%2F%2Fgithub-health-staging.appspot.com%2Foauth.html');
+          `https://github.com/login/oauth/authorize?client_id=ClientID&scope=${
+              REQUIRED_SCOPES.join(
+                  ' ')}&redirect_uri=https%3A%2F%2Fgithub-health.appspot.com%2Foauth.html%3Fredirect-origin%3Dhttps%3A%2F%2Fgithub-health-staging.appspot.com%2Foauth.html`);
     });
 
 
@@ -153,5 +162,6 @@ test(
       t.deepEqual(res.redirect.callCount, 1);
       t.deepEqual(
           res.redirect.args[0][0],
-          'https://github.com/login/oauth/authorize?client_id=ClientID&scope=repo example-1 example-2');
+          `https://github.com/login/oauth/authorize?client_id=ClientID&scope=${
+              REQUIRED_SCOPES.join(' ')} example-1 example-2`);
     });

@@ -12,7 +12,7 @@ export const USERS_COLLECTION_NAME = 'users';
 export const METADATA_COLLECTION_NAME = 'metadata';
 export const TOKEN_COLLECTION_NAME = 'user-tokens';
 
-export const REQUIRED_SCOPES = ['repo'];
+export const REQUIRED_SCOPES = ['repo', 'read:org', 'read:discussion'];
 
 export interface FeatureDetails { enabledAt: number; }
 
