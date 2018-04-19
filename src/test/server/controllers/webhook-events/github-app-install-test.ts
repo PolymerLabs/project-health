@@ -61,8 +61,7 @@ test.afterEach.always(async (t) => {
 });
 
 test.serial(
-    '[handleGithubAppInstall]: should not handle a non-submitted hook',
-    async (t) => {
+    '[handleGithubAppInstall]: should handle a valid install', async (t) => {
       const githubInstance = github();
       t.context.sandbox.stub(githubInstance, 'query').callsFake(() => {
         return {
@@ -87,4 +86,60 @@ test.serial(
       });
 
       await t.throws(handleGithubAppInstall(newFakeHookDetails()));
+    });
+
+test.serial(
+    '[handleGithubAppInstall]: should not be handled if the install has no repos',
+    async (t) => {
+      const details = newFakeHookDetails();
+      delete details.repositories;
+      const response = await handleGithubAppInstall(details);
+      t.is(response.handled, false, 'Webhook handled boolean.');
+    });
+
+test.serial(
+    '[handleGithubAppInstall]: should handle deleting a non-existant installId',
+    async (t) => {
+      const details = newFakeHookDetails();
+      details.action = 'deleted';
+      delete details.repositories;
+
+      const result = await handleGithubAppInstall(details);
+      t.is(result.handled, true);
+    });
+
+test.serial(
+    '[handleGithubAppInstall]: should handle deleting an existant installId',
+    async (t) => {
+      const githubInstance = github();
+      t.context.sandbox.stub(githubInstance, 'query').callsFake(() => {
+        return {
+          data: {
+            repository: {
+              id: 'test-repo-id',
+            }
+          }
+        };
+      });
+
+      const details = newFakeHookDetails();
+      let response = await handleGithubAppInstall(details);
+      t.is(response.handled, true, 'Webhook handled boolean.');
+
+      details.action = 'deleted';
+      delete details.repositories;
+
+      response = await handleGithubAppInstall(details);
+      t.is(response.handled, true, 'Webhook handled boolean.');
+    });
+
+test.serial(
+    '[handleGithubAppInstall]: should not handle an unsupported action',
+    async (t) => {
+      const details = newFakeHookDetails();
+      // tslint:disable-next-line:no-any
+      details.action = 'unsupported' as any;
+
+      const response = await handleGithubAppInstall(details);
+      t.is(response.handled, false, 'Webhook handled boolean.');
     });
