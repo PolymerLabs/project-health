@@ -9,10 +9,11 @@ export class NavElement extends BaseElement {
 
   async connectedCallback() {
     const response = await fetch('/api/user', {credentials: 'include'});
+    // TODO: change this to use the JSON API response
     this.data = (await response.json()).data as api.UserResponse;
   }
 
-  _userTemplate(): TemplateResult {
+  private userTemplate(): TemplateResult {
     if (!this.data) {
       return html``;
     }
@@ -26,7 +27,7 @@ export class NavElement extends BaseElement {
     `;
   }
 
-  _header(): TemplateResult {
+  private header(): TemplateResult {
     return html`
       <div class="nav-item nav-title">
         <img class="nav-item__avatar" src="/images/favicon.svg">
@@ -35,7 +36,7 @@ export class NavElement extends BaseElement {
     `;
   }
 
-  _repoTemplate(repo: api.Repository): TemplateResult {
+  private repoTemplate(repo: api.Repository): TemplateResult {
     return html`
       <a class="nav-item" href="/repo/${repo.owner}/${repo.name}">
         <img class="nav-item__avatar" src="${repo.avatarUrl}">
@@ -46,17 +47,17 @@ export class NavElement extends BaseElement {
 
   render() {
     if (!this.data) {
-      return html`<nav>${this._header()}</nav>`;
+      return html`<nav>${this.header()}</nav>`;
     }
 
     return html`
       <nav>
-        ${this._header()}
-        ${this._userTemplate()}
+        ${this.header()}
+        ${this.userTemplate()}
 
         <div class="nav-item__separator"></div>
 
-        ${this.data.repos.map(this._repoTemplate)}
+        ${this.data.repos.map(this.repoTemplate)}
 
         <div class="nav-item__separator"></div>
       <nav>

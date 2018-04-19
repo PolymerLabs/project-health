@@ -8,7 +8,7 @@ export function newFakeUserRecord() {
     username: FAKE_USERNAME,
     githubToken: getTestTokens()['project-health1'] || 'fake-token',
     scopes: REQUIRED_SCOPES,
-    avatarUrl: 'https://example.com/avatar.png',
+    avatarUrl: 'https://avatars2.githubusercontent.com/u/34584679?s=400&v=4',
     fullname: 'Fakey McFakeFace',
     lastKnownUpdate: null,
     featureLastViewed: {

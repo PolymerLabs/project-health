@@ -40,7 +40,8 @@ class DashPagination extends BaseElement {
       const response = await fetch(
           `/api/dash/outgoing?${[loginParam, cursorParam].join('&')}`,
           {credentials: 'include'});
-      data = await response.json() as api.OutgoingDashResponse;
+      // TODO: update to use JSON API response
+      data = (await response.json()).data as api.OutgoingDashResponse;
 
       // Render each PR and yield each result so they can be added to the DOM.
       for (const pr of data.prs) {
