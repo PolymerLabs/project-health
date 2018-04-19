@@ -16,7 +16,7 @@
 
 import gql from 'graphql-tag';
 
-import {PullRequestsQuery, PullRequestsQueryVariables} from '../../types/gql-types';
+import {PullRequestsQuery} from '../../types/gql-types';
 import {github} from '../../utils/github';
 import {getOrgRepos, getReviewsForPullRequest, PullRequest, Review} from '../common';
 
@@ -155,11 +155,13 @@ async function fetchPullRequestsForId(
     owner: string, name: string): Promise<PullRequest[]> {
   const prs: PullRequest[] = [];
 
-  const results =
-      github().cursorQuery<PullRequestsQuery, PullRequestsQueryVariables>(
-          pullRequestsQuery,
-          {owner, name},
-          (data) => data.repository && data.repository.pullRequests);
+  const results = github().cursorQuery<PullRequestsQuery>(
+      {
+        query: pullRequestsQuery,
+        variables: {owner, name},
+        context: {token: process.env.GITHUB_TOKEN}
+      },
+      (data) => data.repository && data.repository.pullRequests);
 
   for await (const data of results) {
     const repo = data.repository;

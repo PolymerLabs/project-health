@@ -1,0 +1,542 @@
+[
+  {
+    "total": 18,
+    "weeks": [
+      {
+        "w": 1508630400,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1509235200,
+        "a": 248,
+        "d": 231,
+        "c": 1
+      },
+      {
+        "w": 1509840000,
+        "a": 42641,
+        "d": 36793,
+        "c": 7
+      },
+      {
+        "w": 1510444800,
+        "a": 89386,
+        "d": 143,
+        "c": 2
+      },
+      {
+        "w": 1511049600,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1511654400,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1512259200,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1512864000,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1513468800,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1514073600,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1514678400,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1515283200,
+        "a": 11,
+        "d": 10,
+        "c": 1
+      },
+      {
+        "w": 1515888000,
+        "a": 1,
+        "d": 1,
+        "c": 1
+      },
+      {
+        "w": 1516492800,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1517097600,
+        "a": 4303,
+        "d": 1059,
+        "c": 2
+      },
+      {
+        "w": 1517702400,
+        "a": 512,
+        "d": 469,
+        "c": 3
+      },
+      {
+        "w": 1518307200,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1518912000,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1519516800,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1520121600,
+        "a": 1,
+        "d": 1,
+        "c": 1
+      },
+      {
+        "w": 1520726400,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1521331200,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1521936000,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1522540800,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1523145600,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1523750400,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      }
+    ],
+    "author": {
+      "login": "aomarks",
+      "id": 48894,
+      "avatar_url": "https://avatars0.githubusercontent.com/u/48894?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/aomarks",
+      "html_url": "https://github.com/aomarks",
+      "followers_url": "https://api.github.com/users/aomarks/followers",
+      "following_url": "https://api.github.com/users/aomarks/following{/other_user}",
+      "gists_url": "https://api.github.com/users/aomarks/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/aomarks/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/aomarks/subscriptions",
+      "organizations_url": "https://api.github.com/users/aomarks/orgs",
+      "repos_url": "https://api.github.com/users/aomarks/repos",
+      "events_url": "https://api.github.com/users/aomarks/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/aomarks/received_events",
+      "type": "User",
+      "site_admin": false
+    }
+  },
+  {
+    "total": 127,
+    "weeks": [
+      {
+        "w": 1508630400,
+        "a": 202,
+        "d": 0,
+        "c": 1
+      },
+      {
+        "w": 1509235200,
+        "a": 580,
+        "d": 57,
+        "c": 2
+      },
+      {
+        "w": 1509840000,
+        "a": 38126,
+        "d": 1304,
+        "c": 9
+      },
+      {
+        "w": 1510444800,
+        "a": 43458,
+        "d": 1083,
+        "c": 4
+      },
+      {
+        "w": 1511049600,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1511654400,
+        "a": 32825,
+        "d": 2093,
+        "c": 2
+      },
+      {
+        "w": 1512259200,
+        "a": 753,
+        "d": 1252,
+        "c": 3
+      },
+      {
+        "w": 1512864000,
+        "a": 205876,
+        "d": 205671,
+        "c": 5
+      },
+      {
+        "w": 1513468800,
+        "a": 258,
+        "d": 27,
+        "c": 3
+      },
+      {
+        "w": 1514073600,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1514678400,
+        "a": 688556,
+        "d": 1226,
+        "c": 3
+      },
+      {
+        "w": 1515283200,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1515888000,
+        "a": 196,
+        "d": 110,
+        "c": 2
+      },
+      {
+        "w": 1516492800,
+        "a": 1269,
+        "d": 811,
+        "c": 8
+      },
+      {
+        "w": 1517097600,
+        "a": 4725,
+        "d": 3320,
+        "c": 10
+      },
+      {
+        "w": 1517702400,
+        "a": 1957,
+        "d": 2410,
+        "c": 8
+      },
+      {
+        "w": 1518307200,
+        "a": 2173,
+        "d": 1503,
+        "c": 2
+      },
+      {
+        "w": 1518912000,
+        "a": 823,
+        "d": 602,
+        "c": 5
+      },
+      {
+        "w": 1519516800,
+        "a": 3547,
+        "d": 1826,
+        "c": 7
+      },
+      {
+        "w": 1520121600,
+        "a": 11274,
+        "d": 5485,
+        "c": 9
+      },
+      {
+        "w": 1520726400,
+        "a": 868,
+        "d": 40,
+        "c": 3
+      },
+      {
+        "w": 1521331200,
+        "a": 720,
+        "d": 392,
+        "c": 17
+      },
+      {
+        "w": 1521936000,
+        "a": 480,
+        "d": 70,
+        "c": 4
+      },
+      {
+        "w": 1522540800,
+        "a": 189,
+        "d": 183,
+        "c": 3
+      },
+      {
+        "w": 1523145600,
+        "a": 1529,
+        "d": 1152,
+        "c": 14
+      },
+      {
+        "w": 1523750400,
+        "a": 1719,
+        "d": 1627,
+        "c": 3
+      }
+    ],
+    "author": {
+      "login": "samuelli",
+      "id": 787668,
+      "avatar_url": "https://avatars1.githubusercontent.com/u/787668?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/samuelli",
+      "html_url": "https://github.com/samuelli",
+      "followers_url": "https://api.github.com/users/samuelli/followers",
+      "following_url": "https://api.github.com/users/samuelli/following{/other_user}",
+      "gists_url": "https://api.github.com/users/samuelli/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/samuelli/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/samuelli/subscriptions",
+      "organizations_url": "https://api.github.com/users/samuelli/orgs",
+      "repos_url": "https://api.github.com/users/samuelli/repos",
+      "events_url": "https://api.github.com/users/samuelli/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/samuelli/received_events",
+      "type": "User",
+      "site_admin": false
+    }
+  },
+  {
+    "total": 150,
+    "weeks": [
+      {
+        "w": 1508630400,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1509235200,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1509840000,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1510444800,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1511049600,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1511654400,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1512259200,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1512864000,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1513468800,
+        "a": 1257,
+        "d": 220,
+        "c": 5
+      },
+      {
+        "w": 1514073600,
+        "a": 0,
+        "d": 0,
+        "c": 0
+      },
+      {
+        "w": 1514678400,
+        "a": 769,
+        "d": 509,
+        "c": 5
+      },
+      {
+        "w": 1515283200,
+        "a": 1076,
+        "d": 30,
+        "c": 1
+      },
+      {
+        "w": 1515888000,
+        "a": 234,
+        "d": 1015,
+        "c": 8
+      },
+      {
+        "w": 1516492800,
+        "a": 1741600,
+        "d": 1739925,
+        "c": 4
+      },
+      {
+        "w": 1517097600,
+        "a": 711,
+        "d": 410,
+        "c": 4
+      },
+      {
+        "w": 1517702400,
+        "a": 21198,
+        "d": 7353,
+        "c": 13
+      },
+      {
+        "w": 1518307200,
+        "a": 4137,
+        "d": 1910,
+        "c": 13
+      },
+      {
+        "w": 1518912000,
+        "a": 4915,
+        "d": 2976,
+        "c": 14
+      },
+      {
+        "w": 1519516800,
+        "a": 1764,
+        "d": 277,
+        "c": 9
+      },
+      {
+        "w": 1520121600,
+        "a": 2064,
+        "d": 1096,
+        "c": 14
+      },
+      {
+        "w": 1520726400,
+        "a": 7048,
+        "d": 826,
+        "c": 10
+      },
+      {
+        "w": 1521331200,
+        "a": 4466,
+        "d": 2520,
+        "c": 18
+      },
+      {
+        "w": 1521936000,
+        "a": 2007,
+        "d": 1110,
+        "c": 8
+      },
+      {
+        "w": 1522540800,
+        "a": 1207,
+        "d": 814,
+        "c": 6
+      },
+      {
+        "w": 1523145600,
+        "a": 3558,
+        "d": 1592,
+        "c": 9
+      },
+      {
+        "w": 1523750400,
+        "a": 12198,
+        "d": 11490,
+        "c": 9
+      }
+    ],
+    "author": {
+      "login": "gauntface",
+      "id": 139760,
+      "avatar_url": "https://avatars0.githubusercontent.com/u/139760?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/gauntface",
+      "html_url": "https://github.com/gauntface",
+      "followers_url": "https://api.github.com/users/gauntface/followers",
+      "following_url": "https://api.github.com/users/gauntface/following{/other_user}",
+      "gists_url": "https://api.github.com/users/gauntface/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/gauntface/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/gauntface/subscriptions",
+      "organizations_url": "https://api.github.com/users/gauntface/orgs",
+      "repos_url": "https://api.github.com/users/gauntface/repos",
+      "events_url": "https://api.github.com/users/gauntface/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/gauntface/received_events",
+      "type": "User",
+      "site_admin": false
+    }
+  }
+]

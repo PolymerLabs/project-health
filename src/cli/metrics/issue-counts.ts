@@ -16,7 +16,7 @@
 
 import gql from 'graphql-tag';
 
-import {IssuesQuery, IssuesQueryVariables} from '../../types/gql-types';
+import {IssuesQuery} from '../../types/gql-types';
 import {github} from '../../utils/github';
 import {getOrgRepos} from '../common';
 
@@ -149,9 +149,12 @@ type Issue = {
 async function getIssues(owner: string, name: string): Promise<Issue[]> {
   const issues: Issue[] = [];
 
-  const results = github().cursorQuery<IssuesQuery, IssuesQueryVariables>(
-      issuesQuery,
-      {owner, name},
+  const results = github().cursorQuery<IssuesQuery>(
+      {
+        query: issuesQuery,
+        variables: {owner, name},
+        context: {token: process.env.GITHUB_TOKEN},
+      },
       (data) => data.repository && data.repository.issues);
 
   for await (const data of results) {

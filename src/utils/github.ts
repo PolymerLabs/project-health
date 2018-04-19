@@ -4,7 +4,6 @@ import {ApolloQueryResult} from 'apollo-client/core/types';
 import {WatchQueryOptions} from 'apollo-client/core/watchQueryOptions';
 import {setContext} from 'apollo-link-context';
 import {HttpLink} from 'apollo-link-http';
-import {DocumentNode} from 'graphql';
 import fetch from 'node-fetch';
 import * as request from 'request-promise-native';
 import {promisify} from 'util';
@@ -89,13 +88,9 @@ class GitHub {
   /**
    * Issue a multi-page query with automatic cursor management.
    *
-   * @template Q The automatically generated query result type.
-   * @template V The automatically generated query variables type. It must
-   * contain a `cursor` field. This function will automatically update this
-   * field for each page.
+   * @template T The automatically generated query result type.
    *
-   * @param query The GraphQL query to execute.
-   * @param variables The query variables to pass.
+   * @param options The GraphQL options containing query & variables to execute.
    * @param getPageInfo A function that receives a query result page, and
    * returns an object that contains a `pageInfo` object (which must contain
    * `hasNextPage` and `endCursor`). Note that this `pageInfo` object should be
@@ -107,18 +102,13 @@ class GitHub {
    * `for-await-of` loop.
    */
   async *
-      cursorQuery<Q, V extends {cursor?: string | null}>(
-          query: DocumentNode,
-          variables: V,
-          getPageInfo: (result: Q) => {pageInfo: PageInfo} | null):
-          AsyncIterable<Q> {
-    variables = Object.assign({}, variables);
+      cursorQuery<T>(options: WatchQueryOptions, getPageInfo: (result: T) => {
+        pageInfo: PageInfo
+      } | null): AsyncIterable<T> {
+    const variables = Object.assign({}, options.variables);
     let hasNextPage = true;
     while (hasNextPage) {
-      // TODO: this shouldn't be using environment variables and is currently
-      // only used by the CLI.
-      const result = await this.query<Q>(
-          {query, variables, context: {token: process.env.GITHUB_TOKEN}});
+      const result = await this.query<T>(Object.assign(options, {variables}));
       const pageInfo = getPageInfo(result.data);
       hasNextPage = !!pageInfo && pageInfo.pageInfo.hasNextPage;
       variables.cursor = pageInfo && pageInfo.pageInfo.endCursor;

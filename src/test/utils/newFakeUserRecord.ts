@@ -14,6 +14,7 @@ export function newFakeUserRecord() {
     featureLastViewed: {
       enabledAt: Date.now(),
     },
+    repos: null,
   };
 
   return Object.assign({}, fakeRecord);

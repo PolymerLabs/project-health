@@ -17,6 +17,7 @@
 import gql from 'graphql-tag';
 import {promisify} from 'util';
 
+import * as api from '../../types/api';
 import {MyReposQuery, MyReposQueryVariables} from '../../types/gql-types';
 import {github} from '../../utils/github';
 
@@ -25,45 +26,71 @@ const MAX_STATS_RETRIES = 5;
 // Variables that impact the scoring algorithm.
 
 // Repos below this score are discarded from the list.
-const SCORE_THRESHOLD = 20;
+const SCORE_THRESHOLD = 30;
 // A contribution is roughly a commit. This parameter impacts the distribution &
 // scale of the resulting scores.
 const CONTRIBUTION_SIZE = 10;
-const CONTRIBUTION_WINDOW = 1000 * 60 * 60 * 24 * 90;  // 90 days.
+const CONTRIBUTION_WINDOW = 1000 * 60 * 60 * 24 * 7;  // 7 days.
+
+type RepoWithScore = api.Repository&{score: number};
 
 /**
  * Returns a list of repos that the given user contributes to. It is ordered
  * based on contribution recency and consistency.
  */
-export async function getMyRepos(
-    login: string, userToken: string): Promise<string[]> {
-  const repos = new Map<string, number>();
-  const results = github().cursorQuery<MyReposQuery, MyReposQueryVariables>(
-      reposQuery, {login}, (q) => q.user && q.user.contributedRepositories);
+export async function generateMyRepoList(
+    login: string, token: string): Promise<api.Repository[]> {
+  const repos = new Map<string, RepoWithScore>();
+  const variables: MyReposQueryVariables = {login};
+
+  const response = await github().query<MyReposQuery>({
+    query: reposQuery,
+    variables,
+    context: {token},
+    fetchPolicy: 'network-only'
+  });
+
   const promises = [];
-  for await (const data of results) {
-    if (!data.user) {
+  if (!response.data.user) {
+    return [];
+  }
+  for (const repo of response.data.user.repositoriesContributedTo.nodes || []) {
+    // Ignore archived repos.
+    if (!repo || repo.isArchived) {
       continue;
     }
-    for (const repo of data.user.contributedRepositories.nodes || []) {
-      if (!repo) {
-        continue;
-      }
-      const promise =
-          getContributionWeight(repo.owner.login, repo.name, login, userToken);
-      promises.push(promise.then((score) => {
-        repos.set(repo.owner.login + '/' + repo.name, score);
-      }));
-    }
+    const promise =
+        getContributionWeight(repo.owner.login, repo.name, login, token);
+    promises.push(promise.then((score) => {
+      repos.set(repo.owner.login + '/' + repo.name, {
+        score,
+        owner: repo.owner.login,
+        name: repo.name,
+        avatarUrl: repo.owner.avatarUrl,
+      });
+    }));
   }
   await Promise.all(promises);
   const comparator = (a: string, b: string) => {
-    return (repos.get(a) || 0) < (repos.get(b) || 0) ? 1 : -1;
+    return repos.get(a)!.score < repos.get(b)!.score ? 1 : -1;
   };
   let result = Array.from(repos.keys());
+
   // Filter out repos with small levels of contributions.
-  result = result.filter((key) => (repos.get(key) || 0) > SCORE_THRESHOLD);
-  return result.sort(comparator);
+  result = result.filter((key) => {
+    const record = repos.get(key);
+    if (!record) {
+      return false;
+    }
+    return record.score > SCORE_THRESHOLD;
+  });
+
+  // Only keep the top 10 and sort descending by score.
+  return result.sort(comparator).slice(0, 10).map((key) => {
+    const record = repos.get(key)!;
+    delete record.score;
+    return record;
+  });
 }
 
 /**
@@ -71,20 +98,19 @@ export async function getMyRepos(
  * (0-100).
  */
 async function getContributionWeight(
-    org: string, repo: string, user: string, userToken: string):
-    Promise<number> {
+    org: string, repo: string, user: string, token: string): Promise<number> {
   try {
     // GitHub doesn't provide a v4 API equivalent for stats, so v3 API must be
     // used.
     const queryPath = `repos/${org}/${repo}/stats/contributors`;
 
-    let response = await github().get(queryPath, userToken, false);
+    let response = await github().get(queryPath, token, false);
     let retries = 0;
     // GitHub's API may serve a cached response and begin an asynchronous
     // job to calculate required data.
     while (response.statusCode !== 200 && retries++ < MAX_STATS_RETRIES) {
       await setTimeoutPromise(1000 * retries);
-      response = await github().get(queryPath, userToken, false);
+      response = await github().get(queryPath, token, false);
     }
 
     if (response.statusCode === 200) {
@@ -125,18 +151,16 @@ async function getContributionWeight(
 }
 
 const reposQuery = gql`
-  query MyRepos($login:String!, $cursor: String) {
+  query MyRepos($login:String!) {
     user(login: $login) {
-      contributedRepositories(first: 100, after: $cursor) {
-        pageInfo {
-          endCursor
-          hasNextPage
-        }
+      repositoriesContributedTo(first: 100, orderBy: {field: UPDATED_AT, direction: DESC}, contributionTypes: COMMIT) {
         nodes {
           name
           owner {
             login
+            avatarUrl
           }
+          isArchived
         }
       }
     }

@@ -16,6 +16,7 @@ import {getRouter as getLastViewedRouter} from './apis/last-viewed';
 import {getRouter as getLoginRouter} from './apis/login';
 import {getRouter as getPushSubRouter} from './apis/push-subscription';
 import {getRouter as getUpdatesRouter} from './apis/updates';
+import {getRouter as getUserRouter} from './apis/user';
 import {enforceHTTPS} from './utils/enforce-https';
 import {performGitHubRedirect} from './utils/perform-github-redirect';
 import {requireLogin} from './utils/require-login';
@@ -121,6 +122,7 @@ export class DashServer {
     app.use('/api/check-pr-state/', getCheckPRStateRouter());
     app.use('/api/issues/', getIssuesRouter());
     app.use('/api/last-viewed/', getLastViewedRouter());
+    app.use('/api/user/', getUserRouter());
 
     // Serve app shell on all other routes.
     app.get(

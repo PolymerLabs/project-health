@@ -16,7 +16,7 @@
 
 import gql from 'graphql-tag';
 
-import {OrgReposQuery, OrgReposQueryVariables} from '../types/gql-types';
+import {OrgReposQuery} from '../types/gql-types';
 import {github} from '../utils/github';
 
 /**
@@ -26,9 +26,12 @@ export async function getOrgRepos(orgName: string):
     Promise<Array<{owner: string, name: string}>> {
   const ids = [];
 
-  const results = github().cursorQuery<OrgReposQuery, OrgReposQueryVariables>(
-      orgReposQuery,
-      {login: orgName},
+  const results = github().cursorQuery<OrgReposQuery>(
+      {
+        query: orgReposQuery,
+        variables: {login: orgName},
+        context: {token: process.env.GITHUB_TOKEN}
+      },
       (data) => data.organization && data.organization.repositories);
 
   for await (const data of results) {

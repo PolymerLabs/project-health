@@ -16,7 +16,7 @@
 
 import gql from 'graphql-tag';
 
-import {StarsQuery, StarsQueryVariables} from '../../types/gql-types';
+import {StarsQuery} from '../../types/gql-types';
 import {github} from '../../utils/github';
 import {getOrgRepos} from '../common';
 
@@ -95,9 +95,12 @@ const starsQuery = gql`
 async function fetchStarsForRepo(owner: string, name: string): Promise<Star[]> {
   const stars: Star[] = [];
 
-  const results = github().cursorQuery<StarsQuery, StarsQueryVariables>(
-      starsQuery,
-      {owner, name},
+  const results = github().cursorQuery<StarsQuery>(
+      {
+        query: starsQuery,
+        variables: {owner, name},
+        context: {token: process.env.GITHUB_TOKEN}
+      },
       (data) => data.repository && data.repository.stargazers);
 
   for await (const data of results) {
