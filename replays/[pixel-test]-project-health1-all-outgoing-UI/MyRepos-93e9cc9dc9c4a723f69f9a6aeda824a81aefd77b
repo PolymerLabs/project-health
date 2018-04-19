@@ -1,0 +1,11 @@
+{
+  "data": {
+    "user": {
+      "repositoriesContributedTo": {
+        "nodes": [],
+        "__typename": "RepositoryConnection"
+      },
+      "__typename": "User"
+    }
+  }
+}

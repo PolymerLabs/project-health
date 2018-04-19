@@ -1,0 +1,81 @@
+{
+  "data": {
+    "search": {
+      "nodes": [
+        {
+          "__typename": "Issue",
+          "createdAt": "2018-03-24T00:04:16Z",
+          "author": {
+            "login": "project-health2",
+            "avatarUrl": "https://avatars3.githubusercontent.com/u/34584974?v=4",
+            "__typename": "User"
+          },
+          "comments": {
+            "nodes": [],
+            "__typename": "IssueCommentConnection"
+          },
+          "commentTotal": {
+            "count": 0,
+            "__typename": "IssueCommentConnection"
+          },
+          "reactions": {
+            "totalCount": 0,
+            "__typename": "ReactionConnection"
+          },
+          "participants": {
+            "totalCount": 2,
+            "__typename": "UserConnection"
+          },
+          "id": "MDU6SXNzdWUzMDgyMTA0Njc=",
+          "title": "I found a bug.",
+          "url": "https://github.com/project-health1/repo/issues/16",
+          "repository": {
+            "name": "repo",
+            "owner": {
+              "login": "project-health1",
+              "__typename": "User"
+            },
+            "__typename": "Repository"
+          }
+        },
+        {
+          "__typename": "Issue",
+          "createdAt": "2018-03-24T00:02:42Z",
+          "author": {
+            "login": "project-health1",
+            "avatarUrl": "https://avatars3.githubusercontent.com/u/34584679?v=4",
+            "__typename": "User"
+          },
+          "comments": {
+            "nodes": [],
+            "__typename": "IssueCommentConnection"
+          },
+          "commentTotal": {
+            "count": 0,
+            "__typename": "IssueCommentConnection"
+          },
+          "reactions": {
+            "totalCount": 0,
+            "__typename": "ReactionConnection"
+          },
+          "participants": {
+            "totalCount": 1,
+            "__typename": "UserConnection"
+          },
+          "id": "MDU6SXNzdWUzMDgyMTAyNzM=",
+          "title": "Self Assigned Issue",
+          "url": "https://github.com/project-health1/repo/issues/15",
+          "repository": {
+            "name": "repo",
+            "owner": {
+              "login": "project-health1",
+              "__typename": "User"
+            },
+            "__typename": "Repository"
+          }
+        }
+      ],
+      "__typename": "SearchResultItemConnection"
+    }
+  }
+}
