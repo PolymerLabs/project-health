@@ -33,6 +33,7 @@ app-element > :not([selected]) {
 
 @media (max-width: 1550px) {
   app-element {
+    flex: 1;
     margin-left: calc(var(--nav-size) + var(--grid-size));
     width: auto;
   }

@@ -1,0 +1,28 @@
+@import "./variables/dimens.css";
+@import "./variables/colors.css";
+
+github-app-config {
+  display: block;
+}
+
+.editor-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.github-app-defaults {
+  margin-right: var(--padding);
+}
+.github-app-config {
+  margin-left: var(--padding);
+}
+
+.text-editor {
+  min-height: 230px;
+  flex: 1;
+}
+
+.button-container {
+  margin-top: var(--padding);
+  text-align: right;
+}

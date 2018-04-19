@@ -70,7 +70,9 @@ export interface IncomingDashResponse {
   prs: PullRequest[];
 }
 
-export interface IssuesResponse { issues: Issue[]; }
+export interface IssuesResponse {
+  issues: Issue[];
+}
 
 export interface Review {
   author: string;
@@ -78,7 +80,9 @@ export interface Review {
   reviewState: 'PENDING'|'COMMENTED'|'APPROVED'|'CHANGES_REQUESTED'|'DISMISSED';
 }
 
-export interface GenericStatusResponse { status: string; }
+export interface GenericStatusResponse {
+  status: string;
+}
 
 export interface LastKnownResponse {
   lastKnownUpdate: string|null;
@@ -95,6 +99,35 @@ export interface UserResponse {
   login: string;
   avatarUrl: string|null;
   repos: Repository[];
+}
+
+export interface OrgSettings {
+  fileContents: string;
+  lastUpdated: number;
+  editors: string[];
+}
+
+export interface JSONAPIErrorResponse {
+  error: {
+    code: string,
+    message: string,
+  };
+}
+
+export interface JSONAPIDataResponse<T> {
+  data: T;
+}
+
+export type JSONAPIResponse<T> = JSONAPIErrorResponse|JSONAPIDataResponse<T>;
+
+export interface GithubAppInstall {
+  installationId: number;
+  permissions: {[name: string]: string;};
+  events: string[];
+  repository_selection: 'all'|'selected';
+  type: 'User'|'Organization';
+  login: string;
+  avatar_url: string;
 }
 
 /** Not necessarily actionable. */

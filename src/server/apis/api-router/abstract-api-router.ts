@@ -1,5 +1,6 @@
 import * as express from 'express';
 
+import {JSONAPIDataResponse} from '../../../types/api';
 import {UserRecord} from '../../models/userModel';
 
 import * as responseHelper from './response-helper';
@@ -16,10 +17,9 @@ export interface ErrorAPIResponse {
   error: {code: string; message: string;};
 }
 
-export interface DataAPIResponse<T> {
+export interface DataAPIResponse<T> extends JSONAPIDataResponse<T> {
   statusCode: number;
   cookies?: CookiesObject;
-  data: T;
 }
 
 // tslint:disable-next-line:no-any

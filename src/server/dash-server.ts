@@ -10,6 +10,7 @@ import * as path from 'path';
 import {getRouter as getAutomergeRouter} from './apis/auto-merge';
 import {getRouter as getCheckPRStateRouter} from './apis/check-pr-state';
 import {getRouter as getDashRouter} from './apis/dash-data';
+import {getRouter as getGithubAppRouter} from './apis/github-app';
 import {getRouter as getGitHubHookRouter} from './apis/github-webhook';
 import {getRouter as getIssuesRouter} from './apis/issues';
 import {getRouter as getLastViewedRouter} from './apis/last-viewed';
@@ -123,6 +124,7 @@ export class DashServer {
     app.use('/api/issues/', getIssuesRouter());
     app.use('/api/last-viewed/', getLastViewedRouter());
     app.use('/api/user/', getUserRouter());
+    app.use('/api/github-app/', getGithubAppRouter());
 
     // Serve app shell on all other routes.
     app.get(
