@@ -9,9 +9,7 @@ export type FilterLegendItem = {
 
 import {BaseElement, property} from './base-element.js';
 
-export interface FilterLegendEvent {
-  state: FilterState;
-}
+export interface FilterLegendEvent { state: FilterState; }
 
 export class FilterLegend extends BaseElement {
   @property() filters: FilterLegendItem[] = [];

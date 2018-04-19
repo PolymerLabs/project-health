@@ -5,7 +5,6 @@ import '../dash/push-controller.js';
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import {BaseElement} from '../components/base-element.js';
 import {FilterLegendEvent} from '../components/filter-legend.js';
-import {NavElement} from '../components/nav-element.js';
 import {dashData} from '../dash/dash-data.js';
 import {DashPollController} from '../dash/dash-poll-controller.js';
 import {filterController, FilterId} from '../dash/filter-controller.js';
@@ -138,17 +137,6 @@ class DashPage extends BaseElement {
     await updateApplicationState();
   }
 
-  // TODO: this should live in the nav itself.
-  _renderNavUser() {
-    const profileData = dashData.getProfileData();
-    if (!profileData) {
-      return;
-    }
-
-    const nav = (document.querySelector('nav-element') as NavElement);
-    nav.user = profileData;
-  }
-
   _createFilters() {
     filterController.createFilter('outgoing-prs', this.filters['outgoing-prs']);
     filterController.createFilter('incoming-prs', this.filters['incoming-prs']);
@@ -168,7 +156,6 @@ class DashPage extends BaseElement {
   // incrementally updated. Currently we wait for all the data before rendering.
   render() {
     const user = dashData.getProfileData();
-    this._renderNavUser();
 
     return html`
 <div class="title-container">
