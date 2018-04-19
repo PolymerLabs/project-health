@@ -1,6 +1,6 @@
 import * as express from 'express';
 
-import {JSONAPIDataResponse} from '../../../types/api';
+import {JSONAPIDataResponse, JSONAPIErrorResponse} from '../../../types/api';
 import {UserRecord} from '../../models/userModel';
 
 import * as responseHelper from './response-helper';
@@ -12,9 +12,8 @@ export interface CookiesObject {
   };
 }
 
-export interface ErrorAPIResponse {
+export interface ErrorAPIResponse extends JSONAPIErrorResponse {
   statusCode: number;
-  error: {code: string; message: string;};
 }
 
 export interface DataAPIResponse<T> extends JSONAPIDataResponse<T> {
