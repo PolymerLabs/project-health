@@ -109,6 +109,21 @@ test.serial(
     });
 
 test.serial(
+    '[usermodel]: should return null for user with featureLastViewed',
+    async (t) => {
+      const exampleRecord = newFakeUserRecord();
+      delete exampleRecord.featureLastViewed;
+
+      await firestore()
+          .collection(USERS_COLLECTION_NAME)
+          .doc(exampleRecord.username)
+          .set(exampleRecord);
+
+      const result = await userModel.getUserRecord(exampleRecord.username);
+      t.deepEqual(result, null);
+    });
+
+test.serial(
     '[usermodel]: should return data for existing user with valid data',
     async (t) => {
       const exampleRecord = newFakeUserRecord();
@@ -161,7 +176,73 @@ test.serial('[usermodel]: should return a new user token', async (t) => {
   t.deepEqual(result, exampleRecord);
 });
 
+test.serial(
+    '[usermodel]: should update token details and maintain stored values',
+    async (t) => {
+      // This ensures enabledAt is the same
+      const fakeTimer = t.context.sandbox.useFakeTimers();
 
+      let githubQueryCount = 0;
+      t.context.sandbox.stub(githubFactory, 'github').callsFake(() => {
+        return {
+          query: () => {
+            githubQueryCount++;
+            return {
+              data: {
+                viewer: {
+                  login: 'example-login',
+                  name: `example-name-${githubQueryCount}`,
+                  avatarUrl: `https://example-avatar-url/${githubQueryCount}`,
+                }
+              }
+            };
+          }
+        };
+      });
+
+      const FIRST_TOKEN = 'first-token';
+      const SECOND_TOKEN = 'second-token';
+      t.context.sandbox.stub(crypto, 'randomBytes')
+          .onFirstCall()
+          .callsFake(() => {
+            return {
+              toString: () => {
+                return FIRST_TOKEN;
+              },
+            };
+          })
+          .onSecondCall()
+          .callsFake(() => {
+            return {
+              toString: () => {
+                return SECOND_TOKEN;
+              },
+            };
+          });
+
+      const firstToken = await userModel.generateNewUserToken(
+          'github-token-1', ['repo', 'scope-1']);
+      t.deepEqual(firstToken, FIRST_TOKEN);
+
+      userModel.markUserForUpdate('example-login');
+      fakeTimer.tick(1000);
+
+      const secondToken = await userModel.generateNewUserToken(
+          'github-token-2', ['repo', 'scope-2']);
+      t.deepEqual(secondToken, SECOND_TOKEN);
+
+      const result = await userModel.getUserRecordFromToken(SECOND_TOKEN);
+      if (!result) {
+        throw new Error('Expected a valid user record');
+      }
+      t.is(result.username, 'example-login');
+      t.is(result.githubToken, 'github-token-2');
+      t.deepEqual(result.scopes, ['repo', 'scope-2']);
+      t.is(result.fullname, 'example-name-2');
+      t.is(result.avatarUrl, 'https://example-avatar-url/2');
+      t.deepEqual(result.featureLastViewed, {enabledAt: 0});
+      t.truthy(result.lastKnownUpdate);
+    });
 
 test.serial('[usermodel]: should return null for no token', async (t) => {
   const result = await userModel.getUserRecordFromToken(undefined);
@@ -242,3 +323,10 @@ test.serial(
       value = await userModel.getAllLastViewedInfo('example-user');
       t.deepEqual(value['test-issue-id'], 1);
     });
+
+test.serial('[usermodel]: should update last viewed timestamp', async (t) => {
+  await userModel.updateLastViewed('example-user', 'test-issue-id', 1);
+  await userModel.updateLastViewed('example-user', 'test-issue-id', 2);
+  const value = await userModel.getAllLastViewedInfo('example-user');
+  t.deepEqual(value['test-issue-id'], 2);
+});

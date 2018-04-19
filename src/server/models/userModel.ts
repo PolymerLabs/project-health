@@ -96,12 +96,14 @@ class UserModel {
     const userDocument =
         await firestore().collection(USERS_COLLECTION_NAME).doc(username);
 
-    let details: UserRecord = {
+    const latestDetails = {
       username,
       avatarUrl: loginResult.data.viewer.avatarUrl,
       fullname: loginResult.data.viewer.name,
       scopes,
       githubToken,
+    };
+    const defaultValues = {
       lastKnownUpdate: null,
       featureLastViewed: {
         enabledAt: Date.now(),
@@ -109,14 +111,9 @@ class UserModel {
     };
 
     const existingUserSnapshot = await userDocument.get();
-    if (existingUserSnapshot.exists) {
-      const existingData = existingUserSnapshot.data();
-      const combinedDetails = Object.assign(details, existingData);
-      // Only use combined details if they work, other fall back to what works
-      if (this.validateDetails(combinedDetails)) {
-        details = combinedDetails;
-      }
-    }
+    const existingData = existingUserSnapshot.data() || {};
+
+    const details = Object.assign(defaultValues, existingData, latestDetails);
 
     // Final validation - this should never fail!
     if (!this.validateDetails(details)) {
