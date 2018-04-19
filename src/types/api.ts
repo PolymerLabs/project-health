@@ -250,7 +250,7 @@ export interface Issue {
   status: IssueStatus;
 }
 
-export type IssueStatus = Assigned|Author|Involved|UnknownStatus;
+export type IssueStatus = Assigned|Author|Involved|UnknownStatus|Untriaged;
 
 interface Assigned {
   type: 'Assigned';
@@ -262,6 +262,10 @@ interface Author {
 
 interface Involved {
   type: 'Involved';
+}
+
+interface Untriaged {
+  type: 'Untriaged';
 }
 
 export type Popularity = number&{

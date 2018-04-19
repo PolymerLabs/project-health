@@ -22,6 +22,8 @@ function statusToDisplay(issue: api.Issue): StatusDisplay {
         text: 'You are involved with this issue',
         type: issue.hasNewActivity ? 'actionable' : 'passive'
       };
+    case 'Untriaged':
+      return {text: 'Untriaged', type: 'actionable'};
     case 'UnknownStatus':
       return {text: '', type: 'activity'};
     default:

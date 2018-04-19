@@ -3,7 +3,7 @@ import {Server} from 'http';
 import * as sinon from 'sinon';
 import {SinonSandbox} from 'sinon';
 
-import {handleActivityIssues, handleAssignedIssues} from '../../../server/apis/issues';
+import {handleActivityIssues, handleAssignedIssues, handleUntriagedIssues} from '../../../server/apis/issues';
 import {userModel} from '../../../server/models/userModel';
 import {initFirestore} from '../../../utils/firestore';
 import {github, initGithub} from '../../../utils/github';
@@ -632,3 +632,49 @@ test.serial('[issueActivity]: should return Author status types', async (t) => {
                 status: {type: 'Author'},
               }]);
 });
+
+test.serial(
+    '[untriagedIssues]: should retrieve untriaged issues for a repo',
+    async (t) => {
+      const userRecord = newFakeUserRecord();
+      userRecord.username = 'project-health1';
+
+      const request = newFakeRequest();
+      request.params = {owner: 'project-health1', repo: 'repo'};
+
+      const response = await handleUntriagedIssues(request, userRecord);
+      t.is(response.statusCode, 200, 'Response status code');
+      if ('error' in response) {
+        throw new Error('Expected a data response');
+      }
+      t.deepEqual(response.data, {
+        issues: [
+          {
+            id: 'MDU6SXNzdWUzMDgyMTA0Njc=',
+            title: 'I found a bug.',
+            repo: 'repo',
+            owner: 'project-health1',
+            author: 'project-health2',
+            avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
+            createdAt: 1521849856000,
+            url: 'https://github.com/project-health1/repo/issues/16',
+            popularity: 1,
+            hasNewActivity: false,
+            status: {type: 'Untriaged'},
+          },
+          {
+            id: 'MDU6SXNzdWUzMDgyMTAyNzM=',
+            title: 'Self Assigned Issue',
+            repo: 'repo',
+            owner: 'project-health1',
+            author: 'project-health1',
+            avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
+            createdAt: 1521849762000,
+            url: 'https://github.com/project-health1/repo/issues/15',
+            popularity: 1,
+            hasNewActivity: false,
+            status: {type: 'Untriaged'},
+          },
+        ]
+      });
+    });

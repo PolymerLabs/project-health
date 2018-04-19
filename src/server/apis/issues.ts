@@ -14,26 +14,19 @@ import * as responseHelper from './api-router/response-helper';
 
 async function getIssueData(
     userRecord: UserRecord,
-    queryCb: (assigneeLogin: string) => string,
-    statusCb: (issue: issueFieldsFragment, assigneeLogin: string) =>
-        IssueStatus,
-    request: express.Request,
+    login: string,
+    query: string,
+    statusCb: (issue: issueFieldsFragment) => IssueStatus,
+    _request: express.Request,
     ): Promise<APIResponse> {
-  let assigneeLogin = userRecord.username;
-  if (request.query.login) {
-    assigneeLogin = request.query.login;
-  }
-
   let lastViewedInfo: {[issue: string]: number}|null = null;
-  if (assigneeLogin === userRecord.username) {
-    lastViewedInfo = await userModel.getAllLastViewedInfo(assigneeLogin);
+  if (login === userRecord.username) {
+    lastViewedInfo = await userModel.getAllLastViewedInfo(userRecord.username);
   }
 
   const issueResult = await github().query<IssuesSearchQuery>({
     query: issueQuery,
-    variables: {
-      query: queryCb(assigneeLogin),
-    },
+    variables: {query},
     fetchPolicy: 'network-only',
     context: {token: userRecord.githubToken}
   });
@@ -56,7 +49,7 @@ async function getIssueData(
 
       let hasNewActivity = false;
       if (lastViewedInfo) {
-        const lastActivity = await getIssueLastActivity(assigneeLogin, node);
+        const lastActivity = await getIssueLastActivity(login, node);
         if (lastActivity) {
           hasNewActivity = await issueHasNewActivity(
               userRecord, lastActivity, lastViewedInfo[node.id]);
@@ -74,7 +67,7 @@ async function getIssueData(
         url: node.url,
         popularity: fetchPopularity(node),
         hasNewActivity,
-        status: statusCb(node, assigneeLogin),
+        status: statusCb(node),
       });
     }
   }
@@ -86,32 +79,50 @@ async function getIssueData(
 
 export async function handleAssignedIssues(
     request: express.Request, userRecord: UserRecord): Promise<APIResponse> {
-  const queryCb = (assigneeLogin: string) =>
-      `assignee:${assigneeLogin} is:issue state:open archived:false`;
-  const statusCb = (): IssueStatus => {
+  // Emulated user or authed user.
+  const login = request.query.login || userRecord.username;
+  const query = `assignee:${login} is:issue state:open archived:false`;
+  const calculateStatus = (): IssueStatus => {
     return {type: 'Assigned'};
   };
-  return await getIssueData(userRecord, queryCb, statusCb, request);
+  return await getIssueData(userRecord, login, query, calculateStatus, request);
 }
 
 export async function handleActivityIssues(
     request: express.Request, userRecord: UserRecord): Promise<APIResponse> {
-  const queryCb = (assigneeLogin: string) =>
-      `is:issue archived:false is:open involves:${assigneeLogin} -assignee:${
-          assigneeLogin}`;
-  const statusCb = (node: issueFieldsFragment, assigneeLogin: string) => {
+  // Emulated user or authed user.
+  const login = request.query.login || userRecord.username;
+  const query =
+      `is:issue archived:false is:open involves:${login} -assignee:${login}`;
+  const calculateStatus = (node: issueFieldsFragment) => {
     let status: IssueStatus = {
       type: 'Involved',
     };
 
-    if (node.author && node.author.login === assigneeLogin) {
+    if (node.author && node.author.login === login) {
       status = {
         type: 'Author',
       };
     }
     return status;
   };
-  return await getIssueData(userRecord, queryCb, statusCb, request);
+  return await getIssueData(userRecord, login, query, calculateStatus, request);
+}
+
+/**
+ * Given owner/repo, this will return all the untriaged issues for that repo.
+ */
+export async function handleUntriagedIssues(
+    request: express.Request, userRecord: UserRecord): Promise<APIResponse> {
+  const params = request.params as {owner: string, repo: string};
+  // Do not allow emulation of user.
+  const query = `is:issue state:open archived:false no:label repo:${
+      params.owner}/${params.repo}`;
+  const calculateStatus = (): IssueStatus => {
+    return {type: 'Untriaged'};
+  };
+  return await getIssueData(
+      userRecord, userRecord.username, query, calculateStatus, request);
 }
 
 /**
@@ -132,6 +143,7 @@ export function getRouter(): express.Router {
   const issueRouter = new PrivateAPIRouter();
   issueRouter.get('/assigned/', handleAssignedIssues);
   issueRouter.get('/activity/', handleActivityIssues);
+  issueRouter.get('/untriaged/:owner/:repo', handleUntriagedIssues);
 
   return issueRouter.router;
 }
@@ -185,6 +197,7 @@ fragment commentFields on Issue {
   }
 }`;
 
+// TODO: This should support cursoring.
 const issueQuery = gql`
 query IssuesSearch($query: String!){
   search(query:$query,type:ISSUE,last:10) {
