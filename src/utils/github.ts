@@ -8,6 +8,11 @@ import fetch from 'node-fetch';
 import * as request from 'request-promise-native';
 import {promisify} from 'util';
 
+interface RestOpts {
+  parseJSON?: boolean;
+  customHeaders?: {[name: string]: string};
+}
+
 // tslint:disable-next-line:no-require-imports
 const schema = require('../types/github-schema.json');
 
@@ -116,20 +121,31 @@ class GitHub {
     }
   }
 
+  private finaliseOpts(opts?: RestOpts): RestOpts {
+    return Object.assign(
+        {
+          parseJSON: true,
+        },
+        opts);
+  }
+
   // tslint:disable-next-line:no-any
-  async get(path: string, token: string, parseJSON = true): Promise<any> {
+  async get(path: string, token: string, opts?: RestOpts): Promise<any> {
+    opts = this.finaliseOpts(opts);
     const query = {
       url: this.jsonUrl + '/' + path,
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `token ${token}`,
-        'User-Agent': 'Project Health Bot',
-      },
+      headers: Object.assign(
+          {
+            'Accept': 'application/json',
+            'Authorization': `token ${token}`,
+            'User-Agent': 'Project Health Bot',
+          },
+          opts.customHeaders),
       json: true,
       resolveWithFullResponse: false,
       simple: true,
     };
-    if (!parseJSON) {
+    if (!opts.parseJSON) {
       query.json = false;
       query.resolveWithFullResponse = true;
       query.simple = false;
@@ -137,24 +153,27 @@ class GitHub {
     return await request.get(query);
   }
 
-  async put(path: string, userToken: string, body: {}, parseJSON = true):
+  async put(path: string, userToken: string, body: {}, opts?: RestOpts):
       // tslint:disable-next-line:no-any
       Promise<any> {
+    opts = this.finaliseOpts(opts);
     const token = userToken || process.env.GITHUB_TOKEN;
     const query = {
       url: this.jsonUrl + '/' + path,
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `token ${token}`,
-        'User-Agent': 'Project Health Bot',
-        'Content-Type': 'application/json',
-      },
+      headers: Object.assign(
+          {
+            'Accept': 'application/json',
+            'Authorization': `token ${token}`,
+            'User-Agent': 'Project Health Bot',
+            'Content-Type': 'application/json',
+          },
+          opts.customHeaders),
       body,
       json: true,
       resolveWithFullResponse: false,
       simple: true,
     };
-    if (!parseJSON) {
+    if (!opts.parseJSON) {
       query.json = false;
       query.resolveWithFullResponse = true;
       query.simple = false;
@@ -162,28 +181,58 @@ class GitHub {
     return await request.put(query);
   }
 
-  async post(path: string, token: string, body: {}, parseJSON = true):
+  async post(path: string, token: string, body: {}, opts?: RestOpts):
       // tslint:disable-next-line:no-any
       Promise<any> {
+    opts = this.finaliseOpts(opts);
     const query = {
       url: this.jsonUrl + '/' + path,
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `token ${token}`,
-        'User-Agent': 'Project Health Bot',
-        'Content-Type': 'application/json',
-      },
+      headers: Object.assign(
+          {
+            'Accept': 'application/json',
+            'Authorization': `token ${token}`,
+            'User-Agent': 'Project Health Bot',
+            'Content-Type': 'application/json',
+          },
+          opts.customHeaders),
       body,
       json: true,
       resolveWithFullResponse: false,
       simple: true,
     };
-    if (!parseJSON) {
+    if (!opts.parseJSON) {
       query.json = false;
       query.resolveWithFullResponse = true;
       query.simple = false;
     }
     return await request.post(query);
+  }
+
+  async patch(path: string, token: string, body: {}, opts?: RestOpts):
+      // tslint:disable-next-line:no-any
+      Promise<any> {
+    opts = this.finaliseOpts(opts);
+    const query = {
+      url: this.jsonUrl + '/' + path,
+      headers: Object.assign(
+          {
+            'Accept': 'application/json',
+            'Authorization': `token ${token}`,
+            'User-Agent': 'Project Health Bot',
+            'Content-Type': 'application/json',
+          },
+          opts.customHeaders),
+      body,
+      json: true,
+      resolveWithFullResponse: false,
+      simple: true,
+    };
+    if (!opts.parseJSON) {
+      query.json = false;
+      query.resolveWithFullResponse = true;
+      query.simple = false;
+    }
+    return await request.patch(query);
   }
 
   async delete(path: string, token: string): Promise<void> {

@@ -18,6 +18,7 @@ import {getRouter as getLoginRouter} from './apis/login';
 import {getRouter as getPushSubRouter} from './apis/push-subscription';
 import {getRouter as getUpdatesRouter} from './apis/updates';
 import {getRouter as getUserRouter} from './apis/user';
+import {configureBot} from './controllers/bot-controller';
 import {enforceHTTPS} from './utils/enforce-https';
 import {performGitHubRedirect} from './utils/perform-github-redirect';
 import {requireLogin} from './utils/require-login';
