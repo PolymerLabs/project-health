@@ -30,8 +30,9 @@ async function launch() {
   initGithub();
   initFirestore();
 
+  const port = Number(process.env.PORT || '') || 8080;
   const server = new DashServer();
-  const serverAddress = await server.listen();
+  const serverAddress = await server.listen(port);
 
   console.log('project health server listening');
   console.log(serverAddress);

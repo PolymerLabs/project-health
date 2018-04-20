@@ -3,6 +3,13 @@ import {firestore} from '../../utils/firestore';
 const GITHUB_APP_COLLECTION_NAME = 'github-apps';
 const GITHUB_APP_REPO_COLLECTION_NAME = 'repositories';
 
+export interface GithubRepo {
+  id: string;
+  databaseId: number;
+  name: string;
+  nameWithOwner: string;
+}
+
 interface GithubAppInstall {
   installationId: number;
   permissions: {[name: string]: string;};
@@ -11,13 +18,6 @@ interface GithubAppInstall {
   type: 'User'|'Organization';
   login: string;
   avatar_url: string;
-}
-
-export interface GithubRepo {
-  id: string;
-  databaseId: number;
-  name: string;
-  nameWithOwner: string;
 }
 
 class GithubAppsModel {
@@ -55,6 +55,21 @@ class GithubAppsModel {
       }
       return true;
     });
+  }
+
+  async getInstallation(installId: number): Promise<GithubAppInstall|null> {
+    const githubCollection =
+        await firestore().collection(GITHUB_APP_COLLECTION_NAME);
+
+    const querySnapshot =
+        await githubCollection.where('installationId', '==', installId).get();
+    if (querySnapshot.docs.length === 0) {
+      return null;
+    } else if (querySnapshot.docs.length > 1) {
+      throw new Error(`Found multiple docs linked to ID: ${installId}`);
+    } else {
+      return querySnapshot.docs[0].data() as GithubAppInstall;
+    }
   }
 }
 
