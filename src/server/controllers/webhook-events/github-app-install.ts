@@ -18,7 +18,7 @@ export interface InstallHook {
       type: 'User'|'Organization',
     }
   };
-  repositories: Array<{
+  repositories?: Array<{
     id: number,
     name: string,
     full_name: string,
@@ -38,6 +38,14 @@ async function handleNewAppInstall(hookBody: InstallHook) {
       nameWithOwner
     }`,
   ];
+
+  if (!hookBody.repositories) {
+    return {
+      handled: false,
+      notifications: null,
+      message: 'No repositories defined.',
+    };
+  }
 
   for (const repo of hookBody.repositories) {
     queries.push(`repository(owner:"${owner}" name:"${repo.name}") {
@@ -92,10 +100,22 @@ async function handleNewAppInstall(hookBody: InstallHook) {
   };
 }
 
+async function handleDeleteApp(hookBody: InstallHook) {
+  const installLogin = hookBody.installation.account.login;
+  await githubAppModel.deleteInstallation(installLogin);
+  return {
+    handled: true,
+    notifications: null,
+    message: 'Deletion recorded on backend',
+  };
+}
+
 export async function handleGithubAppInstall(hookBody: InstallHook):
     Promise<WebHookHandleResponse> {
   if (hookBody.action === 'created') {
     return handleNewAppInstall(hookBody);
+  } else if (hookBody.action === 'deleted') {
+    return handleDeleteApp(hookBody);
   }
 
   return {

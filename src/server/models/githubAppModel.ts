@@ -33,6 +33,16 @@ class GithubAppsModel {
     }
   }
 
+  async deleteInstallation(installLogin: string): Promise<void> {
+    const installDocRef = await firestore()
+                              .collection(GITHUB_APP_COLLECTION_NAME)
+                              .doc(installLogin);
+    const docSnapshot = await installDocRef.get();
+    if (docSnapshot.exists) {
+      await installDocRef.delete();
+    }
+  }
+
   async addRepos(orgOrUser: string, allRepos: GithubRepo[]) {
     return firestore().runTransaction(async (transaction) => {
       for (const repo of allRepos) {
