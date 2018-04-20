@@ -9,7 +9,7 @@ import {filterController, FilterId} from '../dash/filter-controller.js';
 import {genericIssueListTemplate} from '../dash/issues.js';
 
 class RepoPage extends BaseElement {
-  @property({attribute: true}) path = '';
+  @property({attribute: true}) urlparams = '';
   @property() untriaged: api.Issue[] = [];
   private cachedId = '';
   private filters: {[key: string]: [FilterLegendItem]} = {
@@ -24,15 +24,14 @@ class RepoPage extends BaseElement {
         'untriaged-issues', this.filters['untriaged-issues']);
   }
 
-  private async updatePath(path: string) {
-    const parts = path.split('/');
+  private async updateParams(urlparams: string) {
+    const parts = urlparams.split('/');
     await this.fetchData(parts[0], parts[1]);
   }
 
   private clearData() {
     this.untriaged = [];
   }
-
 
   private updateFilter(id: FilterId, event: CustomEvent) {
     const data = event.detail as FilterLegendEvent;
@@ -57,11 +56,11 @@ class RepoPage extends BaseElement {
   }
 
   render(): TemplateResult {
-    this.updatePath(this.path);
+    this.updateParams(this.urlparams);
 
     return html`
 <div class="title-container">
-  <h1 id="page-header">${this.path}</h1>
+  <h1 id="page-header">${this.urlparams}</h1>
 </div>
 
 <div id="assigned-issues">

@@ -14,6 +14,8 @@ class AppElement extends HTMLElement {
       const prefix = element.getAttribute('prefix');
       if (prefix) {
         this.modules.push(prefix);
+      } else {
+        console.error('Page prefix missing:', element);
       }
     }
 
@@ -35,8 +37,8 @@ class AppElement extends HTMLElement {
     }
 
     // Strip any leading slash.
-    const tailPath = path.substr(selectedModule.length + 1);
-    this.setVisiblePage(selectedModule, tailPath);
+    const urlParams = path.substr(selectedModule.length + 1);
+    this.setVisiblePage(selectedModule, urlParams);
 
     if (!this.loadedModules.includes(selectedModule)) {
       this.loadModule(selectedModule);
@@ -46,11 +48,11 @@ class AppElement extends HTMLElement {
   /**
    * Switches the visible page.
    */
-  setVisiblePage(selectedModule: string, path: string) {
+  setVisiblePage(selectedModule: string, urlParams: string) {
     for (const element of Array.from(this.children)) {
       if (element.getAttribute('prefix') === selectedModule) {
         element.setAttribute('selected', '');
-        element.setAttribute('path', path);
+        element.setAttribute('urlparams', urlParams);
       } else {
         element.removeAttribute('selected');
       }

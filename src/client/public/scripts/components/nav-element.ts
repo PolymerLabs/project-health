@@ -6,6 +6,7 @@ import {BaseElement, property} from './base-element.js';
 
 export class NavElement extends BaseElement {
   @property() data: api.UserResponse|null = null;
+  // Use property bindings to trigger renders on URL changes.
   @property() documentUrl = document.location.pathname;
 
   async connectedCallback() {
@@ -13,27 +14,9 @@ export class NavElement extends BaseElement {
     // TODO: change this to use the JSON API response
     this.data = (await response.json()).data as api.UserResponse;
 
-    document.body.addEventListener('url-changed', this.urlChanged.bind(this));
-  }
-
-  private urlChanged() {
-    this.documentUrl = document.location.pathname;
-  }
-
-  private userTemplate(): TemplateResult {
-    if (!this.data) {
-      return html``;
-    }
-
-    const selected = this.documentUrl === '/' ? 'selected' : '';
-
-    return html`
-      <a class$="nav-item ${selected}" href="/">
-        <img class="nav-item__avatar" src="${this.data.avatarUrl}"
-            alt="Avatar of ${this.data.login}" />
-        <div class="nav-item__name">${this.data.login}</div>
-      </a>
-    `;
+    document.body.addEventListener('url-changed', () => {
+      this.documentUrl = document.location.pathname;
+    });
   }
 
   private header(): TemplateResult {
@@ -45,15 +28,28 @@ export class NavElement extends BaseElement {
     `;
   }
 
-  private repoTemplate(repo: api.Repository): TemplateResult {
-    const href = `/repo/${repo.owner}/${repo.name}`;
+  private navItemTemplate(href: string, avatarUrl: string|null, title: string):
+      TemplateResult {
     const selected = this.documentUrl === href ? 'selected' : '';
     return html`
       <a class$="nav-item ${selected}" href="${href}">
-        <img class="nav-item__avatar" src="${repo.avatarUrl}">
-        <div class="nav-item__name">${repo.name}</div>
+        <img class="nav-item__avatar" src="${avatarUrl}">
+        <div class="nav-item__name">${title}</div>
       </a>
     `;
+  }
+
+  private userTemplate(): TemplateResult {
+    if (!this.data) {
+      return html``;
+    }
+
+    return this.navItemTemplate('/', this.data.avatarUrl, this.data.login);
+  }
+
+  private repoTemplate(repo: api.Repository): TemplateResult {
+    return this.navItemTemplate(
+        `/repo/${repo.owner}/${repo.name}`, repo.avatarUrl, repo.name);
   }
 
   render() {
