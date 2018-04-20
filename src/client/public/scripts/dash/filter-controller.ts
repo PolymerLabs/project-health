@@ -2,8 +2,8 @@ export type FilterState = {
   [type: string]: boolean
 };
 
-export type FilterId =
-    'outgoing-prs'|'incoming-prs'|'assigned-issues'|'issue-activity';
+export type FilterId = 'outgoing-prs'|'incoming-prs'|'assigned-issues'|
+    'issue-activity'|'untriaged-issues';
 
 export class FilterController {
   private filters: Map<FilterId, FilterState>;

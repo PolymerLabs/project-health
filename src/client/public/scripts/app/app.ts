@@ -11,7 +11,10 @@ class AppElement extends HTMLElement {
   connectedCallback() {
     document.body.addEventListener('url-changed', this.updatePage.bind(this));
     for (const element of Array.from(this.children)) {
-      this.modules.push(element.id);
+      const prefix = element.getAttribute('prefix');
+      if (prefix) {
+        this.modules.push(prefix);
+      }
     }
 
     // Initial load.
@@ -24,24 +27,30 @@ class AppElement extends HTMLElement {
   updatePage() {
     // Remove leading /
     const path = window.location.pathname.substring(1);
-    let module = 'dash';
-    if (this.modules.includes(path)) {
-      module = path;
+    let selectedModule = 'dash';
+    for (const prefix of this.modules) {
+      if (path.startsWith(prefix)) {
+        selectedModule = prefix;
+      }
     }
-    this.setVisiblePage(module);
 
-    if (!this.loadedModules.includes(module)) {
-      this.loadModule(module);
+    // Strip any leading slash.
+    const tailPath = path.substr(selectedModule.length + 1);
+    this.setVisiblePage(selectedModule, tailPath);
+
+    if (!this.loadedModules.includes(selectedModule)) {
+      this.loadModule(selectedModule);
     }
   }
 
   /**
    * Switches the visible page.
    */
-  setVisiblePage(module: string) {
+  setVisiblePage(selectedModule: string, path: string) {
     for (const element of Array.from(this.children)) {
-      if (element.id === module) {
+      if (element.getAttribute('prefix') === selectedModule) {
         element.setAttribute('selected', '');
+        element.setAttribute('path', path);
       } else {
         element.removeAttribute('selected');
       }
