@@ -24,8 +24,8 @@ class RepoPage extends BaseElement {
         'untriaged-issues', this.filters['untriaged-issues']);
   }
 
-  private async updateParams(urlparams: string) {
-    const parts = urlparams.split('/');
+  private async updateParams(urlParams: string) {
+    const parts = urlParams.split('/');
     await this.fetchData(parts[0], parts[1]);
   }
 
