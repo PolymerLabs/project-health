@@ -74,6 +74,15 @@ export interface IssuesResponse {
   issues: Issue[];
 }
 
+export interface Label {
+  name: string;
+  description: string|null;
+}
+
+export interface LabelsResponse {
+  labels: Label[];
+}
+
 export interface Review {
   author: string;
   createdAt: number;
@@ -250,7 +259,8 @@ export interface Issue {
   status: IssueStatus;
 }
 
-export type IssueStatus = Assigned|Author|Involved|UnknownStatus|Untriaged;
+export type IssueStatus =
+    Assigned|Author|Involved|UnknownStatus|Untriaged|Unassigned|AssignedTo;
 
 interface Assigned {
   type: 'Assigned';
@@ -266,6 +276,15 @@ interface Involved {
 
 interface Untriaged {
   type: 'Untriaged';
+}
+
+interface Unassigned {
+  type: 'Unassigned';
+}
+
+interface AssignedTo {
+  type: 'AssignedTo';
+  users: string[];
 }
 
 export type Popularity = number&{

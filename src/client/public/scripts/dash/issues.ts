@@ -26,6 +26,13 @@ function statusToDisplay(issue: api.Issue): StatusDisplay {
       return {text: 'Untriaged', type: 'actionable'};
     case 'UnknownStatus':
       return {text: '', type: 'activity'};
+    case 'Unassigned':
+      return {text: 'Unassigned', type: 'actionable'};
+    case 'AssignedTo':
+      return {
+        text: `Assigned to ${issue.status.users.join(', ')}`,
+        type: 'activity'
+      };
     default:
       const unknown: never = issue.status;
       throw new Error(`Unknown PullRequestStatus: ${unknown}`);
@@ -49,7 +56,7 @@ function popularityTemplate(popularity: api.Popularity) {
 }
 
 /**
- * Applies a filter to an array of issues
+ * Applies a filter to an array of issues.
  */
 function applyFilter(
     filter: FilterState|undefined, issues: api.Issue[]): api.Issue[] {

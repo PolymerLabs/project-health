@@ -41,8 +41,8 @@ export class FilterLegend extends BaseElement {
         }
       }
 
-      const detail: FilterLegendEvent = {state: result};
-      legend.dispatchEvent(new CustomEvent('legend-change', {detail}));
+      legend.dispatchEvent(new CustomEvent<FilterLegendEvent>(
+          'legend-change', {detail: {state: result}}));
     }
 
     const selectedClass =
