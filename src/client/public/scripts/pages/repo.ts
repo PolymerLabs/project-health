@@ -16,8 +16,8 @@ class RepoPage extends BaseElement {
   @property() filteredIssues: api.Issue[] = [];
   @property() labels: api.Label[] = [];
 
-  private owner: string = '';
-  private repo: string = '';
+  private owner = '';
+  private repo = '';
 
   private cachedId = '';
   private filters: {[key: string]: [FilterLegendItem]} = {

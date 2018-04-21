@@ -1,0 +1,89 @@
+{
+  "data": {
+    "repository": {
+      "labels": {
+        "pageInfo": {
+          "hasNextPage": false,
+          "endCursor": "Y3Vyc29yOnYyOpHOLn4vsQ==",
+          "__typename": "PageInfo"
+        },
+        "nodes": [
+          {
+            "name": "bug",
+            "description": "Serious issues",
+            "issues": {
+              "totalCount": 1,
+              "__typename": "IssueConnection"
+            },
+            "__typename": "Label"
+          },
+          {
+            "name": "duplicate",
+            "description": null,
+            "issues": {
+              "totalCount": 0,
+              "__typename": "IssueConnection"
+            },
+            "__typename": "Label"
+          },
+          {
+            "name": "enhancement",
+            "description": null,
+            "issues": {
+              "totalCount": 0,
+              "__typename": "IssueConnection"
+            },
+            "__typename": "Label"
+          },
+          {
+            "name": "help wanted",
+            "description": null,
+            "issues": {
+              "totalCount": 0,
+              "__typename": "IssueConnection"
+            },
+            "__typename": "Label"
+          },
+          {
+            "name": "good first issue",
+            "description": null,
+            "issues": {
+              "totalCount": 0,
+              "__typename": "IssueConnection"
+            },
+            "__typename": "Label"
+          },
+          {
+            "name": "invalid",
+            "description": null,
+            "issues": {
+              "totalCount": 0,
+              "__typename": "IssueConnection"
+            },
+            "__typename": "Label"
+          },
+          {
+            "name": "question",
+            "description": null,
+            "issues": {
+              "totalCount": 0,
+              "__typename": "IssueConnection"
+            },
+            "__typename": "Label"
+          },
+          {
+            "name": "wontfix",
+            "description": null,
+            "issues": {
+              "totalCount": 0,
+              "__typename": "IssueConnection"
+            },
+            "__typename": "Label"
+          }
+        ],
+        "__typename": "LabelConnection"
+      },
+      "__typename": "Repository"
+    }
+  }
+}

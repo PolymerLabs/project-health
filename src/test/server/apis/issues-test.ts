@@ -3,7 +3,7 @@ import {Server} from 'http';
 import * as sinon from 'sinon';
 import {SinonSandbox} from 'sinon';
 
-import {handleActivityIssues, handleAssignedIssues, handleUntriagedIssues} from '../../../server/apis/issues';
+import {handleActivityIssues, handleAssignedIssues, handleByLabel, handleLabels, handleUntriagedIssues} from '../../../server/apis/issues';
 import {userModel} from '../../../server/models/userModel';
 import {initFirestore} from '../../../utils/firestore';
 import {github, initGithub} from '../../../utils/github';
@@ -678,3 +678,50 @@ test.serial(
         ]
       });
     });
+
+test.serial('[issueLabels]: gets all used labels for a repo', async (t) => {
+  const userRecord = newFakeUserRecord();
+  userRecord.username = 'project-health1';
+
+  const request = newFakeRequest();
+  request.params = {owner: 'project-health1', repo: 'repo'};
+
+  const response = await handleLabels(request, userRecord);
+  t.is(response.statusCode, 200, 'Response status code');
+  if ('error' in response) {
+    throw new Error('Expected a data response');
+  }
+  t.deepEqual(
+      response.data, {labels: [{description: 'Serious issues', name: 'bug'}]});
+});
+
+test.serial('[issueGetByLabel]: should retrieve issue by label', async (t) => {
+  const userRecord = newFakeUserRecord();
+  userRecord.username = 'project-health1';
+
+  const request = newFakeRequest();
+  request.params = {owner: 'project-health1', repo: 'repo', labels: 'bug'};
+
+  const response = await handleByLabel(request, userRecord);
+  t.is(response.statusCode, 200, 'Response status code');
+  if ('error' in response) {
+    throw new Error('Expected a data response');
+  }
+  t.deepEqual(response.data, {
+    issues: [
+      {
+        id: 'MDU6SXNzdWUzMTY0NTU0NTM=',
+        title: 'Issue with label',
+        repo: 'repo',
+        owner: 'project-health1',
+        author: 'project-health1',
+        avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
+        createdAt: 1524279150000,
+        url: 'https://github.com/project-health1/repo/issues/18',
+        popularity: 1,
+        hasNewActivity: false,
+        status: {type: 'Unassigned'},
+      },
+    ]
+  });
+});
