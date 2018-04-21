@@ -64,14 +64,15 @@ class OrgConfig extends BaseElement {
   }
 
   render(): TemplateResult {
+    const title = this.orgName ? this.orgName : 'Org';
     if (this.errorMsg) {
-      return html`<h2>Org settings</h2>
+      return html`<h2>${title} settings</h2>
 
       <p>${this.errorMsg}</p>`;
     }
 
     if (!this.initialised) {
-      return html`<h2>${this.orgName} settings</h2>
+      return html`<h2>${title} settings</h2>
 
       <p>Loading....</p>`;
     }
@@ -81,7 +82,7 @@ class OrgConfig extends BaseElement {
       configDisplay = this.currentConfig;
     }
 
-    return html`<h2>${this.orgName} settings</h2>
+    return html`<h2>${title} settings</h2>
 
   <div class="editor-container">
 <textarea class="github-app-defaults text-editor">

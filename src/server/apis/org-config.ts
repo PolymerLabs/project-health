@@ -8,14 +8,15 @@ import {UserRecord} from '../models/userModel';
 import {PrivateAPIRouter} from './api-router/private-api-router';
 import * as responseHelper from './api-router/response-helper';
 
-export async function handleGetConfigRequest(request: express.Request) {
+export async function handleGetConfigRequest(
+    request: express.Request, userRecord: UserRecord) {
   const orgName = request.params.orgName;
   if (!orgName) {
     return responseHelper.error(
         'no-org-name', 'You must provide an \'orgName\' to use this API.');
   }
 
-  const details = await settingsModel.getOrgSettings(orgName);
+  const details = await settingsModel.getOrgSettings(orgName, userRecord);
   return responseHelper.data<OrgSettings|null>(details);
 }
 
@@ -42,8 +43,7 @@ export async function handleSaveConfigRequest(
   }
 
   try {
-    await settingsModel.setOrgSettings(
-        orgName, newSettings, userRecord.username);
+    await settingsModel.setOrgSettings(orgName, newSettings, userRecord);
   } catch (err) {
     return responseHelper.error('unable-to-save', err.message);
   }

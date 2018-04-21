@@ -37,8 +37,9 @@ test.afterEach.always(async (t) => {
 test.serial(
     '[org-config-api]: should handle no orgName when getting settings',
     async (t) => {
+      const userRecord = newFakeUserRecord();
       const request = newFakeRequest();
-      const response = await handleGetConfigRequest(request);
+      const response = await handleGetConfigRequest(request, userRecord);
       if (!('error' in response)) {
         throw new Error('Expected error response');
       }
@@ -58,9 +59,10 @@ test.serial(
             t.is(orgName, 'example-org', 'Org name');
             return injectedSettings;
           });
+      const userRecord = newFakeUserRecord();
       const request = newFakeRequest();
       request.params.orgName = 'example-org';
-      const response = await handleGetConfigRequest(request);
+      const response = await handleGetConfigRequest(request, userRecord);
       if (!('data' in response)) {
         throw new Error('Expected data response');
       }
@@ -107,8 +109,12 @@ test.serial(
     });
 
 test.serial(
-    '[org-config-api]: should handle non-JSON5 string settings when saving settings',
+    '[org-config-api]: should handle settingsModel throws string settings when saving settings',
     async (t) => {
+      t.context.sandbox.stub(settingsModel, 'setOrgSettings').callsFake(() => {
+        throw new Error('Injected Error.');
+      });
+
       const userRecord = newFakeUserRecord();
       const request = newFakeRequest();
       request.params.orgName = 'example-org';
@@ -121,8 +127,10 @@ test.serial(
     });
 
 test.serial(
-    '[org-config-api]: should handle saving valid JSON5 string settings when saving settings',
+    '[org-config-api]: should handle successful saving of settings',
     async (t) => {
+      t.context.sandbox.stub(settingsModel, 'setOrgSettings')
+          .callsFake(() => {});
       const userRecord = newFakeUserRecord();
       const request = newFakeRequest();
       request.params.orgName = 'example-org';
