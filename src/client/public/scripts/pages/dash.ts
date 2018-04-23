@@ -146,9 +146,8 @@ class DashPage extends BaseElement {
         'issue-activity', this.filters['issue-activity']);
   }
 
-  _updateFilter(id: FilterId, event: CustomEvent) {
-    const data = event.detail as FilterLegendEvent;
-    filterController.updateFilter(id, data.state);
+  _updateFilter(id: FilterId, event: CustomEvent<FilterLegendEvent>) {
+    filterController.updateFilter(id, event.detail.state);
     this.requestRender();
   }
 

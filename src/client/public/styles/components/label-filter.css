@@ -1,0 +1,34 @@
+@import "../variables/dimens.css";
+@import "../variables/colors.css";
+
+label-filter {
+  user-select: none;
+}
+
+label-filter .label-item {
+  display: inline-block;
+  height: 32px;
+  padding: 0 var(--grid-size);
+  margin-right: calc(var(--grid-size) / 2);
+  margin-bottom: calc(var(--grid-size) / 2);
+  box-sizing: border-box;
+
+  border: 1px solid #DADCE0;
+  border-radius: 16px;
+
+  color: #3C4043;
+  font-family: var(--heading-font);
+  font-weight: 500;
+  line-height: 30px;
+  cursor: pointer;
+}
+
+label-filter .label-item:hover {
+  background-color: rgba(128, 134, 139, 0.04);
+}
+
+label-filter .label-item.selected {
+  background-color: #E8F0FE;
+  border-color: #E8F0FE;
+  color: #1967D2;
+}

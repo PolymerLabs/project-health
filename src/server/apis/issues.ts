@@ -1,8 +1,8 @@
 import * as express from 'express';
 import gql from 'graphql-tag';
 
-import {Issue, IssuesResponse, IssueStatus, Popularity} from '../../types/api';
-import {issueFieldsFragment, IssuesSearchQuery, popularityFieldsFragment} from '../../types/gql-types';
+import * as api from '../../types/api';
+import {issueFieldsFragment, IssuesSearchQuery, popularityFieldsFragment, RepoLabelsQuery, RepoLabelsQueryVariables} from '../../types/gql-types';
 import {github} from '../../utils/github';
 import {userModel, UserRecord} from '../models/userModel';
 import {getIssueLastActivity} from '../utils/get-issue-last-activity';
@@ -16,7 +16,7 @@ async function getIssueData(
     userRecord: UserRecord,
     login: string,
     query: string,
-    statusCb: (issue: issueFieldsFragment) => IssueStatus,
+    statusCb: (issue: issueFieldsFragment) => api.IssueStatus,
     _request: express.Request,
     ): Promise<APIResponse> {
   let lastViewedInfo: {[issue: string]: number}|null = null;
@@ -31,7 +31,7 @@ async function getIssueData(
     context: {token: userRecord.githubToken}
   });
 
-  const issues: Issue[] = [];
+  const issues: api.Issue[] = [];
   if (issueResult.data.search.nodes) {
     for (const node of issueResult.data.search.nodes) {
       if (!node) {
@@ -72,7 +72,7 @@ async function getIssueData(
     }
   }
 
-  return responseHelper.data<IssuesResponse>({
+  return responseHelper.data<api.IssuesResponse>({
     issues,
   });
 }
@@ -82,7 +82,7 @@ export async function handleAssignedIssues(
   // Emulated user or authed user.
   const login = request.query.login || userRecord.username;
   const query = `assignee:${login} is:issue state:open archived:false`;
-  const calculateStatus = (): IssueStatus => {
+  const calculateStatus = (): api.IssueStatus => {
     return {type: 'Assigned'};
   };
   return await getIssueData(userRecord, login, query, calculateStatus, request);
@@ -95,7 +95,7 @@ export async function handleActivityIssues(
   const query =
       `is:issue archived:false is:open involves:${login} -assignee:${login}`;
   const calculateStatus = (node: issueFieldsFragment) => {
-    let status: IssueStatus = {
+    let status: api.IssueStatus = {
       type: 'Involved',
     };
 
@@ -118,11 +118,82 @@ export async function handleUntriagedIssues(
   // Do not allow emulation of user.
   const query = `is:issue state:open archived:false no:label repo:${
       params.owner}/${params.repo}`;
-  const calculateStatus = (): IssueStatus => {
+  const calculateStatus = (): api.IssueStatus => {
     return {type: 'Untriaged'};
   };
   return await getIssueData(
       userRecord, userRecord.username, query, calculateStatus, request);
+}
+
+/**
+ * Given owner/repo, this will return the list of issues that match the
+ * specified list of comma-separated labels.
+ */
+export async function handleByLabel(
+    request: express.Request, userRecord: UserRecord): Promise<APIResponse> {
+  const params =
+      request.params as {owner: string, repo: string, labels: string};
+  const labels = params.labels.split(',').map((l) => `label:"${l}"`);
+  const query = `is:issue state:open archived:false repo:${params.owner}/${
+      params.repo} ${labels.join(' ')}`;
+
+  const calculateStatus = (issue: issueFieldsFragment): api.IssueStatus => {
+    const assignees = [];
+    for (const user of issue.assignees.nodes || []) {
+      if (user) {
+        assignees.push(user.login);
+      }
+    }
+    if (!assignees.length) {
+      return {type: 'Unassigned'};
+    }
+    return {type: 'AssignedTo', users: assignees};
+  };
+
+  return await getIssueData(
+      userRecord, userRecord.username, query, calculateStatus, request);
+}
+
+/**
+ * Fetches labels for a repo.
+ */
+export async function handleLabels(
+    request: express.Request, userRecord: UserRecord): Promise<APIResponse> {
+  const params = request.params as {owner: string, repo: string};
+  const variables:
+      RepoLabelsQueryVariables = {owner: params.owner, repo: params.repo};
+  const results = github().cursorQuery<RepoLabelsQuery>(
+      {
+        query: labelsQuery,
+        variables,
+        context: {token: userRecord.githubToken},
+      },
+      (result) => result.repository && result.repository.labels);
+
+  const labels = [];
+  for await (const data of results) {
+    if (!data.repository) {
+      continue;
+    }
+    if (!data.repository.labels) {
+      continue;
+    }
+    for (const label of data.repository.labels.nodes || []) {
+      if (!label || label.issues.totalCount === 0) {
+        continue;
+      }
+      labels.push({
+        name: label.name,
+        description: label.description,
+      });
+    }
+  }
+
+  // Sort alphabetically.
+  labels.sort((a, b) => {
+    return a.name.localeCompare(b.name);
+  });
+  return responseHelper.data<api.LabelsResponse>({labels});
 }
 
 /**
@@ -132,11 +203,11 @@ export async function handleUntriagedIssues(
  * and the total number of reactions on the issue itself. This does *not*
  * include reactions on individual comments.
  */
-function fetchPopularity(fields: popularityFieldsFragment): Popularity {
+function fetchPopularity(fields: popularityFieldsFragment): api.Popularity {
   const score = fields.participants.totalCount * 2 +
       fields.commentTotal.count / 2 + fields.reactions.totalCount;
   const scaledScore = Math.round(score / 10);
-  return Math.min(Math.max(scaledScore, 1), 4) as Popularity;
+  return Math.min(Math.max(scaledScore, 1), 4) as api.Popularity;
 }
 
 export function getRouter(): express.Router {
@@ -144,6 +215,8 @@ export function getRouter(): express.Router {
   issueRouter.get('/assigned/', handleAssignedIssues);
   issueRouter.get('/activity/', handleActivityIssues);
   issueRouter.get('/untriaged/:owner/:repo', handleUntriagedIssues);
+  issueRouter.get('/labels/:owner/:repo', handleLabels);
+  issueRouter.get('/by-labels/:owner/:repo/:labels(*)', handleByLabel);
 
   return issueRouter.router;
 }
@@ -161,6 +234,11 @@ fragment issueFields on Issue {
   repository {
     name
     owner {
+      login
+    }
+  }
+  assignees(first: 3) {
+    nodes {
       login
     }
   }
@@ -214,4 +292,24 @@ query IssuesSearch($query: String!){
 ${issueFragment}
 ${popularityFragment}
 ${commentFragment}
+`;
+
+const labelsQuery = gql`
+query RepoLabels($owner: String!, $repo: String!, $cursor: String) {
+  repository(owner: $owner, name: $repo) {
+    labels(first: 20, after: $cursor) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        name
+        description
+        issues(states: OPEN) {
+          totalCount
+        }
+      }
+    }
+  }
+}
 `;

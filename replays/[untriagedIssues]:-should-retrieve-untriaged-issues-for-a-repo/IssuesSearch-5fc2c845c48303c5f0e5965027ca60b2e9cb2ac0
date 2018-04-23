@@ -36,6 +36,15 @@
               "__typename": "User"
             },
             "__typename": "Repository"
+          },
+          "assignees": {
+            "nodes": [
+              {
+                "login": "project-health1",
+                "__typename": "User"
+              }
+            ],
+            "__typename": "UserConnection"
           }
         },
         {
@@ -72,6 +81,15 @@
               "__typename": "User"
             },
             "__typename": "Repository"
+          },
+          "assignees": {
+            "nodes": [
+              {
+                "login": "project-health1",
+                "__typename": "User"
+              }
+            ],
+            "__typename": "UserConnection"
           }
         }
       ],

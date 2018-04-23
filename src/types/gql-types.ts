@@ -1375,6 +1375,16 @@ export interface IssuesSearchQuery {
             }
           ),
         },
+        // A list of Users assigned to this object.
+        assignees:  {
+          __typename: "UserConnection",
+          // A list of nodes.
+          nodes:  Array< {
+            __typename: "User",
+            // The username used to login.
+            login: string,
+          } | null > | null,
+        },
         // A list of comments associated with the Issue.
         commentTotal:  {
           __typename: "IssueCommentConnection",
@@ -1431,6 +1441,45 @@ export interface IssuesSearchQuery {
       }
     ) | null > | null,
   },
+};
+
+export interface RepoLabelsQueryVariables {
+  owner: string,
+  repo: string,
+  cursor?: string | null,
+};
+
+export interface RepoLabelsQuery {
+  // Lookup a given repository by the owner and repository name.
+  repository:  {
+    __typename: "Repository",
+    // A list of labels associated with the repository.
+    labels:  {
+      __typename: "LabelConnection",
+      // Information to aid in pagination.
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating forwards, the cursor to continue.
+        endCursor: string | null,
+      },
+      // A list of nodes.
+      nodes:  Array< {
+        __typename: "Label",
+        // Identifies the label name.
+        name: string,
+        // A brief description of this label.
+        description: string | null,
+        // A list of issues associated with this label.
+        issues:  {
+          __typename: "IssueConnection",
+          // Identifies the total count of items in the connection.
+          totalCount: number,
+        },
+      } | null > | null,
+    } | null,
+  } | null,
 };
 
 export interface ViewerLoginQuery {
@@ -1866,6 +1915,16 @@ export interface issueFieldsFragment {
         login: string,
       }
     ),
+  },
+  // A list of Users assigned to this object.
+  assignees:  {
+    __typename: "UserConnection",
+    // A list of nodes.
+    nodes:  Array< {
+      __typename: "User",
+      // The username used to login.
+      login: string,
+    } | null > | null,
   },
 };
 
