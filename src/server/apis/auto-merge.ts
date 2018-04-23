@@ -8,7 +8,7 @@ import {PrivateAPIRouter} from './api-router/private-api-router';
 import * as responseHelper from './api-router/response-helper';
 
 export async function handleSetMergeOpt(request: express.Request):
-    Promise<APIResponse> {
+    Promise<APIResponse<GenericStatusResponse>> {
   const owner = request.body.owner;
   const repo = request.body.repo;
   const num = request.body.number;

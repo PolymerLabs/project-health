@@ -13,7 +13,8 @@ import * as responseHelper from './api-router/response-helper';
  * is forbidden here.
  */
 export async function handleUserRequest(
-    _request: express.Request, userRecord: UserRecord): Promise<APIResponse> {
+    _request: express.Request,
+    userRecord: UserRecord): Promise<APIResponse<api.UserResponse>> {
   let repos = userRecord.repos;
   if (!repos) {
     repos =
@@ -21,7 +22,7 @@ export async function handleUserRequest(
     await userModel.updateRepos(userRecord.username, repos);
   }
 
-  return responseHelper.data<api.UserResponse>({
+  return responseHelper.data({
     login: userRecord.username,
     avatarUrl: userRecord.avatarUrl,
     repos,
@@ -29,7 +30,8 @@ export async function handleUserRequest(
 }
 
 export async function handleRemoveRepo(
-    request: express.Request, userRecord: UserRecord): Promise<APIResponse> {
+    request: express.Request,
+    userRecord: UserRecord): Promise<APIResponse<api.GenericStatusResponse>> {
   const owner = request.body.owner;
   const name = request.body.name;
 
@@ -60,7 +62,7 @@ export async function handleRemoveRepo(
   }
 
   await userModel.updateRepos(userRecord.username, repos);
-  return responseHelper.data<api.GenericStatusResponse>({status: 'ok'});
+  return responseHelper.data({status: 'ok'});
 }
 
 export function getRouter(): express.Router {

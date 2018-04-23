@@ -9,7 +9,8 @@ import {PrivateAPIRouter} from './api-router/private-api-router';
 import * as responseHelper from './api-router/response-helper';
 
 export async function handlePushSubscriptionAction(
-    request: express.Request, userRecord: UserRecord): Promise<APIResponse> {
+    request: express.Request,
+    userRecord: UserRecord): Promise<APIResponse<GenericStatusResponse>> {
   const pushSubscriptionModel = getSubscriptionModel();
   if (request.params.action === 'add') {
     await pushSubscriptionModel.addPushSubscription(

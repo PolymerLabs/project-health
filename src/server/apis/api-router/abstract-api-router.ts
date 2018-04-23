@@ -21,37 +21,40 @@ export interface DataAPIResponse<T> extends JSONAPIDataResponse<T> {
   cookies?: CookiesObject;
 }
 
-// tslint:disable-next-line:no-any
-export type APIResponse = ErrorAPIResponse|DataAPIResponse<any>;
+export type APIResponse<D> = ErrorAPIResponse|DataAPIResponse<D>;
 
-export type PublicAPICallback = (request: express.Request) =>
-    Promise<APIResponse>;
+export type PublicAPICallback<D> = (request: express.Request) =>
+    Promise<APIResponse<D>>;
 
-export type PrivateAPICallback =
-    (request: express.Request, userRecord: UserRecord) => Promise<APIResponse>;
+export type PrivateAPICallback<D> =
+    (request: express.Request, userRecord: UserRecord) =>
+        Promise<APIResponse<D>>;
 
-export type APIRouteCallback = PublicAPICallback|PrivateAPICallback;
+export type APIRouteCallback<D> = PublicAPICallback<D>|PrivateAPICallback<D>;
 
 interface APIRouteOpts {
   requireBody?: boolean;
 }
 
-export abstract class AbstractAPIRouter<T extends APIRouteCallback> {
+export abstract class AbstractAPIRouter {
   protected expRouter: express.Router;
 
   constructor() {
     this.expRouter = express.Router();
   }
 
-  get(apiPath: string, callback: T) {
+  get<D>(apiPath: string, callback: APIRouteCallback<D>) {
     this.expRouter.get(apiPath, this.wrapCallback(callback, {}));
   }
 
-  post(apiPath: string, callback: T, opts: APIRouteOpts = {}) {
+  post<D>(
+      apiPath: string,
+      callback: APIRouteCallback<D>,
+      opts: APIRouteOpts = {}) {
     this.expRouter.post(apiPath, this.wrapCallback(callback, opts));
   }
 
-  private wrapCallback(callback: T, opts: APIRouteOpts) {
+  private wrapCallback<D>(callback: APIRouteCallback<D>, opts: APIRouteOpts) {
     return async (request: express.Request, response: express.Response) => {
       try {
         // Some other middleware may have responded to the request.
@@ -87,7 +90,9 @@ export abstract class AbstractAPIRouter<T extends APIRouteCallback> {
     return this.expRouter;
   }
 
-  private sendResponse(response: express.Response, apiResponse: APIResponse) {
+  private sendResponse<D>(
+      response: express.Response,
+      apiResponse: APIResponse<D>) {
     response.status(apiResponse.statusCode);
 
     // Set any cookies if they are defined.
@@ -107,8 +112,8 @@ export abstract class AbstractAPIRouter<T extends APIRouteCallback> {
     }
   }
 
-  protected abstract executeCallback(
-      callback: T,
+  protected abstract executeCallback<D>(
+      callback: APIRouteCallback<D>,
       request: express.Request,
-      response: express.Response): Promise<APIResponse>;
+      response: express.Response): Promise<APIResponse<D>>;
 }

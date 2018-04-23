@@ -18,7 +18,7 @@ async function getIssueData(
     query: string,
     statusCb: (issue: issueFieldsFragment) => api.IssueStatus,
     _request: express.Request,
-    ): Promise<APIResponse> {
+    ): Promise<APIResponse<api.IssuesResponse>> {
   let lastViewedInfo: {[issue: string]: number}|null = null;
   if (login === userRecord.username) {
     lastViewedInfo = await userModel.getAllLastViewedInfo(userRecord.username);
@@ -72,13 +72,14 @@ async function getIssueData(
     }
   }
 
-  return responseHelper.data<api.IssuesResponse>({
+  return responseHelper.data({
     issues,
   });
 }
 
 export async function handleAssignedIssues(
-    request: express.Request, userRecord: UserRecord): Promise<APIResponse> {
+    request: express.Request,
+    userRecord: UserRecord): Promise<APIResponse<api.IssuesResponse>> {
   // Emulated user or authed user.
   const login = request.query.login || userRecord.username;
   const query = `assignee:${login} is:issue state:open archived:false`;
@@ -89,7 +90,8 @@ export async function handleAssignedIssues(
 }
 
 export async function handleActivityIssues(
-    request: express.Request, userRecord: UserRecord): Promise<APIResponse> {
+    request: express.Request,
+    userRecord: UserRecord): Promise<APIResponse<api.IssuesResponse>> {
   // Emulated user or authed user.
   const login = request.query.login || userRecord.username;
   const query =
@@ -113,7 +115,8 @@ export async function handleActivityIssues(
  * Given owner/repo, this will return all the untriaged issues for that repo.
  */
 export async function handleUntriagedIssues(
-    request: express.Request, userRecord: UserRecord): Promise<APIResponse> {
+    request: express.Request,
+    userRecord: UserRecord): Promise<APIResponse<api.IssuesResponse>> {
   const params = request.params as {owner: string, repo: string};
   // Do not allow emulation of user.
   const query = `is:issue state:open archived:false no:label repo:${
@@ -130,7 +133,8 @@ export async function handleUntriagedIssues(
  * specified list of comma-separated labels.
  */
 export async function handleByLabel(
-    request: express.Request, userRecord: UserRecord): Promise<APIResponse> {
+    request: express.Request,
+    userRecord: UserRecord): Promise<APIResponse<api.IssuesResponse>> {
   const params =
       request.params as {owner: string, repo: string, labels: string};
   const labels = params.labels.split(',').map((l) => `label:"${l}"`);
@@ -158,7 +162,8 @@ export async function handleByLabel(
  * Fetches labels for a repo.
  */
 export async function handleLabels(
-    request: express.Request, userRecord: UserRecord): Promise<APIResponse> {
+    request: express.Request,
+    userRecord: UserRecord): Promise<APIResponse<api.LabelsResponse>> {
   const params = request.params as {owner: string, repo: string};
   const variables:
       RepoLabelsQueryVariables = {owner: params.owner, repo: params.repo};
@@ -193,7 +198,7 @@ export async function handleLabels(
   labels.sort((a, b) => {
     return a.name.localeCompare(b.name);
   });
-  return responseHelper.data<api.LabelsResponse>({labels});
+  return responseHelper.data({labels});
 }
 
 /**

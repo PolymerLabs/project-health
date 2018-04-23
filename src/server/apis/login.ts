@@ -10,7 +10,7 @@ import {PublicAPIRouter} from './api-router/public-api-router';
 import * as responseHelper from './api-router/response-helper';
 
 export async function handleLoginRequest(request: express.Request):
-    Promise<APIResponse> {
+    Promise<APIResponse<GenericStatusResponse>> {
   const loginResponse =
       await fetch('https://github.com/login/oauth/access_token', {
         method: 'POST',

@@ -5,6 +5,7 @@ import {SinonSandbox} from 'sinon';
 
 import {handleActivityIssues, handleAssignedIssues, handleByLabel, handleLabels, handleUntriagedIssues} from '../../../server/apis/issues';
 import {userModel} from '../../../server/models/userModel';
+import {Popularity} from '../../../types/api';
 import {initFirestore} from '../../../utils/firestore';
 import {github, initGithub} from '../../../utils/github';
 import {newFakeRequest} from '../../utils/newFakeRequest';
@@ -54,36 +55,34 @@ test.serial(
       if ('error' in response) {
         throw new Error('Expected a data response');
       }
-      t.deepEqual(response.data, {
-        issues: [
-          {
-            id: 'MDU6SXNzdWUzMDgyMTA0Njc=',
-            title: 'I found a bug.',
-            repo: 'repo',
-            owner: 'project-health1',
-            author: 'project-health2',
-            avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
-            createdAt: 1521849856000,
-            url: 'https://github.com/project-health1/repo/issues/16',
-            popularity: 1,
-            hasNewActivity: false,
-            status: {type: 'Assigned'},
-          },
-          {
-            id: 'MDU6SXNzdWUzMDgyMTAyNzM=',
-            title: 'Self Assigned Issue',
-            repo: 'repo',
-            owner: 'project-health1',
-            author: 'project-health1',
-            avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
-            createdAt: 1521849762000,
-            url: 'https://github.com/project-health1/repo/issues/15',
-            popularity: 1,
-            hasNewActivity: false,
-            status: {type: 'Assigned'},
-          },
-        ]
-      });
+      t.deepEqual(response.data.issues, [
+        {
+          id: 'MDU6SXNzdWUzMDgyMTA0Njc=',
+          title: 'I found a bug.',
+          repo: 'repo',
+          owner: 'project-health1',
+          author: 'project-health2',
+          avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
+          createdAt: 1521849856000,
+          url: 'https://github.com/project-health1/repo/issues/16',
+          popularity: 1 as Popularity,
+          hasNewActivity: false,
+          status: {type: 'Assigned'},
+        },
+        {
+          id: 'MDU6SXNzdWUzMDgyMTAyNzM=',
+          title: 'Self Assigned Issue',
+          repo: 'repo',
+          owner: 'project-health1',
+          author: 'project-health1',
+          avatarUrl: 'https://avatars3.githubusercontent.com/u/34584679?v=4',
+          createdAt: 1521849762000,
+          url: 'https://github.com/project-health1/repo/issues/15',
+          popularity: 1 as Popularity,
+          hasNewActivity: false,
+          status: {type: 'Assigned'},
+        },
+      ]);
     });
 
 test.serial(
@@ -284,7 +283,7 @@ test.serial(
           avatarUrl: 'https://example.com/test-image.png',
           createdAt: 2,
           url: 'https://example.com/test/url',
-          popularity: 1,
+          popularity: 1 as Popularity,
           hasNewActivity: true,
           status: {type: 'Assigned'},
         },
@@ -297,7 +296,7 @@ test.serial(
           avatarUrl: 'https://example.com/test-image.png',
           createdAt: 2,
           url: 'https://example.com/test/url',
-          popularity: 1,
+          popularity: 1 as Popularity,
           hasNewActivity: false,
           status: {type: 'Assigned'},
         },
@@ -403,7 +402,7 @@ test.serial(
           avatarUrl: 'https://example.com/test-image.png',
           createdAt: 2,
           url: 'https://example.com/test/url',
-          popularity: 1,
+          popularity: 1 as Popularity,
           hasNewActivity: false,
           status: {type: 'Assigned'},
         },
@@ -416,7 +415,7 @@ test.serial(
           avatarUrl: 'https://example.com/test-image.png',
           createdAt: 2,
           url: 'https://example.com/test/url',
-          popularity: 1,
+          popularity: 1 as Popularity,
           hasNewActivity: false,
           status: {type: 'Assigned'},
         },
@@ -489,7 +488,7 @@ test.serial(
                     avatarUrl: 'https://example.com/test-image.png',
                     createdAt: 2,
                     url: 'https://example.com/test/url',
-                    popularity: 1,
+                    popularity: 1 as Popularity,
                     hasNewActivity: false,
                     status: {type: 'Assigned'},
                   }]);
@@ -565,7 +564,7 @@ test.serial(
                     avatarUrl: 'https://example.com/test-image.png',
                     createdAt: 2,
                     url: 'https://example.com/test/url',
-                    popularity: 1,
+                    popularity: 1 as Popularity,
                     hasNewActivity: false,
                     status: {type: 'Involved'},
                   }]);
@@ -627,7 +626,7 @@ test.serial('[issueActivity]: should return Author status types', async (t) => {
                 avatarUrl: 'https://example.com/test-image.png',
                 createdAt: 2,
                 url: 'https://example.com/test/url',
-                popularity: 1,
+                popularity: 1 as Popularity,
                 hasNewActivity: false,
                 status: {type: 'Author'},
               }]);
