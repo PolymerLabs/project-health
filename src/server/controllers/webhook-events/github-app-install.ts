@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 import {github} from '../../../utils/github';
 import {secrets} from '../../../utils/secrets';
 import {WebHookHandleResponse} from '../../apis/github-webhook';
-import {githubAppModel} from '../../models/githubAppModel';
+import {githubAppModel, GithubRepo} from '../../models/githubAppModel';
 
 export interface InstallHook {
   action: 'created'|'deleted';
@@ -76,9 +76,9 @@ async function handleNewAppInstall(hookBody: InstallHook) {
       token: secrets().GITHUB_APP_TO_GQL_TOKEN,
     }
   });
-  const allRepos = Object.keys(result.data).map((repoKey) => {
-    // tslint:disable-next-line:no-any
-    return (result.data as any)[repoKey];
+  const data = result.data as {[key: string]: GithubRepo};
+  const allRepos = Object.keys(data).map((repoKey) => {
+    return data[repoKey];
   });
 
   await githubAppModel.addInstallation({

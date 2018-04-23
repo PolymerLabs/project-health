@@ -91,16 +91,6 @@ test.serial(
     });
 
 test.serial(
-    '[getIssueLastActivity]: should return comment timestamp when no updatedOn field',
-    async (t) => {
-      // tslint:disable-next-line:no-any
-      const issue = newFakeIssue() as any;
-      delete issue.updatedOn;
-      const activity = await getIssueLastActivity('example-username', issue);
-      t.deepEqual(activity, 1489541590000, 'issue has new activity result');
-    });
-
-test.serial(
     '[getIssueLastActivity]: should return updatedOn timestamp when null comment node',
     async (t) => {
       const issue = newFakeIssue();

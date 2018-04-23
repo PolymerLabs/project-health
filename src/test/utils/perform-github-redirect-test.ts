@@ -1,4 +1,5 @@
 import anyTest, {TestInterface} from 'ava';
+import {Request} from 'express';
 import * as sinon from 'sinon';
 import {SinonSandbox} from 'sinon';
 
@@ -34,7 +35,7 @@ test(
       };
 
       // tslint:disable-next-line no-any
-      await performGitHubRedirect(req as any, res as any);
+      await performGitHubRedirect(req as Request, res as any);
 
       t.deepEqual(res.redirect.callCount, 1);
       t.deepEqual(
@@ -56,7 +57,7 @@ test(
       };
 
       // tslint:disable-next-line no-any
-      await performGitHubRedirect(req as any, res as any);
+      await performGitHubRedirect(req as Request, res as any);
 
       t.deepEqual(res.redirect.callCount, 1);
       t.deepEqual(
@@ -78,7 +79,7 @@ test(
       };
 
       // tslint:disable-next-line no-any
-      await performGitHubRedirect(req as any, res as any);
+      await performGitHubRedirect(req as Request, res as any);
 
       t.deepEqual(res.redirect.callCount, 1);
       t.deepEqual(
@@ -97,7 +98,7 @@ test(
       };
 
       // tslint:disable-next-line no-any
-      await performGitHubRedirect(req as any, res as any);
+      await performGitHubRedirect(req as Request, res as any);
 
       t.deepEqual(res.redirect.callCount, 1);
       t.deepEqual(
@@ -121,7 +122,7 @@ test(
       };
 
       // tslint:disable-next-line no-any
-      await performGitHubRedirect(req as any, res as any);
+      await performGitHubRedirect(req as Request, res as any);
 
       t.deepEqual(res.redirect.callCount, 1);
       t.deepEqual(
@@ -157,7 +158,7 @@ test(
           });
 
       // tslint:disable-next-line no-any
-      await performGitHubRedirect(req as any, res as any);
+      await performGitHubRedirect(req as Request, res as any);
 
       t.deepEqual(res.redirect.callCount, 1);
       t.deepEqual(

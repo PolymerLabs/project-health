@@ -1,9 +1,10 @@
+import {Request} from 'express';
+
 export function newFakeRequest() {
   const fakeRequest = {
     body: {},
     params: {},
     query: {},
-    // tslint:disable-next-line: no-any
-  } as any;
+  } as Request;
   return Object.assign({}, fakeRequest);
 }
