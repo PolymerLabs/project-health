@@ -14,9 +14,11 @@ import {getRouter as getGitHubHookRouter} from './apis/github-webhook';
 import {getRouter as getIssuesRouter} from './apis/issues';
 import {getRouter as getLastViewedRouter} from './apis/last-viewed';
 import {getRouter as getLoginRouter} from './apis/login';
+import {getRouter as getOrgConfigRouter} from './apis/org-config';
 import {getRouter as getPushSubRouter} from './apis/push-subscription';
 import {getRouter as getUpdatesRouter} from './apis/updates';
 import {getRouter as getUserRouter} from './apis/user';
+import {githubAppModel} from './models/githubAppModel';
 import {enforceHTTPS} from './utils/enforce-https';
 import {performGitHubRedirect} from './utils/perform-github-redirect';
 import {requireLogin} from './utils/require-login';
@@ -111,6 +113,24 @@ export class DashServer {
           });
     }
 
+    // Redirect Github-App Post Install to /org/config/:orgName
+    app.get(
+        '/github-app/post-install',
+        async (request: express.Request, response: express.Response) => {
+          if (!request.query.installation_id) {
+            response.status(400).send('Installation ID required.');
+            return;
+          }
+
+          const installDetails = await githubAppModel.getInstallation(
+              Number(request.query.installation_id));
+          if (!installDetails) {
+            response.status(400).send('Invalid installation ID.');
+            return;
+          }
+          response.redirect(`/org/config/${installDetails.login}`);
+        });
+
     // Add login middleware
     app.use(requireLogin());
 
@@ -123,6 +143,7 @@ export class DashServer {
     app.use('/api/issues/', getIssuesRouter());
     app.use('/api/last-viewed/', getLastViewedRouter());
     app.use('/api/user/', getUserRouter());
+    app.use('/api/org/config/', getOrgConfigRouter());
 
     // Serve app shell on all other routes.
     app.get(
@@ -135,10 +156,8 @@ export class DashServer {
         });
   }
 
-  listen(): Promise<string> {
+  listen(port: number): Promise<string> {
     return new Promise((resolve, reject) => {
-      const port = Number(process.env.PORT || '') || 8080;
-
       const printStatus = () => {
         if (!this.server) {
           return reject(new Error('No server configured'));

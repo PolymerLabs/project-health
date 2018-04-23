@@ -33,7 +33,7 @@ test.before(async () => {
       {args: ['--no-sandbox', '--disable-setuid-sandbox']});
 
   dashServer = new DashServer();
-  dashAddress = await dashServer.listen();
+  dashAddress = await dashServer.listen(8080);
 });
 
 test.beforeEach(async (t) => {
