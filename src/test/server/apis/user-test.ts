@@ -39,7 +39,8 @@ test.afterEach.always(async (t) => {
 
 test.serial('[user-api]: should return what my-repos returns', async (t) => {
   t.context.sandbox.stub(myRepos, 'generateMyRepoList').callsFake(() => {
-    return [{name: 'name', owner: 'owner'}] as api.Repository[];
+    return [{name: 'name', owner: 'owner', avatarUrl: null}] as
+        api.Repository[];
   });
 
   const response =
@@ -47,10 +48,11 @@ test.serial('[user-api]: should return what my-repos returns', async (t) => {
   if (!('data' in response)) {
     throw new Error('Expected data response');
   }
+
   t.deepEqual(response.data, {
     avatarUrl: 'https://avatars2.githubusercontent.com/u/34584679?s=400&v=4',
     login: 'fake-username',
-    repos: [{name: 'name', owner: 'owner'}],
+    repos: [{name: 'name', owner: 'owner', avatarUrl: null}],
   });
 });
 
@@ -66,6 +68,7 @@ test.serial('[user-api]: remove repo', async (t) => {
   const response = await handleRemoveRepo(
       {body: {owner: 'owner', name: 'repo'}} as express.Request,
       fakeUserRecord);
+
   if (!('data' in response)) {
     throw new Error('Expected data response');
   }

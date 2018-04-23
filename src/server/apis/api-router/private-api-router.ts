@@ -5,9 +5,9 @@ import {userModel} from '../../models/userModel';
 import {AbstractAPIRouter, PrivateAPICallback} from './abstract-api-router';
 import * as responseHelper from './response-helper';
 
-export class PrivateAPIRouter extends AbstractAPIRouter<PrivateAPICallback> {
-  protected async executeCallback(
-      callback: PrivateAPICallback,
+export class PrivateAPIRouter extends AbstractAPIRouter {
+  protected async executeCallback<D>(
+      callback: PrivateAPICallback<D>,
       request: express.Request) {
     const userRecord = await userModel.getUserRecordFromRequest(request);
     if (!userRecord) {

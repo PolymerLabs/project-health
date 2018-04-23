@@ -8,7 +8,8 @@ import {PrivateAPIRouter} from './api-router/private-api-router';
 import * as responseHelper from './api-router/response-helper';
 
 async function handleUpdateRequest(
-    request: express.Request, userRecord: UserRecord): Promise<APIResponse> {
+    request: express.Request,
+    userRecord: UserRecord): Promise<APIResponse<GenericStatusResponse>> {
   const issueId = request.body.id;
   await userModel.updateLastViewed(
       userRecord.username,
@@ -16,7 +17,7 @@ async function handleUpdateRequest(
       Date.now(),
   );
 
-  return responseHelper.data<GenericStatusResponse>({
+  return responseHelper.data({
     status: 'ok',
   });
 }

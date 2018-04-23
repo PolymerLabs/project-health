@@ -12,7 +12,6 @@ export function firestore(): Firestore {
   return firestoreSingleton;
 }
 
-// tslint:disable:no-any
 export function initFirestore() {
   if (firestoreSingleton) {
     throw new Error('Firestore is already initialised.');

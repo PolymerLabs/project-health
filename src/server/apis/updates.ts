@@ -10,7 +10,8 @@ import {PrivateAPIRouter} from './api-router/private-api-router';
 import * as responseHelper from './api-router/response-helper';
 
 async function handleLastKnownUpdate(
-    request: express.Request, userRecord: UserRecord): Promise<APIResponse> {
+    request: express.Request,
+    userRecord: UserRecord): Promise<APIResponse<LastKnownResponse>> {
   let lastKnownUpdate: string|null;
   if (!request.query.login) {
     lastKnownUpdate = userRecord.lastKnownUpdate;
