@@ -110,6 +110,25 @@ export interface UserResponse {
   repos: Repository[];
 }
 
+export interface OrgSettings {
+  fileContents: string;
+  lastUpdated: number;
+  editors: string[];
+}
+
+export interface JSONAPIErrorResponse {
+  error: {
+    code: string,
+    message: string,
+  };
+}
+
+export interface JSONAPIDataResponse<T> {
+  data: T;
+}
+
+export type JSONAPIResponse<T> = JSONAPIErrorResponse|JSONAPIDataResponse<T>;
+
 /** Not necessarily actionable. */
 
 interface UnknownStatus {
