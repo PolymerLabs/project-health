@@ -47,7 +47,6 @@ class OrgConfig extends BaseElement {
       credentials: 'include',
     });
 
-    // tslint:disable-next-line:no-any
     const responseBody =
         await response.json() as api.JSONAPIResponse<api.OrgSettings>;
     if ('error' in responseBody) {

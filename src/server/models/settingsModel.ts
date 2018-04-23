@@ -60,6 +60,7 @@ class SettingsModel {
 
     return snapshot.data() as OrgSettings;
   }
+
   async setOrgSettings(
       orgOrUser: string,
       newSettings: string,
