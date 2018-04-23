@@ -28,13 +28,17 @@ export class NavElement extends BaseElement {
     `;
   }
 
-  private navItemTemplate(href: string, avatarUrl: string|null, title: string):
-      TemplateResult {
+  private navItemTemplate(
+      href: string,
+      avatarUrl: string|null,
+      title: string,
+      button?: TemplateResult): TemplateResult {
     const selected = this.documentUrl === href ? 'selected' : '';
     return html`
       <a class$="nav-item ${selected}" href="${href}">
         <img class="nav-item__avatar" src="${avatarUrl}">
         <div class="nav-item__name">${title}</div>
+        ${button}
       </a>
     `;
   }
@@ -47,9 +51,44 @@ export class NavElement extends BaseElement {
     return this.navItemTemplate('/', this.data.avatarUrl, this.data.login);
   }
 
+  /**
+   * Removes a repo from the menu.
+   */
+  private async removeRepo(owner: string, name: string, event: MouseEvent) {
+    let element: HTMLElement|null = event.target as HTMLElement;
+
+    await fetch('/api/user/remove-repo', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({owner, name}),
+    });
+
+    while (element && !element.classList.contains('nav-item')) {
+      element = element.parentElement;
+    }
+
+    if (element) {
+      element.remove();
+    }
+  }
+
   private repoTemplate(repo: api.Repository): TemplateResult {
+    const removeButton = html`
+      <div class="nav-item__buttons">
+        <i class="material-icons-extended nav-item__action" title$="Remove ${
+        repo.name} from menu" on-click="${
+        this.removeRepo.bind(this, repo.owner, repo.name)}">remove_circle</i>
+      </div>
+    `;
+
     return this.navItemTemplate(
-        `/repo/${repo.owner}/${repo.name}`, repo.avatarUrl, repo.name);
+        `/repo/${repo.owner}/${repo.name}`,
+        repo.avatarUrl,
+        repo.name,
+        removeButton);
   }
 
   render() {
