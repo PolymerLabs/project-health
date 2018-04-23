@@ -33,29 +33,33 @@ export async function handleRemoveRepo(
   const owner = request.body.owner;
   const name = request.body.name;
 
-  if (!owner || !name) {
-    return responseHelper.error(
-        'invalid-request', 'Missing owner/name from request');
+  if (!owner) {
+    return responseHelper.error('invalid-request', 'Missing owner in request');
   }
 
-  const oldRepos = userRecord.repos;
-  const newRepos = [];
-  if (!oldRepos) {
+  if (!name) {
+    return responseHelper.error('invalid-request', 'Missing name in request');
+  }
+
+  const repos = userRecord.repos;
+  if (!repos) {
     return responseHelper.error('no-repos', 'No repos found on user');
   }
 
-  for (const repo of oldRepos) {
-    if (repo.owner !== owner || repo.name !== name) {
-      newRepos.push(repo);
+  let i = 0;
+  for (i; i < repos.length; i++) {
+    if (repos[i].owner === owner && repos[i].name === name) {
+      repos.splice(i, 1);
+      break;
     }
   }
 
-  if (oldRepos.length === newRepos.length) {
+  if (i === repos.length) {
     return responseHelper.error(
         'unknown-repo', 'Could not find repo to remove');
   }
 
-  await userModel.updateRepos(userRecord.username, newRepos);
+  await userModel.updateRepos(userRecord.username, repos);
   return responseHelper.data<api.GenericStatusResponse>({status: 'ok'});
 }
 

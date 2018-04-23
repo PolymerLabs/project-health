@@ -64,7 +64,7 @@ test.serial('[user-api]: remove repo', async (t) => {
 
   // Remove repo.
   const response = await handleRemoveRepo(
-      {body: {owner: 'owner', repo: 'repo'}} as express.Request,
+      {body: {owner: 'owner', name: 'repo'}} as express.Request,
       fakeUserRecord);
   if (!('data' in response)) {
     throw new Error('Expected data response');
