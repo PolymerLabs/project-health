@@ -40,6 +40,7 @@ class RepoPage extends BaseElement {
   private clearData() {
     this.untriaged = [];
     this.labels = [];
+    this.filteredIssues = [];
   }
 
   private updateFilter(id: FilterId, event: CustomEvent<FilterLegendEvent>) {
@@ -63,19 +64,18 @@ class RepoPage extends BaseElement {
     this.labels = data.labels;
   }
 
-  private async labelFilterChanged(event:
-                                       CustomEvent<LabelFilterChangedEvent>) {
-    const labels = event.detail.selectedLabels;
-    if (labels.length === 0) {
-      this.filteredIssues = [];
-      return;
-    }
-
+  private async fetchFilteredIssues(labels: string[]) {
     const response = await fetch(
         `/api/issues/by-labels/${this.owner}/${this.repo}/${labels.join(',')}`,
         {credentials: 'include'});
     const data = (await response.json()).data as api.IssuesResponse;
     this.filteredIssues = data.issues;
+  }
+
+  private async labelFilterChanged(event:
+                                       CustomEvent<LabelFilterChangedEvent>) {
+    const labels = event.detail.selectedLabels;
+    this.fetchFilteredIssues(labels);
   }
 
   private async fetchData(owner: string, repo: string) {
@@ -92,6 +92,7 @@ class RepoPage extends BaseElement {
 
     this.fetchUntriaged();
     this.fetchLabels();
+    this.fetchFilteredIssues([]);
   }
 
   render(): TemplateResult {
@@ -119,7 +120,7 @@ class RepoPage extends BaseElement {
   </div>
 </div>
 <div id="all-issues">
-  <h2>Issues</h2>
+  <h2>Triaged issues</h2>
   <div class="pr-list">
     <label-filter labels="${this.labels}" on-label-filter-changed="${
         this.labelFilterChanged.bind(this)}"></label-filter>
