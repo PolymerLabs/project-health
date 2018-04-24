@@ -4,7 +4,7 @@
 # `project-health`
 
 ## Building
-Use `build` or `build:watch` to build the project.
+Use `npm run build` or `npm run dev` to build the project.
 
 ### Re-generating github-schema.json
 When GitHub's API changes, the corresponding schema needs to be updated. Run
@@ -14,58 +14,27 @@ the following command to generate the schema from GitHub's introspection API.
 $(npm bin)/apollo-codegen introspect-schema https://api.github.com/graphql --output src/types/github-schema.json --header "Authorization: bearer <your token>"
 ```
 
-## Running the CLI
-Ensure you have your GitHub token set. Generate a new token in [GitHub's settings](https://github.com/settings/tokens).
-Once you have the token, set the environment variable.
-
-```bash
-export GITHUB_TOKEN=<your token>
-```
-
-After building the project, run the CLI:
-```bash
-./build/cli/project-health.js --metric review-latency --org webcomponents
-```
-
-Options:
- * `metric` - required, name of metric
- * `org` - required, GitHub organization/owner name
- * `repo` - optional, name of the GitHub repo
- * `raw` - dump relevant raw data
-
-## Adding a new metric
-A few tips when creating a new metric:
- * Write your queries using [GitHub's API explorer](https://developer.github.com/v4/explorer/). The
-   validation will make it much easier to write.
- * After any changes to queries using the `gql` template tag, run `npm run
-   generate-gql-types`. This command will validate your query against the
-   stored `github-schema.json` and then generate typings for your query and
-   store them in `gql-types.ts`. This is part of `npm run build` already.
+After executing this, build and run tests to ensure everything still functions
+correctly.
 
 ## Testing
-To run the tests, use `npm test`. The tests use a mock server which emulates
-the GitHub API by allowing you to record GitHub API responses. To add a new
-test, write your test then run the following: ``` npm run test:record --
---match 'testname*'``` Check in the generated files so that tests will use
-these snapshotted responses.
+Run `npm run test` to execute the tests.
 
-## Running the dashboard
-- Be in the top-level `project-health` directory.
-- Create a `secrets.json` file with this format (note: do not commit this file):
+### Recording a test
+Many aspects of the code base use the GitHub API. To avoid using the GitHub API
+for testing, tests use a mock server which records and replays GitHub API
+responses. When adding or modifying a test, you may need to record a test:
+- Supply [a token](https://github.com/settings/tokens) sufficient for your tests.
+  ```bash
+  export GITHUB_TOKEN="<your personal access token>".
   ```
-  {
-    "GITHUB_CLIENT_ID": "<MY_ID>",
-    "GITHUB_CLIENT_SECRET": "<MY_SECRET>"
-  }
+- Record a single test.
+  ```bash
+  npm run test:record -- --match 'Your exact testname'
   ```
-- `npm run build`
-- `node server.js`
-- To test using the auth flow, open http://localhost:8080/ in your browser.
 
-## Transferring repositories
-This script allows you to move many repositories between organizations. A data file with each repo name per line should be provided via `stdin`. Invoke as follows:
+### Rebaselining a pixel test
+Whenever the UI changes, pixel tests will need to be rebaselined for what to expect. Pixel tests also use recorded data, so ensure you have recorded the test correctly first before rebaselining as follows:
+```bash
+npm run test:rebaseline -- --match 'Your exact pixel testname'
 ```
-./build/cli/transfer.js --token <github-token> --from OrganizationFrom --to OrganizationTo
-```
-
-To perform the transfer, repeat with the `--force` parameter.
