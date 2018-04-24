@@ -4,11 +4,11 @@ import * as api from '../../../../types/api.js';
 import {BaseElement, property} from './base-element.js';
 
 export class NavElementInput extends BaseElement {
-  @property({attribute: true}) title: string = '';
-  @property({attribute: true}) placeholder: string = '';
-  @property() endpoint: string = '';
+  @property({attribute: true}) title = '';
+  @property({attribute: true}) placeholder = '';
+  @property() endpoint = '';
   @property() error?: string;
-  @property() private editing: boolean = false;
+  @property() private editing = false;
 
   private startEditing() {
     this.editing = true;
