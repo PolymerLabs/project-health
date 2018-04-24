@@ -52,14 +52,15 @@ export async function handleRemoveRepo(
   }
 
   let i = 0;
+  const oldLength = repos.length;
   for (i; i < repos.length; i++) {
-    if (repos[i].owner === owner && repos[i].name === name) {
+    if (repos[i].owner == owner && repos[i].name === name) {
       repos.splice(i, 1);
       break;
     }
   }
 
-  if (i === repos.length) {
+  if (i === oldLength) {
     return responseHelper.error(
         'unknown-repo', 'Could not find repo to remove');
   }
@@ -71,16 +72,16 @@ export async function handleRemoveRepo(
 export async function handleAddRepo(
     request: express.Request,
     userRecord: UserRecord): Promise<APIResponse<api.GenericStatusResponse>> {
-  const text = request.body.text;
+  const nameWithOwner = request.body.nameWithOwner;
 
-  if (!text) {
-    return responseHelper.error('invalid-request', 'No text found');
+  if (!nameWithOwner) {
+    return responseHelper.error('invalid-request', 'No nameWithOwner found');
   }
 
-  const split = text.split('/');
+  const split = nameWithOwner.split('/');
 
   if (split.length !== 2 || !split[0].length || !split[1].length) {
-    return responseHelper.error('invalid-request', 'Not in format owner/repo');
+    return responseHelper.error('invalid-format', 'Not in format owner/repo');
   }
 
   const repos = userRecord.repos || [];
@@ -96,7 +97,7 @@ export async function handleAddRepo(
 
     const repo = response.data.repository;
     if (!repo) {
-      return responseHelper.error('no-repo-info', 'Unable to find repo info');
+      return responseHelper.error('bad-repo-info', 'Unable to find repo info');
     }
     repos.push({
       name: repo.name,

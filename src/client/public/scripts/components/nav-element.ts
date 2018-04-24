@@ -115,7 +115,7 @@ export class NavElement extends BaseElement {
 
         <nav-element-input class="nav-item" title="Add repository"
           placeholder="owner/repo"
-          endpoint="${'/api/user/add-repo'}"></nav-element-input>
+          apiEndpoint="${'/api/user/add-repo'}"></nav-element-input>
 
         <div class="nav-item__separator"></div>
       <nav>

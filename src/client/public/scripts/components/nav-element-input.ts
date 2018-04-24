@@ -6,7 +6,7 @@ import {BaseElement, property} from './base-element.js';
 export class NavElementInput extends BaseElement {
   @property({attribute: true}) title = '';
   @property({attribute: true}) placeholder = '';
-  @property() endpoint = '';
+  @property() apiEndpoint = '';
   @property() error?: string;
   @property() private editing = false;
 
@@ -20,19 +20,20 @@ export class NavElementInput extends BaseElement {
       return;
     }
 
-    if (!this.endpoint) {
+    if (!this.apiEndpoint) {
       console.error('No endpoint configured.');
       return;
     }
 
-    const response = await fetch(this.endpoint, {
+    const inputElement = this.querySelector('input') as HTMLInputElement;
+
+    const response = await fetch(this.apiEndpoint, {
       method: 'POST',
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(
-          {text: (this.querySelector('input') as HTMLInputElement).value}),
+      body: JSON.stringify({nameWithOwner: inputElement.value}),
     });
 
     if (response.status === 200) {

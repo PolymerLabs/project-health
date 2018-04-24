@@ -94,7 +94,7 @@ test.serial('[user-api]: add repo', async (t) => {
   const updateReposSpy = t.context.sandbox.spy(userModel, 'updateRepos');
 
   const response = await handleAddRepo(
-      {body: {text: 'polymer/polymer'}} as express.Request,
+      {body: {nameWithOwner: 'polymer/polymer'}} as express.Request,
       newFakeUserRecord());
 
   if (!('data' in response)) {
