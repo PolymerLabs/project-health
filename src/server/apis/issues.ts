@@ -137,9 +137,13 @@ export async function handleByLabel(
     userRecord: UserRecord): Promise<APIResponse<api.IssuesResponse>> {
   const params =
       request.params as {owner: string, repo: string, labels: string};
-  const labels = params.labels.split(',').map((l) => `label:"${l}"`);
+  const labels = params.labels.split(',')
+                     .filter((l) => l.length)
+                     .map((l) => `label:"${l}"`);
+  // "label: " checks that the issue has a label. "-no:label" does not appear to
+  // work.
   const query = `is:issue state:open archived:false repo:${params.owner}/${
-      params.repo} ${labels.join(' ')}`;
+      params.repo} label: ${labels.join(' ')}`;
 
   const calculateStatus = (issue: issueFieldsFragment): api.IssueStatus => {
     const assignees = [];
