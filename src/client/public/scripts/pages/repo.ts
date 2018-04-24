@@ -120,7 +120,7 @@ class RepoPage extends BaseElement {
   </div>
 </div>
 <div id="all-issues">
-  <h2>Triaged issues</h2>
+  <h2>Issues</h2>
   <div class="pr-list">
     <label-filter labels="${this.labels}" on-label-filter-changed="${
         this.labelFilterChanged.bind(this)}"></label-filter>
