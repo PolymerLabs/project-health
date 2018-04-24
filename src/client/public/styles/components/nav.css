@@ -1,3 +1,7 @@
+@import "./../variables/dimens.css";
+@import "./../variables/colors.css";
+@import "./nav-element-input.css";
+
 nav-element {
   width: var(--nav-size);
   display: flex;
@@ -29,6 +33,10 @@ nav-element {
 
 a.nav-item:hover {
   background-color: hsla(211, 100%, 46%, 0.05);
+}
+
+i.nav-item__avatar {
+  font-size: 20px;
 }
 
 .nav-item__avatar {

@@ -1482,6 +1482,35 @@ export interface RepoLabelsQuery {
   } | null,
 };
 
+export interface VerifyRepoQueryVariables {
+  owner: string,
+  repo: string,
+};
+
+export interface VerifyRepoQuery {
+  // Lookup a given repository by the owner and repository name.
+  repository:  {
+    __typename: "Repository",
+    // The name of the repository.
+    name: string,
+    // The User owner of the repository.
+    owner: ( {
+        __typename: "Organization",
+        // The username used to login.
+        login: string,
+        // A URL pointing to the owner's public avatar.
+        avatarUrl: string,
+      } | {
+        __typename: "User",
+        // The username used to login.
+        login: string,
+        // A URL pointing to the owner's public avatar.
+        avatarUrl: string,
+      }
+    ),
+  } | null,
+};
+
 export interface ViewerLoginQuery {
   // The currently authenticated user.
   viewer:  {

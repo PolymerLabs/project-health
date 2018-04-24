@@ -40,6 +40,7 @@ class RepoPage extends BaseElement {
   private clearData() {
     this.untriaged = [];
     this.labels = [];
+    this.filteredIssues = [];
   }
 
   private updateFilter(id: FilterId, event: CustomEvent<FilterLegendEvent>) {

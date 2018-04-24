@@ -236,11 +236,6 @@ export interface NotificationPayload {
   badge?: string;
 }
 
-export interface ErrorPayload {
-  code: string;
-  message: string;
-}
-
 export interface NotificationPullRequestData {
   gqlId: string;
   state?: 'CLOSED'|'MERGED'|'OPEN';
