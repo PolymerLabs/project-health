@@ -1,3 +1,5 @@
+import './nav-element-input.js';
+
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import {TemplateResult} from '../../../../../node_modules/lit-html/lit-html.js';
 import * as api from '../../../../types/api.js';
@@ -10,13 +12,19 @@ export class NavElement extends BaseElement {
   @property() documentUrl = document.location.pathname;
 
   async connectedCallback() {
-    const response = await fetch('/api/user', {credentials: 'include'});
-    // TODO: change this to use the JSON API response
-    this.data = (await response.json()).data as api.UserResponse;
+    this.fetchAndUpdate();
 
     document.body.addEventListener('url-changed', () => {
       this.documentUrl = document.location.pathname;
     });
+    this.addEventListener(
+        'nav-update-required', this.fetchAndUpdate.bind(this));
+  }
+
+  private async fetchAndUpdate() {
+    const response = await fetch('/api/user', {credentials: 'include'});
+    // TODO: change this to use the JSON API response
+    this.data = (await response.json()).data as api.UserResponse;
   }
 
   private header(): TemplateResult {
@@ -104,6 +112,10 @@ export class NavElement extends BaseElement {
         <div class="nav-item__separator"></div>
 
         ${this.data.repos.map(this.repoTemplate.bind(this))}
+
+        <nav-element-input class="nav-item" title="Add repository"
+          placeholder="owner/repo"
+          apiEndpoint="${'/api/user/add-repo'}"></nav-element-input>
 
         <div class="nav-item__separator"></div>
       <nav>

@@ -1,0 +1,13 @@
+@import "./../variables/dimens.css";
+@import "./../variables/colors.css";
+
+nav-element-input {
+  color: var(--secondary-text-color);
+  cursor: pointer;
+}
+
+nav-element-input input {
+  padding: 8px;
+  margin: -8px;
+  border: none;
+}
