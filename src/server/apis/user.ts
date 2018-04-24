@@ -54,7 +54,7 @@ export async function handleRemoveRepo(
   let i = 0;
   const oldLength = repos.length;
   for (i; i < repos.length; i++) {
-    if (repos[i].owner == owner && repos[i].name === name) {
+    if (repos[i].owner === owner && repos[i].name === name) {
       repos.splice(i, 1);
       break;
     }
