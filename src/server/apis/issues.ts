@@ -140,10 +140,10 @@ export async function handleByLabel(
   const labels = params.labels.split(',')
                      .filter((l) => l.length)
                      .map((l) => `label:"${l}"`);
-  // "label: " checks that the issue has a label. "-no:label" does not appear to
-  // work.
+  // Optimistically apply the "-no:label" field which is currently not
+  // supported by GitHub, but ignored.
   const query = `is:issue state:open archived:false repo:${params.owner}/${
-      params.repo} label: ${labels.join(' ')}`;
+      params.repo} ${labels.length ? labels.join(' ') : '-no:label'}`;
 
   const calculateStatus = (issue: issueFieldsFragment): api.IssueStatus => {
     const assignees = [];
