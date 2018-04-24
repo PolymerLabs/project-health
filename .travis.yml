@@ -20,3 +20,6 @@ deploy:
   project: github-health-staging
   default: true
   skip_cleanup: true
+branches:
+  only:
+  - master
