@@ -1,7 +1,9 @@
 import * as express from 'express';
+import * as JSON5 from 'json5';
 
 import {OrgSettings} from '../../types/api';
 import {GenericStatusResponse} from '../../types/api';
+import {settings} from '../controllers/github-app-settings';
 import {settingsModel} from '../models/settingsModel';
 import {UserRecord} from '../models/userModel';
 
@@ -47,6 +49,8 @@ export async function handleSaveConfigRequest(
   } catch (err) {
     return responseHelper.error('unable-to-save', err.message);
   }
+
+  settings.configChanged(orgName, JSON5.parse(newSettings));
 
   return responseHelper.data<GenericStatusResponse>({
     status: 'ok',
