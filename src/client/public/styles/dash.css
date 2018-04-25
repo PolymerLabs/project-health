@@ -5,6 +5,7 @@
 @import "./components/empty-message.css";
 @import "./components/filter-legend.css";
 @import "./components/issues.css";
+@import "./components/push-toggle.css";
 
 .pr-list a {
   text-decoration-line: none;
@@ -40,8 +41,4 @@
 .title-container #page-header {
   flex: 1;
   margin-bottom: 0;
-}
-
-toggle-element {
-  margin-top: var(--grid-size);
 }
