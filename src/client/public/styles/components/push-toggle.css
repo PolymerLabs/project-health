@@ -1,0 +1,29 @@
+@import "../variables/dimens.css";
+@import "../variables/colors.css";
+
+push-toggle {
+  margin-top: var(--grid-size);
+  font-size: var(--small-text);
+  line-height: 18px;
+  user-select: none;
+  cursor: pointer;
+  color: var(--actionable-color);
+}
+
+push-toggle span {
+  vertical-align: middle;
+  padding-right: calc(var(--grid-size) / 2);
+}
+
+push-toggle i {
+  font-size: calc(var(--padding) * 2);
+  vertical-align: middle;
+}
+
+push-toggle.selected {
+  color: var(--secondary-text-color);
+}
+
+push-toggle.disabled {
+  cursor: not-allowed;
+}

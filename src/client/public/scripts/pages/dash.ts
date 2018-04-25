@@ -1,4 +1,4 @@
-import '../components/toggle-element.js';
+import '../components/push-toggle.js';
 import '../components/filter-legend.js';
 import '../dash/push-controller.js';
 
@@ -11,7 +11,6 @@ import {filterController, FilterId} from '../dash/filter-controller.js';
 import {genericIssueListTemplate} from '../dash/issues.js';
 import {notificationCenter} from '../dash/notification-center.js';
 import {genericPrListTemplate, outgoingPrListTemplate} from '../dash/prs.js';
-import {PushController} from '../dash/push-controller.js';
 import {getLoginParam} from '../dash/utils/get-data.js';
 
 // Full update - poll every 5 minutes
@@ -123,11 +122,6 @@ class DashPage extends BaseElement {
 
   async connectedCallback() {
     await this.performFullUpdate();
-
-    // TODO: this should move inside the toggle-element and become its own
-    // PushToggle.
-    const pushComponent = new PushController();
-    pushComponent.update();
   }
 
   async performFullUpdate() {
@@ -159,7 +153,7 @@ class DashPage extends BaseElement {
     return html`
 <div class="title-container">
   <h1 id="page-header">${user && user.login}</h1>
-  <toggle-element id="push-toggle" disabled="true"></toggle-element>
+  <push-toggle></push-toggle>
 </div>
 <div id="outgoing-prs">
   <h2>
