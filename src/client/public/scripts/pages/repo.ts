@@ -15,6 +15,7 @@ class RepoPage extends BaseElement {
   @property() untriaged: api.Issue[] = [];
   @property() filteredIssues: api.Issue[] = [];
   @property() labels: api.Label[] = [];
+  private fetches: Set<AbortController> = new Set();
 
   private owner = '';
   private repo = '';
@@ -41,6 +42,9 @@ class RepoPage extends BaseElement {
     this.untriaged = [];
     this.labels = [];
     this.filteredIssues = [];
+    for (const controller of this.fetches.values()) {
+      controller.abort();
+    }
   }
 
   private updateFilter(id: FilterId, event: CustomEvent<FilterLegendEvent>) {
@@ -48,26 +52,53 @@ class RepoPage extends BaseElement {
     this.requestRender();
   }
 
+  /**
+   * This wraps fetch to keep track of pending fetches so they can be aborted if
+   * necessary.
+   */
+  private async abortableFetch(input: RequestInfo): Promise<Response|null> {
+    const controller = new AbortController();
+    this.fetches.add(controller);
+    try {
+      const response = await fetch(input, {
+        credentials: 'include',
+        signal: controller.signal,
+      });
+
+      return response;
+    } catch {
+      return null;
+    } finally {
+      this.fetches.delete(controller);
+    }
+  }
+
   private async fetchUntriaged() {
-    const response = await fetch(
-        `/api/issues/untriaged/${this.owner}/${this.repo}`,
-        {credentials: 'include'});
+    const response = await this.abortableFetch(
+        `/api/issues/untriaged/${this.owner}/${this.repo}`);
+    if (!response) {
+      return;
+    }
     const data = (await response.json()).data as api.IssuesResponse;
     this.untriaged = data.issues;
   }
 
   private async fetchLabels() {
-    const response = await fetch(
-        `/api/issues/labels/${this.owner}/${this.repo}`,
-        {credentials: 'include'});
+    const response = await this.abortableFetch(
+        `/api/issues/labels/${this.owner}/${this.repo}`);
+    if (!response) {
+      return;
+    }
     const data = (await response.json()).data as api.LabelsResponse;
     this.labels = data.labels;
   }
 
   private async fetchFilteredIssues(labels: string[]) {
-    const response = await fetch(
-        `/api/issues/by-labels/${this.owner}/${this.repo}/${labels.join(',')}`,
-        {credentials: 'include'});
+    const response = await this.abortableFetch(
+        `/api/issues/by-labels/${this.owner}/${this.repo}/${labels.join(',')}`);
+    if (!response) {
+      return;
+    }
     const data = (await response.json()).data as api.IssuesResponse;
     this.filteredIssues = data.issues;
   }
