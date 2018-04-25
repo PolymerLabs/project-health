@@ -56,7 +56,7 @@ class RepoPage extends BaseElement {
    * This wraps fetch to keep track of pending fetches so they can be aborted if
    * necessary.
    */
-  private async cancelableFetch(input: RequestInfo): Promise<Response|null> {
+  private async abortableFetch(input: RequestInfo): Promise<Response|null> {
     const controller = new AbortController();
     this.fetches.add(controller);
     try {
@@ -74,8 +74,8 @@ class RepoPage extends BaseElement {
   }
 
   private async fetchUntriaged() {
-    const response = await this.cancelableFetch(
-        `/api/issues/untriaged/${this.owner}/${this.repo}`)
+    const response = await this.abortableFetch(
+        `/api/issues/untriaged/${this.owner}/${this.repo}`);
     if (!response) {
       return;
     }
@@ -84,7 +84,7 @@ class RepoPage extends BaseElement {
   }
 
   private async fetchLabels() {
-    const response = await this.cancelableFetch(
+    const response = await this.abortableFetch(
         `/api/issues/labels/${this.owner}/${this.repo}`);
     if (!response) {
       return;
@@ -94,7 +94,7 @@ class RepoPage extends BaseElement {
   }
 
   private async fetchFilteredIssues(labels: string[]) {
-    const response = await this.cancelableFetch(
+    const response = await this.abortableFetch(
         `/api/issues/by-labels/${this.owner}/${this.repo}/${labels.join(',')}`);
     if (!response) {
       return;
