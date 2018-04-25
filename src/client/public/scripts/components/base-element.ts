@@ -17,6 +17,7 @@ export abstract class BaseElement extends HTMLElement {
   requestRender() {
     this._debouncer(() => {
       litRender(this.render(), this);
+      this.afterRender();
     });
   }
 
@@ -43,6 +44,10 @@ export abstract class BaseElement extends HTMLElement {
   }
 
   abstract render(): TemplateResult;
+
+  // This is called immediately after the render has completed.
+  afterRender() {
+  }
 }
 
 function createDebouncer(): Debouncer {

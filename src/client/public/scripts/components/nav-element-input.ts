@@ -10,8 +10,17 @@ export class NavElementInput extends BaseElement {
   @property() error?: string;
   @property() private editing = false;
 
+  connectedCallback() {
+    this.addEventListener('click', this.startEditing.bind(this));
+  }
+
   private startEditing() {
     this.editing = true;
+  }
+
+  private finishEditing() {
+    this.editing = false;
+    this.error = undefined;
   }
 
   private async onKeyPress(event: KeyboardEvent) {
@@ -54,14 +63,23 @@ export class NavElementInput extends BaseElement {
       return html`
         <i class="material-icons-extended nav-item__avatar">add_circle</i>
         <input type="text" placeholder="${placeholder}" on-keypress="${
-          this.onKeyPress.bind(this)}"></input>
+          this.onKeyPress.bind(
+              this)}" on-blur="${this.finishEditing.bind(this)}"></input>
       `;
     }
 
     return html`
       <i class="material-icons-extended nav-item__avatar">add_circle</i>
-      <span on-click="${this.startEditing.bind(this)}">${this.title}</span>
+      ${this.title}
     `;
+  }
+
+  afterRender() {
+    // Immediately focus the input element.
+    if (this.editing) {
+      const inputElement = this.querySelector('input') as HTMLInputElement;
+      inputElement.focus();
+    }
   }
 }
 
