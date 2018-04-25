@@ -1,6 +1,5 @@
 import '../components/push-toggle.js';
 import '../components/filter-legend.js';
-import '../dash/push-controller.js';
 
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import {BaseElement} from '../components/base-element.js';

@@ -68,8 +68,7 @@ export class PushToggle extends BaseElement {
           icon: '/images/notification-images/icon-192x192.png',
           badge: '/images/notification-images/badge-128x128.png',
           tag: 'training-notification',
-          // tslint:disable-next-line:no-any
-        } as any);
+        } as NotificationOptions);
   }
 
   private async disablePush() {
@@ -112,7 +111,6 @@ export class PushToggle extends BaseElement {
 
   async toggle() {
     if (this.disabled) {
-      debugger;
       return;
     }
 
