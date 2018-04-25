@@ -4,11 +4,9 @@ import '../components/row-element.js';
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import * as api from '../../../../types/api.js';
 import {createEmptyMessage} from '../components/empty-message.js';
-import {RowData, RowEvent, StatusDisplay} from '../components/row-element.js';
+import {StatusDisplay} from '../components/row-element.js';
 
-import {getAutoMergeOptions} from './auto-merge-events.js';
 import {FilterState} from './filter-controller.js';
-import {parseAsEventModel} from './pr-event.js';
 
 
 export function genericPrListTemplate(
@@ -19,7 +17,7 @@ export function genericPrListTemplate(
   prList = applyFilter(filter, prList);
   if (prList.length) {
     return html`${prList.map((pr) => {
-      return getPRRowTemplate(pr);
+      return html`<pull-request data=${pr}></pull-request>`;
     })}`;
   } else {
     return createEmptyMessage(emptyMessageTitle, emptyMessageDescription);
@@ -39,29 +37,6 @@ function applyFilter<T extends api.PullRequest>(
     const typeSelected = filter[type];
     return typeSelected;
   });
-}
-
-function viewAllTemplate(info: api.OutgoingPullRequestInfo) {
-  return html`<a href="/all" class="view-all__button">View all ${
-      info.totalCount} outgoing pull requests</a>`;
-}
-
-export function outgoingPrListTemplate(
-    prList: api.OutgoingPullRequest[],
-    filter: FilterState|undefined,
-    emptyMessageTitle: string,
-    emptyMessageDescription: string,
-    info: api.OutgoingPullRequestInfo|null) {
-  prList = applyFilter(filter, prList);
-  if (prList.length) {
-    return html`${prList.map((pr) => {
-      return outgoingPrTemplate(pr);
-    })}
-    ${info && info.hasMore ? viewAllTemplate(info) : ''}
-    `;
-  } else {
-    return createEmptyMessage(emptyMessageTitle, emptyMessageDescription);
-  }
 }
 
 export function statusToDisplay(pr: api.PullRequest): StatusDisplay {
@@ -99,33 +74,4 @@ export function statusToDisplay(pr: api.PullRequest): StatusDisplay {
       const unknown: never = pr.status;
       throw new Error(`Unknown PullRequestStatus: ${unknown}`);
   }
-}
-
-export function outgoingPrTemplate(pr: api.OutgoingPullRequest) {
-  const autoMergeEvents = getAutoMergeOptions(pr as api.OutgoingPullRequest);
-  return getPRRowTemplate(pr, autoMergeEvents);
-}
-
-function getPRRowTemplate(pr: api.PullRequest, automergeEvents?: RowEvent[]) {
-  const prEvents = pr.events.map((event) => parseAsEventModel(event));
-
-  let events = prEvents;
-  if (automergeEvents) {
-    events = events.concat(automergeEvents);
-  }
-
-  const data: RowData = {
-    id: pr.id,
-    createdAt: pr.createdAt,
-    author: pr.author,
-    avatarUrl: pr.avatarUrl,
-    url: pr.url,
-    title: pr.title,
-    owner: pr.owner,
-    repo: pr.repo,
-    status: statusToDisplay(pr),
-    hasNewActivity: pr.hasNewActivity,
-  };
-
-  return html`<row-element data="${data}" events="${events}"></row-element>`;
 }
