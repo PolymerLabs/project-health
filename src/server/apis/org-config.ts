@@ -50,7 +50,7 @@ export async function handleSaveConfigRequest(
     return responseHelper.error('unable-to-save', err.message);
   }
 
-  settings.configChanged(orgName, JSON5.parse(newSettings));
+  settings.onChange(orgName, JSON5.parse(newSettings));
 
   return responseHelper.data<GenericStatusResponse>({
     status: 'ok',

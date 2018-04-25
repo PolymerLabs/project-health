@@ -1,74 +1,72 @@
 import * as fse from 'fs-extra';
-import {validate} from 'jsonschema';
+import {validate as validateAgainstSchema} from 'jsonschema';
 import * as path from 'path';
 
 import {githubAppModel, GithubRepo} from '../models/githubAppModel';
 
-// TODO: How should this be configured
+// TODO: This might be better of as conditional types
 type AvailableIssueTypes = boolean;
 
-interface SettingsModuleConfig {
+interface AppPluginConfig {
   default: AvailableIssueTypes;
   description: string;
   type: string;
 }
 
-export interface SettingsModule {
-  config(): {[key: string]: SettingsModuleConfig};
+export interface AppPlugin {
+  config(): {[key: string]: AppPluginConfig};
 
-  // tslint:disable-next-line:no-any
-  run: (settingConfig: any, repos: GithubRepo[]) => Promise<void>;
+  settingsChanged<T>(settingConfig: T, repos: GithubRepo[]): Promise<void>;
 }
 
 class Settings {
   private moduleKeys: Set<string>;
-  private settingsModules: SettingsModule[];
-  private initialised: boolean;
+  private settingsModules: AppPlugin[];
 
   constructor() {
-    this.initialised = false;
     this.settingsModules = [];
     this.moduleKeys = new Set();
+
+    this.loadAppPlugins();
   }
 
-  addSettingsModule(module: SettingsModule) {
-    const configKeys = Object.keys(module.config());
+  loadAppPlugins() {
+    const settingsDir = path.join(__dirname, 'settings');
+
+    // Autoloads priority issues
+    const files = fse.readdirSync(settingsDir);
+    for (const file of files) {
+      if (path.extname(file) === '.js') {
+import(path.join(settingsDir, file));
+      }
+    }
+  }
+
+  registerPlugin(module: AppPlugin) {
+    const config = module.config();
+    const configKeys = Object.keys(config);
     for (const key of configKeys) {
       if (this.moduleKeys.has(key)) {
         throw new Error('Duplicate SettingsModule keys found: ' + key);
       }
 
       this.moduleKeys.add(key);
+
+      // Ensure the default key is valid (This should never be an issue)
+      validateAgainstSchema(config[key].default, config[key], {
+        throwError: true,
+      });
     }
 
     this.settingsModules.push(module);
   }
 
-  private async init() {
-    const settingsDir = path.join(__dirname, 'settings');
-    // Autoloads priority issues
-    const files = await fse.readdir(settingsDir);
-    for (const file of files) {
-      if (path.extname(file) === '.js') {
-import(path.join(settingsDir, file));
-      }
-    }
-
-    this.initialised = true;
-  }
-
-  // tslint:disable-next-line:no-any
-  async validate(settings: any) {
-    if (!this.initialised) {
-      await this.init();
-    }
-
+  validate(settings: {[key: string]: {}}) {
     for (const module of this.settingsModules) {
       const config = module.config();
       for (const key of Object.keys(config)) {
         if (key in settings) {
-          // tslint:disable-next-line:no-any
-          const report = validate(settings[key] as any, config[key]);
+          const report = validateAgainstSchema(settings[key], config[key]);
           if (!report.valid) {
             // This ensures the problem key is included in the error message.
             throw new Error(`"${key}" ${report.errors[0]}.`);
@@ -78,21 +76,17 @@ import(path.join(settingsDir, file));
     }
   }
 
-  async configChanged(
+  async onChange(
       orgOrUser: string,
       userSettings: {[key: string]: AvailableIssueTypes}) {
-    if (!this.initialised) {
-      await this.init();
-    }
-
     const repos = await githubAppModel.getRepos(orgOrUser);
     if (repos.length === 0) {
-      // No  repos, so nothing to do.
+      // No repos, so nothing to do.
       return;
     }
 
-    for (const module of this.settingsModules) {
-      const config = module.config();
+    for (const plugin of this.settingsModules) {
+      const config = plugin.config();
       const reducedSettings: {[key: string]: AvailableIssueTypes} = {};
       for (const key of Object.keys(config)) {
         if (userSettings[key]) {
@@ -101,7 +95,7 @@ import(path.join(settingsDir, file));
           reducedSettings[key] = config[key].default;
         }
       }
-      await module.run(reducedSettings, repos);
+      await plugin.settingsChanged(reducedSettings, repos);
     }
   }
 }

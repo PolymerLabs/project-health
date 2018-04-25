@@ -1,7 +1,12 @@
 import {GithubRepo} from '../../models/githubAppModel';
-import {settings, SettingsModule} from '../github-app-settings';
+import {AppPlugin, settings} from '../github-app-settings';
 
-class PriorityIssueSetting implements SettingsModule {
+// TODO: Conditional types might allow us to define this from config()
+export interface PluginSetting {
+  'issues.priorityIssues': boolean;
+}
+
+class PriorityIssueSetting implements AppPlugin {
   config() {
     return {
       'issues.priorityIssues': {
@@ -11,10 +16,12 @@ class PriorityIssueSetting implements SettingsModule {
       },
     };
   }
-  // tslint:disable-next-line:no-any
-  async run(setting: any, repos: GithubRepo[]) {
+
+  async settingsChanged<PluginSetting>(
+      setting: PluginSetting,
+      repos: GithubRepo[]) {
     console.log('Priority Issue.: ', setting, 'on: ', repos);
   }
 }
 
-settings.addSettingsModule(new PriorityIssueSetting());
+settings.registerPlugin(new PriorityIssueSetting());

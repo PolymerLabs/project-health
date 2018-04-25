@@ -77,7 +77,7 @@ class SettingsModel {
       throw new Error('Settings are not valid JSON5.');
     }
 
-    await settings.validate(parsedValues);
+    settings.validate(parsedValues);
 
     const orgDocRef = await firestore()
                           .collection(ORG_SETTINGS_COLLECTION_NAME)
