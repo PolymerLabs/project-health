@@ -1,5 +1,5 @@
 import {PullRequest} from '../../../../../types/api.js';
-import {statusToDisplay} from '../prs.js';
+import {statusToDisplay} from '../../components/pull-request.js';
 
 export function newlyActionablePrs(
     newList: PullRequest[], oldList: PullRequest[]): string[] {
