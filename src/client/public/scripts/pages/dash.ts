@@ -96,9 +96,6 @@ class DashPage extends BaseElement {
     super();
     this._createFilters();
 
-    document.body.addEventListener(
-        'render-outgoing-request', this.requestRender.bind(this));
-
     // Setup polling if we aren't emulating a different user.
     if (getLoginParam() === null) {
       updateController.startPoll(
