@@ -33,7 +33,6 @@ class Settings {
   loadAppPlugins() {
     const settingsDir = path.join(__dirname, 'settings');
 
-    // Autoloads priority issues
     const files = fse.readdirSync(settingsDir);
     for (const file of files) {
       if (path.extname(file) === '.js') {

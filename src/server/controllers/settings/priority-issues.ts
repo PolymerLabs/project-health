@@ -6,7 +6,7 @@ export interface PluginSetting {
   'issues.priorityIssues': boolean;
 }
 
-class PriorityIssueSetting implements AppPlugin {
+class PriorityIssuePlugin implements AppPlugin {
   config() {
     return {
       'issues.priorityIssues': {
