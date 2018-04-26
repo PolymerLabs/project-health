@@ -28,14 +28,13 @@ export interface RowEvent {
   text: string|TemplateResult;
   time?: number;
   url?: string;
-  classes?: string[];
 }
 
 export class RowElement extends BaseElement {
   @property() data: RowData|null = null;
   @property() extraHeaderData: TemplateResult[] = [];
   @property() events: RowEvent[] = [];
-  @property() extraElements?: HTMLElement[] = [];
+  @property() extraElement?: HTMLElement;
 
   _renderEvent(event: RowEvent) {
     function timeTemplate(time?: number) {
@@ -56,8 +55,7 @@ export class RowElement extends BaseElement {
     }
 
     return html`
-<div class$="dashboard-row-event ${
-        event.classes ? event.classes.join(' ') : ''}">
+<div class$="dashboard-row-event">
   ${timeTemplate(event.time)}
 
   <div class="dashboard-row-event__bullet">
@@ -87,10 +85,7 @@ export class RowElement extends BaseElement {
   </row-header>
 
   ${this.events.map(this._renderEvent)}
-  ${
-        this.extraElements && this.extraElements.length ?
-            this.extraElements[0] :
-            ''}`;
+  ${this.extraElement}`;
   }
 }
 

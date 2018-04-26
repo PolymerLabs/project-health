@@ -34,15 +34,14 @@ export class PullRequest extends BaseElement {
       hasNewActivity: pr.hasNewActivity,
     };
 
-    const extraElements = [];
+    let extraElement = undefined;
     if ('automergeAvailable' in pr && shouldShowAutoMerger(pr)) {
-      const element = document.createElement('auto-merger') as AutoMerger;
-      element.pr = pr;
-      extraElements.push(element);
+      extraElement = document.createElement('auto-merger') as AutoMerger;
+      extraElement.pr = pr;
     }
 
-    return html`<row-element data="${data}" events="${events}" extraElements="${
-        extraElements}"></row-element>
+    return html`<row-element data="${data}" events="${events}" extraElement="${
+        extraElement}"></row-element>
     `;
   }
 }
