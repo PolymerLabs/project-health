@@ -188,11 +188,11 @@ row-element, row-element > .dashboard-row-event:last-child > .dashboard-row-even
   text-decoration-color: inherit;
 }
 
-.dashboard-row-event.blue-dot .dashboard-row-event__bullet svg {
+auto-merger .dashboard-row-event__bullet svg {
   stroke: var(--non-actionable-color);
 }
 
-.dashboard-row-event.red-dot .dashboard-row-event__bullet svg {
+auto-merger .dashboard-row-event.red-dot .dashboard-row-event__bullet svg {
   stroke: var(--red-color);
 }
 

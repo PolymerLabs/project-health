@@ -1,9 +1,12 @@
+import './auto-merger.js';
+
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import * as api from '../../../../types/api.js';
 import {getAutoMergeOptions} from '../dash/auto-merge-events.js';
 import {FilterState} from '../dash/filter-controller.js';
 import {parseAsEventModel} from '../dash/pr-event.js';
 
+import {shouldShowAutoMerger} from './auto-merger.js';
 import {BaseElement, property} from './base-element.js';
 import {createEmptyMessage} from './empty-message.js';
 import {StatusDisplay} from './row-element.js';
@@ -20,8 +23,8 @@ export class PullRequest extends BaseElement {
     const prEvents = pr.events.map((event) => parseAsEventModel(event));
 
     let events = prEvents;
-    if ('automergeAvailable' in pr) {
-      events = events.concat(getAutoMergeOptions(pr));
+    if ('automergeAvailable' in pr && shouldShowAutoMerger(pr)) {
+      // events = events.concat(getAutoMergeOptions(pr));
     }
 
     const data: RowData = {
@@ -37,7 +40,8 @@ export class PullRequest extends BaseElement {
       hasNewActivity: pr.hasNewActivity,
     };
 
-    return html`<row-element data="${data}" events="${events}"></row-element>`;
+    return html`<row-element data="${data}" events="${events}"></row-element>
+    <auto-merger pr="${pr}"></auto-merger>`;
   }
 }
 
