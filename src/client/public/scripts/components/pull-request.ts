@@ -2,11 +2,10 @@ import './auto-merger.js';
 
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import * as api from '../../../../types/api.js';
-import {getAutoMergeOptions} from '../dash/auto-merge-events.js';
 import {FilterState} from '../dash/filter-controller.js';
 import {parseAsEventModel} from '../dash/pr-event.js';
 
-import {shouldShowAutoMerger} from './auto-merger.js';
+import {AutoMerger, shouldShowAutoMerger} from './auto-merger.js';
 import {BaseElement, property} from './base-element.js';
 import {createEmptyMessage} from './empty-message.js';
 import {StatusDisplay} from './row-element.js';
@@ -20,12 +19,7 @@ export class PullRequest extends BaseElement {
       return html``;
     }
     const pr = this.data;
-    const prEvents = pr.events.map((event) => parseAsEventModel(event));
-
-    let events = prEvents;
-    if ('automergeAvailable' in pr && shouldShowAutoMerger(pr)) {
-      // events = events.concat(getAutoMergeOptions(pr));
-    }
+    const events = pr.events.map((event) => parseAsEventModel(event));
 
     const data: RowData = {
       id: pr.id,
@@ -40,8 +34,16 @@ export class PullRequest extends BaseElement {
       hasNewActivity: pr.hasNewActivity,
     };
 
-    return html`<row-element data="${data}" events="${events}"></row-element>
-    <auto-merger pr="${pr}"></auto-merger>`;
+    const extraElements = [];
+    if ('automergeAvailable' in pr && shouldShowAutoMerger(pr)) {
+      const element = document.createElement('auto-merger') as AutoMerger;
+      element.pr = pr;
+      extraElements.push(element);
+    }
+
+    return html`<row-element data="${data}" events="${events}" extraElements="${
+        extraElements}"></row-element>
+    `;
   }
 }
 

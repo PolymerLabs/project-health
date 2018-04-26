@@ -8,12 +8,13 @@ import {BaseElement, property} from './base-element.js';
 
 export class AutoMerger extends BaseElement {
   @property() pr?: api.OutgoingPullRequest;
-  @property() open: boolean = false;
+  @property() open = false;
   @property() selected?: api.MergeType;
 
   private renderOption(
       text: string|TemplateResult,
       clickHandler: (event: MouseEvent) => {},
+      isOption: boolean,
       extraClasses: string[] = []) {
     if (text === 'Manual merge') {
       extraClasses.push('red-dot');
@@ -28,7 +29,9 @@ export class AutoMerger extends BaseElement {
   </svg>
 </div>
 <div class="dashboard-row-event__title">
-  <button class="dashboard-row-event__action" on-click="${clickHandler}">
+  <button class$="${
+        isOption ? 'dashboard-row-event__option' :
+                   'dashboard-row-event__action'}" on-click="${clickHandler}">
     ${text}
   </button>
 </div>
@@ -40,6 +43,7 @@ export class AutoMerger extends BaseElement {
     return this.renderOption(
         optionText[option],
         this.selectOption.bind(this, option),
+        true,
         ['disconnected']);
   }
 
@@ -86,7 +90,8 @@ export class AutoMerger extends BaseElement {
       return html``;
     }
 
-    if (this.pr.automergeOpts && this.pr.automergeOpts.mergeType) {
+    if (!this.selected && this.pr.automergeOpts &&
+        this.pr.automergeOpts.mergeType) {
       this.selected = this.pr.automergeOpts.mergeType;
     }
 
@@ -95,6 +100,7 @@ export class AutoMerger extends BaseElement {
     const titleTemplate = this.renderOption(
         titleText,
         this.toggleOpen.bind(this),
+        false,
         this.selected ? [] : ['disconnected']);
 
     // Just render the title option, which opens the selection menu.

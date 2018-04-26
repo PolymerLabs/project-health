@@ -11,7 +11,7 @@ row-element {
 row-element.has-events::before {
   position: absolute;
   top: calc((var(--padding) / 3) + 1px);
-  bottom: calc(var(--padding) / 3);
+  bottom: calc(var(--padding));
   left: calc(var(--time-width) + var(--padding) + var(--avatar-size) / 2 - 1px);
   display: block;
   width: 3px;
@@ -164,8 +164,7 @@ row-element[type='activity'] a {
   z-index: var(--z-index-pr-dot);
 }
 
-/* Hide the timeline line after the last event  */
-row-element, row-element > .dashboard-row-event:last-child > .dashboard-row-event__bullet svg {
+row-element, row-element > :last-child .dashboard-row-event__bullet svg {
   background-color: var(--page-bg-color);
 }
 

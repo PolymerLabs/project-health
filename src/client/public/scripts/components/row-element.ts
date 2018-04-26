@@ -35,6 +35,7 @@ export class RowElement extends BaseElement {
   @property() data: RowData|null = null;
   @property() extraHeaderData: TemplateResult[] = [];
   @property() events: RowEvent[] = [];
+  @property() extraElements?: HTMLElement[] = [];
 
   _renderEvent(event: RowEvent) {
     function timeTemplate(time?: number) {
@@ -85,7 +86,11 @@ export class RowElement extends BaseElement {
   <row-header rowData="${this.data}" extraHeaderData="${this.extraHeaderData}">
   </row-header>
 
-  ${this.events.map(this._renderEvent)}`;
+  ${this.events.map(this._renderEvent)}
+  ${
+        this.extraElements && this.extraElements.length ?
+            this.extraElements[0] :
+            ''}`;
   }
 }
 
