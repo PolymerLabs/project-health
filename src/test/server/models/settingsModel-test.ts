@@ -42,7 +42,7 @@ test.serial(
 test.serial(
     '[settingsModel]: should throw when accessing another users account',
     async (t) => {
-      t.context.sandbox.stub(githubAppModel, 'getInstallationByName')
+      t.context.sandbox.stub(githubAppModel, 'getInstallationByOrgOrUserName')
           .callsFake(() => {
             return {
               installationId: 0,
@@ -68,7 +68,7 @@ test.serial(
 
 test.serial(
     '[settingsModel]: should throw if the app is not installed', async (t) => {
-      t.context.sandbox.stub(githubAppModel, 'getInstallationByName')
+      t.context.sandbox.stub(githubAppModel, 'getInstallationByOrgOrUserName')
           .callsFake(() => {
             return null;
           });
@@ -81,7 +81,7 @@ test.serial(
 test.serial(
     '[settingsModel]: should throw when user is not an active member',
     async (t) => {
-      t.context.sandbox.stub(githubAppModel, 'getInstallationByName')
+      t.context.sandbox.stub(githubAppModel, 'getInstallationByOrgOrUserName')
           .callsFake(() => {
             return {
               installationId: 0,
@@ -126,7 +126,7 @@ test.serial(
 
 test.serial(
     '[settingsModel]: should set and return orgs settings', async (t) => {
-      t.context.sandbox.stub(githubAppModel, 'getInstallationByName')
+      t.context.sandbox.stub(githubAppModel, 'getInstallationByOrgOrUserName')
           .callsFake(() => {
             return {
               installationId: 0,
@@ -166,7 +166,7 @@ test.serial(
 test.serial(
     '[settingsModel]: should update org settings and add editors',
     async (t) => {
-      t.context.sandbox.stub(githubAppModel, 'getInstallationByName')
+      t.context.sandbox.stub(githubAppModel, 'getInstallationByOrgOrUserName')
           .callsFake(() => {
             return {
               installationId: 0,
@@ -216,7 +216,7 @@ test.serial(
 test.serial(
     '[settingsModel]: should throw when attempting to set settings on an org without admin rights',
     async (t) => {
-      t.context.sandbox.stub(githubAppModel, 'getInstallationByName')
+      t.context.sandbox.stub(githubAppModel, 'getInstallationByOrgOrUserName')
           .callsFake(() => {
             return {
               installationId: 0,
@@ -247,7 +247,7 @@ test.serial(
 test.serial(
     '[settingsModel]: should throw when attempting to save non-JSON data',
     async (t) => {
-      t.context.sandbox.stub(githubAppModel, 'getInstallationByName')
+      t.context.sandbox.stub(githubAppModel, 'getInstallationByOrgOrUserName')
           .callsFake(() => {
             return {
               installationId: 0,
@@ -278,7 +278,7 @@ test.serial(
 test.serial(
     '[settingsModel]: should not set when user is not an active member',
     async (t) => {
-      t.context.sandbox.stub(githubAppModel, 'getInstallationByName')
+      t.context.sandbox.stub(githubAppModel, 'getInstallationByOrgOrUserName')
           .callsFake(() => {
             return {
               installationId: 0,

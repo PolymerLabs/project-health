@@ -26,7 +26,6 @@ class OrgConfig extends BaseElement {
     if (urlParams) {
       const splitParams = urlParams.split('/');
       this.orgName = splitParams[0];
-      console.log('orgName: ', this.orgName);
     }
     this.getLatestConfig();
   }

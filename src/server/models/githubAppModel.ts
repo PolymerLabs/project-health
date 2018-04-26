@@ -72,7 +72,7 @@ class GithubAppsModel {
     }
   }
 
-  async getInstallationByName(orgOrUser: string):
+  async getInstallationByOrgOrUserName(orgOrUser: string):
       Promise<GithubAppInstall|null> {
     const repoDocSnapshot = await firestore()
                                 .collection(GITHUB_APP_COLLECTION_NAME)
@@ -82,6 +82,24 @@ class GithubAppsModel {
       return null;
     }
     return repoDocSnapshot.data() as GithubAppInstall;
+  }
+
+  async getRepos(orgOrUser: string): Promise<GithubRepo[]> {
+    const repoDocSnapshot = await firestore()
+                                .collection(GITHUB_APP_COLLECTION_NAME)
+                                .doc(orgOrUser)
+                                .collection(GITHUB_APP_REPO_COLLECTION_NAME)
+                                .get();
+
+    const repos: GithubRepo[] = [];
+    for (const doc of repoDocSnapshot.docs) {
+      const data = doc.data();
+      if (!data) {
+        continue;
+      }
+      repos.push(data as GithubRepo);
+    }
+    return repos;
   }
 }
 

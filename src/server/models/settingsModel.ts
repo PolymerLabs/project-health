@@ -3,6 +3,7 @@ import * as JSON5 from 'json5';
 import {OrgSettings} from '../../types/api';
 import {firestore} from '../../utils/firestore';
 import {github} from '../../utils/github';
+import {settings} from '../controllers/github-app-settings';
 import {generateGithubAppToken} from '../utils/generate-github-app-token';
 
 import {githubAppModel} from './githubAppModel';
@@ -19,7 +20,7 @@ class SettingsModel {
     }
 
     const installDetails =
-        await githubAppModel.getInstallationByName(orgOrUser);
+        await githubAppModel.getInstallationByOrgOrUserName(orgOrUser);
     if (!installDetails) {
       throw new Error(
           `The GitHub application is not installed for '${orgOrUser}'`);
@@ -69,11 +70,14 @@ class SettingsModel {
       throw new Error('User does not have permission to access this data.');
     }
 
+    let parsedValues;
     try {
-      JSON5.parse(newSettings);
+      parsedValues = JSON5.parse(newSettings);
     } catch (e) {
       throw new Error('Settings are not valid JSON5.');
     }
+
+    settings.validate(parsedValues);
 
     const orgDocRef = await firestore()
                           .collection(ORG_SETTINGS_COLLECTION_NAME)
