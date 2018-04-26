@@ -1,5 +1,6 @@
 import '../components/push-toggle.js';
 import '../components/filter-legend.js';
+import '../components/pull-request.js';
 
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import {BaseElement} from '../components/base-element.js';
@@ -9,7 +10,7 @@ import {DashPollController} from '../dash/dash-poll-controller.js';
 import {filterController, FilterId} from '../dash/filter-controller.js';
 import {genericIssueListTemplate} from '../dash/issues.js';
 import {notificationCenter} from '../dash/notification-center.js';
-import {genericPrListTemplate, outgoingPrListTemplate} from '../dash/prs.js';
+import {genericPrListTemplate} from '../dash/prs.js';
 import {getLoginParam} from '../dash/utils/get-data.js';
 
 // Full update - poll every 5 minutes
@@ -163,12 +164,11 @@ class DashPage extends BaseElement {
   </h2>
   <div class="outgoing-prs__list pr-list">
     ${
-        outgoingPrListTemplate(
+        genericPrListTemplate(
             dashData.getOutgoingPrs(),
             filterController.getFilter('outgoing-prs'),
             'No outgoing pull requests',
-            'When you open new pull requests, they\'ll appear here.',
-            dashData.getOutgoingInfo())}
+            'When you open new pull requests, they\'ll appear here.')}
   </div>
 </div>
 <div id="incoming-prs">
