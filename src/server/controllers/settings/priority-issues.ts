@@ -24,4 +24,4 @@ class PriorityIssuePlugin implements AppPlugin {
   }
 }
 
-settings.registerPlugin(new PriorityIssueSetting());
+settings.registerPlugin(new PriorityIssuePlugin());
