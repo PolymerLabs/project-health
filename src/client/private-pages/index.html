@@ -13,13 +13,13 @@
   <link rel="icon" type="image/png" href="/images/favicon-16x16.png" sizes="16x16">
   <script src="/node_modules/@webcomponents/custom-elements/custom-elements.min.js"></script>
   <style>
-    body.missing-async-styles .material-icons-extended {
+    body.missing-async-fonts .material-icons-extended {
       visibility: hidden;
     }
   </style>
 </head>
 
-<body class="missing-async-styles">
+<body class="missing-async-fonts">
   <nav-element></nav-element>
   <app-element>
     <dash-page prefix="dash"></dash-page>
@@ -45,7 +45,7 @@
     style.rel = 'stylesheet';
     document.head.appendChild(style);
     document.fonts.onloadingdone = function () {
-      document.body.classList.remove('missing-async-styles');
+      document.body.classList.remove('missing-async-fonts');
     }
   });
 </script>
