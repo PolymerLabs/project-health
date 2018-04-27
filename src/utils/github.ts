@@ -122,11 +122,7 @@ class GitHub {
   }
 
   private finaliseOpts(opts?: RestOpts): RestOpts {
-    return Object.assign(
-        {
-          parseJSON: true,
-        },
-        opts);
+    return Object.assign({parseJSON: true}, opts);
   }
 
   // tslint:disable-next-line:no-any
@@ -163,6 +159,7 @@ class GitHub {
             'Accept': 'application/json',
             'Authorization': `token ${token}`,
             'User-Agent': 'Project Health Bot',
+            'Content-Type': 'application/json',
           },
           opts.customHeaders),
       body,
