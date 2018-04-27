@@ -113,6 +113,7 @@ export class DashServer {
           });
     }
 
+    // TODO: We might be redirected before the install information is saved.
     // Redirect Github-App Post Install to /org/config/:orgName
     app.get(
         '/github-app/post-install',

@@ -3,6 +3,7 @@ import {validate as validateAgainstSchema} from 'jsonschema';
 import * as path from 'path';
 
 import {githubAppModel, GithubRepo} from '../models/githubAppModel';
+import {generateGithubAppToken} from '../utils/generate-github-app-token';
 
 // TODO: This might be better of as conditional types
 type AvailableIssueTypes = boolean;
@@ -13,10 +14,11 @@ interface AppPluginConfig {
   type: string;
 }
 
-export interface AppPlugin {
+export interface AppPlugin<T = {}> {
   config(): {[key: string]: AppPluginConfig};
 
-  settingsChanged<T>(settingConfig: T, repos: GithubRepo[]): Promise<void>;
+  settingsChanged(settingConfig: T, token: string, repos: GithubRepo[]):
+      Promise<void>;
 }
 
 class Settings {
@@ -78,6 +80,13 @@ import(path.join(settingsDir, file));
   async onChange(
       orgOrUser: string,
       userSettings: {[key: string]: AvailableIssueTypes}) {
+    const installDetails =
+        await githubAppModel.getInstallationByOrgOrUserName(orgOrUser);
+    if (!installDetails) {
+      console.warn('Unable to find installation details for ' + orgOrUser);
+      return;
+    }
+
     const repos = await githubAppModel.getRepos(orgOrUser);
     if (repos.length === 0) {
       // No repos, so nothing to do.
@@ -94,7 +103,10 @@ import(path.join(settingsDir, file));
           reducedSettings[key] = config[key].default;
         }
       }
-      await plugin.settingsChanged(reducedSettings, repos);
+
+      const githubAppToken =
+          await generateGithubAppToken(installDetails.installationId);
+      await plugin.settingsChanged(reducedSettings, githubAppToken, repos);
     }
   }
 }
