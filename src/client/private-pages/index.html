@@ -11,11 +11,15 @@
   <link href="/styles/github-config.css" rel="stylesheet" />
   <link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
   <link rel="icon" type="image/png" href="/images/favicon-16x16.png" sizes="16x16">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Extended" rel="stylesheet">
   <script src="/node_modules/@webcomponents/custom-elements/custom-elements.min.js"></script>
+  <style>
+    body.missing-async-styles .material-icons-extended {
+      visibility: hidden;
+    }
+  </style>
 </head>
 
-<body>
+<body class="missing-async-styles">
   <nav-element></nav-element>
   <app-element>
     <dash-page prefix="dash"></dash-page>
@@ -34,5 +38,16 @@
 
 <script nomodule src="/bundled/scripts/window-analytics.js" crossorigin></script>
 <script type="module" src="/scripts/window-analytics.js"></script>
+<script>
+  window.addEventListener('load', () => {
+    const style = document.createElement('link');
+    style.href = 'https://fonts.googleapis.com/icon?family=Material+Icons+Extended';
+    style.rel = 'stylesheet';
+    document.head.appendChild(style);
+    document.fonts.onloadingdone = function () {
+      document.body.classList.remove('missing-async-styles');
+    }
+  });
+</script>
 
 </html>
