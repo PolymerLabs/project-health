@@ -1,6 +1,8 @@
 import {GithubRepo} from '../../models/githubAppModel';
 import {AppPlugin, settings} from '../github-app-settings';
 
+import {deleteLabels, ensureLabelsExist} from './manage-github-labels';
+
 // TODO: Conditional types might allow us to define this from config()
 export interface PluginSetting {
   'issues.priorityIssues': boolean;
@@ -17,10 +19,26 @@ class PriorityIssuePlugin implements AppPlugin {
     };
   }
 
-  async settingsChanged<PluginSetting>(
-      setting: PluginSetting,
+  async settingsChanged(
+      settingConfig: PluginSetting,
+      token: string,
       repos: GithubRepo[]) {
-    console.log('Priority Issue.: ', setting, 'on: ', repos);
+    const priorityLabels = [
+      {name: 'P0', description: 'Critical', color: 'd0021b'},
+      {name: 'P1', description: 'Need', color: 'd0021b'},
+      {name: 'P2', description: 'Want', color: '0071eb'},
+      {name: 'P3', description: 'Not Critical', color: '0071eb'},
+    ];
+
+    if (!settingConfig['issues.priorityIssues']) {
+      for (const repo of repos) {
+        deleteLabels(token, repo, priorityLabels);
+      }
+    } else {
+      for (const repo of repos) {
+        ensureLabelsExist(token, repo, priorityLabels);
+      }
+    }
   }
 }
 

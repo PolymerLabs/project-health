@@ -104,13 +104,17 @@ async function getContributionWeight(
     // used.
     const queryPath = `repos/${org}/${repo}/stats/contributors`;
 
-    let response = await github().get(queryPath, token, false);
+    let response = await github().get(queryPath, token, {
+      parseJSON: false,
+    });
     let retries = 0;
     // GitHub's API may serve a cached response and begin an asynchronous
     // job to calculate required data.
     while (response.statusCode !== 200 && retries++ < MAX_STATS_RETRIES) {
       await setTimeoutPromise(1000 * retries);
-      response = await github().get(queryPath, token, false);
+      response = await github().get(queryPath, token, {
+        parseJSON: false,
+      });
     }
 
     if (response.statusCode === 200) {
