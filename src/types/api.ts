@@ -251,8 +251,10 @@ export type SWClientMessage<T> = {
   data: T|void,
 };
 
+export type MergeType = 'manual'|'merge'|'squash'|'rebase';
+
 export type AutomergeOpts = {
-  mergeType: 'manual'|'merge'|'squash'|'rebase',
+  mergeType: MergeType,
 };
 
 export type CheckPRPayload = {

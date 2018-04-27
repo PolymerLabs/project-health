@@ -10,7 +10,6 @@ import {DashPollController} from '../dash/dash-poll-controller.js';
 import {filterController, FilterId} from '../dash/filter-controller.js';
 import {genericIssueListTemplate} from '../dash/issues.js';
 import {notificationCenter} from '../dash/notification-center.js';
-import {genericPrListTemplate} from '../dash/prs.js';
 import {getLoginParam} from '../dash/utils/get-data.js';
 
 // Full update - poll every 5 minutes
@@ -97,9 +96,6 @@ class DashPage extends BaseElement {
     super();
     this._createFilters();
 
-    document.body.addEventListener(
-        'render-outgoing-request', this.requestRender.bind(this));
-
     // Setup polling if we aren't emulating a different user.
     if (getLoginParam() === null) {
       updateController.startPoll(
@@ -163,12 +159,14 @@ class DashPage extends BaseElement {
         this.filters['outgoing-prs']}"></filter-legend>
   </h2>
   <div class="outgoing-prs__list pr-list">
-    ${
-        genericPrListTemplate(
-            dashData.getOutgoingPrs(),
-            filterController.getFilter('outgoing-prs'),
-            'No outgoing pull requests',
-            'When you open new pull requests, they\'ll appear here.')}
+    <pull-request-list data="${dashData.getOutgoingPrs()}"
+          filter="${
+        filterController.getFilter(
+            'outgoing-prs')}"
+          emptyMessageTitle="${'No outgoing pull requests'}"
+          emptyMessageDescription="${
+                           'When you open new pull requests, they\'ll appear here'}">
+    </pull-request-list>
   </div>
 </div>
 <div id="incoming-prs">
@@ -179,12 +177,14 @@ class DashPage extends BaseElement {
         this.filters['incoming-prs']}"></filter-legend>
   </h2>
   <div class="incoming-prs__list pr-list">
-    ${
-        genericPrListTemplate(
-            dashData.getIncomingPrs(),
-            filterController.getFilter('incoming-prs'),
-            'No incoming pull requests',
-            'When you\'re added as a reviewer to a pull request, they\'ll appear here.')}
+  <pull-request-list data="${dashData.getIncomingPrs()}"
+          filter="${
+        filterController.getFilter(
+            'incoming-prs')}"
+          emptyMessageTitle="${'No incoming pull requests'}"
+          emptyMessageDescription="${
+                           'When you\'re added as a reviewer to a pull request, they\'ll appear here.'}">
+    </pull-request-list>
   </div>
 </div>
 <div id="assigned-issues">
