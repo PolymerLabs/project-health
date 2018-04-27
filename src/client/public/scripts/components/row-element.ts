@@ -55,7 +55,7 @@ export class RowElement extends BaseElement {
     }
 
     return html`
-<div class$="dashboard-row-event">
+<div class="dashboard-row-event">
   ${timeTemplate(event.time)}
 
   <div class="dashboard-row-event__bullet">
