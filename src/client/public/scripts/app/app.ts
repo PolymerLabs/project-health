@@ -86,4 +86,18 @@ const supportsDynamicImport = (() => {
   }
 })();
 
+// Wrap customElements.define with a check to ensure we don't double-register
+// anything.
+const originalDefine = customElements.define.bind(customElements);
+function wrappedCustomElementsDefine(
+    name: string,
+    constructor: Function,
+    options?: ElementDefinitionOptions|undefined) {
+  if (!customElements.get(name)) {
+    originalDefine(name, constructor, options);
+  }
+}
+
+customElements.define = wrappedCustomElementsDefine;
+
 customElements.define('app-element', AppElement);
