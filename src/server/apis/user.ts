@@ -39,11 +39,11 @@ export async function handleRemoveRepo(
   const name = request.body.name;
 
   if (!owner) {
-    return responseHelper.error('invalid-request', 'Missing owner in request');
+    return responseHelper.error('no-owner', 'Missing owner in request');
   }
 
   if (!name) {
-    return responseHelper.error('invalid-request', 'Missing name in request');
+    return responseHelper.error('no-name', 'Missing name in request');
   }
 
   const repos = userRecord.repos;
@@ -75,7 +75,7 @@ export async function handleAddRepo(
   const nameWithOwner = request.body.nameWithOwner;
 
   if (!nameWithOwner) {
-    return responseHelper.error('invalid-request', 'No nameWithOwner found');
+    return responseHelper.error('no-name-with-owner', 'No nameWithOwner found');
   }
 
   const split = nameWithOwner.split('/');
