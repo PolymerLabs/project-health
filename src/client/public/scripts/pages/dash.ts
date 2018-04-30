@@ -1,6 +1,7 @@
 import '../components/push-toggle.js';
 import '../components/filter-legend.js';
 import '../components/pull-request.js';
+import '../components/github-issue.js';
 
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import {BaseElement} from '../components/base-element.js';
@@ -8,7 +9,6 @@ import {FilterLegendEvent} from '../components/filter-legend.js';
 import {dashData} from '../dash/dash-data.js';
 import {DashPollController} from '../dash/dash-poll-controller.js';
 import {filterController, FilterId} from '../dash/filter-controller.js';
-import {genericIssueListTemplate} from '../dash/issues.js';
 import {notificationCenter} from '../dash/notification-center.js';
 import {getLoginParam} from '../dash/utils/get-data.js';
 
@@ -158,16 +158,14 @@ class DashPage extends BaseElement {
         this._updateFilter.bind(this, 'outgoing-prs')}" filters="${
         this.filters['outgoing-prs']}"></filter-legend>
   </h2>
-  <div class="outgoing-prs__list pr-list">
-    <pull-request-list data="${dashData.getOutgoingPrs()}"
-          filter="${
+  <pull-request-list data="${dashData.getOutgoingPrs()}"
+        filter="${
         filterController.getFilter(
             'outgoing-prs')}"
-          emptyMessageTitle="${'No outgoing pull requests'}"
-          emptyMessageDescription="${
+        emptyMessageTitle="${'No outgoing pull requests'}"
+        emptyMessageDescription="${
                            'When you open new pull requests, they\'ll appear here'}">
-    </pull-request-list>
-  </div>
+  </pull-request-list>
 </div>
 <div id="incoming-prs">
   <h2>
@@ -176,7 +174,6 @@ class DashPage extends BaseElement {
         this._updateFilter.bind(this, 'incoming-prs')}" filters="${
         this.filters['incoming-prs']}"></filter-legend>
   </h2>
-  <div class="incoming-prs__list pr-list">
   <pull-request-list data="${dashData.getIncomingPrs()}"
           filter="${
         filterController.getFilter(
@@ -185,7 +182,6 @@ class DashPage extends BaseElement {
           emptyMessageDescription="${
                            'When you\'re added as a reviewer to a pull request, they\'ll appear here.'}">
     </pull-request-list>
-  </div>
 </div>
 <div id="assigned-issues">
   <h2>
@@ -194,14 +190,14 @@ class DashPage extends BaseElement {
         this._updateFilter.bind(this, 'assigned-issues')}" filters="${
         this.filters['assigned-issues']}"></filter-legend>
   </h2>
-  <div class="assigned-issues__list pr-list">
-    ${
-        genericIssueListTemplate(
-            dashData.getAssignedIssues(),
-            filterController.getFilter('assigned-issues'),
-            'No issues assigned to you',
-            'When you\'re assigned issues, they\'ll appear here.')}
-  </div>
+  <github-issue-list data="${dashData.getAssignedIssues()}"
+    loading="${dashData.getAssignedIssues() === null}"
+    filter="${
+        filterController.getFilter(
+            'assigned-issues')}"
+    emptyMessageTitle="${'No issues assigned to you'}"
+    emptyMessageDescription="${
+                              'When you\'re assigned issues, they\'ll appear here.'}">
 </div>
 <div id="issue-activity">
   <h2>
@@ -210,14 +206,14 @@ class DashPage extends BaseElement {
         this._updateFilter.bind(this, 'issue-activity')}" filters="${
         this.filters['issue-activity']}"></filter-legend>
   </h2>
-  <div class="issue-activity__list pr-list">
-    ${
-        genericIssueListTemplate(
-            dashData.getIssueActivity(),
-            filterController.getFilter('issue-activity'),
-            'No open issues involving you',
-            'When you\'re involved in issues, they\'ll appear here.')}
-  </div>
+  <github-issue-list data="${dashData.getIssueActivity()}"
+    loading="${dashData.getIssueActivity() === null}"
+    filter="${
+        filterController.getFilter(
+            'issue-activity')}"
+    emptyMessageTitle="${'No open issues involving you'}"
+    emptyMessageDescription="${
+                             'When you\'re involved in issues, they\'ll appear here.'}">
 </div>
     `;
   }

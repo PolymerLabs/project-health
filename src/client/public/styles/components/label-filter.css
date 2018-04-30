@@ -18,6 +18,7 @@ label-filter .label-item {
 
   color: #3C4043;
   font-family: var(--heading-font);
+  font-size: 14px;
   font-weight: 500;
   line-height: 30px;
   cursor: pointer;
