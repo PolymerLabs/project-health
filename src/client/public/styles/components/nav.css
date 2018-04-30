@@ -45,6 +45,7 @@ i.nav-item__avatar {
   height: 20px;
   border-radius: 50%;
   margin-right: var(--grid-size);
+  color: var(--nav-icon-color);
 }
 
 .nav-item__separator {
@@ -71,9 +72,9 @@ i.nav-item__avatar {
 
 .nav-item:hover .nav-item__action {
   visibility: visible;
-  color: var(--icon-button-color);
+  color: var(--nav-icon-color);
 }
 
 .nav-item .nav-item__action:hover {
-  color: var(--button-hover-color);
+  color: var(--nav-icon-hover-color);
 }
