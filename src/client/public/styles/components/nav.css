@@ -11,6 +11,7 @@ nav-element {
   line-height: 20px;
   flex-shrink: 0;
   position: absolute;
+  color: var(--nav-color);
 }
 
 .nav-title {
@@ -24,10 +25,6 @@ nav-element {
   display: flex;
   text-decoration: none;
   border-radius: 0 22px 22px 0;
-}
-
-.nav-item-secondary {
-  color: var(--secondary-text-color);
 }
 
 .nav-item.selected {
@@ -48,7 +45,6 @@ i.nav-item__avatar {
   height: 20px;
   border-radius: 50%;
   margin-right: var(--grid-size);
-  color: var(--icon-button-color);
 }
 
 .nav-item__separator {
