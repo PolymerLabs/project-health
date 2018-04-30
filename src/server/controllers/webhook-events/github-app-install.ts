@@ -73,7 +73,7 @@ async function handleNewAppInstall(hookBody: InstallHook) {
       // itself. At the moment this is using a persona access token
       // to get around restriction of GitHub app not having access
       // to GQL.
-      token: secrets().APP.GITHUB_APP_TO_GQL_TOKEN,
+      token: secrets().GITHUB_APP.TO_GQL_TOKEN,
     }
   });
   const data = result.data as {[key: string]: GithubRepo};
