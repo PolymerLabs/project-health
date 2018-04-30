@@ -1,7 +1,7 @@
 import {GithubRepo} from '../../models/githubAppModel';
 import {AppPlugin, settings} from '../github-app-settings';
 
-import {deleteLabels, ensureLabelsExist} from './manage-github-labels';
+import {addLabels, deleteLabels} from './manage-github-labels';
 
 // TODO: Conditional types might allow us to define this from config()
 export interface PluginSetting {
@@ -36,7 +36,7 @@ class PriorityIssuePlugin implements AppPlugin {
       }
     } else {
       for (const repo of repos) {
-        ensureLabelsExist(token, repo, priorityLabels);
+        addLabels(token, repo, priorityLabels);
       }
     }
   }
