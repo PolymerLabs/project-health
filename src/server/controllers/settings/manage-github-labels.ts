@@ -28,15 +28,20 @@ function labelsAreSame(label1: Label, label2: Label) {
 
 export async function deleteLabels(
     token: string, repo: GithubRepo, labels: Label[]) {
-  labels = manipulateLabels(labels);
-  for (const label of labels) {
-    const queryUrl = `repos/${repo.nameWithOwner}/labels/${label.name}`;
-    await github().delete(queryUrl, token);
-  }
+  await setLabels(token, repo, labels, false);
 }
 
-export async function ensureLabelsExist(
+export async function addLabels(
     token: string, repo: GithubRepo, labels: Label[]) {
+  await setLabels(token, repo, labels, true);
+}
+
+/**
+ * This adds/removes labels by first checking what existing labels are being
+ * used.
+ */
+async function setLabels(
+    token: string, repo: GithubRepo, labels: Label[], shouldExist: boolean) {
   // Get current labels from repo
   const existingLabels =
       await github().get(`repos/${repo.nameWithOwner}/labels`, token, {
@@ -53,23 +58,36 @@ export async function ensureLabelsExist(
     existingLabelsMap.set(existingLabel.name, existingLabel);
   }
 
-  for (const labelToMake of labels) {
-    const labelAlreadyExists = existingLabelsMap.has(labelToMake.name);
-    if (labelAlreadyExists &&
-        labelsAreSame(labelToMake, existingLabelsMap.get(labelToMake.name))) {
+  for (const label of labels) {
+    const labelAlreadyExists = existingLabelsMap.has(label.name);
+    if (shouldExist && labelAlreadyExists &&
+        labelsAreSame(label, existingLabelsMap.get(label.name))) {
       // If labels are identical, no need to create or update.
+      continue;
+    } else if (!shouldExist && !labelAlreadyExists) {
+      // Label isn't there and doesn't need to be.
       continue;
     }
 
     try {
-      let queryUrl = `repos/${repo.nameWithOwner}/labels`;
-      let method = github().post.bind(github());
-      if (labelAlreadyExists) {
-        queryUrl = `repos/${repo.nameWithOwner}/labels/${labelToMake.name}`;
+      let queryUrl: string;
+      let method;
+
+      if (!shouldExist) {
+        // Delete existing label.
+        queryUrl = `repos/${repo.nameWithOwner}/labels/${label.name}`;
+        method = github().delete.bind(github());
+      } else if (shouldExist && labelAlreadyExists) {
+        // Update existing label.
+        queryUrl = `repos/${repo.nameWithOwner}/labels/${label.name}`;
         method = github().patch.bind(github());
+      } else {
+        // Create label.
+        queryUrl = `repos/${repo.nameWithOwner}/labels`;
+        method = github().post.bind(github());
       }
 
-      await method(queryUrl, token, labelToMake, {
+      await method(queryUrl, token, label, {
         customHeaders: {
           // Enable preview API which allows settings description.
           'Accept': 'application/vnd.github.symmetra-preview+json',
@@ -77,7 +95,9 @@ export async function ensureLabelsExist(
       });
     } catch (err) {
       console.warn(
-          `Unable to create label: '${labelToMake.name}'`, err.message);
+          `Unable to update label: '${label.name}'. Should exist: '${
+              shouldExist}'`,
+          err.message);
     }
   }
 }
