@@ -10,9 +10,11 @@
   --timeline-color: hsl(0, 0%, 75%);
   --profile-border-color: var(--light-grey);
   --avatar-bg-color: var(--light-grey);
-  --button-color: hsl(0, 0%, 60%);
-  --button-hover-color: hsl(0, 0%, 40%);
   --page-bg-color: white;
   --incognito-color: hsl(0, 0%, 20%);
   --red-color: #d0021b;
+
+  --nav-color: hsl(225, 6%, 13%);
+  --nav-icon-color: hsl(0, 0%, 46%);
+  --nav-icon-hover-color: hsl(0, 0%, 35%);
 }

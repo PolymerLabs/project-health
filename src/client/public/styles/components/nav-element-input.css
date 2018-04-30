@@ -2,8 +2,8 @@
 @import "./../variables/colors.css";
 
 nav-element-input {
-  color: var(--secondary-text-color);
   cursor: pointer;
+  display: block;
 }
 
 nav-element-input input {
