@@ -83,6 +83,7 @@
                   "additions": 3,
                   "deletions": 1,
                   "changedFiles": 1,
+                  "authoredDate": "2018-03-12T19:09:21Z",
                   "pushedDate": "2018-03-12T19:09:22Z",
                   "oid": "14b676f9d5063c90e929871911a8d942d6a687bf",
                   "__typename": "Commit"
@@ -146,6 +147,7 @@
                   "additions": 3,
                   "deletions": 1,
                   "changedFiles": 1,
+                  "authoredDate": "2018-03-07T23:59:35Z",
                   "pushedDate": "2018-03-07T23:59:36Z",
                   "oid": "6b48b7f4a73de3bd5e6f91541941eaec816f2990",
                   "__typename": "Commit"
@@ -157,6 +159,7 @@
                   "additions": 1,
                   "deletions": 1,
                   "changedFiles": 1,
+                  "authoredDate": "2018-03-08T00:20:15Z",
                   "pushedDate": "2018-03-08T00:20:16Z",
                   "oid": "6879c9013521c45431a7ac42bf38374510cf5fce",
                   "__typename": "Commit"
@@ -229,6 +232,7 @@
                   "additions": 3,
                   "deletions": 1,
                   "changedFiles": 1,
+                  "authoredDate": "2018-02-07T22:25:07Z",
                   "pushedDate": "2018-02-07T22:25:08Z",
                   "oid": "f38c8afea9a6a8c8e47772cbd87e8839983aa140",
                   "__typename": "Commit"
@@ -292,6 +296,7 @@
                   "additions": 3,
                   "deletions": 1,
                   "changedFiles": 1,
+                  "authoredDate": "2018-02-07T19:24:17Z",
                   "pushedDate": "2018-02-07T19:24:18Z",
                   "oid": "f018b948f2906453a06c95089a785ba657eb0817",
                   "__typename": "Commit"
@@ -355,6 +360,7 @@
                   "additions": 3,
                   "deletions": 1,
                   "changedFiles": 1,
+                  "authoredDate": "2018-01-31T19:18:43Z",
                   "pushedDate": "2018-01-31T19:18:44Z",
                   "oid": "4eb760bbbeb1e9b5ee51010050fca4d1f2fe5dbb",
                   "__typename": "Commit"
@@ -366,6 +372,7 @@
                   "additions": 1,
                   "deletions": 1,
                   "changedFiles": 1,
+                  "authoredDate": "2018-01-31T19:19:59Z",
                   "pushedDate": "2018-01-31T19:20:01Z",
                   "oid": "bf67264ad3d77fcd9ad43cfcc13c8578fb9f57de",
                   "__typename": "Commit"
@@ -429,6 +436,7 @@
                   "additions": 3,
                   "deletions": 1,
                   "changedFiles": 1,
+                  "authoredDate": "2018-01-23T23:35:17Z",
                   "pushedDate": "2018-01-23T23:35:18Z",
                   "oid": "9b09af13ea76c068b99dfd81f457e76ca92d0299",
                   "__typename": "Commit"
@@ -625,8 +633,8 @@
     "rateLimit": {
       "cost": 1,
       "limit": 5000,
-      "remaining": 4990,
-      "resetAt": "2018-04-21T03:54:05Z",
+      "remaining": 4988,
+      "resetAt": "2018-04-30T18:21:32Z",
       "nodeCount": 3080,
       "__typename": "RateLimit"
     }

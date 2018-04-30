@@ -132,18 +132,18 @@ export async function handleIncomingPRRequest(
       let lastPushedAt = 0;
       let lastOid;
       for (const node of pr.commits.nodes) {
-        if (!myReview || !node || !node.commit.pushedDate) {
+        if (!myReview || !node || !node.commit.authoredDate) {
           continue;
         }
-        const pushedAt = Date.parse(node.commit.pushedDate);
-        if (pushedAt <= myReview.createdAt) {
+        const authoredDate = Date.parse(node.commit.authoredDate);
+        if (authoredDate <= myReview.createdAt) {
           continue;
         }
         additions += node.commit.additions;
         deletions += node.commit.deletions;
         changedFiles += node.commit.changedFiles;
-        if (pushedAt > lastPushedAt) {
-          lastPushedAt = Date.parse(node.commit.pushedDate);
+        if (authoredDate > lastPushedAt) {
+          lastPushedAt = Date.parse(node.commit.authoredDate);
           lastOid = node.commit.oid;
         }
         newCommits.push(node);
