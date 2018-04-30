@@ -205,6 +205,7 @@ query IncomingPullRequests($login: String!, $reviewRequestsQueryString: String!,
               additions
               deletions
               changedFiles
+              authoredDate
               pushedDate
               oid
             }

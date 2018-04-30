@@ -656,6 +656,8 @@ export interface IncomingPullRequestsQuery {
               deletions: number,
               // The number of changed files in this commit.
               changedFiles: number,
+              // The datetime when this commit was authored.
+              authoredDate: string,
               // The datetime when this commit was pushed.
               pushedDate: string | null,
               // The Git object ID

@@ -231,7 +231,7 @@ test('[incoming-prs-test]: Incoming PR that I reviewed. New commit since', (t) =
         additions: 1,
         deletions: 1,
         changedFiles: 1,
-        lastPushedAt: 1517426401000,
+        lastPushedAt: 1517426399000,
         url:
             'https://github.com/project-health1/repo/pull/9/files/4eb760bbbeb1e9b5ee51010050fca4d1f2fe5dbb..bf67264ad3d77fcd9ad43cfcc13c8578fb9f57de',
       }
@@ -315,7 +315,7 @@ test('[incoming-prs-test]: incoming with mention, new commits', (t) => {
         changedFiles: 1,
         count: 1,
         deletions: 1,
-        lastPushedAt: 1520468416000,
+        lastPushedAt: 1520468415000,
         type: 'NewCommitsEvent',
         url:
             'https://github.com/project-health1/repo/pull/13/files/6b48b7f4a73de3bd5e6f91541941eaec816f2990..6879c9013521c45431a7ac42bf38374510cf5fce',
