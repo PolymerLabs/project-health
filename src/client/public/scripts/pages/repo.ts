@@ -1,6 +1,6 @@
 import '../components/filter-legend.js';
 import '../components/label-filter.js';
-import '../components/github-issue.js';
+import '../components/issue-element.js';
 
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import {TemplateResult} from '../../../../../node_modules/lit-html/lit-html.js';
@@ -141,7 +141,7 @@ class RepoPage extends BaseElement {
         this.updateFilter.bind(this, 'untriaged-issues')}" filters="${
         this.filters['untriaged-issues']}"></filter-legend>
   </h2>
-  <github-issue-list data="${this.untriaged}"
+  <issue-list data="${this.untriaged}"
     loading="${this.untriaged === null}"
     filter="${filterController.getFilter('untriaged-issues')}"
     emptyMessageTitle="${'No untriaged issues'}"
@@ -151,7 +151,7 @@ class RepoPage extends BaseElement {
   <h2>Issues</h2>
     <label-filter labels="${this.labels}" on-label-filter-changed="${
         this.labelFilterChanged.bind(this)}"></label-filter>
-    <github-issue-list data="${this.filteredIssues}"
+    <issue-list data="${this.filteredIssues}"
       loading="${this.filteredIssues === null}"
       emptyMessageTitle="${'No issue matched selected filters'}"
       emptyMessageDescription="${'Select labels to view issues'}">

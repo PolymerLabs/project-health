@@ -7,12 +7,12 @@
 @import "./components/issues.css";
 @import "./components/push-toggle.css";
 
-.pr-list a, github-issue-list a, pull-request-list a {
+.pr-list a, issue-list a, pull-request-list a {
   text-decoration-line: none;
   color: inherit;
 }
 
-.pr-list, github-issue-list, pull-request-list {
+.pr-list, issue-list, pull-request-list {
   font-size: 14px;
   margin-bottom: var(--padding);
   display: block;
