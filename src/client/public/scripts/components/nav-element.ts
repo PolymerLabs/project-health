@@ -118,6 +118,11 @@ export class NavElement extends BaseElement {
           apiEndpoint="${'/api/user/add-repo'}"></nav-element-input>
 
         <div class="nav-item__separator"></div>
+
+        <a class="nav-item nav-item-secondary" href="https://github.com/polymerlabs/project-health/issues/new" target="blank">
+          <i class="material-icons-extended nav-item__avatar">feedback</i>
+          <div class="nav-item__name">File feedback</div>
+        </a>
       <nav>
     `;
   }

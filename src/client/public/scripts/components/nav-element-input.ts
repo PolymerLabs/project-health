@@ -70,7 +70,7 @@ export class NavElementInput extends BaseElement {
 
     return html`
       <i class="material-icons-extended nav-item__avatar">add_circle</i>
-      ${this.title}
+      <span class="nav-item-secondary">${this.title}</span>
     `;
   }
 

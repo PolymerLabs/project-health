@@ -219,10 +219,6 @@ class DashPage extends BaseElement {
             'When you\'re involved in issues, they\'ll appear here.')}
   </div>
 </div>
-
-<footer>Bug? Feedback? File an
-  <a target="_blank" href="https://github.com/polymerlabs/project-health/issues/new">issue on GitHub</a>
-</footer>
     `;
   }
 }

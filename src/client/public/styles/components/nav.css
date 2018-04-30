@@ -26,12 +26,16 @@ nav-element {
   border-radius: 0 22px 22px 0;
 }
 
+.nav-item-secondary {
+  color: var(--secondary-text-color);
+}
+
 .nav-item.selected {
   background-color: hsla(0, 0%, 0%, 0.05);
   font-weight: bold;
 }
 
-a.nav-item:hover {
+a.nav-item:hover, nav-element-input:hover {
   background-color: hsla(211, 100%, 46%, 0.05);
 }
 
@@ -44,6 +48,7 @@ i.nav-item__avatar {
   height: 20px;
   border-radius: 50%;
   margin-right: var(--grid-size);
+  color: var(--icon-button-color);
 }
 
 .nav-item__separator {
@@ -70,7 +75,7 @@ i.nav-item__avatar {
 
 .nav-item:hover .nav-item__action {
   visibility: visible;
-  color: var(--button-color);
+  color: var(--icon-button-color);
 }
 
 .nav-item .nav-item__action:hover {
