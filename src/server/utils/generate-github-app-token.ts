@@ -7,8 +7,8 @@ import {secrets} from '../../utils/secrets';
 export async function generateGithubAppToken(installId: number):
     Promise<string> {
   const jwt = await generateJWT(
-      secrets().GITHUB_APP_ID,
-      secrets().GITHUB_APP_JWT_PATH,
+      secrets().APP.GITHUB_APP_ID,
+      secrets().APP.GITHUB_APP_JWT_PATH,
   );
 
   const response = await fetch(
