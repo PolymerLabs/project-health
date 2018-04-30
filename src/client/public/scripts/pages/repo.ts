@@ -1,5 +1,6 @@
 import '../components/filter-legend.js';
 import '../components/label-filter.js';
+import '../components/github-issue.js';
 
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import {TemplateResult} from '../../../../../node_modules/lit-html/lit-html.js';
@@ -8,12 +9,11 @@ import {BaseElement, property} from '../components/base-element.js';
 import {FilterLegendEvent, FilterLegendItem} from '../components/filter-legend.js';
 import {LabelFilterChangedEvent} from '../components/label-filter.js';
 import {filterController, FilterId} from '../dash/filter-controller.js';
-import {genericIssueListTemplate} from '../dash/issues.js';
 
 class RepoPage extends BaseElement {
   @property({attribute: true}) urlparams = '';
-  @property() untriaged: api.Issue[] = [];
-  @property() filteredIssues: api.Issue[] = [];
+  @property() untriaged: api.Issue[]|null = null;
+  @property() filteredIssues: api.Issue[]|null = null;
   @property() labels: api.Label[] = [];
   private fetches: Set<AbortController> = new Set();
 
@@ -39,9 +39,9 @@ class RepoPage extends BaseElement {
   }
 
   private clearData() {
-    this.untriaged = [];
+    this.untriaged = null;
+    this.filteredIssues = null;
     this.labels = [];
-    this.filteredIssues = [];
     for (const controller of this.fetches.values()) {
       controller.abort();
     }
@@ -141,29 +141,20 @@ class RepoPage extends BaseElement {
         this.updateFilter.bind(this, 'untriaged-issues')}" filters="${
         this.filters['untriaged-issues']}"></filter-legend>
   </h2>
-  <div class="pr-list">
-        ${
-        genericIssueListTemplate(
-            this.untriaged,
-            filterController.getFilter('untriaged-issues'),
-            'No untriaged issues',
-            'When there are untriaged issues, they\'ll appear here.')}
-  </div>
+  <github-issue-list data="${this.untriaged}"
+    loading="${this.untriaged === null}"
+    filter="${filterController.getFilter('untriaged-issues')}"
+    emptyMessageTitle="${'No untriaged issues'}"
+    emptyMessageDescription="${'When there are untriaged issues, they\'ll appear here.'}">
 </div>
 <div id="all-issues">
   <h2>Issues</h2>
-  <div class="pr-list">
     <label-filter labels="${this.labels}" on-label-filter-changed="${
         this.labelFilterChanged.bind(this)}"></label-filter>
-    <div class="pr-list">
-      ${
-        genericIssueListTemplate(
-            this.filteredIssues,
-            undefined,
-            'No issues matching selected filters',
-            'Select labels to view issues')}
-    </div>
-  </div>
+    <github-issue-list data="${this.filteredIssues}"
+      loading="${this.filteredIssues === null}"
+      emptyMessageTitle="${'No issue matched selected filters'}"
+      emptyMessageDescription="${'Select labels to view issues'}">
 </div>`;
   }
 }

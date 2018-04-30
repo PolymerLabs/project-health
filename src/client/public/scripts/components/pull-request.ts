@@ -1,4 +1,5 @@
 import './auto-merger.js';
+import './row-element.js';
 
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import * as api from '../../../../types/api.js';
