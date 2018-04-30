@@ -9,7 +9,7 @@ import {createEmptyMessage} from './empty-message.js';
 import {StatusDisplay} from './row-element.js';
 import {RowData} from './row-element.js';
 
-export class GithubIssue extends BaseElement {
+export class IssueElement extends BaseElement {
   @property() data?: api.Issue;
 
   render() {
@@ -85,7 +85,7 @@ function popularityTemplate(popularity: api.Popularity) {
   `;
 }
 
-export class GithubIssueList extends BaseElement {
+export class IssueList extends BaseElement {
   @property() data: api.Issue[] = [];
   @property() filter?: FilterState;
   @property() loading = true;
@@ -93,7 +93,7 @@ export class GithubIssueList extends BaseElement {
   @property() emptyMessageDescription = '';
 
   issueTemplate(pr: api.Issue) {
-    return html`<github-issue data="${pr}"></github-issue>`;
+    return html`<issue-element data="${pr}"></issue-element>`;
   }
 
   private applyFilter(filter: FilterState|undefined, issueList: api.Issue[]):
@@ -123,5 +123,5 @@ export class GithubIssueList extends BaseElement {
   }
 }
 
-customElements.define('github-issue', GithubIssue);
-customElements.define('github-issue-list', GithubIssueList);
+customElements.define('issue-element', IssueElement);
+customElements.define('issue-list', IssueList);

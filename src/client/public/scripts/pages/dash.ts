@@ -1,7 +1,7 @@
 import '../components/push-toggle.js';
 import '../components/filter-legend.js';
 import '../components/pull-request.js';
-import '../components/github-issue.js';
+import '../components/issue-element.js';
 
 import {html} from '../../../../../node_modules/lit-html/lib/lit-extended.js';
 import {BaseElement} from '../components/base-element.js';
@@ -190,7 +190,7 @@ class DashPage extends BaseElement {
         this._updateFilter.bind(this, 'assigned-issues')}" filters="${
         this.filters['assigned-issues']}"></filter-legend>
   </h2>
-  <github-issue-list data="${dashData.getAssignedIssues()}"
+  <issue-list data="${dashData.getAssignedIssues()}"
     loading="${dashData.getAssignedIssues() === null}"
     filter="${
         filterController.getFilter(
@@ -206,7 +206,7 @@ class DashPage extends BaseElement {
         this._updateFilter.bind(this, 'issue-activity')}" filters="${
         this.filters['issue-activity']}"></filter-legend>
   </h2>
-  <github-issue-list data="${dashData.getIssueActivity()}"
+  <issue-list data="${dashData.getIssueActivity()}"
     loading="${dashData.getIssueActivity() === null}"
     filter="${
         filterController.getFilter(
