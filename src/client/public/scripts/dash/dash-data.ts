@@ -31,24 +31,25 @@ class DashData {
   }
 
   async updateData() {
-    try {
-      // Execute these requests in parallel.
-      const results = await Promise.all([
-        getOutgoingData(),
-        getIncomingData(),
-        getAssignedIssues(),
-        getIssueActivity(),
-      ]);
+    this.lastUpdateFailed = false;
 
-      this.lastUpdateFailed = false;
-
-      this.lastPolledOutgoing = results[0];
-      this.lastPolledIncoming = results[1];
-      this.lastPolledAssignedIssues = results[2];
-      this.lastPolledIssueActivity = results[3];
-    } catch (err) {
+    const handleErr = (err: Error) => {
       this.lastUpdateFailed = true;
-    }
+      console.warn(err);
+      return null;
+    };
+    // Execute these requests in parallel.
+    const results = await Promise.all([
+      getOutgoingData().catch(handleErr),
+      getIncomingData().catch(handleErr),
+      getAssignedIssues().catch(handleErr),
+      getIssueActivity().catch(handleErr),
+    ]);
+
+    this.lastPolledOutgoing = results[0];
+    this.lastPolledIncoming = results[1];
+    this.lastPolledAssignedIssues = results[2];
+    this.lastPolledIssueActivity = results[3];
   }
 
   async markDataViewed() {
