@@ -2,10 +2,10 @@ import {github} from '../../../utils/github';
 import {GithubRepo} from '../../models/githubAppModel';
 
 // These values will be automatically added to label names and description
-const LABEL_NAME_PREFIX = ':blue_heart:';
-const LABEL_DESCRIPTION_SUFFIX = '- used by Project Health';
+export const LABEL_NAME_PREFIX = ':blue_heart:';
+export const LABEL_DESCRIPTION_SUFFIX = '- used by Project Health';
 
-interface Label {
+export interface Label {
   name: string;
   color: string;
   description: string;
@@ -72,19 +72,20 @@ async function setLabels(
     try {
       let queryUrl: string;
       let method;
+      const gh = github();
 
       if (!shouldExist) {
         // Delete existing label.
         queryUrl = `repos/${repo.nameWithOwner}/labels/${label.name}`;
-        method = github().delete.bind(github());
+        method = gh.delete.bind(gh);
       } else if (shouldExist && labelAlreadyExists) {
         // Update existing label.
         queryUrl = `repos/${repo.nameWithOwner}/labels/${label.name}`;
-        method = github().patch.bind(github());
+        method = gh.patch.bind(gh);
       } else {
         // Create label.
         queryUrl = `repos/${repo.nameWithOwner}/labels`;
-        method = github().post.bind(github());
+        method = gh.post.bind(gh);
       }
 
       await method(queryUrl, token, label, {
