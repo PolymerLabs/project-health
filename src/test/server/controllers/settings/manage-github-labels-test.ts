@@ -40,7 +40,8 @@ const fakeGitHubRepo: GithubRepo = {
   id: 'id',
 };
 
-const prefix = '[manage-github-labels]: '
+const prefix = '[manage-github-labels]: ';
+
 test.serial(`${prefix} should delete non-existing labels`, async (t) => {
   t.context.sandbox.stub(github(), 'get').callsFake(() => {
     return [];
@@ -109,7 +110,6 @@ test.serial(`${prefix} should not touch existing labels`, async (t) => {
       color: 'red',
     }];
   });
-  debugger;
   const labels: Label[] = [
     {name: 'my-label', description: 'my description', color: 'red'},
     {name: 'my-label2', description: 'my description', color: 'blue'},
