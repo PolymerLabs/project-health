@@ -58,6 +58,10 @@ class OrgConfig extends BaseElement {
       return null;
     }
 
+    if (responseBody.data === null) {
+      return null;
+    }
+
     return responseBody.data.fileContents;
   }
 
