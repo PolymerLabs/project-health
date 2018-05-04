@@ -8,7 +8,7 @@ export interface LastComment {
 export function getPRLastActivity(
     userLogin: string, pr: PullRequest, lastComment?: LastComment|null): number|
     null {
-  let lastActivity = pr.createdAt;
+  let lastActivity = pr.author === userLogin ? null : pr.createdAt;
 
   if (pr.events.length > 0) {
     const lastEvent = pr.events[pr.events.length - 1];
