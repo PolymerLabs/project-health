@@ -324,7 +324,7 @@ function getStatus(
       if (requiresChanges) {
         outgoingStatus = {type: 'PendingChanges'};
       }
-    } else if (reviewsApproved.length === reviewersCount) {
+    } else if (reviewsApproved.length) {
       if (latestCommit && latestCommit.status) {
         const state = latestCommit.status.state;
         if (state === 'PENDING') {
