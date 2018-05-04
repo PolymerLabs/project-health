@@ -257,7 +257,7 @@ function reviewsForOutgoingPrs(reviews: reviewFieldsFragment[]): api.Review[] {
   // Get the latest important review for each reviewer.
   const reviewerMap: Map<string, reviewFieldsFragment> = new Map();
   for (const review of reviews) {
-    if (!review || !review.author) {
+    if (!review || !review.author || !review.submittedAt) {
       continue;
     }
 
@@ -279,7 +279,7 @@ function reviewsForOutgoingPrs(reviews: reviewFieldsFragment[]): api.Review[] {
     }
 
     // Store if its newer.
-    if (review.createdAt > selectedReview.createdAt) {
+    if (review.submittedAt > selectedReview.submittedAt!) {
       reviewerMap.set(review.author.login, review);
     }
   }

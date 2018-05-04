@@ -371,8 +371,8 @@ export interface OutgoingPullRequestsQuery {
           // A list of nodes.
           nodes:  Array< {
             __typename: "PullRequestReview",
-            // Identifies the date and time when the object was created.
-            createdAt: string,
+            // Identifies when the Pull Request Review was submitted
+            submittedAt: string | null,
             // Identifies the current state of the pull request review.
             state: PullRequestReviewState,
             // The actor who authored the comment.
@@ -614,8 +614,8 @@ export interface IncomingPullRequestsQuery {
           // A list of nodes.
           nodes:  Array< {
             __typename: "PullRequestReview",
-            // Identifies the date and time when the object was created.
-            createdAt: string,
+            // Identifies when the Pull Request Review was submitted
+            submittedAt: string | null,
             // Identifies the current state of the pull request review.
             state: PullRequestReviewState,
             // The actor who authored the comment.
@@ -1115,8 +1115,8 @@ export interface MyReposQuery {
 
 export interface reviewFieldsFragment {
   __typename: "PullRequestReview",
-  // Identifies the date and time when the object was created.
-  createdAt: string,
+  // Identifies when the Pull Request Review was submitted
+  submittedAt: string | null,
   // Identifies the current state of the pull request review.
   state: PullRequestReviewState,
   // The actor who authored the comment.
