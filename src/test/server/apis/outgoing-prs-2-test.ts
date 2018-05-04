@@ -70,7 +70,7 @@ test('[outgoing-prs-2]: requested changes', (t) => {
       {
         reviews: [{
           author: 'project-health1',
-          createdAt: 1520881784000,
+          createdAt: 1520881787000,
           reviewState: PullRequestReviewState.CHANGES_REQUESTED,
         }],
         type: 'OutgoingReviewEvent',
@@ -106,7 +106,7 @@ test('[outgoing-prs-2]: review with comments', (t) => {
       {
         reviews: [{
           author: 'project-health1',
-          createdAt: 1520468376000,
+          createdAt: 1520468379000,
           reviewState: PullRequestReviewState.COMMENTED,
         }],
         type: 'OutgoingReviewEvent',
@@ -145,7 +145,7 @@ test('[outgoing-prs-2]: review with comments2', (t) => {
       {
         reviews: [{
           author: 'project-health1',
-          createdAt: 1518042373000,
+          createdAt: 1518042376000,
           reviewState: PullRequestReviewState.COMMENTED,
         }],
         type: 'OutgoingReviewEvent',
@@ -184,7 +184,7 @@ test('[outgoing-prs-2]: ready to merge', (t) => {
       {
         reviews: [{
           author: 'project-health1',
-          createdAt: 1518031560000,
+          createdAt: 1518031566000,
           reviewState: PullRequestReviewState.APPROVED,
         }],
         type: 'OutgoingReviewEvent',
@@ -220,7 +220,7 @@ test('[outgoing-prs-2]: changes requested, new commit', (t) => {
       {
         reviews: [{
           author: 'project-health1',
-          createdAt: 1517426369000,
+          createdAt: 1517426375000,
           reviewState: PullRequestReviewState.CHANGES_REQUESTED,
         }],
         type: 'OutgoingReviewEvent',

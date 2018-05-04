@@ -23,7 +23,7 @@ export function getRouter(): express.Router {
 export function convertReviewFields(fields: reviewFieldsFragment): api.Review {
   const review = {
     author: '',
-    createdAt: Date.parse(fields.createdAt),
+    createdAt: fields.submittedAt ? Date.parse(fields.submittedAt) : -1,
     reviewState: fields.state,
   };
 
@@ -63,7 +63,7 @@ export function convertPrFields(fields: prFieldsFragment): api.PullRequest {
 
 const reviewFragment = gql`
 fragment reviewFields on PullRequestReview {
-  createdAt
+  submittedAt
   state
   author {
     login

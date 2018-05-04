@@ -74,7 +74,7 @@ test('[outgoing-prs-1]: outgoing PR, review with my own replies', (t) => {
       {
         reviews: [{
           author: 'project-health2',
-          createdAt: 1517359027000,
+          createdAt: 1517359030000,
           reviewState: PullRequestReviewState.COMMENTED,
         }],
         type: 'OutgoingReviewEvent',
@@ -209,7 +209,7 @@ test('[outgoing-prs-1]: Outgoing PR, has 1 commented review', (t) => {
       reviews: [
         {
           author: 'project-health2',
-          createdAt: 1516324775000,
+          createdAt: 1516324904000,
           reviewState: PullRequestReviewState.COMMENTED,
         },
       ]

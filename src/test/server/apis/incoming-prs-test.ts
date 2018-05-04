@@ -157,7 +157,7 @@ test(
           {
             review: {
               author: 'project-health1',
-              createdAt: 1518042373000,
+              createdAt: 1518042376000,
               reviewState: PullRequestReviewState.COMMENTED,
             },
             type: 'MyReviewEvent',
@@ -185,7 +185,7 @@ test('[incoming-prs-test]: Incoming PR with new @mention after I reviewed', (t) 
       {
         review: {
           author: 'project-health1',
-          createdAt: 1518031560000,
+          createdAt: 1518031566000,
           reviewState: PullRequestReviewState.APPROVED,
         },
         type: 'MyReviewEvent',
@@ -220,7 +220,7 @@ test('[incoming-prs-test]: Incoming PR that I reviewed. New commit since', (t) =
       {
         review: {
           author: 'project-health1',
-          createdAt: 1517426369000,
+          createdAt: 1517426375000,
           reviewState: PullRequestReviewState.CHANGES_REQUESTED,
         },
         type: 'MyReviewEvent',
@@ -305,7 +305,7 @@ test('[incoming-prs-test]: incoming with mention, new commits', (t) => {
       {
         review: {
           author: 'project-health1',
-          createdAt: 1520468376000,
+          createdAt: 1520468379000,
           reviewState: 'COMMENTED',
         },
         type: 'MyReviewEvent',
@@ -342,7 +342,7 @@ test('[incoming-prs-test]: Incoming PR with changes requested', (t) => {
       {
         review: {
           author: 'project-health1',
-          createdAt: 1520881784000,
+          createdAt: 1520881787000,
           reviewState: PullRequestReviewState.CHANGES_REQUESTED,
         },
         type: 'MyReviewEvent',
