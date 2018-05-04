@@ -46,7 +46,7 @@ test.serial(
     });
 
 test.serial(
-    '[issueHasNewActivity]: should mark as new entry when its timestamp is great than last viewed',
+    '[issueHasNewActivity]: should mark as new entry when its timestamp is greater than last viewed',
     async (t) => {
       const userRecord = newFakeUserRecord();
       userRecord.featureLastViewed.enabledAt = 0;
