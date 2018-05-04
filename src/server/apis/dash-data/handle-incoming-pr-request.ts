@@ -198,7 +198,8 @@ export async function handleIncomingPRRequest(
       continue;
     }
 
-    if (pr.viewerSubscription === 'IGNORED') {
+    if (pr.viewerSubscription === 'IGNORED' ||
+        pr.viewerSubscription === 'UNSUBSCRIBED') {
       continue;
     }
 
