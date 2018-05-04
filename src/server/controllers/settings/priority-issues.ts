@@ -24,10 +24,10 @@ class PriorityIssuePlugin implements AppPlugin {
       token: string,
       repos: GithubRepo[]) {
     const priorityLabels = [
-      {name: 'P0', description: 'Critical', color: 'd0021b'},
-      {name: 'P1', description: 'Need', color: 'd0021b'},
-      {name: 'P2', description: 'Want', color: '0071eb'},
-      {name: 'P3', description: 'Not Critical', color: '0071eb'},
+      {name: 'P0', description: 'Critical', color: 'FF0000'},
+      {name: 'P1', description: 'Need', color: 'FF6100'},
+      {name: 'P2', description: 'Want', color: 'FFC500'},
+      {name: 'P3', description: 'Not Critical', color: 'FEF2C0'},
     ];
 
     if (!settingConfig['issues.priorityIssues']) {
