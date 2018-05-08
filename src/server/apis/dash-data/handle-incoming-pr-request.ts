@@ -91,7 +91,7 @@ export async function handleIncomingPRRequest(
     }
 
     // Cast because inner type has less strict type for __typename.
-    let myReview: api.Review =
+    const myReview: api.Review =
         convertReviewFields(relevantReview as reviewFieldsFragment);
 
     let lastComment: LastComment|null = null;
