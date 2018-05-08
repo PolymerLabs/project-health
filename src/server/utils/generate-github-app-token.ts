@@ -6,10 +6,7 @@ import {secrets} from '../../utils/secrets';
 
 export async function generateGithubAppToken(installId: number):
     Promise<string> {
-  const jwt = await generateJWT(
-      secrets().GITHUB_APP.ID,
-      secrets().GITHUB_APP.JWT_PATH,
-  );
+  const jwt = await generateJWT();
 
   const response = await fetch(
       `https://api.github.com/installations/${installId}/access_tokens`, {
@@ -21,19 +18,22 @@ export async function generateGithubAppToken(installId: number):
       });
   const responseBody = await response.json();
   if (!responseBody.token) {
-    console.error('Unabel to g');
     throw new Error('Unable to generate to GitHub App auth token.');
   }
   return responseBody.token;
 }
 
-async function generateJWT(appId: number, certPath: string) {
+export async function generateJWT() {
+  const appId = secrets().GITHUB_APP.ID;
+  const certPath = secrets().GITHUB_APP.JWT_PATH;
+
   const certContents = await fse.readFile(certPath);
+  const now = Math.floor(Date.now() / 1000);
   const payload = {
     // Issued at time
-    iat: Math.floor(Date.now() / 1000),
+    iat: now,
     // JWT expiration time  (10 minute maximum)
-    exp: Math.floor(Date.now() / 1000) + (10 * 60),
+    exp: now + (10 * 60),
     // Integration's GitHub id
     iss: appId
   };

@@ -5,9 +5,8 @@ import * as express from 'express';
 import {Express} from 'express';
 import * as fsExtra from 'fs-extra';
 import {Server} from 'http';
+import fetch from 'node-fetch';
 import * as path from 'path';
-
-import {github} from '../utils/github';
 
 import {getRouter as getAutomergeRouter} from './apis/auto-merge';
 import {getRouter as getCheckPRStateRouter} from './apis/check-pr-state';
@@ -20,9 +19,10 @@ import {getRouter as getOrgConfigRouter} from './apis/org-config';
 import {getRouter as getPushSubRouter} from './apis/push-subscription';
 import {getRouter as getUpdatesRouter} from './apis/updates';
 import {getRouter as getUserRouter} from './apis/user';
+import {githubAppModel} from './models/githubAppModel';
 import {userModel} from './models/userModel';
 import {enforceHTTPS} from './utils/enforce-https';
-import {generateGithubAppToken} from './utils/generate-github-app-token';
+import {generateJWT} from './utils/generate-github-app-token';
 import {performGitHubRedirect} from './utils/perform-github-redirect';
 import {requireLogin} from './utils/require-login';
 
@@ -137,23 +137,49 @@ export class DashServer {
             return;
           }
 
+          const installId = request.query.installation_id;
+          const installDetails =
+              await githubAppModel.getInstallation(installId);
+          if (installDetails) {
+            return response.redirect(
+                302, `/org/config/${installDetails.installationId}`);
+          }
+
           try {
-            const installId = request.query.installation_id;
-            const token = await generateGithubAppToken(installId);
-            const installDetails =
-                await github().get(`app/installations/${installId}`, token, {
-                  customHeaders: {
+            const jwt = await generateJWT();
+            const installResponse = await fetch(
+                `https://api.github.com/app/installations/${installId}`, {
+                  method: 'GET',
+                  headers: {
                     'Accept': 'application/vnd.github.machine-man-preview+json',
+                    'Authorization': `Bearer ${jwt}`,
                   },
-                  // Request plugin overrides accept headers if it is expecting
-                  // to parse JSON. This breaks Github.
-                  parseJSON: false,
                 });
-            console.log(installDetails);
-            // TODO: Add details to firestore
-            // response.redirect(302, `/org/config/${installDetails.login}`);
+
+            if (!installResponse.ok) {
+              return response.status(400).send('Invalid response from GitHub.');
+            }
+
+            const installResponseBody = await installResponse.json();
+            if (!installResponseBody.account ||
+                !installResponseBody.account.login) {
+              return response.status(400).send('Unexpected GitHub response.')
+            }
+
+            await githubAppModel.addInstallation({
+              installationId: installResponseBody.id,
+              permissions: installResponseBody.permissions,
+              events: installResponseBody.events,
+              repository_selection: installResponseBody.repository_selection,
+              type: installResponseBody.target_type,
+              login: installResponseBody.account.login,
+              avatar_url: installResponseBody.account.avatar_url,
+            });
+
+            const redirectUrl =
+                `/org/config/${installResponseBody.account.login}`;
+            response.redirect(302, redirectUrl);
           } catch (err) {
-            console.log(err);
             response.status(400).send('Invalid installation ID.');
           }
         });
