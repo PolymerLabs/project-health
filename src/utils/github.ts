@@ -130,11 +130,13 @@ class GitHub {
     opts = this.finaliseOpts(opts);
     const query = {
       url: this.jsonUrl + '/' + path,
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `token ${token}`,
-        'User-Agent': 'Project Health Bot',
-      },
+      headers: Object.assign(
+          {
+            'Accept': 'application/json',
+            'Authorization': `token ${token}`,
+            'User-Agent': 'Project Health Bot',
+          },
+          opts.customHeaders),
       json: true,
       resolveWithFullResponse: false,
       simple: true,

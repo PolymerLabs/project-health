@@ -7,6 +7,8 @@ import * as fsExtra from 'fs-extra';
 import {Server} from 'http';
 import * as path from 'path';
 
+import {github} from '../utils/github';
+
 import {getRouter as getAutomergeRouter} from './apis/auto-merge';
 import {getRouter as getCheckPRStateRouter} from './apis/check-pr-state';
 import {getRouter as getDashRouter} from './apis/dash-data';
@@ -18,8 +20,9 @@ import {getRouter as getOrgConfigRouter} from './apis/org-config';
 import {getRouter as getPushSubRouter} from './apis/push-subscription';
 import {getRouter as getUpdatesRouter} from './apis/updates';
 import {getRouter as getUserRouter} from './apis/user';
-import {githubAppModel} from './models/githubAppModel';
+import {userModel} from './models/userModel';
 import {enforceHTTPS} from './utils/enforce-https';
+import {generateGithubAppToken} from './utils/generate-github-app-token';
 import {performGitHubRedirect} from './utils/perform-github-redirect';
 import {requireLogin} from './utils/require-login';
 
@@ -123,13 +126,36 @@ export class DashServer {
             return;
           }
 
-          const installDetails = await githubAppModel.getInstallation(
-              Number(request.query.installation_id));
-          if (!installDetails) {
-            response.status(400).send('Invalid installation ID.');
+          const userRecord = await userModel.getUserRecordFromRequest(request);
+          if (!userRecord) {
+            // User may not be signed but have project-health setup and
+            // have installed the app so we should redirect.
+            response.redirect(
+                302,
+                `/signin?final-redirect=${
+                    encodeURIComponent(request.originalUrl)}`);
             return;
           }
-          response.redirect(`/org/config/${installDetails.login}`);
+
+          try {
+            const installId = request.query.installation_id;
+            const token = await generateGithubAppToken(installId);
+            const installDetails =
+                await github().get(`app/installations/${installId}`, token, {
+                  customHeaders: {
+                    'Accept': 'application/vnd.github.machine-man-preview+json',
+                  },
+                  // Request plugin overrides accept headers if it is expecting
+                  // to parse JSON. This breaks Github.
+                  parseJSON: false,
+                });
+            console.log(installDetails);
+            // TODO: Add details to firestore
+            // response.redirect(302, `/org/config/${installDetails.login}`);
+          } catch (err) {
+            console.log(err);
+            response.status(400).send('Invalid installation ID.');
+          }
         });
 
     // Add login middleware
