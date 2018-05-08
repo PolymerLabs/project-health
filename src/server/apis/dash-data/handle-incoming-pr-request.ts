@@ -84,9 +84,9 @@ export async function handleIncomingPRRequest(
           findMyRelevantReview(pr.reviews.nodes as Array<MyReviewFields|null>);
     }
 
-    if (!relevantReview) {
-      // No review has actually been submitted yet. This PR should appear under
-      // review requests instead.
+    // No review has actually been submitted yet. This PR should appear under
+    // review requests instead.
+    if (!relevantReview || relevantReview.state === 'PENDING') {
       continue;
     }
 
