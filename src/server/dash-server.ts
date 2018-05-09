@@ -116,7 +116,6 @@ export class DashServer {
           });
     }
 
-    // TODO: We might be redirected before the install information is saved.
     // Redirect Github-App Post Install to /org/config/:orgName
     app.get(
         '/github-app/post-install',
@@ -142,7 +141,7 @@ export class DashServer {
               await githubAppModel.getInstallation(installId);
           if (installDetails) {
             return response.redirect(
-                302, `/org/config/${installDetails.installationId}`);
+                302, `/org/config/${installDetails.login}`);
           }
 
           try {
@@ -163,7 +162,7 @@ export class DashServer {
             const installResponseBody = await installResponse.json();
             if (!installResponseBody.account ||
                 !installResponseBody.account.login) {
-              return response.status(400).send('Unexpected GitHub response.')
+              return response.status(400).send('Unexpected GitHub response.');
             }
 
             await githubAppModel.addInstallation({
@@ -180,7 +179,7 @@ export class DashServer {
                 `/org/config/${installResponseBody.account.login}`;
             response.redirect(302, redirectUrl);
           } catch (err) {
-            response.status(400).send('Invalid installation ID.');
+            response.status(400).send('Unable to find installation ID.');
           }
         });
 
