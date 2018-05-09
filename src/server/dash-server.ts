@@ -5,6 +5,7 @@ import * as express from 'express';
 import {Express} from 'express';
 import * as fsExtra from 'fs-extra';
 import {Server} from 'http';
+import fetch from 'node-fetch';
 import * as path from 'path';
 
 import {getRouter as getAutomergeRouter} from './apis/auto-merge';
@@ -19,7 +20,9 @@ import {getRouter as getPushSubRouter} from './apis/push-subscription';
 import {getRouter as getUpdatesRouter} from './apis/updates';
 import {getRouter as getUserRouter} from './apis/user';
 import {githubAppModel} from './models/githubAppModel';
+import {userModel} from './models/userModel';
 import {enforceHTTPS} from './utils/enforce-https';
+import {generateJWT} from './utils/generate-github-app-token';
 import {performGitHubRedirect} from './utils/perform-github-redirect';
 import {requireLogin} from './utils/require-login';
 
@@ -113,7 +116,6 @@ export class DashServer {
           });
     }
 
-    // TODO: We might be redirected before the install information is saved.
     // Redirect Github-App Post Install to /org/config/:orgName
     app.get(
         '/github-app/post-install',
@@ -123,13 +125,62 @@ export class DashServer {
             return;
           }
 
-          const installDetails = await githubAppModel.getInstallation(
-              Number(request.query.installation_id));
-          if (!installDetails) {
-            response.status(400).send('Invalid installation ID.');
+          const userRecord = await userModel.getUserRecordFromRequest(request);
+          if (!userRecord) {
+            // User may not be signed but have project-health app installed,
+            // so we should redirect.
+            response.redirect(
+                302,
+                `/signin?final-redirect=${
+                    encodeURIComponent(request.originalUrl)}`);
             return;
           }
-          response.redirect(`/org/config/${installDetails.login}`);
+
+          const installId = request.query.installation_id;
+          const installDetails =
+              await githubAppModel.getInstallation(installId);
+          if (installDetails) {
+            return response.redirect(
+                302, `/org/config/${installDetails.login}`);
+          }
+
+          try {
+            const jwt = await generateJWT();
+            const installResponse = await fetch(
+                `https://api.github.com/app/installations/${installId}`, {
+                  method: 'GET',
+                  headers: {
+                    'Accept': 'application/vnd.github.machine-man-preview+json',
+                    'Authorization': `Bearer ${jwt}`,
+                  },
+                });
+
+            if (!installResponse.ok) {
+              return response.status(400).send('Invalid response from GitHub.');
+            }
+
+            const installResponseBody = await installResponse.json();
+            if (!installResponseBody.account ||
+                !installResponseBody.account.login) {
+              return response.status(400).send('Unexpected GitHub response.');
+            }
+
+            await githubAppModel.addInstallation({
+              installationId: installResponseBody.id,
+              permissions: installResponseBody.permissions,
+              events: installResponseBody.events,
+              repository_selection: installResponseBody.repository_selection,
+              type: installResponseBody.target_type,
+              login: installResponseBody.account.login,
+              avatar_url: installResponseBody.account.avatar_url,
+            });
+
+            const redirectUrl =
+                `/org/config/${installResponseBody.account.login}`;
+            response.redirect(302, redirectUrl);
+          } catch (err) {
+            response.status(400).send('Unable to find installation ID.');
+          }
         });
 
     // Add login middleware
