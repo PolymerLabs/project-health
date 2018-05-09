@@ -13,6 +13,31 @@
             },
             "__typename": "Repository"
           },
+          "title": "Pending review",
+          "url": "https://github.com/project-health1/repo/pull/19",
+          "number": 19,
+          "id": "MDExOlB1bGxSZXF1ZXN0MTg2Nzg2MzE0",
+          "mergeable": "MERGEABLE",
+          "createdAt": "2018-05-09T00:02:28Z",
+          "viewerSubscription": "SUBSCRIBED",
+          "author": {
+            "avatarUrl": "https://avatars3.githubusercontent.com/u/34584974?v=4",
+            "login": "project-health2",
+            "url": "https://github.com/project-health2",
+            "__typename": "User"
+          }
+        },
+        {
+          "__typename": "PullRequest",
+          "repository": {
+            "name": "repo",
+            "nameWithOwner": "project-health1/repo",
+            "owner": {
+              "login": "project-health1",
+              "__typename": "User"
+            },
+            "__typename": "Repository"
+          },
           "title": "A new pull request",
           "url": "https://github.com/project-health1/repo/pull/11",
           "number": 11,
@@ -57,6 +82,70 @@
     },
     "reviewed": {
       "nodes": [
+        {
+          "reviews": {
+            "nodes": [
+              {
+                "commit": {
+                  "oid": "49847c08691e66d5099361af91c8331381bb9893",
+                  "__typename": "Commit"
+                },
+                "__typename": "PullRequestReview",
+                "submittedAt": null,
+                "state": "PENDING",
+                "author": {
+                  "login": "project-health1",
+                  "__typename": "User"
+                }
+              }
+            ],
+            "__typename": "PullRequestReviewConnection"
+          },
+          "commits": {
+            "nodes": [
+              {
+                "commit": {
+                  "additions": 3,
+                  "deletions": 1,
+                  "changedFiles": 1,
+                  "authoredDate": "2018-05-09T00:02:22Z",
+                  "pushedDate": "2018-05-09T00:02:23Z",
+                  "oid": "49847c08691e66d5099361af91c8331381bb9893",
+                  "__typename": "Commit"
+                },
+                "__typename": "PullRequestCommit"
+              }
+            ],
+            "__typename": "PullRequestCommitConnection"
+          },
+          "__typename": "PullRequest",
+          "comments": {
+            "nodes": [],
+            "__typename": "IssueCommentConnection"
+          },
+          "repository": {
+            "name": "repo",
+            "nameWithOwner": "project-health1/repo",
+            "owner": {
+              "login": "project-health1",
+              "__typename": "User"
+            },
+            "__typename": "Repository"
+          },
+          "title": "Pending review",
+          "url": "https://github.com/project-health1/repo/pull/19",
+          "number": 19,
+          "id": "MDExOlB1bGxSZXF1ZXN0MTg2Nzg2MzE0",
+          "mergeable": "MERGEABLE",
+          "createdAt": "2018-05-09T00:02:28Z",
+          "viewerSubscription": "SUBSCRIBED",
+          "author": {
+            "avatarUrl": "https://avatars3.githubusercontent.com/u/34584974?v=4",
+            "login": "project-health2",
+            "url": "https://github.com/project-health2",
+            "__typename": "User"
+          }
+        },
         {
           "reviews": {
             "nodes": [
@@ -633,8 +722,8 @@
     "rateLimit": {
       "cost": 1,
       "limit": 5000,
-      "remaining": 4999,
-      "resetAt": "2018-05-04T01:33:13Z",
+      "remaining": 4994,
+      "resetAt": "2018-05-09T01:03:54Z",
       "nodeCount": 3080,
       "__typename": "RateLimit"
     }

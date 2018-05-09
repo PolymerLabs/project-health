@@ -47,7 +47,7 @@ test.beforeEach(async (t) => {
 test('[incoming-prs-test]: sane output', (t) => {
   const data = t.context.data;
   // Make sure a test is added each time these numbers are changed.
-  t.is(data.prs.length, 7);
+  t.is(data.prs.length, 8);
 });
 
 test('[incoming-prs-test]: events are always sorted correctly', (t) => {
@@ -356,6 +356,25 @@ test('[incoming-prs-test]: Incoming PR with changes requested', (t) => {
     },
     title: 'Modify readme description',
     url: 'https://github.com/project-health1/repo/pull/14',
+    hasNewActivity: false,
+  });
+});
+
+test('[incoming-prs-test]: Incoming PR with pending review', (t) => {
+  t.deepEqual(t.context.prsById.get('19'), {
+    id: 'MDExOlB1bGxSZXF1ZXN0MTg2Nzg2MzE0',
+    author: 'project-health2',
+    avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
+    createdAt: 1525824148000,
+    events: [],
+    number: 19,
+    owner: 'project-health1',
+    repo: 'repo',
+    status: {
+      type: 'ReviewRequired',
+    },
+    title: 'Pending review',
+    url: 'https://github.com/project-health1/repo/pull/19',
     hasNewActivity: false,
   });
 });
