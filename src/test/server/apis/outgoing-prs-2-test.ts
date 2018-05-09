@@ -47,7 +47,7 @@ test.beforeEach(async (t) => {
 test('[outgoing-prs-2]: sane output', (t) => {
   const data = t.context.data;
   // Make sure a test is added each time these numbers are changed.
-  t.is(data.prs.length, 7);
+  t.is(data.prs.length, 8);
 });
 
 test('[outgoing-prs-2]: outgoing PRs are sorted', (t) => {
@@ -307,5 +307,33 @@ test('[outgoing-prs-2]: basic requested changes', (t) => {
     title: 'A couple minor changes for browserify compatibility',
     url: 'https://github.com/project-health1/repo/pull/3',
     hasNewActivity: false,
+  });
+});
+
+test('[outgoing-prs-2]: outgoing PR with pending review', (t) => {
+  t.deepEqual(t.context.prsById.get('19'), {
+    id: 'MDExOlB1bGxSZXF1ZXN0MTg2Nzg2MzE0',
+    author: 'project-health2',
+    avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
+    createdAt: 1525824148000,
+    events: [],
+    number: 19,
+    owner: 'project-health1',
+    repo: 'repo',
+    status: {
+      reviewers: ['project-health1'],
+      type: 'WaitingReview',
+    },
+    title: 'Pending review',
+    url: 'https://github.com/project-health1/repo/pull/19',
+    hasNewActivity: false,
+    automergeOpts: null,
+    automergeAvailable: false,
+    mergeable: 'MERGEABLE',
+    repoDetails: {
+      allow_rebase_merge: true,
+      allow_squash_merge: true,
+      allow_merge_commit: true,
+    },
   });
 });

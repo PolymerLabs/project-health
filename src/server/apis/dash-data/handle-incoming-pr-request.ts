@@ -84,11 +84,15 @@ export async function handleIncomingPRRequest(
           findMyRelevantReview(pr.reviews.nodes as Array<MyReviewFields|null>);
     }
 
-    let myReview: api.Review|null = null;
-    if (relevantReview) {
-      // Cast because inner type has less strict type for __typename.
-      myReview = convertReviewFields(relevantReview as reviewFieldsFragment);
+    // No review has actually been submitted yet. This PR should appear under
+    // review requests instead.
+    if (!relevantReview || relevantReview.state === 'PENDING') {
+      continue;
     }
+
+    // Cast because inner type has less strict type for __typename.
+    const myReview: api.Review =
+        convertReviewFields(relevantReview as reviewFieldsFragment);
 
     let lastComment: LastComment|null = null;
     if (pr.comments.nodes && pr.comments.nodes.length > 0) {

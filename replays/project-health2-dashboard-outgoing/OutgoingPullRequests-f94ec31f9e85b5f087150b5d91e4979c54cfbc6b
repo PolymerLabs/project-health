@@ -5,7 +5,7 @@
       "avatarUrl": "https://avatars3.githubusercontent.com/u/34584974?v=4",
       "login": "project-health2",
       "pullRequests": {
-        "totalCount": 7,
+        "totalCount": 8,
         "pageInfo": {
           "hasPreviousPage": false,
           "startCursor": "Y3Vyc29yOnYyOpHOCdFq/g==",
@@ -487,6 +487,76 @@
               "url": "https://github.com/project-health2",
               "__typename": "User"
             }
+          },
+          {
+            "reviews": {
+              "totalCount": 1,
+              "nodes": [
+                {
+                  "__typename": "PullRequestReview",
+                  "submittedAt": null,
+                  "state": "PENDING",
+                  "author": {
+                    "login": "project-health1",
+                    "__typename": "User"
+                  }
+                }
+              ],
+              "__typename": "PullRequestReviewConnection"
+            },
+            "reviewRequests": {
+              "totalCount": 1,
+              "nodes": [
+                {
+                  "requestedReviewer": {
+                    "login": "project-health1",
+                    "__typename": "User"
+                  },
+                  "__typename": "ReviewRequest"
+                }
+              ],
+              "__typename": "ReviewRequestConnection"
+            },
+            "__typename": "PullRequest",
+            "commits": {
+              "nodes": [
+                {
+                  "commit": {
+                    "__typename": "Commit",
+                    "status": null,
+                    "pushedDate": "2018-05-09T00:02:23Z"
+                  },
+                  "__typename": "PullRequestCommit"
+                }
+              ],
+              "__typename": "PullRequestCommitConnection"
+            },
+            "comments": {
+              "nodes": [],
+              "__typename": "IssueCommentConnection"
+            },
+            "repository": {
+              "name": "repo",
+              "nameWithOwner": "project-health1/repo",
+              "owner": {
+                "login": "project-health1",
+                "__typename": "User"
+              },
+              "__typename": "Repository"
+            },
+            "title": "Pending review",
+            "url": "https://github.com/project-health1/repo/pull/19",
+            "number": 19,
+            "id": "MDExOlB1bGxSZXF1ZXN0MTg2Nzg2MzE0",
+            "mergeable": "MERGEABLE",
+            "createdAt": "2018-05-09T00:02:28Z",
+            "viewerSubscription": "SUBSCRIBED",
+            "author": {
+              "avatarUrl": "https://avatars3.githubusercontent.com/u/34584974?v=4",
+              "login": "project-health2",
+              "url": "https://github.com/project-health2",
+              "__typename": "User"
+            }
           }
         ],
         "__typename": "PullRequestConnection"
@@ -496,8 +566,8 @@
     "rateLimit": {
       "cost": 1,
       "limit": 5000,
-      "remaining": 4990,
-      "resetAt": "2018-05-04T01:33:15Z",
+      "remaining": 4969,
+      "resetAt": "2018-05-09T01:03:54Z",
       "nodeCount": 150,
       "__typename": "RateLimit"
     }
