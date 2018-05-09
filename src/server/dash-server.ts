@@ -127,8 +127,8 @@ export class DashServer {
 
           const userRecord = await userModel.getUserRecordFromRequest(request);
           if (!userRecord) {
-            // User may not be signed but have project-health setup and
-            // have installed the app so we should redirect.
+            // User may not be signed but have project-health app installed,
+            // so we should redirect.
             response.redirect(
                 302,
                 `/signin?final-redirect=${

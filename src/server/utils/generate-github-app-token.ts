@@ -23,6 +23,12 @@ export async function generateGithubAppToken(installId: number):
   return responseBody.token;
 }
 
+/**
+ * Generate a JSON Web Token to send to GitHub.
+ * JWT's are used as a Bearer token to identify the app itself to GitHub
+ * and act on behalf of the app (instead of acting on behalf of an
+ * installation).
+ */
 export async function generateJWT() {
   const appId = secrets().GITHUB_APP.ID;
   const certPath = secrets().GITHUB_APP.JWT_PATH;
