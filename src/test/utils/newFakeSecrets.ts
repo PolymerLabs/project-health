@@ -10,7 +10,7 @@ export function newFakeSecrets(): ApplicationSecrets {
     GITHUB_APP: {
       TO_GQL_TOKEN: 'GitHubAppToGQLToken',
       ID: 0,
-      JWT_PATH: '',
+      JWT_PATH: 'stub-generateGithubAppToken-instead',
     },
   };
   return Object.assign({}, fakeSecrets);
