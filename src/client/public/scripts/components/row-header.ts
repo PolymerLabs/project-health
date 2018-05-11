@@ -15,7 +15,6 @@ export class RowHeader extends BaseElement {
 
   render() {
     async function handleRowClick(event: Event) {
-      debugger;
       if (!data) {
         return;
       }
