@@ -79,8 +79,14 @@ class RepoPage extends BaseElement {
     if (!response) {
       return;
     }
-    const data = (await response.json()).data as api.IssuesResponse;
-    this.untriaged = data.issues;
+
+    const apiResponse =
+        await response.json() as api.JSONAPIResponse<api.IssuesResponse>;
+    if ('error' in apiResponse) {
+      this.untriaged = null;
+      return;
+    }
+    this.untriaged = apiResponse.data.issues;
   }
 
   private async fetchLabels() {
@@ -89,8 +95,14 @@ class RepoPage extends BaseElement {
     if (!response) {
       return;
     }
-    const data = (await response.json()).data as api.LabelsResponse;
-    this.labels = data.labels;
+
+    const apiResponse =
+        await response.json() as api.JSONAPIResponse<api.LabelsResponse>;
+    if ('error' in apiResponse) {
+      this.labels = [];
+      return;
+    }
+    this.labels = apiResponse.data.labels;
   }
 
   private async fetchFilteredIssues(labels: string[]) {
@@ -99,8 +111,14 @@ class RepoPage extends BaseElement {
     if (!response) {
       return;
     }
-    const data = (await response.json()).data as api.IssuesResponse;
-    this.filteredIssues = data.issues;
+
+    const apiResponse =
+        await response.json() as api.JSONAPIResponse<api.IssuesResponse>;
+    if ('error' in apiResponse) {
+      this.filteredIssues = null;
+      return;
+    }
+    this.filteredIssues = apiResponse.data.issues;
   }
 
   private async labelFilterChanged(event:

@@ -23,8 +23,13 @@ export class NavElement extends BaseElement {
 
   private async fetchAndUpdate() {
     const response = await fetch('/api/user', {credentials: 'include'});
-    // TODO: change this to use the JSON API response
-    this.data = (await response.json()).data as api.UserResponse;
+    const apiResponse =
+        await response.json() as api.JSONAPIResponse<api.UserResponse>;
+    if ('error' in apiResponse) {
+      this.data = null;
+      return;
+    }
+    this.data = apiResponse.data;
   }
 
   private header(): TemplateResult {
