@@ -1,9 +1,9 @@
 import * as express from 'express';
 
+import {webhooksController} from '../controllers/github-app-webhooks';
 import {NotificationsSent} from '../controllers/notifications';
 import {handleGithubAppInstall} from '../controllers/webhook-events/github-app-install';
 import {handlePullRequest} from '../controllers/webhook-events/pull-request';
-import {handlePullRequestReview} from '../controllers/webhook-events/pull-request-review';
 import {handleStatus} from '../controllers/webhook-events/status';
 import {hooksModel} from '../models/hooksModel';
 
@@ -49,6 +49,7 @@ export function getRouter(): express.Router {
             }
           }
 
+          // TODO: migrate these to the new subscriber model.
           let handled: WebHookHandleResponse|null = null;
           // List of these events available here:
           // https://developer.github.com/webhooks/
@@ -59,20 +60,26 @@ export function getRouter(): express.Router {
             case 'pull_request':
               handled = await handlePullRequest(request.body);
               break;
-            case 'pull_request_review':
-              handled = await handlePullRequestReview(request.body);
-              break;
             case 'installation':
               handled = await handleGithubAppInstall(request.body);
             default:
               break;
           }
 
-          response.status(handled ? 200 : 202);
           if (handled) {
+            response.status(handled ? 200 : 202);
             response.json(handled);
           } else {
-            response.json({message: `Unsupported event type: ${eventName}`});
+            const payload = request.body;
+            payload.type = eventName;
+            const results =
+                await webhooksController.handleWebhookEvent(payload);
+            if (!results.length) {
+              response.sendStatus(202);
+            } else {
+              response.status(200);
+              response.json(results);
+            }
           }
         } catch (err) {
           console.error('Error while handled GitHub web hook: ', err);

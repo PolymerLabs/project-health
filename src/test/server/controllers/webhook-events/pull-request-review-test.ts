@@ -4,17 +4,19 @@ import * as sinon from 'sinon';
 import {SinonSandbox, SinonStub} from 'sinon';
 
 import * as notificationController from '../../../../server/controllers/notifications';
-import {handlePullRequestReview} from '../../../../server/controllers/webhook-events/pull-request-review';
-import {PullRequestReviewHook} from '../../../../server/controllers/webhook-events/types';
+import {ReviewUpdater} from '../../../../server/controllers/webhook-handlers/pull-request-review';
 import {userModel} from '../../../../server/models/userModel';
 import * as getPRIDUtils from '../../../../server/utils/get-gql-pr-id';
 import * as getPRFromCommitModule from '../../../../server/utils/get-pr-from-commit';
 import {PullRequestDetails} from '../../../../server/utils/get-pr-from-commit';
+import * as webhook from '../../../../types/webhooks';
 import {initFirestore} from '../../../../utils/firestore';
 import {initGithub} from '../../../../utils/github';
 import {initSecrets} from '../../../../utils/secrets';
 import {newFakeSecrets} from '../../../utils/newFakeSecrets';
 import {startTestReplayServer} from '../../../utils/replay-server';
+
+const reviewUpdater = new ReviewUpdater();
 
 const FAKE_LOGIN_DETAILS = {
   githubToken: 'injected-fake-token',
@@ -23,7 +25,8 @@ const FAKE_LOGIN_DETAILS = {
 };
 
 function newFakeHookDetails(extraDetails: {}) {
-  const HOOK_DATA: PullRequestReviewHook = {
+  const HOOK_DATA = {
+    type: 'pull_request_review',
     action: 'unexpected',
     review: {
       state: 'unexpected',
@@ -49,7 +52,8 @@ function newFakeHookDetails(extraDetails: {}) {
     }
   };
 
-  return Object.assign({}, HOOK_DATA, extraDetails);
+  return Object.assign({}, HOOK_DATA, extraDetails) as
+      webhook.PullRequestReviewPayload;
 }
 
 function newFakePRDetails(extraDetails: {}) {
@@ -102,13 +106,10 @@ test.afterEach.always(async (t) => {
 test.serial(
     '[handlePullRequestReview]: should not handle a non-submitted hook',
     async (t) => {
-      const response = await handlePullRequestReview(newFakeHookDetails({}));
-      t.deepEqual(
-          response.message,
-          'The PR review action is not a handled action: \'unexpected\'');
-      t.deepEqual(response.handled, false, 'webhook should not be handled.');
-      t.deepEqual(
-          sendStub.callCount, 0, 'sendNotification should not be called');
+      const response =
+          await reviewUpdater.handleWebhookEvent(newFakeHookDetails({}));
+      t.is(response, null, 'webhook should not be handled.');
+      t.is(sendStub.callCount, 0, 'sendNotification should not be called');
     });
 
 test.serial(
@@ -118,13 +119,10 @@ test.serial(
         return null;
       });
 
-      const response = await handlePullRequestReview(
+      const response = await reviewUpdater.handleWebhookEvent(
           newFakeHookDetails({action: 'submitted'}));
-      t.deepEqual(
-          response.message, 'Unable to find login details to retrieve PR ID');
-      t.deepEqual(response.handled, false, 'webhook should not be handled.');
-      t.deepEqual(
-          sendStub.callCount, 0, 'sendNotification should not be called');
+      t.not(response, null, 'webhook should be handled.');
+      t.is(sendStub.callCount, 0, 'sendNotification should not be called');
     });
 
 test.serial(
@@ -134,14 +132,11 @@ test.serial(
         return FAKE_LOGIN_DETAILS;
       });
 
-      const response = await handlePullRequestReview(
+      const response = await reviewUpdater.handleWebhookEvent(
           newFakeHookDetails({action: 'submitted'}));
-      t.deepEqual(
-          response.message,
-          'Unsupported review state received: \'unexpected\'');
-      t.deepEqual(response.handled, false, 'webhook should not be handled.');
-      t.deepEqual(
-          sendStub.callCount, 0, 'sendNotification should not be called');
+      t.not(response, null, 'webhook should be handled');
+      t.is(response!.notifications.length, 0);
+      t.is(sendStub.callCount, 0, 'sendNotification should not be called');
     });
 
 test.serial(
@@ -157,11 +152,10 @@ test.serial(
 
       const hookData = newFakeHookDetails({action: 'submitted'});
       hookData.review.state = 'changes_requested';
-      const response = await handlePullRequestReview(hookData);
-      t.deepEqual(response.message, 'Unable to retrieve the PR ID');
-      t.deepEqual(response.handled, false, 'webhook should not be handled.');
-      t.deepEqual(
-          sendStub.callCount, 0, 'sendNotification should not be called');
+      const response = await reviewUpdater.handleWebhookEvent(hookData);
+      t.not(response, null);
+      t.is(response!.notifications.length, 0);
+      t.is(sendStub.callCount, 0, 'sendNotification should not be called');
     });
 
 test.serial(
@@ -177,12 +171,11 @@ test.serial(
 
       const hookData = newFakeHookDetails({action: 'submitted'});
       hookData.review.state = 'changes_requested';
-      const response = await handlePullRequestReview(hookData);
-      t.deepEqual(response.message, 'Sending changes requested notification');
-      t.deepEqual(response.handled, true, 'webhook should be handled.');
-      t.deepEqual(sendStub.callCount, 1, 'sendNotification should be called');
-      t.deepEqual(
-          sendStub.args[0][0], 'test-pr-author', 'Notification receiver');
+      const response = await reviewUpdater.handleWebhookEvent(hookData);
+      t.not(response, null, 'webhook should be handled.');
+      t.is(response!.notifications.length, 1);
+      t.is(sendStub.callCount, 1, 'sendNotification should be called');
+      t.is(sendStub.args[0][0], 'test-pr-author', 'Notification receiver');
       t.deepEqual(
           sendStub.args[0][1],
           {
@@ -213,12 +206,11 @@ test.serial(
 
       const hookData = newFakeHookDetails({action: 'submitted'});
       hookData.review.state = 'commented';
-      const response = await handlePullRequestReview(hookData);
-      t.deepEqual(response.message, 'Sending comment notification');
-      t.deepEqual(response.handled, true, 'webhook should be handled.');
-      t.deepEqual(sendStub.callCount, 1, 'sendNotification should be called');
-      t.deepEqual(
-          sendStub.args[0][0], 'test-pr-author', 'Notification receiver');
+      const response = await reviewUpdater.handleWebhookEvent(hookData);
+      t.not(response, null, 'webhook should be handled.');
+      t.is(response!.notifications.length, 1);
+      t.is(sendStub.callCount, 1, 'sendNotification should be called');
+      t.is(sendStub.args[0][0], 'test-pr-author', 'Notification receiver');
       t.deepEqual(
           sendStub.args[0][1],
           {
@@ -251,12 +243,10 @@ test.serial(
       hookData.review.state = 'commented';
       hookData.review.user.login = hookData.pull_request.user.login;
 
-      const response = await handlePullRequestReview(hookData);
-      t.deepEqual(
-          response.message,
-          'Author of PR is author of comment so doing nothing');
-      t.deepEqual(response.handled, false, 'webhook should be handled.');
-      t.deepEqual(sendStub.callCount, 0, 'sendNotification should be called');
+      const response = await reviewUpdater.handleWebhookEvent(hookData);
+      t.not(response, null, 'webhook should be handled');
+      t.is(response!.notifications.length, 0, 'should not send notifications');
+      t.is(sendStub.callCount, 0, 'sendNotification should not be called');
     });
 
 test.serial(
@@ -278,14 +268,11 @@ test.serial(
       const hookData = newFakeHookDetails({action: 'submitted'});
       hookData.review.state = 'approved';
 
-      const response = await handlePullRequestReview(hookData);
-      t.deepEqual(
-          response.message,
-          'Sending approved but not ready to merge notification');
-      t.deepEqual(response.handled, true, 'webhook should be handled.');
-      t.deepEqual(sendStub.callCount, 1, 'sendNotification should be called');
-      t.deepEqual(
-          sendStub.args[0][0], 'test-pr-author', 'Notification receiver');
+      const response = await reviewUpdater.handleWebhookEvent(hookData);
+      t.not(response, null, 'webhook should be handled');
+      t.is(response!.notifications.length, 1);
+      t.is(sendStub.callCount, 1, 'sendNotification should be called');
+      t.is(sendStub.args[0][0], 'test-pr-author', 'Notification receiver');
       t.deepEqual(
           sendStub.args[0][1],
           {
@@ -322,14 +309,11 @@ test.serial(
       const hookData = newFakeHookDetails({action: 'submitted'});
       hookData.review.state = 'approved';
 
-      const response = await handlePullRequestReview(hookData);
-      t.deepEqual(
-          response.message,
-          'Sending approved but not ready to merge notification');
-      t.deepEqual(response.handled, true, 'webhook should be handled.');
-      t.deepEqual(sendStub.callCount, 1, 'sendNotification should be called');
-      t.deepEqual(
-          sendStub.args[0][0], 'test-pr-author', 'Notification receiver');
+      const response = await reviewUpdater.handleWebhookEvent(hookData);
+      t.not(response, null, 'webhook should be handled.');
+      t.is(response!.notifications.length, 1);
+      t.is(sendStub.callCount, 1, 'sendNotification should be called');
+      t.is(sendStub.args[0][0], 'test-pr-author', 'Notification receiver');
       t.deepEqual(
           sendStub.args[0][1],
           {
@@ -368,13 +352,11 @@ test.serial(
       const hookData = newFakeHookDetails({action: 'submitted'});
       hookData.review.state = 'approved';
 
-      const response = await handlePullRequestReview(hookData);
-      t.deepEqual(
-          response.message, 'Sending approved and ready to merge notification');
-      t.deepEqual(response.handled, true, 'webhook should be handled.');
-      t.deepEqual(sendStub.callCount, 1, 'sendNotification should be called');
-      t.deepEqual(
-          sendStub.args[0][0], 'test-pr-author', 'Notification receiver');
+      const response = await reviewUpdater.handleWebhookEvent(hookData);
+      t.not(response, null, 'webhook should be handled.');
+      t.is(response!.notifications.length, 1);
+      t.is(sendStub.callCount, 1, 'sendNotification should be called');
+      t.is(sendStub.args[0][0], 'test-pr-author', 'Notification receiver');
       t.deepEqual(
           sendStub.args[0][1],
           {
