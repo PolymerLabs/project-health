@@ -8,7 +8,7 @@ export interface WebhookListenerResponse {
 
 export interface WebhookListener {
   handleWebhookEvent(payload: webhooks.WebhookPayload):
-      Promise<WebhookListenerResponse|null>
+      Promise<WebhookListenerResponse|null>;
 }
 
 class WebhooksController {

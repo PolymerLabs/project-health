@@ -19,8 +19,8 @@ interface TypedPayload {
 export interface PullRequestPayload extends TypedPayload {
   type: 'pull_request';
   number: number;
-  pull_request: PullRequest
-  repository: Repository,
+  pull_request: PullRequest;
+  repository: Repository;
 }
 
 export interface PullRequestReviewPayload extends TypedPayload {
