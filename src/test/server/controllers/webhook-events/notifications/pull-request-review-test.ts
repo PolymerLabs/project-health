@@ -3,18 +3,18 @@ import {Server} from 'http';
 import * as sinon from 'sinon';
 import {SinonSandbox, SinonStub} from 'sinon';
 
-import * as notificationController from '../../../../server/controllers/notifications';
-import {ReviewUpdater} from '../../../../server/controllers/webhook-handlers/notifications/pull-request-review';
-import {userModel} from '../../../../server/models/userModel';
-import * as getPRIDUtils from '../../../../server/utils/get-gql-pr-id';
-import * as getPRFromCommitModule from '../../../../server/utils/get-pr-from-commit';
-import {PullRequestDetails} from '../../../../server/utils/get-pr-from-commit';
-import * as webhook from '../../../../types/webhooks';
-import {initFirestore} from '../../../../utils/firestore';
-import {initGithub} from '../../../../utils/github';
-import {initSecrets} from '../../../../utils/secrets';
-import {newFakeSecrets} from '../../../utils/newFakeSecrets';
-import {startTestReplayServer} from '../../../utils/replay-server';
+import * as notificationController from '../../../../../server/controllers/notifications';
+import {ReviewUpdater} from '../../../../../server/controllers/webhook-handlers/notifications/pull-request-review';
+import {userModel} from '../../../../../server/models/userModel';
+import * as getPRIDUtils from '../../../../../server/utils/get-gql-pr-id';
+import * as getPRFromCommitModule from '../../../../../server/utils/get-pr-from-commit';
+import {PullRequestDetails} from '../../../../../server/utils/get-pr-from-commit';
+import * as webhook from '../../../../../types/webhooks';
+import {initFirestore} from '../../../../../utils/firestore';
+import {initGithub} from '../../../../../utils/github';
+import {initSecrets} from '../../../../../utils/secrets';
+import {newFakeSecrets} from '../../../../utils/newFakeSecrets';
+import {startTestReplayServer} from '../../../../utils/replay-server';
 
 const reviewUpdater = new ReviewUpdater();
 
