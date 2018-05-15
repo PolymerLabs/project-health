@@ -11,7 +11,7 @@ export interface WebhookListener {
       Promise<WebhookListenerResponse|null>;
 }
 
-class WebhooksController {
+export class WebhooksController {
   private eventsToListener: Map<webhooks.WebhookType, Set<WebhookListener>> =
       new Map();
 
