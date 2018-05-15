@@ -4,7 +4,7 @@ import * as sinon from 'sinon';
 import {SinonSandbox, SinonStub} from 'sinon';
 
 import * as notificationController from '../../../../server/controllers/notifications';
-import {ReviewUpdater} from '../../../../server/controllers/webhook-handlers/pull-request-review';
+import {ReviewUpdater} from '../../../../server/controllers/webhook-handlers/notifications/pull-request-review';
 import {userModel} from '../../../../server/models/userModel';
 import * as getPRIDUtils from '../../../../server/utils/get-gql-pr-id';
 import * as getPRFromCommitModule from '../../../../server/utils/get-pr-from-commit';

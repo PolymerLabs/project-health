@@ -6,7 +6,7 @@ import * as webhooks from '../../../types/webhooks';
 
 function createFakePayload(type: string) {
   // tslint:disable-next-line:no-any
-  return ({type: type, blah: 'a'} as any) as webhooks.PullRequestPayload;
+  return ({type, blah: 'a'} as any) as webhooks.PullRequestPayload;
 }
 
 test('[github-app-webhooks] adding a listener works', async (t) => {

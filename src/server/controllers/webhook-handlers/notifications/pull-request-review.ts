@@ -1,10 +1,10 @@
-import {WebhookPayload} from '../../../types/webhooks';
-import {userModel} from '../../models/userModel';
-import {generateGithubAppToken} from '../../utils/generate-github-app-token';
-import {getPRID} from '../../utils/get-gql-pr-id';
-import {getPRDetailsFromCommit} from '../../utils/get-pr-from-commit';
-import {WebhookListener, WebhookListenerResponse, webhooksController} from '../github-app-webhooks';
-import {getPRTag, sendNotification} from '../notifications';
+import {WebhookPayload} from '../../../../types/webhooks';
+import {userModel} from '../../../models/userModel';
+import {generateGithubAppToken} from '../../../utils/generate-github-app-token';
+import {getPRID} from '../../../utils/get-gql-pr-id';
+import {getPRDetailsFromCommit} from '../../../utils/get-pr-from-commit';
+import {WebhookListener, WebhookListenerResponse, webhooksController} from '../../github-app-webhooks';
+import {getPRTag, sendNotification} from '../../notifications';
 
 /**
  * Sends notifications to the PR author when a review is submitted. It also
