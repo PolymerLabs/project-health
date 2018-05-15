@@ -3,7 +3,6 @@ import * as express from 'express';
 import {webhooksController} from '../controllers/github-app-webhooks';
 import {NotificationsSent} from '../controllers/notifications';
 import {handleGithubAppInstall} from '../controllers/webhook-events/github-app-install';
-import {handlePullRequest} from '../controllers/webhook-events/pull-request';
 import {handleStatus} from '../controllers/webhook-events/status';
 import {hooksModel} from '../models/hooksModel';
 
@@ -56,9 +55,6 @@ export function getRouter(): express.Router {
           switch (eventName) {
             case 'status':
               handled = await handleStatus(request.body);
-              break;
-            case 'pull_request':
-              handled = await handlePullRequest(request.body);
               break;
             case 'installation':
               handled = await handleGithubAppInstall(request.body);
