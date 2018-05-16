@@ -4,6 +4,7 @@ import * as sinon from 'sinon';
 import {SinonSandbox} from 'sinon';
 
 import {handleGithubAppInstall, InstallHook} from '../../../../server/controllers/webhook-events/github-app-install';
+import * as genTokenUtils from '../../../../server/utils/generate-github-app-token';
 import {initFirestore} from '../../../../utils/firestore';
 import {github, initGithub} from '../../../../utils/github';
 import {initSecrets} from '../../../../utils/secrets';
@@ -62,6 +63,12 @@ test.afterEach.always(async (t) => {
 
 test.serial(
     '[handleGithubAppInstall]: should handle a valid install', async (t) => {
+      t.context.sandbox.stub(genTokenUtils, 'generateGithubAppToken')
+          .callsFake((installId: number) => {
+            t.is(installId, 123);
+            return 'example-app-token';
+          });
+
       const githubInstance = github();
       t.context.sandbox.stub(githubInstance, 'query').callsFake(() => {
         return {
@@ -111,6 +118,12 @@ test.serial(
 test.serial(
     '[handleGithubAppInstall]: should handle deleting an existant installId',
     async (t) => {
+      t.context.sandbox.stub(genTokenUtils, 'generateGithubAppToken')
+          .callsFake((installId: number) => {
+            t.is(installId, 123);
+            return 'example-app-token';
+          });
+
       const githubInstance = github();
       t.context.sandbox.stub(githubInstance, 'query').callsFake(() => {
         return {

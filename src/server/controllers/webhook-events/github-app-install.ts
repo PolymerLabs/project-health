@@ -1,9 +1,9 @@
 import gql from 'graphql-tag';
 
 import {github} from '../../../utils/github';
-import {secrets} from '../../../utils/secrets';
 import {WebHookHandleResponse} from '../../apis/github-webhook';
 import {githubAppModel, GithubRepo} from '../../models/githubAppModel';
+import {generateGithubAppToken} from '../../utils/generate-github-app-token';
 
 export interface InstallHook {
   action: 'created'|'deleted';
@@ -65,16 +65,12 @@ async function handleNewAppInstall(hookBody: InstallHook) {
 
   ${fragments.join('\n')}`;
 
+  // Generate a token from the installed app to use for this API request.
+  const token = await generateGithubAppToken(hookBody.installation.id);
   const result = await github().query({
     query: gql`${completeQuery}`,
     fetchPolicy: 'network-only',
-    context: {
-      // TODO: Replace this with a token derived from the GitHub App
-      // itself. At the moment this is using a persona access token
-      // to get around restriction of GitHub app not having access
-      // to GQL.
-      token: secrets().GITHUB_APP.TO_GQL_TOKEN,
-    }
+    context: {token}
   });
   const data = result.data as {[key: string]: GithubRepo};
   const allRepos = Object.keys(data).map((repoKey) => {
