@@ -1,92 +1,95 @@
-import {WebHookHandleResponse} from '../../apis/github-webhook';
-import {getPRTag, sendNotification} from '../../controllers/notifications';
-import {pullRequestsModel} from '../../models/pullRequestsModel';
-import {userModel} from '../../models/userModel';
-import {getPRID} from '../../utils/get-gql-pr-id';
+import * as webhooks from '../../../../types/webhooks';
+import {userModel} from '../../../models/userModel';
+import {generateGithubAppToken} from '../../../utils/generate-github-app-token';
+import {getPRID} from '../../../utils/get-gql-pr-id';
+import {WebhookListener, WebhookListenerResponse, webhooksController} from '../../github-app-webhooks';
+import {getPRTag, sendNotification} from '../../notifications';
 
-import {PullRequestHook} from './types';
+/**
+ * Sends notification to the reviewer that a review has been requested. GitHub
+ * sends a separate payload for each requested reviewer.
+ */
+export class ReviewRequestedNotification implements WebhookListener {
+  static ID = 'review-requested-notification';
 
-async function handleReviewRequested(hookBody: PullRequestHook):
-    Promise<WebHookHandleResponse> {
-  const pullRequest = hookBody.pull_request;
-  const repo = hookBody.repository;
-  const user = pullRequest.user;
-  const reviewer = hookBody.requested_reviewer;
+  async handleWebhookEvent(payload: webhooks.WebhookPayload):
+      Promise<WebhookListenerResponse|null> {
+    if (payload.type !== 'pull_request') {
+      return null;
+    }
 
-  // The reviewer's dash will have a new entry under incoming
-  await userModel.markUserForUpdate(reviewer.login);
-  // The PR owner's dash should update with an incoming entry
-  await userModel.markUserForUpdate(user.login);
+    if (payload.action !== 'review_requested') {
+      return null;
+    }
 
-  const userRecord = await userModel.getUserRecord(user.login);
-  if (!userRecord) {
-    return {
-      handled: false,
-      notifications: null,
-      message: 'Unable to find login details to retrieve PR ID'
-    };
-  }
+    // If one of the reviewers requires a notification, we should be able to
+    // find a token to use.
+    const token = await this.getToken(payload);
+    if (!token) {
+      return null;
+    }
 
-  const prGqlId = await getPRID(
-      userRecord.githubToken, repo.owner.login, repo.name, pullRequest.number);
+    const prGqlId = await getPRID(
+        token,
+        payload.repository.owner.login,
+        payload.repository.name,
+        payload.pull_request.number);
 
-  if (!prGqlId) {
-    return {
-      handled: false,
-      notifications: null,
-      message: 'Unable to retrieve the PR ID'
-    };
-  }
+    if (!prGqlId) {
+      return null;
+    }
 
-  const notification = {
-    title: `${user.login} requested a review`,
-    body: `[${repo.name}] ${pullRequest.title}`,
-    requireInteraction: true,
-    data: {
-      url: pullRequest.html_url,
-      pullRequest: {
-        gqlId: prGqlId,
+    const notification = {
+      title: `${payload.pull_request.user.login} requested a review`,
+      body: `[${payload.repository.name}] ${payload.pull_request.title}`,
+      requireInteraction: true,
+      data: {
+        url: payload.pull_request.html_url,
+        pullRequest: {
+          gqlId: prGqlId,
+        },
       },
-    },
-    tag: getPRTag(repo.owner.login, repo.name, pullRequest.number),
-  };
+      tag: getPRTag(
+          payload.repository.owner.login,
+          payload.repository.name,
+          payload.pull_request.number),
+    };
 
-  const notificationStats =
-      await sendNotification(reviewer.login, notification);
+    // Send a notification to each requested reviewer.
+    const notificationStats = [];
+    notificationStats.push(
+        await sendNotification(payload.requested_reviewer.login, notification));
 
-  return {handled: true, notifications: notificationStats, message: null};
-}
-
-async function handlePROpened(hookBody: PullRequestHook):
-    Promise<WebHookHandleResponse> {
-  const owner = hookBody.repository.owner.login;
-  const repo = hookBody.repository.name;
-  const num = hookBody.pull_request.number;
-  await pullRequestsModel.pullRequestOpened(owner, repo, num);
-  return {handled: true, notifications: null, message: null};
-}
-
-async function handlePRClosed(hookBody: PullRequestHook) {
-  const owner = hookBody.repository.owner.login;
-  const repo = hookBody.repository.name;
-  const num = hookBody.pull_request.number;
-  await pullRequestsModel.deletePR(owner, repo, num);
-  return {handled: true, notifications: null, message: null};
-}
-
-export async function handlePullRequest(hookBody: PullRequestHook):
-    Promise<WebHookHandleResponse> {
-  if (hookBody.action === 'review_requested') {
-    return handleReviewRequested(hookBody);
-  } else if (hookBody.action === 'opened') {
-    return handlePROpened(hookBody);
-  } else if (hookBody.action === 'closed') {
-    return handlePRClosed(hookBody);
+    return {
+      id: ReviewRequestedNotification.ID,
+      notifications: notificationStats
+    };
   }
 
-  return {
-    handled: false,
-    notifications: null,
-    message: `The PR action is not a handled action: '${hookBody.action}'`
-  };
+  // Fetches a token to use for this payload. First, for app webhook events,
+  // generate an appropriate token. Otherwise, try and use the pull request
+  // author's token. Finally try finding a token from the reviewers list.
+  private async getToken(payload: webhooks.PullRequestReviewRequestedPayload):
+      Promise<string|null> {
+    if (payload.installation) {
+      return await generateGithubAppToken(payload.installation.id);
+    }
+
+    let userRecord =
+        await userModel.getUserRecord(payload.pull_request.user.login);
+    if (userRecord) {
+      return userRecord.githubToken;
+    }
+
+    userRecord =
+        await userModel.getUserRecord(payload.requested_reviewer.login);
+    if (userRecord) {
+      return userRecord.githubToken;
+    }
+
+    return null;
+  }
 }
+
+webhooksController.addListener(
+    'pull_request', new ReviewRequestedNotification());
