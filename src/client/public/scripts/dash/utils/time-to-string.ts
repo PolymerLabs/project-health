@@ -28,5 +28,5 @@ export function timeToString(dateTime: number) {
   if (timeStr !== '1') {
     units += 's';
   }
-  return `${} ${unit} ago`;
+  return `${timeStr} ${unit} ago`;
 }
