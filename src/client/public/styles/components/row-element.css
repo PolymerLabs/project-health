@@ -83,11 +83,11 @@ row-element[type='passive'] .dashboard-row-status__msg {
   margin-left: calc(var(--padding) / 2);
 
   background-color: var(--non-actionable-color);
-  opacity: 0;
+  display: none;
 }
 
 .dashboard-row-link[has-new-activity=true] .dashboard-row-status__has-activity {
-  opacity: 1;
+  display: block;
 }
 
 row-element[type='complete'] .dashboard-row-status__has-activity {

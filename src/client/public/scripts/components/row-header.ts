@@ -25,9 +25,11 @@ export class RowHeader extends BaseElement {
         anchorElement = anchorElement.parentNode as HTMLElement;
       }
 
-      if (anchorElement) {
-        anchorElement.removeAttribute('has-new-activity');
+      if (!anchorElement || !anchorElement.hasAttribute('has-new-activity')) {
+        return;
       }
+
+      anchorElement.removeAttribute('has-new-activity');
 
       const response = await fetch('/api/last-viewed/update/', {
         method: 'POST',
