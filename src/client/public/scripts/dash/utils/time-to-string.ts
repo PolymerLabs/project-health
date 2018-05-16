@@ -1,27 +1,32 @@
 export function timeToString(dateTime: number) {
   let secondsSince = (Date.now() - dateTime) / 1000;
-  let unit = 'seconds';
+  let unit = 'second';
   if (secondsSince > 60) {
     secondsSince = secondsSince / 60;
-    unit = 'minutes';
+    unit = 'minute';
 
     if (secondsSince > 60) {
       secondsSince = secondsSince / 60;
-      unit = 'hours';
+      unit = 'hour';
 
       if (secondsSince > 24) {
         secondsSince = secondsSince / 24;
-        unit = 'days';
+        unit = 'day';
 
         if (secondsSince > 365) {
           secondsSince = secondsSince / 365;
-          unit = Math.floor(secondsSince) === 1 ? 'year' : 'years';
+          unit = 'year';
         } else if (secondsSince > 30) {
           secondsSince = secondsSince / 30;
-          unit = 'months';
+          unit = 'month';
         }
       }
     }
   }
-  return `${(secondsSince).toFixed(0)} ${unit} ago`;
+  
+  const timeStr = (secondsSince).toFixed(0);
+  if (timeStr !== '1') {
+    units += 's';
+  }
+  return `${} ${unit} ago`;
 }
