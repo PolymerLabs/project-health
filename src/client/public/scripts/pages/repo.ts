@@ -83,7 +83,6 @@ class RepoPage extends BaseElement {
     const apiResponse =
         await response.json() as api.JSONAPIResponse<api.IssuesResponse>;
     if ('error' in apiResponse) {
-      this.untriaged = null;
       return;
     }
     this.untriaged = apiResponse.data.issues;
@@ -99,7 +98,6 @@ class RepoPage extends BaseElement {
     const apiResponse =
         await response.json() as api.JSONAPIResponse<api.LabelsResponse>;
     if ('error' in apiResponse) {
-      this.labels = [];
       return;
     }
     this.labels = apiResponse.data.labels;
@@ -115,7 +113,6 @@ class RepoPage extends BaseElement {
     const apiResponse =
         await response.json() as api.JSONAPIResponse<api.IssuesResponse>;
     if ('error' in apiResponse) {
-      this.filteredIssues = null;
       return;
     }
     this.filteredIssues = apiResponse.data.issues;
