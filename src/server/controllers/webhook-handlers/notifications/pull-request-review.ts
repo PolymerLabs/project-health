@@ -61,6 +61,7 @@ export class ReviewUpdater implements WebhookListener {
       }
     }
 
+    // No notification to send. For example the review state might be dismissed.
     if (!notificationTitle) {
       return response;
     }

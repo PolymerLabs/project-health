@@ -12,8 +12,8 @@ export interface WebhookListener {
 }
 
 export class WebhooksController {
-  private eventsToListener: Map<webhooks.WebhookType, Set<WebhookListener>> =
-      new Map();
+  private eventsToListener =
+      new Map<webhooks.WebhookType, Set<WebhookListener>>();
 
   /**
    * Subscribes the listener to the specified events.
@@ -38,9 +38,8 @@ export class WebhooksController {
    * Unsubscribes the listener from all events.
    */
   removeListener(listener: WebhookListener) {
-    const events = this.eventsToListener.keys();
-    for (const e of events) {
-      this.eventsToListener.get(e)!.delete(listener);
+    for (const listeners of this.eventsToListener.values()) {
+      listeners.delete(listener);
     }
   }
 
