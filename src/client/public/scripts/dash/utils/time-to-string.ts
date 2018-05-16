@@ -15,7 +15,7 @@ export function timeToString(dateTime: number) {
 
         if (secondsSince > 365) {
           secondsSince = secondsSince / 365;
-          unit = 'years';
+          unit = Math.floor(secondsSince) === 1 ? 'year' : 'years';
         } else if (secondsSince > 30) {
           secondsSince = secondsSince / 30;
           unit = 'months';
