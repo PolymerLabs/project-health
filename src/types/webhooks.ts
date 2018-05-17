@@ -16,11 +16,25 @@ interface TypedPayload {
   };
 }
 
-export interface PullRequestPayload extends TypedPayload {
+export type PullRequestPayload =
+    PullRequestOtherPayload|PullRequestReviewRequestedPayload;
+
+interface PullRequestBasePayload extends TypedPayload {
   type: 'pull_request';
   number: number;
   pull_request: PullRequest;
   repository: Repository;
+}
+
+export interface PullRequestOtherPayload extends PullRequestBasePayload {
+  action: 'assigned'|'unassigned'|'review_request_removed'|'labeled'|
+      'unlabeled'|'opened'|'edited'|'closed'|'reopened';
+}
+
+export interface PullRequestReviewRequestedPayload extends
+    PullRequestBasePayload {
+  action: 'review_requested';
+  requested_reviewer: User;
 }
 
 export interface PullRequestReviewPayload extends TypedPayload {
