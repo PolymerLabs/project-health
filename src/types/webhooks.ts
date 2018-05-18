@@ -7,7 +7,8 @@ export type WebhookType = 'check_run'|'check_suite'|'commit_comment'|'create'|
     'repository'|'repository_vulnerability_alert'|'release'|'status'|'team'|
     'team_add'|'watch';
 
-export type WebhookPayload = PullRequestPayload|PullRequestReviewPayload;
+export type WebhookPayload =
+    PullRequestPayload|PullRequestReviewPayload|InstallationPayload;
 
 interface TypedPayload {
   type: WebhookType;
@@ -43,6 +44,30 @@ export interface PullRequestReviewPayload extends TypedPayload {
   pull_request: PullRequest;
   repository: Repository;
   review: Review;
+}
+
+export interface InstallationPayload extends TypedPayload {
+  type: 'installation';
+  action: 'created'|'deleted';
+  installation: {
+    id: number,
+    repository_selection: 'all'|'selected',
+    permissions: {
+      [name: string]: string,
+    },
+    events: string[],
+    account: {
+      login: string,
+      avatar_url: string,
+      type: 'User'|'Organization',
+    },
+  };
+  repositories?: Array<{
+    id: number,
+    name: string,
+    full_name: string,
+    private: boolean,
+  }>;
 }
 
 interface PullRequest {
