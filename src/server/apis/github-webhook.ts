@@ -1,15 +1,7 @@
 import * as express from 'express';
 
 import {webhooksController} from '../controllers/github-app-webhooks';
-import {NotificationsSent} from '../controllers/notifications';
-import {handleStatus} from '../controllers/webhook-events/status';
 import {hooksModel} from '../models/hooksModel';
-
-export interface WebHookHandleResponse {
-  handled: boolean;
-  notifications: NotificationsSent|null;
-  message: string|null;
-}
 
 export function getRouter(): express.Router {
   const githubHookRouter = express.Router();
@@ -47,32 +39,20 @@ export function getRouter(): express.Router {
             }
           }
 
-          // TODO: migrate these to the new subscriber model.
-          let handled: WebHookHandleResponse|null = null;
-          // List of these events available here:
-          // https://developer.github.com/webhooks/
-          switch (eventName) {
-            case 'status':
-              handled = await handleStatus(request.body);
-              break;
-            default:
-              break;
-          }
+          const payload = request.body;
+          // Inject the payload type into the payload itself. This allows
+          // handlers to check the type and for typescript to type differentiate
+          // based on its value.
+          payload.type = eventName;
 
-          if (handled) {
-            response.status(handled ? 200 : 202);
-            response.json(handled);
+          // Send the payload to the webhooks controller, which sends the
+          // payload to all subscribed handlers.
+          const results = await webhooksController.handleWebhookEvent(payload);
+          if (!results.length) {
+            response.sendStatus(202);
           } else {
-            const payload = request.body;
-            payload.type = eventName;
-            const results =
-                await webhooksController.handleWebhookEvent(payload);
-            if (!results.length) {
-              response.sendStatus(202);
-            } else {
-              response.status(200);
-              response.json(results);
-            }
+            response.status(200);
+            response.json(results);
           }
         } catch (err) {
           console.error('Error while handled GitHub web hook: ', err);

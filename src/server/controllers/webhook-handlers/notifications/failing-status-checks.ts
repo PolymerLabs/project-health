@@ -1,21 +1,62 @@
-async function handleFailingStatus(
-    hookData: StatusHook,
-    prDetails: PullRequestDetails,
-    savedCommitDetails: CommitDetails|null): Promise<WebHookHandleResponse> {
-  const webhookResponse: WebHookHandleResponse = {
-    handled: false,
-    notifications: null,
-    message: null,
-  };
+import * as webhooks from '../../../../types/webhooks';
+import {pullRequestsModel} from '../../../models/pullRequestsModel';
+import {userModel} from '../../../models/userModel';
+import {getPRDetailsFromCommit} from '../../../utils/get-pr-from-commit';
+import {WebhookListener, WebhookListenerResponse} from '../../github-app-webhooks';
+import {getPRTag, sendNotification} from '../../notifications';
 
-  if (!savedCommitDetails || savedCommitDetails.status !== hookData.state) {
-    webhookResponse.handled = true;
+export class FailingStatusChecksNotification implements WebhookListener {
+  static ID = 'failing-status-checks-notification';
 
-    const repo = hookData.repository;
+  async handleWebhookEvent(payload: webhooks.WebhookPayload):
+      Promise<WebhookListenerResponse|null> {
+    if (payload.type !== 'status') {
+      return null;
+    }
+
+    const token = await this.getToken(payload);
+    if (!token) {
+      return null;
+    }
+
+    // Fetch info about the associated pull request.
+    const prDetails =
+        await getPRDetailsFromCommit(token, payload.name, payload.sha);
+    if (!prDetails) {
+      return null;
+    }
+
+    // Status is not failing.
+    if (payload.state !== 'error' && payload.state !== 'failure') {
+      return null;
+    }
+
+    // Get previous state. If another handler of the same payload saves before
+    // this hook, this will prevent this notification from correctly sending.
+    const savedCommitDetails = await pullRequestsModel.getCommitDetails(
+        prDetails.owner,
+        prDetails.repo,
+        prDetails.number,
+        prDetails.commit.oid,
+    );
+
+    // Save commit status.
+    await pullRequestsModel.setCommitStatus(
+        prDetails.owner,
+        prDetails.repo,
+        prDetails.number,
+        prDetails.commit.oid,
+        payload.state,
+    );
+
+    // Previous commit details and the payload details are for the same state.
+    if (savedCommitDetails && savedCommitDetails.status === payload.state) {
+      return null;
+    }
 
     const results = await sendNotification(prDetails.author, {
-      title: hookData.description,
-      body: `[${hookData.repository.name}] ${prDetails.title}`,
+      title: payload.description || 'Status checks failed',
+      body: `[${payload.repository.name}] ${prDetails.title}`,
       requireInteraction: false,
       icon: '/images/notification-images/icon-error-192x192.png',
       data: {
@@ -24,13 +65,29 @@ async function handleFailingStatus(
           gqlId: prDetails.gqlId,
         },
       },
-      tag: getPRTag(repo.owner.login, repo.name, prDetails.number),
+      tag: getPRTag(
+          payload.repository.owner.login,
+          payload.repository.name,
+          prDetails.number),
     });
-    webhookResponse.notifications = results;
-  } else {
-    webhookResponse.message = 'The previous commit details and the hook ' +
-        'details are the same state.';
+
+    return {
+      id: FailingStatusChecksNotification.ID,
+      notifications: [results],
+    };
   }
 
-  return webhookResponse;
+  /**
+   * Fetches the token for the given status payload. As we're trying to send a
+   * notification to the author of the PR, fetch the token associated with the
+   * pull request author.
+   */
+  private async getToken(payload: webhooks.StatusPayload) {
+    const userRecord =
+        await userModel.getUserRecord(payload.commit.author.login);
+    if (!userRecord) {
+      return null;
+    }
+    return userRecord.githubToken;
+  }
 }

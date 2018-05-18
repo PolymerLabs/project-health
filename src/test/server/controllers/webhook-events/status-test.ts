@@ -4,7 +4,6 @@ import * as sinon from 'sinon';
 import {SinonSandbox, SinonStub} from 'sinon';
 
 import * as notificationController from '../../../../server/controllers/notifications';
-import {handleStatus} from '../../../../server/controllers/webhook-events/status';
 import {StatusHook} from '../../../../server/controllers/webhook-events/types';
 import {pullRequestsModel} from '../../../../server/models/pullRequestsModel';
 import {userModel} from '../../../../server/models/userModel';
