@@ -23,10 +23,10 @@ export function timeToString(dateTime: number) {
       }
     }
   }
-  
+
   const timeStr = (secondsSince).toFixed(0);
   if (timeStr !== '1') {
-    units += 's';
+    unit += 's';
   }
   return `${timeStr} ${unit} ago`;
 }
