@@ -1,4 +1,4 @@
-import {WebhookPayload} from '../../../../types/webhooks';
+import * as webhooks from '../../../../types/webhooks';
 import {userModel} from '../../../models/userModel';
 import {generateGithubAppToken} from '../../../utils/generate-github-app-token';
 import {getPRID} from '../../../utils/get-gql-pr-id';
@@ -13,7 +13,7 @@ import {getPRTag, sendNotification} from '../../notifications';
 export class ReviewUpdater implements WebhookListener {
   static ID = 'pull-request-review-notifications';
 
-  async handleWebhookEvent(payload: WebhookPayload):
+  async handleWebhookEvent(payload: webhooks.WebhookPayload):
       Promise<WebhookListenerResponse|null> {
     if (payload.type !== 'pull_request_review') {
       return null;
@@ -100,7 +100,8 @@ export class ReviewUpdater implements WebhookListener {
   // Fetches a token to use for this payload. First, for app webhook events,
   // generate an appropriate token. Otherwise, try and use the pull request
   // author's token.
-  private async getToken(payload: WebhookPayload): Promise<string|null> {
+  private async getToken(payload: webhooks.PullRequestReviewPayload):
+      Promise<string|null> {
     if (payload.installation) {
       return await generateGithubAppToken(payload.installation.id);
     }
