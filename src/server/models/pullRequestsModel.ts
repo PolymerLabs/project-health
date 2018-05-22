@@ -5,6 +5,7 @@ const PR_COLLECTION_NAME = 'pull-requests';
 
 type Status = 'error'|'failure'|'pending'|'success';
 
+// TODO: this is a confusing name, given that PullRequestsDetail already exists.
 export type PRDetails = {
   commits?: {[key: string]: CommitDetails};
   automerge?: AutomergeOpts;

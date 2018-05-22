@@ -18,7 +18,7 @@ interface TypedPayload {
 }
 
 export type PullRequestPayload =
-    PullRequestOtherPayload|PullRequestReviewRequestedPayload;
+    PullRequestOtherPayload|PullRequestReviewRequestedPayload|StatusPayload;
 
 interface PullRequestBasePayload extends TypedPayload {
   type: 'pull_request';
@@ -68,6 +68,29 @@ export interface InstallationPayload extends TypedPayload {
     full_name: string,
     private: boolean,
   }>;
+}
+
+export interface StatusPayload extends TypedPayload {
+  type: 'status';
+  sha: string;
+  name: string;
+  state: 'error'|'failure'|'pending'|'success';
+  description: string|null;
+  target_url: string|null;
+  branches: Array<{
+    name: string,
+    commit: {
+      sha: string,
+      url: string,
+    },
+  }>;
+  commit: {
+    author: {
+      login: string,
+    },
+    sha: string,
+  };
+  repository: Repository;
 }
 
 interface PullRequest {

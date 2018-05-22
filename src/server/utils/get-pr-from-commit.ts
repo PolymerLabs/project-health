@@ -23,6 +23,9 @@ interface CommitDetails {
   state: 'ERROR'|'EXPECTED'|'FAILURE'|'PENDING'|'SUCCESS'|null;
 }
 
+/**
+ * Given a SHA and a repository name, find the associated pull request.
+ */
 export async function getPRDetailsFromCommit(
     githubToken: string, repoFullName: string, sha: string):
     Promise<PullRequestDetails|null> {
