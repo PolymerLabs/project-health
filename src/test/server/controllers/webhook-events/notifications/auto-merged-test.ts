@@ -7,6 +7,7 @@ import * as notificationController from '../../../../../server/controllers/notif
 import {AutoMergedNotification} from '../../../../../server/controllers/webhook-handlers/notifications/auto-merged';
 import {pullRequestsModel} from '../../../../../server/models/pullRequestsModel';
 import {userModel} from '../../../../../server/models/userModel';
+import * as genTokenUtils from '../../../../../server/utils/generate-github-app-token';
 import * as getPRFromCommitModule from '../../../../../server/utils/get-pr-from-commit';
 import * as performAutomergeModule from '../../../../../server/utils/perform-automerge';
 import {StatusPayload} from '../../../../../types/webhooks';
@@ -40,6 +41,7 @@ function payload(state: 'error'|'failure'|'pending'|'success'): StatusPayload {
       },
       sha: 'commit-SHA'
     },
+    installation: {id: 123},
   };
 }
 
@@ -66,6 +68,12 @@ test.beforeEach(async (t) => {
   sendStub = t.context.sandbox.stub(notificationController, 'sendNotification');
   performAutomergeStub =
       t.context.sandbox.stub(performAutomergeModule, 'performAutomerge');
+
+  t.context.sandbox.stub(genTokenUtils, 'generateGithubAppToken')
+      .callsFake((installId: number) => {
+        t.is(installId, 123);
+        return 'example-app-token';
+      });
 });
 
 test.afterEach.always(async (t) => {
@@ -74,33 +82,6 @@ test.afterEach.always(async (t) => {
 });
 
 const handler = new AutoMergedNotification();
-
-test.serial(
-    '[handleStatus]: should not handle success hook if no login details',
-    async (t) => {
-      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        return null;
-      });
-
-      const response = await handler.handleWebhookEvent(payload('success'));
-      t.is(response, null, 'webhook should not be handled.');
-      t.deepEqual(
-          sendStub.callCount, 0, 'sendNotification should not be called');
-    });
-
-test.serial(
-    '[handleStatus]: should not handle error hook if no login details',
-    async (t) => {
-      t.context.sandbox.stub(userModel, 'getUserRecord').callsFake(() => {
-        // Return no details to act as no token
-        return null;
-      });
-
-      const response = await handler.handleWebhookEvent(payload('error'));
-      t.is(response, null, 'webhook should not be handled.');
-      t.deepEqual(
-          sendStub.callCount, 0, 'sendNotification should not be called');
-    });
 
 test.serial(
     '[handleStatus]: should not handle success hook if no PR Details',
@@ -123,7 +104,7 @@ test.serial(
           getPRDetailsStub.callCount,
           1,
           'getPRDetailsFromCommit should be called once.');
-      t.deepEqual(getPRDetailsStub.args[0][0], userRecord.githubToken);
+      t.deepEqual(getPRDetailsStub.args[0][0], 'example-app-token');
       t.deepEqual(getPRDetailsStub.args[0][1], 'test-owner/test-repo');
       t.deepEqual(getPRDetailsStub.args[0][2], 'test-commit-SHA');
       t.deepEqual(
@@ -151,7 +132,7 @@ test.serial(
           getPRDetailsStub.callCount,
           1,
           'getPRDetailsFromCommit should be called once.');
-      t.deepEqual(getPRDetailsStub.args[0][0], userRecord.githubToken);
+      t.deepEqual(getPRDetailsStub.args[0][0], 'example-app-token');
       t.deepEqual(getPRDetailsStub.args[0][1], 'test-owner/test-repo');
       t.deepEqual(getPRDetailsStub.args[0][2], 'test-commit-SHA');
       t.deepEqual(
