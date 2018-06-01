@@ -1,7 +1,7 @@
 import * as webhooks from '../../../../types/webhooks';
 import {getPRTag, sendNotification} from '../../../controllers/notifications';
 import {pullRequestsModel} from '../../../models/pullRequestsModel';
-import {userModel} from '../../../models/userModel';
+import {generateGithubAppToken} from '../../../utils/generate-github-app-token';
 import {getPRDetailsFromCommit, PullRequestDetails} from '../../../utils/get-pr-from-commit';
 import {performAutomerge} from '../../../utils/perform-automerge';
 import {WebhookListener, WebhookListenerResponse, webhooksController} from '../../github-app-webhooks';
@@ -19,7 +19,14 @@ export class AutoMergedNotification implements WebhookListener {
       return null;
     }
 
-    const token = await this.getToken(payload);
+    // Do not perform auto merges for non installation payloads.
+    if (!payload.installation) {
+      return null;
+    }
+
+    // Generate an app token to use for the auto merging. The user token for the
+    // author may not have the necessary permissions.
+    const token = await generateGithubAppToken(payload.installation.id);
     if (!token) {
       return null;
     }
@@ -115,20 +122,6 @@ export class AutoMergedNotification implements WebhookListener {
         prDetails.commit.oid,
         payload.state,
     );
-  }
-
-  /**
-   * Fetches the token for the given status payload. As we're trying to send a
-   * notification to the author of the PR, fetch the token associated with the
-   * pull request author.
-   */
-  private async getToken(payload: webhooks.StatusPayload) {
-    const userRecord =
-        await userModel.getUserRecord(payload.commit.author.login);
-    if (!userRecord) {
-      return null;
-    }
-    return userRecord.githubToken;
   }
 }
 
