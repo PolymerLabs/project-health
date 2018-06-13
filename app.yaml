@@ -1,4 +1,5 @@
 runtime: nodejs8
+instance_class: F4
 
 handlers:
 - url: /.*
