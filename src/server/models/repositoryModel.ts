@@ -49,26 +49,28 @@ class RepositoryModel {
 
     const response =
         await github().get(`repos/${owner}/${repo}`, userRecord.githubToken);
-    if (response.error) {
-      console.error('Get repo details threw an error: ', response.message);
+    if (!response.ok) {
+      console.error(`Get repo details threw an error: [${response.status}]: ${
+          response.statusText}`);
       return null;
     }
 
+    const result = await response.json();
     const requiredKeys = [
       'allow_rebase_merge',
       'allow_squash_merge',
       'allow_merge_commit',
     ];
     for (const key of requiredKeys) {
-      if (typeof response[key] === 'undefined') {
+      if (typeof result[key] === 'undefined') {
         return null;
       }
     }
 
     const prDetails: RepoDetails = {
-      allow_rebase_merge: response.allow_rebase_merge,
-      allow_squash_merge: response.allow_squash_merge,
-      allow_merge_commit: response.allow_merge_commit,
+      allow_rebase_merge: result.allow_rebase_merge,
+      allow_squash_merge: result.allow_squash_merge,
+      allow_merge_commit: result.allow_merge_commit,
     };
 
     await repoDoc.set({

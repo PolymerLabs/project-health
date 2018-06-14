@@ -43,13 +43,12 @@ export async function addLabels(
 async function setLabels(
     token: string, repo: GithubRepo, labels: Label[], shouldExist: boolean) {
   // Get current labels from repo
-  const existingLabels =
+  const response =
       await github().get(`repos/${repo.nameWithOwner}/labels`, token, {
-        customHeaders: {
-          // Enable preview API which allows reading description.
-          'Accept': 'application/vnd.github.symmetra-preview+json',
-        }
+        // Enable preview API which allows reading description.
+        'Accept': 'application/vnd.github.symmetra-preview+json',
       });
+  const existingLabels = await response.json();
 
   labels = manipulateLabels(labels);
 
@@ -89,10 +88,8 @@ async function setLabels(
       }
 
       await method(queryUrl, token, label, {
-        customHeaders: {
-          // Enable preview API which allows settings description.
-          'Accept': 'application/vnd.github.symmetra-preview+json',
-        }
+        // Enable preview API which allows settings description.
+        'Accept': 'application/vnd.github.symmetra-preview+json',
       });
     } catch (err) {
       console.warn(

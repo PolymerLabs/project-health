@@ -104,21 +104,18 @@ async function getContributionWeight(
     // used.
     const queryPath = `repos/${org}/${repo}/stats/contributors`;
 
-    let response = await github().get(queryPath, token, {
-      parseJSON: false,
-    });
+    let response = await github().get(queryPath, token);
     let retries = 0;
+
     // GitHub's API may serve a cached response and begin an asynchronous
     // job to calculate required data.
-    while (response.statusCode !== 200 && retries++ < MAX_STATS_RETRIES) {
+    while (response.status !== 200 && retries++ < MAX_STATS_RETRIES) {
       await setTimeoutPromise(1000 * retries);
-      response = await github().get(queryPath, token, {
-        parseJSON: false,
-      });
+      response = await github().get(queryPath, token);
     }
 
-    if (response.statusCode === 200) {
-      const stats = JSON.parse(response.body) as GitHubStatsResponse;
+    if (response.status === 200) {
+      const stats = await response.json() as GitHubStatsResponse;
       // Find contribution stats for the specified user.
       const stat = stats.filter((x) => x.author.login === user);
       if (stat.length === 0) {
@@ -147,7 +144,7 @@ async function getContributionWeight(
       return Math.round(score * 100) / 100;
     } else {
       throw new Error(`Unable to fetch contribution stats for ${repo}. Got ${
-          response.statusCode} from GitHub.`);
+          response.status} from GitHub.`);
     }
   } catch (err) {
     throw err;

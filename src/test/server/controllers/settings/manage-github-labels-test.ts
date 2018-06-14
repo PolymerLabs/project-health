@@ -44,7 +44,7 @@ const prefix = '[manage-github-labels]: ';
 
 test.serial(`${prefix} should delete non-existing labels`, async (t) => {
   t.context.sandbox.stub(github(), 'get').callsFake(() => {
-    return [];
+    return {json: async () => []};
   });
   const labels: Label[] = [
     {name: 'my-label', description: 'my description', color: 'red'},
@@ -59,7 +59,7 @@ test.serial(`${prefix} should delete non-existing labels`, async (t) => {
 
 test.serial(`${prefix} should delete existing labels`, async (t) => {
   t.context.sandbox.stub(github(), 'get').callsFake(() => {
-    return [{name: `${LABEL_NAME_PREFIX} my-label`}];
+    return {json: async () => [{name: `${LABEL_NAME_PREFIX} my-label`}]};
   });
   const labels: Label[] = [
     {name: 'my-label', description: 'my description', color: 'red'},
@@ -74,7 +74,7 @@ test.serial(`${prefix} should delete existing labels`, async (t) => {
 
 test.serial(`${prefix} should add labels`, async (t) => {
   t.context.sandbox.stub(github(), 'get').callsFake(() => {
-    return [];
+    return {json: async () => []};
   });
   const labels: Label[] = [
     {name: 'my-label', description: 'my description', color: 'red'},
@@ -89,7 +89,7 @@ test.serial(`${prefix} should add labels`, async (t) => {
 
 test.serial(`${prefix} should update existing labels`, async (t) => {
   t.context.sandbox.stub(github(), 'get').callsFake(() => {
-    return [{name: `${LABEL_NAME_PREFIX} my-label`}];
+    return {json: async () => [{name: `${LABEL_NAME_PREFIX} my-label`}]};
   });
   const labels: Label[] = [
     {name: 'my-label', description: 'my description', color: 'red'},
@@ -104,11 +104,13 @@ test.serial(`${prefix} should update existing labels`, async (t) => {
 
 test.serial(`${prefix} should not touch existing labels`, async (t) => {
   t.context.sandbox.stub(github(), 'get').callsFake(() => {
-    return [{
-      name: `${LABEL_NAME_PREFIX} my-label`,
-      description: `my description ${LABEL_DESCRIPTION_SUFFIX}`,
-      color: 'red',
-    }];
+    return {
+      json: async () => [{
+        name: `${LABEL_NAME_PREFIX} my-label`,
+        description: `my description ${LABEL_DESCRIPTION_SUFFIX}`,
+        color: 'red',
+      }]
+    };
   });
   const labels: Label[] = [
     {name: 'my-label', description: 'my description', color: 'red'},

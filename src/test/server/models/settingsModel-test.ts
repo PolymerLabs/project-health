@@ -56,6 +56,7 @@ test.serial(
           });
 
       // NOTE a user is not an org, github().get() will throw an error
+      // TODO: I don't think this is correct
       const githubInstance = github();
       t.context.sandbox.stub(githubInstance, 'get').callsFake(() => {
         throw new Error('Injected Error');
@@ -144,8 +145,9 @@ test.serial(
           .callsFake((_url: string, token: string) => {
             t.is(token, 'example-app-token');
             return {
-              state: 'active',
-              role: 'admin',
+              json: async () => {
+                return {state: 'active', role: 'admin'};
+              }
             };
           });
 
@@ -184,8 +186,12 @@ test.serial(
           .callsFake((_url: string, token: string) => {
             t.is(token, 'example-app-token');
             return {
-              state: 'active',
-              role: 'admin',
+              json: async () => {
+                return {
+                  state: 'active',
+                  role: 'admin',
+                };
+              }
             };
           });
 
