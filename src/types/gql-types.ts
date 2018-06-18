@@ -251,6 +251,7 @@ export interface OutgoingPullRequestsQuery {
         // The repository associated with this node.
         repository:  {
           __typename: "Repository",
+          id: string,
           // The name of the repository.
           name: string,
           // The repository's name with owner.
@@ -449,6 +450,7 @@ export interface IncomingPullRequestsQuery {
         // The repository associated with this node.
         repository:  {
           __typename: "Repository",
+          id: string,
           // The name of the repository.
           name: string,
           // The repository's name with owner.
@@ -527,6 +529,7 @@ export interface IncomingPullRequestsQuery {
         // The repository associated with this node.
         repository:  {
           __typename: "Repository",
+          id: string,
           // The name of the repository.
           name: string,
           // The repository's name with owner.
@@ -1141,6 +1144,7 @@ export interface prFieldsFragment {
   // The repository associated with this node.
   repository:  {
     __typename: "Repository",
+    id: string,
     // The name of the repository.
     name: string,
     // The repository's name with owner.

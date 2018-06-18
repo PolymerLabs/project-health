@@ -50,6 +50,7 @@
               "__typename": "IssueCommentConnection"
             },
             "repository": {
+              "id": "MDEwOlJlcG9zaXRvcnkxMTQ0MDg1MjI=",
               "name": "repo",
               "nameWithOwner": "project-health1/repo",
               "owner": {
@@ -80,8 +81,8 @@
     "rateLimit": {
       "cost": 1,
       "limit": 5000,
-      "remaining": 4980,
-      "resetAt": "2018-05-04T01:33:15Z",
+      "remaining": 4988,
+      "resetAt": "2018-06-18T22:48:40Z",
       "nodeCount": 150,
       "__typename": "RateLimit"
     }

@@ -73,6 +73,7 @@ fragment reviewFields on PullRequestReview {
 const prFragment = gql`
 fragment prFields on PullRequest {
   repository {
+    id
     name
     nameWithOwner
     owner {
