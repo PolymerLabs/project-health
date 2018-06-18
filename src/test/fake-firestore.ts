@@ -187,8 +187,13 @@ export function getFirestoreMock<T>(): Firestore {
           return docRef.get();
         },
         set: (docRef: FakeDoc<T>, data: T) => {
-          return docRef.set(data);
-        }
+          docRef.set(data);
+          return cb;
+        },
+        delete: (docRef: FakeDoc<T>) => {
+          docRef.delete();
+          return cb;
+        },
       });
     },
     batch: () => {

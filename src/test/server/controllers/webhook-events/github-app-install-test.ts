@@ -6,7 +6,7 @@ import {SinonSandbox} from 'sinon';
 import {AppInstaller} from '../../../../server/controllers/webhook-handlers/app-install';
 import * as genTokenUtils from '../../../../server/utils/generate-github-app-token';
 import * as webhooks from '../../../../types/webhooks';
-import {initFirestore} from '../../../../utils/firestore';
+import {firestore, initFirestore} from '../../../../utils/firestore';
 import {github, initGithub} from '../../../../utils/github';
 import {initSecrets} from '../../../../utils/secrets';
 import {newFakeSecrets} from '../../../utils/newFakeSecrets';
@@ -27,7 +27,7 @@ function newFakeHookDetails() {
       },
       events: ['issues', 'issue_comment', 'label', 'milestone'],
       account: {
-        login: '',
+        login: 'test-owner',
         avatar_url: '',
         type: 'Organization',
       },
@@ -41,6 +41,41 @@ function newFakeHookDetails() {
   };
 
   return Object.assign({}, HOOK_DATA);
+}
+
+function newFakeRepositoriesPayload():
+    webhooks.InstallationRepositoriesPayload {
+  return {
+    type: 'installation_repositories',
+    action: 'added',
+    installation: {
+      id: 123,
+      repository_selection: 'selected',
+      permissions: {
+        issues: 'write',
+        metadata: 'read',
+      },
+      events: ['issues', 'issue_comment', 'label', 'milestone'],
+      account: {
+        login: 'test-owner',
+        avatar_url: '',
+        type: 'Organization',
+      },
+    },
+    repository_selection: 'selected',
+    repositories_added: [{
+      id: 123,
+      name: 'new-repo',
+      full_name: 'test-owner/new-repo',
+      private: false,
+    }],
+    repositories_removed: [{
+      id: 456,
+      name: 'test-repo2',
+      full_name: 'test-owner/test-repo',
+      private: false,
+    }],
+  };
 }
 
 type TestContext = {
@@ -162,3 +197,50 @@ test.serial(
       const response = await appInstaller.handleWebhookEvent(details);
       t.is(response, null, 'Payload is not handled');
     });
+
+
+test.serial('[handleGithubAppInstall]: handles add then update', async (t) => {
+  t.context.sandbox.stub(genTokenUtils, 'generateGithubAppToken')
+      .callsFake((installId: number) => {
+        t.is(installId, 123);
+        return 'example-app-token';
+      });
+
+  const githubInstance = github();
+  const queryStub = t.context.sandbox.stub(githubInstance, 'query');
+
+  function createQueryResponse(id: string) {
+    return {data: {repository: {id}}};
+  }
+
+  queryStub.onFirstCall()
+      .returns(createQueryResponse('test-repo-id'))
+      .onSecondCall()
+      .returns(createQueryResponse('new-repo-id'))
+      .onThirdCall()
+      .returns(createQueryResponse('test-repo-id'));
+
+  const response = await appInstaller.handleWebhookEvent(newFakeHookDetails());
+  t.not(response, null, 'Payload is handled');
+
+  const ownerRepos = await firestore()
+                         .collection('github-apps')
+                         .doc('test-owner')
+                         .collection('repositories')
+                         .get();
+  const repoIds = ownerRepos.docs.map((doc) => doc.data()['id']);
+  t.deepEqual(repoIds, ['test-repo-id']);
+
+
+  // Update the installation.
+  const response2 =
+      await appInstaller.handleWebhookEvent(newFakeRepositoriesPayload());
+  t.not(response2, null, 'Payload is handled');
+  const ownerRepos2 = await firestore()
+                          .collection('github-apps')
+                          .doc('test-owner')
+                          .collection('repositories')
+                          .get();
+  const repoIds2 = ownerRepos2.docs.map((doc) => doc.data()['id']);
+  t.deepEqual(repoIds2, ['new-repo-id']);
+});
