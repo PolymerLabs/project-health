@@ -29,8 +29,9 @@ class SettingsModel {
     const token = await generateGithubAppToken(installDetails.installationId);
 
     try {
-      const result = await github().get(
+      const response = await github().get(
           `orgs/${orgOrUser}/memberships/${userRecord.username}`, token);
+      const result = await response.json();
 
       if (result.state === 'active' && result.role === 'admin') {
         return true;
