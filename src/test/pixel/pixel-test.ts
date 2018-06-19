@@ -5,7 +5,6 @@ import * as sinon from 'sinon';
 import {SinonSandbox} from 'sinon';
 
 import {DashServer} from '../../server/dash-server';
-import {pullRequestsModel} from '../../server/models/pullRequestsModel';
 import {userModel} from '../../server/models/userModel';
 import {initFirestore} from '../../utils/firestore';
 import {initGithub} from '../../utils/github';
@@ -25,9 +24,6 @@ let dashServer: DashServer;
 let dashAddress: string;
 test.before(async () => {
   initFirestore();
-
-  // This allows automerge to be visible for a specific PR.
-  pullRequestsModel.pullRequestOpened('project-health1', 'status-repo', 4);
 
   browser = await puppeteer.launch(
       {args: ['--no-sandbox', '--disable-setuid-sandbox']});

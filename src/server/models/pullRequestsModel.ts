@@ -1,4 +1,4 @@
-import {AutomergeOpts} from '../../types/api';
+import {AutomergeSelection} from '../../types/api';
 import {firestore} from '../../utils/firestore';
 
 const PR_COLLECTION_NAME = 'pull-requests';
@@ -8,7 +8,7 @@ type Status = 'error'|'failure'|'pending'|'success';
 // TODO: this is a confusing name, given that PullRequestsDetail already exists.
 export type PRDetails = {
   commits?: {[key: string]: CommitDetails};
-  automerge?: AutomergeOpts;
+  automerge?: AutomergeSelection;
   open?: boolean;
 };
 
@@ -116,7 +116,7 @@ class PullRequestsModel {
   }
 
   async getAutomergeOpts(owner: string, repo: string, num: number):
-      Promise<null|AutomergeOpts> {
+      Promise<null|AutomergeSelection> {
     const prSnapshot = await firestore()
                            .collection(PR_COLLECTION_NAME)
                            .doc(this.getDocID(owner, repo, num))

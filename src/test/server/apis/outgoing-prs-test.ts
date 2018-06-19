@@ -95,7 +95,7 @@ test('[outgoing-prs-1]: outgoing PR, review with my own replies', (t) => {
       allow_merge_commit: true,
     },
     mergeable: MergeableState.MERGEABLE,
-    automergeOpts: null,
+    automergeSelection: null,
     automergeAvailable: false,
     hasNewActivity: false,
   });
@@ -122,7 +122,7 @@ test('[outgoing-prs-1]: Outgoing PR, no reviewers', (t) => {
       allow_merge_commit: true,
     },
     mergeable: MergeableState.MERGEABLE,
-    automergeOpts: null,
+    automergeSelection: null,
     automergeAvailable: false,
     hasNewActivity: false,
   });
@@ -154,7 +154,7 @@ test('[outgoing-prs-1]: Outgoing PR, changes requested', (t) => {
       allow_merge_commit: true,
     },
     mergeable: MergeableState.MERGEABLE,
-    automergeOpts: null,
+    automergeSelection: null,
     automergeAvailable: false,
     hasNewActivity: false,
   });
@@ -186,7 +186,7 @@ test('[outgoing-prs-1]: Outgoing PR, approved, ready to merge', (t) => {
       allow_merge_commit: true,
     },
     mergeable: MergeableState.MERGEABLE,
-    automergeOpts: null,
+    automergeSelection: null,
     automergeAvailable: false,
     hasNewActivity: false,
   });
@@ -220,7 +220,7 @@ test('[outgoing-prs-1]: Outgoing PR, has 1 commented review', (t) => {
       allow_merge_commit: true,
     },
     mergeable: MergeableState.MERGEABLE,
-    automergeOpts: null,
+    automergeSelection: null,
     automergeAvailable: false,
     hasNewActivity: false,
   });
@@ -245,7 +245,7 @@ test('[outgoing-prs-1]: Outgoing PR, requested reviews, no reviews', (t) => {
       allow_merge_commit: true,
     },
     mergeable: MergeableState.MERGEABLE,
-    automergeOpts: null,
+    automergeSelection: null,
     automergeAvailable: false,
     hasNewActivity: false,
   });
@@ -278,7 +278,7 @@ test('[outgoing-prs-1]: review requested changes then approved', (t) => {
       allow_merge_commit: true,
     },
     mergeable: MergeableState.MERGEABLE,
-    automergeOpts: null,
+    automergeSelection: null,
     automergeAvailable: false,
     hasNewActivity: false,
   });
@@ -310,7 +310,7 @@ test('[outgoing-prs-1]: with success status', (t) => {
       allow_merge_commit: true,
     },
     mergeable: MergeableState.MERGEABLE,
-    automergeOpts: null,
+    automergeSelection: null,
     automergeAvailable: false,
     hasNewActivity: false,
   });
@@ -342,7 +342,7 @@ test('[outgoing-prs-1]: with pending status', (t) => {
       allow_merge_commit: true,
     },
     mergeable: MergeableState.MERGEABLE,
-    automergeOpts: null,
+    automergeSelection: null,
     automergeAvailable: false,
     hasNewActivity: false,
   });
@@ -374,7 +374,7 @@ test('[outgoing-prs-1]: with error status', (t) => {
       allow_merge_commit: true,
     },
     mergeable: MergeableState.MERGEABLE,
-    automergeOpts: null,
+    automergeSelection: null,
     automergeAvailable: false,
     hasNewActivity: false,
   });
@@ -406,7 +406,7 @@ test('[outgoing-prs-1]: with failing status', (t) => {
       allow_merge_commit: true,
     },
     mergeable: MergeableState.MERGEABLE,
-    automergeOpts: null,
+    automergeSelection: null,
     automergeAvailable: false,
     hasNewActivity: false,
   });
