@@ -19,7 +19,7 @@ export interface RepoDetails {
 export interface OutgoingPullRequest extends PullRequest {
   repoDetails: RepoDetails|null;
   mergeable: 'MERGEABLE'|'CONFLICTING'|'UNKNOWN';
-  automergeOpts: AutomergeOpts|null;
+  automergeSelection: AutomergeSelection|null;
   automergeAvailable: boolean;
 }
 
@@ -253,7 +253,7 @@ export type SWClientMessage<T> = {
 
 export type MergeType = 'manual'|'merge'|'squash'|'rebase';
 
-export type AutomergeOpts = {
+export type AutomergeSelection = {
   mergeType: MergeType,
 };
 

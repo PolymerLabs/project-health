@@ -101,6 +101,17 @@ class GithubAppsModel {
     return repoDocSnapshot.data() as GithubAppInstall;
   }
 
+  async isAppInstalledOnRepo(orgOrUser: string, repoId: string):
+      Promise<boolean> {
+    const repoDocRef = await firestore()
+                           .collection(GITHUB_APP_COLLECTION_NAME)
+                           .doc(orgOrUser)
+                           .collection(GITHUB_APP_REPO_COLLECTION_NAME)
+                           .doc(repoId)
+                           .get();
+    return repoDocRef.exists;
+  }
+
   async getRepos(orgOrUser: string): Promise<GithubRepo[]> {
     const repoDocSnapshot = await firestore()
                                 .collection(GITHUB_APP_COLLECTION_NAME)

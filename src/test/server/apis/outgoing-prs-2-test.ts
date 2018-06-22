@@ -62,7 +62,7 @@ test('[outgoing-prs-2]: outgoing PRs are sorted', (t) => {
 test('[outgoing-prs-2]: requested changes', (t) => {
   t.deepEqual(t.context.prsById.get('14'), {
     author: 'project-health2',
-    automergeOpts: null,
+    automergeSelection: null,
     automergeAvailable: false,
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1520881768000,
@@ -98,7 +98,7 @@ test('[outgoing-prs-2]: requested changes', (t) => {
 test('[outgoing-prs-2]: review with comments', (t) => {
   t.deepEqual(t.context.prsById.get('13'), {
     author: 'project-health2',
-    automergeOpts: null,
+    automergeSelection: null,
     automergeAvailable: false,
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1520468329000,
@@ -137,7 +137,7 @@ test('[outgoing-prs-2]: review with comments', (t) => {
 test('[outgoing-prs-2]: review with comments2', (t) => {
   t.deepEqual(t.context.prsById.get('11'), {
     author: 'project-health2',
-    automergeOpts: null,
+    automergeSelection: null,
     automergeAvailable: false,
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1518042329000,
@@ -176,7 +176,7 @@ test('[outgoing-prs-2]: review with comments2', (t) => {
 test('[outgoing-prs-2]: ready to merge', (t) => {
   t.deepEqual(t.context.prsById.get('10'), {
     author: 'project-health2',
-    automergeOpts: null,
+    automergeSelection: null,
     automergeAvailable: false,
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1518031465000,
@@ -212,7 +212,7 @@ test('[outgoing-prs-2]: ready to merge', (t) => {
 test('[outgoing-prs-2]: changes requested, new commit', (t) => {
   t.deepEqual(t.context.prsById.get('9'), {
     author: 'project-health2',
-    automergeOpts: null,
+    automergeSelection: null,
     automergeAvailable: false,
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1517426339000,
@@ -249,7 +249,7 @@ test('[outgoing-prs-2]: changes requested, new commit', (t) => {
 test('[outgoing-prs-2]: no review', (t) => {
   t.deepEqual(t.context.prsById.get('4'), {
     author: 'project-health2',
-    automergeOpts: null,
+    automergeSelection: null,
     automergeAvailable: false,
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1516753159000,
@@ -277,7 +277,7 @@ test('[outgoing-prs-2]: no review', (t) => {
 test('[outgoing-prs-2]: basic requested changes', (t) => {
   t.deepEqual(t.context.prsById.get('3'), {
     author: 'project-health2',
-    automergeOpts: null,
+    automergeSelection: null,
     automergeAvailable: false,
     avatarUrl: 'https://avatars3.githubusercontent.com/u/34584974?v=4',
     createdAt: 1516750523000,
@@ -327,7 +327,7 @@ test('[outgoing-prs-2]: outgoing PR with pending review', (t) => {
     title: 'Pending review',
     url: 'https://github.com/project-health1/repo/pull/19',
     hasNewActivity: false,
-    automergeOpts: null,
+    automergeSelection: null,
     automergeAvailable: false,
     mergeable: 'MERGEABLE',
     repoDetails: {

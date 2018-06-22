@@ -90,9 +90,9 @@ export class AutoMerger extends BaseElement {
       return html``;
     }
 
-    if (!this.selected && this.pr.automergeOpts &&
-        this.pr.automergeOpts.mergeType) {
-      this.selected = this.pr.automergeOpts.mergeType;
+    if (!this.selected && this.pr.automergeSelection &&
+        this.pr.automergeSelection.mergeType) {
+      this.selected = this.pr.automergeSelection.mergeType;
     }
 
     const titleText =

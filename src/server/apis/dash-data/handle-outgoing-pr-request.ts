@@ -4,6 +4,7 @@ import * as api from '../../../types/api';
 import {OutgoingPullRequestInfo} from '../../../types/api';
 import {commitFieldsFragment, OutgoingPullRequestsQuery, PullRequestReviewState, reviewFieldsFragment} from '../../../types/gql-types';
 import {github} from '../../../utils/github';
+import {githubAppModel} from '../../models/githubAppModel';
 import {pullRequestsModel} from '../../models/pullRequestsModel';
 import {repositoryModel} from '../../models/repositoryModel';
 import {userModel, UserRecord} from '../../models/userModel';
@@ -203,21 +204,18 @@ async function getAllPRInfo(
       const repoDetails = results[0];
       const prDetails = results[1];
 
-      let automergeAvailable = false;
-      let automergeOpts = null;
-      if (prDetails) {
-        // If we have commit data, then we have status hooks configured.
-        automergeAvailable = true;
-        if (prDetails.automerge) {
-          automergeOpts = prDetails.automerge;
-        }
+      const automergeAvailable = await githubAppModel.isAppInstalledOnRepo(
+          pr.repository.owner.login, pr.repository.name);
+      let automergeSelection = null;
+      if (prDetails && prDetails.automerge) {
+        automergeSelection = prDetails.automerge;
       }
 
       const fullPR: api.OutgoingPullRequest = {
         ...outgoingPr,
         repoDetails,
         automergeAvailable,
-        automergeOpts,
+        automergeSelection,
         mergeable: pr.mergeable,
         hasNewActivity: false,
       };
