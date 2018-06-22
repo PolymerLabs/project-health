@@ -7,8 +7,8 @@ export type WebhookType = 'check_run'|'check_suite'|'commit_comment'|'create'|
     'repository'|'repository_vulnerability_alert'|'release'|'status'|'team'|
     'team_add'|'watch';
 
-export type WebhookPayload =
-    PullRequestPayload|PullRequestReviewPayload|InstallationPayload;
+export type WebhookPayload = PullRequestPayload|PullRequestReviewPayload|
+    InstallationPayload|InstallationRepositoriesPayload;
 
 interface TypedPayload {
   type: WebhookType;
@@ -49,25 +49,17 @@ export interface PullRequestReviewPayload extends TypedPayload {
 export interface InstallationPayload extends TypedPayload {
   type: 'installation';
   action: 'created'|'deleted';
-  installation: {
-    id: number,
-    repository_selection: 'all'|'selected',
-    permissions: {
-      [name: string]: string,
-    },
-    events: string[],
-    account: {
-      login: string,
-      avatar_url: string,
-      type: 'User'|'Organization',
-    },
-  };
-  repositories?: Array<{
-    id: number,
-    name: string,
-    full_name: string,
-    private: boolean,
-  }>;
+  installation: Installation;
+  repositories?: RepositoryReference[];
+}
+
+export interface InstallationRepositoriesPayload extends TypedPayload {
+  type: 'installation_repositories';
+  action: 'added'|'removed';
+  repository_selection: 'selected'|'all';
+  installation: Installation;
+  repositories_added: RepositoryReference[];
+  repositories_removed: RepositoryReference[];
 }
 
 export interface StatusPayload extends TypedPayload {
@@ -112,8 +104,30 @@ interface Repository {
   full_name: string;
 }
 
+interface RepositoryReference {
+  id: number;
+  name: string;
+  full_name: string;
+
+  private: boolean;
+}
+
 interface Review {
   state: 'approved'|'changes_requested'|'commented';
   user: User;
   commit_id: string;
+}
+
+interface Installation {
+  id: number;
+  repository_selection: 'all'|'selected';
+  permissions: {
+    [name: string]: string,
+  };
+  events: string[];
+  account: {
+    login: string,
+    avatar_url: string,
+    type: 'User'|'Organization',
+  };
 }

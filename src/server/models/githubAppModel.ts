@@ -57,6 +57,23 @@ class GithubAppsModel {
     });
   }
 
+  /**
+   * Removes repos specified by ids.
+   */
+  async removeRepos(orgOrUser: string, repos: string[]) {
+    return firestore().runTransaction(async (transaction) => {
+      for (const repo of repos) {
+        const repoDocRef = await firestore()
+                               .collection(GITHUB_APP_COLLECTION_NAME)
+                               .doc(orgOrUser)
+                               .collection(GITHUB_APP_REPO_COLLECTION_NAME)
+                               .doc(repo);
+        transaction.delete(repoDocRef);
+      }
+      return true;
+    });
+  }
+
   async getInstallation(installId: number): Promise<GithubAppInstall|null> {
     const githubCollection =
         await firestore().collection(GITHUB_APP_COLLECTION_NAME);

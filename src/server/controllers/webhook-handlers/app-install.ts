@@ -11,7 +11,8 @@ export class AppInstaller implements WebhookListener {
 
   async handleWebhookEvent(payload: webhooks.WebhookPayload):
       Promise<WebhookListenerResponse|null> {
-    if (payload.type !== 'installation') {
+    if (payload.type !== 'installation' &&
+        payload.type !== 'installation_repositories') {
       return null;
     }
 
@@ -19,21 +20,50 @@ export class AppInstaller implements WebhookListener {
       return await this.handleNewAppInstall(payload);
     } else if (payload.action === 'deleted') {
       return await this.handleDeleteApp(payload);
+    } else if (payload.action === 'added' || payload.action === 'removed') {
+      return await this.handleUpdatedAppInstall(payload);
     } else {
       return null;
     }
   }
 
   async handleNewAppInstall(payload: webhooks.InstallationPayload) {
-    const query = this.createRepoQuery(payload);
+    if (!payload.repositories) {
+      return null;
+    }
+    const owner = payload.installation.account.login;
+    const repos = payload.repositories.map((r) => r.name);
+    const query = this.createRepoQuery(owner, repos);
     if (!query) {
       return null;
     }
 
+    return this.updateInstall(payload, query);
+  }
+
+  async handleUpdatedAppInstall(payload:
+                                    webhooks.InstallationRepositoriesPayload) {
+    const owner = payload.installation.account.login;
+    const reposToAdd = payload.repositories_added.map((r) => r.name);
+    const queryToAdd = this.createRepoQuery(owner, reposToAdd);
+    const reposToRemove = payload.repositories_removed.map((r) => r.name);
+    const queryToRemove = this.createRepoQuery(owner, reposToRemove);
+
+    return this.updateInstall(payload, queryToAdd, queryToRemove);
+  }
+
+  async updateInstall(
+      payload: webhooks.InstallationPayload|
+      webhooks.InstallationRepositoriesPayload,
+      queryToAdd: string,
+      queryToRemove?: string) {
     // Generate a token from the installed app to use for this API request.
     const token = await generateGithubAppToken(payload.installation.id);
-    const result = await github().query(
-        {query: gql`${query}`, fetchPolicy: 'network-only', context: {token}});
+    const result = await github().query({
+      query: gql`${queryToAdd}`,
+      fetchPolicy: 'network-only',
+      context: {token}
+    });
     const data = result.data as {[key: string]: GithubRepo};
     const allRepos = Object.keys(data).map((repoKey) => {
       return data[repoKey];
@@ -51,15 +81,33 @@ export class AppInstaller implements WebhookListener {
 
     await githubAppModel.addRepos(payload.installation.account.login, allRepos);
 
+    // Remove specified repos.
+    if (queryToRemove) {
+      const removeResult = await github().query({
+        query: gql`${queryToAdd}`,
+        fetchPolicy: 'network-only',
+        context: {token}
+      });
+      const data = removeResult.data as {[key: string]: GithubRepo};
+      const reposToRemove = Object.keys(data).map((repoKey) => {
+        return data[repoKey].id;
+      });
+
+      await githubAppModel.removeRepos(
+          payload.installation.account.login, reposToRemove);
+    }
+
     return {
       id: AppInstaller.ID,
       notifications: [],
     };
   }
 
-  private createRepoQuery(payload: webhooks.InstallationPayload) {
-    const owner = payload.installation.account.login;
-
+  /**
+   * From a list of repository names, creates a query to fetch the IDs
+   * associated with the repository.
+   */
+  private createRepoQuery(owner: string, repos: string[]) {
     const queryId = 'repoId';
     const queries: string[] = [];
     const fragments: string[] = [
@@ -71,12 +119,8 @@ export class AppInstaller implements WebhookListener {
         }`,
     ];
 
-    if (!payload.repositories) {
-      return null;
-    }
-
-    for (const repo of payload.repositories) {
-      queries.push(`repository(owner:"${owner}" name:"${repo.name}") {
+    for (const repo of repos) {
+      queries.push(`repository(owner:"${owner}" name:"${repo}") {
           ...repoFragment
         }`);
     }
@@ -105,3 +149,4 @@ export class AppInstaller implements WebhookListener {
 }
 
 webhooksController.addListener('installation', new AppInstaller());
+webhooksController.addListener('installation_repositories', new AppInstaller());
