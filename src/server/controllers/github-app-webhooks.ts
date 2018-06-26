@@ -1,4 +1,8 @@
+import * as fse from 'fs-extra';
+import * as path from 'path';
+
 import * as webhooks from '../../types/webhooks';
+
 import {NotificationsSent} from './notifications';
 
 export interface WebhookListenerResponse {
@@ -14,6 +18,23 @@ export interface WebhookListener {
 export class WebhooksController {
   private eventsToListener =
       new Map<webhooks.WebhookType, Set<WebhookListener>>();
+
+  constructor() {
+    this.loadControllers('webhook-handlers');
+    this.loadControllers('webhook-handlers/notifications');
+    this.loadControllers('webhook-handlers/updaters');
+  }
+
+  private loadControllers(dir: string) {
+    const dirPath = path.join(__dirname, dir);
+    const files = fse.readdirSync(dirPath);
+    for (const file of files) {
+      if (path.extname(file) === '.js') {
+        console.log(`loading ${dirPath}/${file}`);
+import(path.join(dirPath, file));
+      }
+    }
+  }
 
   /**
    * Subscribes the listener to the specified events.

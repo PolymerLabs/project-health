@@ -48,27 +48,14 @@ export class AppInstaller implements WebhookListener {
     const queryToAdd = this.createRepoQuery(owner, reposToAdd);
     const reposToRemove = payload.repositories_removed.map((r) => r.name);
     const queryToRemove = this.createRepoQuery(owner, reposToRemove);
-
     return this.updateInstall(payload, queryToAdd, queryToRemove);
   }
 
   async updateInstall(
       payload: webhooks.InstallationPayload|
       webhooks.InstallationRepositoriesPayload,
-      queryToAdd: string,
-      queryToRemove?: string) {
-    // Generate a token from the installed app to use for this API request.
-    const token = await generateGithubAppToken(payload.installation.id);
-    const result = await github().query({
-      query: gql`${queryToAdd}`,
-      fetchPolicy: 'network-only',
-      context: {token}
-    });
-    const data = result.data as {[key: string]: GithubRepo};
-    const allRepos = Object.keys(data).map((repoKey) => {
-      return data[repoKey];
-    });
-
+      queryToAdd: string|null,
+      queryToRemove?: string|null) {
     await githubAppModel.addInstallation({
       installationId: payload.installation.id,
       permissions: payload.installation.permissions,
@@ -79,12 +66,27 @@ export class AppInstaller implements WebhookListener {
       avatar_url: payload.installation.account.avatar_url,
     });
 
-    await githubAppModel.addRepos(payload.installation.account.login, allRepos);
+    const token = await generateGithubAppToken(payload.installation.id);
+
+    if (queryToAdd) {
+      // Generate a token from the installed app to use for this API request.
+      const result = await github().query({
+        query: gql`${queryToAdd}`,
+        fetchPolicy: 'network-only',
+        context: {token}
+      });
+      const data = result.data as {[key: string]: GithubRepo};
+      const allRepos = Object.keys(data).map((repoKey) => {
+        return data[repoKey];
+      });
+      await githubAppModel.addRepos(
+          payload.installation.account.login, allRepos);
+    }
 
     // Remove specified repos.
     if (queryToRemove) {
       const removeResult = await github().query({
-        query: gql`${queryToAdd}`,
+        query: gql`${queryToRemove}`,
         fetchPolicy: 'network-only',
         context: {token}
       });
@@ -107,7 +109,10 @@ export class AppInstaller implements WebhookListener {
    * From a list of repository names, creates a query to fetch the IDs
    * associated with the repository.
    */
-  private createRepoQuery(owner: string, repos: string[]) {
+  private createRepoQuery(owner: string, repos: string[]): string|null {
+    if (!repos.length) {
+      return null;
+    }
     const queryId = 'repoId';
     const queries: string[] = [];
     const fragments: string[] = [
