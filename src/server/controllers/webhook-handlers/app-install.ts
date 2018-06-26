@@ -38,7 +38,7 @@ export class AppInstaller implements WebhookListener {
       return null;
     }
 
-    return this.updateInstall(payload, query);
+    return this.updateInstall(payload, query, []);
   }
 
   async handleUpdatedAppInstall(payload:
@@ -47,15 +47,14 @@ export class AppInstaller implements WebhookListener {
     const reposToAdd = payload.repositories_added.map((r) => r.name);
     const queryToAdd = this.createRepoQuery(owner, reposToAdd);
     const reposToRemove = payload.repositories_removed.map((r) => r.name);
-    const queryToRemove = this.createRepoQuery(owner, reposToRemove);
-    return this.updateInstall(payload, queryToAdd, queryToRemove);
+    return this.updateInstall(payload, queryToAdd, reposToRemove);
   }
 
   async updateInstall(
       payload: webhooks.InstallationPayload|
       webhooks.InstallationRepositoriesPayload,
       queryToAdd: string|null,
-      queryToRemove?: string|null) {
+      reposToRemove: string[]) {
     await githubAppModel.addInstallation({
       installationId: payload.installation.id,
       permissions: payload.installation.permissions,
@@ -84,20 +83,8 @@ export class AppInstaller implements WebhookListener {
     }
 
     // Remove specified repos.
-    if (queryToRemove) {
-      const removeResult = await github().query({
-        query: gql`${queryToRemove}`,
-        fetchPolicy: 'network-only',
-        context: {token}
-      });
-      const data = removeResult.data as {[key: string]: GithubRepo};
-      const reposToRemove = Object.keys(data).map((repoKey) => {
-        return data[repoKey].id;
-      });
-
-      await githubAppModel.removeRepos(
-          payload.installation.account.login, reposToRemove);
-    }
+    await githubAppModel.removeRepos(
+        payload.installation.account.login, reposToRemove);
 
     return {
       id: AppInstaller.ID,

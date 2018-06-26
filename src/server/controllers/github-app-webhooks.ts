@@ -30,7 +30,6 @@ export class WebhooksController {
     const files = fse.readdirSync(dirPath);
     for (const file of files) {
       if (path.extname(file) === '.js') {
-        console.log(`loading ${dirPath}/${file}`);
 import(path.join(dirPath, file));
       }
     }
