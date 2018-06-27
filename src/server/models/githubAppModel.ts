@@ -58,18 +58,27 @@ class GithubAppsModel {
   }
 
   /**
-   * Removes repos specified by ids.
+   * Removes repos specified by name.
    */
-  async removeRepos(orgOrUser: string, repos: string[]) {
+  async removeRepos(orgOrUser: string, repoNames: string[]) {
+    if (!repoNames.length) {
+      return false;
+    }
+
     return firestore().runTransaction(async (transaction) => {
-      for (const repo of repos) {
-        const repoDocRef = await firestore()
-                               .collection(GITHUB_APP_COLLECTION_NAME)
-                               .doc(orgOrUser)
-                               .collection(GITHUB_APP_REPO_COLLECTION_NAME)
-                               .doc(repo);
-        transaction.delete(repoDocRef);
+      const repos = await firestore()
+                        .collection(GITHUB_APP_COLLECTION_NAME)
+                        .doc(orgOrUser)
+                        .collection(GITHUB_APP_REPO_COLLECTION_NAME)
+                        .get();
+
+      for (const doc of repos.docs) {
+        const data = doc.data() as GithubRepo;
+        if (repoNames.includes(data.name)) {
+          transaction.delete(doc.ref);
+        }
       }
+
       return true;
     });
   }

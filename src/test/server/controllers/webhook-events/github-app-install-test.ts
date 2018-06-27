@@ -71,7 +71,7 @@ function newFakeRepositoriesPayload():
     }],
     repositories_removed: [{
       id: 456,
-      name: 'test-repo2',
+      name: 'test-repo',
       full_name: 'test-owner/test-repo',
       private: false,
     }],
@@ -209,16 +209,14 @@ test.serial('[handleGithubAppInstall]: handles add then update', async (t) => {
   const githubInstance = github();
   const queryStub = t.context.sandbox.stub(githubInstance, 'query');
 
-  function createQueryResponse(id: string) {
-    return {data: {repository: {id}}};
+  function createQueryResponse(id: string, name: string) {
+    return {data: {repository: {id, name}}};
   }
 
   queryStub.onFirstCall()
-      .returns(createQueryResponse('test-repo-id'))
+      .returns(createQueryResponse('test-repo-id', 'test-repo'))
       .onSecondCall()
-      .returns(createQueryResponse('new-repo-id'))
-      .onThirdCall()
-      .returns(createQueryResponse('test-repo-id'));
+      .returns(createQueryResponse('new-repo-id', 'new-repo'));
 
   const response = await appInstaller.handleWebhookEvent(newFakeHookDetails());
   t.not(response, null, 'Payload is handled');
