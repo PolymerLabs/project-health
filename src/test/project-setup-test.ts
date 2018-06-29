@@ -50,7 +50,7 @@ test('should have up-to-date secrets', async (t) => {
 
   const fileBuffer = await fsExtra.readFile(secretsPath);
   const hash = crypto.createHash('md5').update(fileBuffer).digest('hex');
-  t.deepEqual(hash, '3604533bcf04159e57befede118636e1');
+  t.deepEqual(hash, '8233d87d6d9acd9585a7ee72131fa197');
 });
 
 test(
