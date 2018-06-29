@@ -18,6 +18,9 @@ export async function generateGithubAppToken(installId: number):
       });
   const responseBody = await response.json();
   if (!responseBody.token) {
+    console.error(`Generating GitHub app token failed with response: [${
+        response.status}] ${response.statusText} ${
+        JSON.stringify(responseBody)}`);
     throw new Error('Unable to generate to GitHub App auth token.');
   }
   return responseBody.token;

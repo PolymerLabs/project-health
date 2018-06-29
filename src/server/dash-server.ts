@@ -5,7 +5,6 @@ import * as express from 'express';
 import {Express} from 'express';
 import * as fsExtra from 'fs-extra';
 import {Server} from 'http';
-import fetch from 'node-fetch';
 import * as path from 'path';
 
 import {getRouter as getAutomergeRouter} from './apis/auto-merge';
@@ -22,7 +21,6 @@ import {getRouter as getUserRouter} from './apis/user';
 import {githubAppModel} from './models/githubAppModel';
 import {userModel} from './models/userModel';
 import {enforceHTTPS} from './utils/enforce-https';
-import {generateJWT} from './utils/generate-github-app-token';
 import {performGitHubRedirect} from './utils/perform-github-redirect';
 import {requireLogin} from './utils/require-login';
 
@@ -120,6 +118,31 @@ export class DashServer {
     app.get(
         '/github-app/post-install',
         async (request: express.Request, response: express.Response) => {
+          // Retries for up to 5 seconds to find the installation details. This
+          // is necessary since GitHub immediately redirects on installation,
+          // but we may have not yet received the installation webhook or
+          // finished processing it.
+          async function checkInstall(
+              response: express.Response,
+              installId: number,
+              attemptNumber: number) {
+            const installDetails =
+                await githubAppModel.getInstallation(installId);
+            if (installDetails) {
+              return response.redirect(
+                  302, `/org/config/${installDetails.login}`);
+            }
+
+            if (attemptNumber < 5) {
+              setTimeout(
+                  checkInstall.bind(
+                      null, response, installId, attemptNumber + 1),
+                  1000);
+            } else {
+              response.status(400).send('Unable to find installation id');
+            }
+          }
+
           if (!request.query.installation_id) {
             response.status(400).send('Installation ID required.');
             return;
@@ -137,50 +160,7 @@ export class DashServer {
           }
 
           const installId = request.query.installation_id;
-          const installDetails =
-              await githubAppModel.getInstallation(installId);
-          if (installDetails) {
-            return response.redirect(
-                302, `/org/config/${installDetails.login}`);
-          }
-
-          try {
-            const jwt = await generateJWT();
-            const installResponse = await fetch(
-                `https://api.github.com/app/installations/${installId}`, {
-                  method: 'GET',
-                  headers: {
-                    'Accept': 'application/vnd.github.machine-man-preview+json',
-                    'Authorization': `Bearer ${jwt}`,
-                  },
-                });
-
-            if (!installResponse.ok) {
-              return response.status(400).send('Invalid response from GitHub.');
-            }
-
-            const installResponseBody = await installResponse.json();
-            if (!installResponseBody.account ||
-                !installResponseBody.account.login) {
-              return response.status(400).send('Unexpected GitHub response.');
-            }
-
-            await githubAppModel.addInstallation({
-              installationId: installResponseBody.id,
-              permissions: installResponseBody.permissions,
-              events: installResponseBody.events,
-              repository_selection: installResponseBody.repository_selection,
-              type: installResponseBody.target_type,
-              login: installResponseBody.account.login,
-              avatar_url: installResponseBody.account.avatar_url,
-            });
-
-            const redirectUrl =
-                `/org/config/${installResponseBody.account.login}`;
-            response.redirect(302, redirectUrl);
-          } catch (err) {
-            response.status(400).send('Unable to find installation ID.');
-          }
+          checkInstall(response, installId, 0);
         });
 
     // Add login middleware

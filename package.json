@@ -1,6 +1,6 @@
 {
   "name": "project-health",
-  "version": "1.0.14",
+  "version": "1.0.20",
   "description": "A tool to help Polymer team manage repos.",
   "private": true,
   "scripts": {
@@ -9,7 +9,7 @@
     "deploy:staging": "gulp build && gcloud app deploy app.yaml --quiet --project github-health-staging",
     "deploy:prod": "gulp build && npm --no-git-tag-version version patch && gcloud app deploy app.yaml --quiet --project github-health",
     "dev": "gulp dev",
-    "encrypt-secrets": "tar cvf secrets.tar secrets.json github-health-staging-5ed56f9155c0-travis.json project-health-staging.2018-04-12.private-key.pem project-health.2018-04-30.private-key.pem && travis encrypt-file secrets.tar --add",
+    "encrypt-secrets": "tar cvf secrets.tar secrets.json github-health-staging-5ed56f9155c0-travis.json project-health-staging.2018-04-12.private-key.pem project-health.2018-06-28.private-key.pem && travis encrypt-file secrets.tar --add",
     "format": "find src -name '*.ts' ! -name 'gql-types.ts' | xargs clang-format --style=file -i",
     "generate-gql-types": "apollo-codegen generate 'src/**/*.ts' --schema 'src/types/github-schema.json' --target typescript --addTypename --output 'src/types/gql-types.ts'",
     "lint": "tslint 'src/**/*.ts' -t stylish",

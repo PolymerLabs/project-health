@@ -7,7 +7,7 @@ export type ApplicationSecrets = {
 };
 
 type GitHubAppSecrets = {
-  TO_GQL_TOKEN: string; ID: number; JWT_PATH: string;
+  ID: number; JWT_PATH: string;
 };
 
 let secretsSingleton: ApplicationSecrets|null = null;
@@ -23,14 +23,13 @@ export function initSecrets(secrets: ApplicationSecrets) {
   if (secretsSingleton) {
     throw new Error('Secrets already initialised.');
   }
-  if (!secrets.GITHUB_APP && process.env.GAE_APPLICATION === 'github-health') {
+  if (!secrets.GITHUB_APP &&
+          process.env.GOOGLE_CLOUD_PROJECT === 'github-health' ||
+      true) {
+    console.log('Using production credentials');
     secrets.GITHUB_APP = (secrets as ApplicationSecrets & {
                            'GITHUB_APP_PROD': GitHubAppSecrets
                          }).GITHUB_APP_PROD;
-  } else if (!secrets.GITHUB_APP) {
-    secrets.GITHUB_APP = (secrets as ApplicationSecrets & {
-                           'GITHUB_APP_STAGING': GitHubAppSecrets
-                         }).GITHUB_APP_STAGING;
   }
   secretsSingleton = secrets;
 }
